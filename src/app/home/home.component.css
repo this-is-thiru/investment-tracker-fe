@@ -1,11 +1,13 @@
-.home-page-container{
-    padding: 50px 100px;
+.home-page-container {
+  padding: 50px 100px;
 }
-.home-page-content{
-    width: 70%;
-    padding-top: 50px;
-    border-top: #dedede 3px solid;
+
+.home-page-content {
+  width: 70%;
+  padding-top: 50px;
+  border-top: #dedede 3px solid;
 }
-p{
-    margin-top: 20px;
+
+p {
+  margin-top: 20px;
 }

@@ -25,3 +25,21 @@ Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To u
 ## Further help
 
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+
+# Custom explanations:
+
+## Build and Serve Commands
+
+- **Development**: `ng serve`
+  - Uses `environment.ts` for configuration.
+
+- **Production Build**: `ng build --prod`
+  - Uses `environment.prod.ts` for configuration.
+
+## Adding Custom Environment Files
+
+If you need additional environment configurations (e.g., for staging, testing), create new environment files (`environment.staging.ts`, `environment.testing.ts`) and specify them when serving or building your application using the `--configuration` flag:
+
+```bash
+ng serve --configuration=staging
+ng build --configuration=testing
