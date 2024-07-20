@@ -3,15 +3,15 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { HeaderComponent } from './header/header.component';
-import { FooterComponent } from './footer/footer.component';
-import { DashboardComponent } from './dashboard/dashboard.component';
+import { HeaderComponent } from './components/common/header/header.component';
+import { FooterComponent } from './components/common/footer/footer.component';
+import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule, provideHttpClient } from '@angular/common/http';
-import { HomeComponent } from './home/home.component';
-import { LoginComponent } from './login/login.component';
+import { HomeComponent } from './components/home/home.component';
 import { LoaderComponent } from './utility/loader/loader.component';
 import { SnackbarComponent } from './utility/snackbar/snackbar.component';
+import { AuthComponent } from './components/auth/auth.component';
 
 @NgModule({
   declarations: [
@@ -20,9 +20,9 @@ import { SnackbarComponent } from './utility/snackbar/snackbar.component';
     FooterComponent,
     DashboardComponent,
     HomeComponent,
-    LoginComponent,
     LoaderComponent,
     SnackbarComponent,
+    AuthComponent,
   ],
   imports: [BrowserModule, FormsModule, HttpClientModule, AppRoutingModule],
   providers: [provideHttpClient()],

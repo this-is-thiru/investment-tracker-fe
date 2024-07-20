@@ -1,15 +1,15 @@
 import { Component } from '@angular/core';
-import { NgForm } from '@angular/forms';
 import { Observable } from 'rxjs';
-import { AuthResponse } from '../model/AuthResponse';
+import { AuthResponse } from '../../model/AuthResponse';
 import { Router } from '@angular/router';
+import { NgForm } from '@angular/forms';
 
 @Component({
-  selector: 'app-login',
-  templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css'],
+  selector: 'app-auth',
+  templateUrl: './auth.component.html',
+  styleUrl: './auth.component.css',
 })
-export class LoginComponent {
+export class AuthComponent {
   authService: any;
   isLoginMode: boolean = true;
   isLoading: boolean = false;
