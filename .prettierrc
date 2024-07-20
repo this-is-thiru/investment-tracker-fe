@@ -1,0 +1,10 @@
+{
+  "htmlWhitespaceSensitivity": "ignore",
+  "wrapAttributes": "auto",
+  "singleQuote": true,
+  "attributeSeparator": {
+    "name": "singleline",
+    "separator": " "
+  },
+  "endOfLine": "auto"
+}

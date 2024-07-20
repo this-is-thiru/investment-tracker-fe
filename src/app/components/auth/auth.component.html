@@ -1,40 +1,49 @@
 <div class="app-login-form">
   <app-snackbar [errorMessage]="errorMessage" *ngIf="errorMessage"></app-snackbar>
-  <h2>{{ isLoginMode ? 'Login' : 'Signup' }} Here</h2>
-  <app-loader *ngIf="isLoading"></app-loader>
-  <form #authForm="ngForm" (ngSubmit)="onFormSubmitted(authForm)" *ngIf="!isLoading">
-    <div class="form-input">
-      <label>Email Address</label>
-      <input type="email"
-             placeholder="Email address"
-             name="email"
-             ngModel
-             required
-             email
-      >
-    </div>
-    <div class="form-input">
-      <label>Password</label>
-      <input type="password"
-             placeholder="Password"
-             name="password"
-             ngModel
-             required
-             minlength="8"
-      >
-    </div>
-    <button type="submit"
-            class="app-login-btn"
-            [disabled]="authForm.invalid"
-    >{{ isLoginMode ? 'Login' : 'Signup' }}
+
+  <!-- Login form -->
+  <div *ngIf="isLoginMode">
+    <h2>Login Here</h2>
+    <app-loader *ngIf="isLoading"></app-loader>
+    <form [formGroup]="loginForm" (ngSubmit)="onLogin()" *ngIf="!isLoading">
+      <div class="form-input">
+        <label for="loginEmail">Email</label>
+        <input type="email" id="loginEmail" formControlName="email">
+      </div>
+      <div class="form-input">
+        <label for="loginPassword">Password</label>
+        <input type="password" id="loginPassword" formControlName="password">
+      </div>
+      <button type="submit" class="app-login-btn" [disabled]="loginForm.invalid">Login</button>
+    </form>
+  </div>
+
+  <!--  Register form-->
+  <div *ngIf="!isLoginMode">
+    <h2>Signup Here</h2>
+    <app-loader *ngIf="isLoading"></app-loader>
+    <form [formGroup]="registrationForm" (ngSubmit)="onRegistration()" *ngIf="!isLoading">
+      <div class="form-input">
+        <label for="email">Email</label>
+        <input type="email" id="email" formControlName="email">
+      </div>
+      <div class="form-input">
+        <label for="password">Password</label>
+        <input type="password" id="password" formControlName="password">
+      </div>
+      <div class="form-input">
+        <label for="confirmPassword">Confirm Password</label>
+        <input type="password" id="confirmPassword" formControlName="confirmPassword">
+      </div>
+      <button type="submit" class="app-login-btn" [disabled]="registrationForm.invalid">Signup</button>
+    </form>
+  </div>
+  <p>{{ isLoginMode ? 'Do not have an account yet?' : 'Already have an account?' }}
+    <button
+      class="app-toggle-btn"
+      type="button"
+      (click)="onSwitchMode()"
+    >{{ isLoginMode ? 'Register Here.' : 'Login Here' }}
     </button>
-    <p>{{ isLoginMode ? 'Do not have an accout yet?' : 'Already have an account?' }}
-      <button
-        class="app-toggle-btn"
-        type="button"
-        (click)="onSwitchMode()"
-      >{{ isLoginMode ? 'Register Here.' : 'Login Here' }}
-      </button>
-    </p>
-  </form>
+  </p>
 </div>
