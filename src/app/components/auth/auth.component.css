@@ -1,49 +1,19 @@
-.app-login-form {
-  width: 520px;
-  box-shadow: rgba(0, 0, 0, 0.35) 0 5px 15px;
-  padding: 30px;
-  border-radius: 10px;
-  margin: 75px auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+mat-card {
+  max-width: 400px;
+  margin: 2rem auto;
+  padding: 2rem;
+}
+mat-card-title
+{
+  margin-bottom: 1rem;
 }
 
-.form-input {
-  margin-top: 20px; /* Increased margin for better spacing between input fields */
-}
-
-.form-input input {
+mat-form-field {
   width: 100%;
-  height: 40px;
-  border: 2px solid #ccc; /* Softened border color */
-  border-radius: 5px; /* Rounded corners for input fields */
-  padding: 0 15px; /* Reduced horizontal padding for a cleaner look */
-  font-size: 16px; /* Increased font size for better readability */
 }
 
-.app-login-btn {
+button {
   width: 100%;
-  height: 50px; /* Increased button height for easier clickability */
-  border: none;
-  padding: 10px 0; /* Adjusted padding for better button appearance */
-  margin: 20px 0; /* Increased margin for better spacing between elements */
-  background-color: #28282B;
-  color: white;
-  cursor: pointer;
-  border-radius: 5px; /* Rounded corners for buttons */
+  margin-top: 1rem;
 }
-
-.app-toggle-btn {
-  margin-top: 10px; /* Increased top margin for better alignment */
-  font-size: 16px;
-  background-color: transparent;
-  color: #0e0ede;
-  cursor: pointer;
-  border: none;
-}
-
-/* Center the toggle button horizontally */
-p {
-  text-align: center;
-}
+  

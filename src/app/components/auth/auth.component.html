@@ -1,8 +1,8 @@
-<div class="app-login-form">
-  <app-snackbar [errorMessage]="errorMessage" *ngIf="errorMessage"></app-snackbar>
+<!-- <div class="app-login-form">
+  <app-snackbar [errorMessage]="errorMessage" *ngIf="errorMessage"></app-snackbar> -->
 
-  <!-- Login form -->
-  <div *ngIf="isLoginMode">
+<!-- Login form -->
+<!-- <div *ngIf="isLoginMode">
     <h2>Login Here</h2>
     <app-loader *ngIf="isLoading"></app-loader>
     <form [formGroup]="loginForm" (ngSubmit)="onLogin()" *ngIf="!isLoading">
@@ -16,10 +16,10 @@
       </div>
       <button type="submit" class="app-login-btn" [disabled]="loginForm.invalid">Login</button>
     </form>
-  </div>
+  </div> -->
 
-  <!--  Register form-->
-  <div *ngIf="!isLoginMode">
+<!--  Register form-->
+<!-- <div *ngIf="!isLoginMode">
     <h2>Signup Here</h2>
     <app-loader *ngIf="isLoading"></app-loader>
     <form [formGroup]="registrationForm" (ngSubmit)="onRegistration()" *ngIf="!isLoading">
@@ -46,4 +46,88 @@
     >{{ isLoginMode ? 'Register Here.' : 'Login Here' }}
     </button>
   </p>
-</div>
+</div> -->
+
+<!-- Login Form -->
+<mat-card>
+  <mat-tab-group>
+    <mat-tab label="Login">
+      <mat-card-title>Login</mat-card-title>
+      <mat-card-content>
+        <form (ngSubmit)="onLogin()" [formGroup]="loginForm">
+          <mat-form-field appearance="outline">
+            <mat-label>Email</mat-label>
+            <input matInput formControlName="email" type="email" placeholder="Enter your email"
+              (blur)="updateEmailErrorMessage('Login')">
+            @if("email.invalid")
+            {
+            <mat-error>{{ emailErrorMessage() }}</mat-error>
+            }
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Password</mat-label>
+            <input matInput formControlName="password" type="password" placeholder="Enter your password"
+              (blur)="updatePasswordErrorMessage('Login')" [type]="hideLogin() ? 'password' : 'text'" />
+            <button mat-icon-button matSuffix (click)="clickEventLogin($event)" [attr.aria-label]="'Hide password'"
+              [attr.aria-pressed]="hideLogin()">
+              <mat-icon>{{hideLogin() ? 'visibility_off' : 'visibility'}}</mat-icon>
+            </button>
+            @if("password.invalid")
+            {
+            <mat-error>{{ passwordErrorMessage() }}</mat-error>
+            }
+          </mat-form-field>
+
+          <button mat-raised-button color="primary" type="submit" [disabled]="loginForm.invalid">Login</button>
+        </form>
+      </mat-card-content>
+    </mat-tab>
+
+
+    <!-- Registration Form -->
+    <mat-tab label="Register">
+      <mat-card-title>Register</mat-card-title>
+      <mat-card-content>
+        <form (ngSubmit)="onRegistration()" [formGroup]="registrationForm">
+          <mat-form-field appearance="outline">
+            <mat-label>Email</mat-label>
+            <input matInput formControlName="email" type="email" placeholder="Enter your email"
+              (blur)="updateEmailErrorMessage('Registration')">
+            @if("email.invalid")
+            {
+            <mat-error>{{ emailErrorMessage() }}</mat-error>
+            }
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Password</mat-label>
+            <input matInput formControlName="password" type="password" placeholder="Enter your password"
+              (blur)="updatePasswordErrorMessage('Registration')" [type]="hideRegistrationP() ? 'password' : 'text'" />
+              <button mat-icon-button matSuffix (click)="clickEventRegistrationP($event)" [attr.aria-label]="'Hide password'"
+                [attr.aria-pressed]="hideRegistrationP()">
+                <mat-icon>{{hideRegistrationP() ? 'visibility_off' : 'visibility'}}</mat-icon>
+              </button>
+            @if("email.invalid")
+            {
+            <mat-error>{{ passwordErrorMessage() }}</mat-error>
+            }
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Confirm Password</mat-label>
+            <input matInput formControlName="confirmPassword" type="password" plaeholder="Enter your confirm password"
+              (blur)="updateConfirmPasswordErrorMessage()"[type]="hideRegistrationCP() ? 'password' : 'text'" />
+              <button mat-icon-button matSuffix (click)="clickEventRegistrationCP($event)" [attr.aria-label]="'Hide password'"
+                [attr.aria-pressed]="hideRegistrationCP()">
+                <mat-icon>{{hideRegistrationCP() ? 'visibility_off' : 'visibility'}}</mat-icon>
+              </button>
+            @if("email.invalid")
+            {
+            <mat-error>{{ confirmPasswordErrorMessage() }}</mat-error>
+            }
+          </mat-form-field>
+          <button mat-raised-button color="primary" type="submit"
+            [disabled]="registrationForm.invalid">Register</button>
+        </form>
+      </mat-card-content>
+    </mat-tab>
+  </mat-tab-group>
+</mat-card>

@@ -62,12 +62,19 @@ i {
 
 .create-task-btn {
   padding: 10px 20px;
-  background-color: #28282B;
+  background-color: #0056d2;
   border: #cdcdcd 1px solid;
   color: white;
   margin: 0px 2px;
   border-radius: 20px;
 }
+
+/* Hover effect on task buttons */
+.create-task-btn:hover {
+  background-color: #007bff;
+  transform: scale(1.05);
+}
+
 
 .loader {
   border: 16px solid #f3f3f3; /* Light grey */
