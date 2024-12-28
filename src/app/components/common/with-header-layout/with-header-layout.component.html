@@ -1,0 +1,49 @@
+<!-- Responsive Header -->
+<div class="header">
+  <div class="header-inner">
+    <!-- Logo Section -->
+    <div class="investment-tracker-logo">
+      <!-- Logo text links to the home page -->
+      <div class="logo pointer">
+        <b class="investment-tracker" routerLink="/home" (click)="closeMenuAfterNavigation()">Investment Tracker</b>
+      </div>
+    </div>
+
+    <!-- Hamburger Menu Icon -->
+    <div class="hamburger-menu pointer" (click)="toggleMenu()">
+      <!-- Transforming lines to cancel icon when menu is open -->
+      <div class="line" [class.rotate-top]="menuOpen"></div>
+      <div class="line" [class.hide]="menuOpen"></div>
+      <div class="line" [class.rotate-bottom]="menuOpen"></div>
+    </div>
+
+    <!-- Navigation Links Section -->
+    <div class="navigation" [class.open]="menuOpen">
+      <!-- Home link -->
+      <div class="home-wrapper pointer">
+        <div class="home" routerLink="/home" (click)="closeMenuAfterNavigation()">Home</div>
+      </div>
+      <!-- Dashboard link -->
+      <div class="dashboard-wrapper pointer">
+        <div class="dashboard" routerLink="/dashboard" (click)="closeMenuAfterNavigation()">Dashboard</div>
+      </div>
+
+      <!-- Login and Logout Buttons -->
+      <div>
+        <!-- Login Button -->
+        <button mat-raised-button routerLink="/auth" (click)="onLogin()" *ngIf="!isLoggedIn">
+          Login
+        </button>
+        <!-- Logout Button -->
+        <button mat-raised-button (click)="onLogout()" *ngIf="isLoggedIn">
+          Logout
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Main Content Area -->
+<main>
+  <router-outlet></router-outlet>
+</main>

@@ -8,7 +8,6 @@ import { HomeComponent } from './components/home/home.component';
 import { LoaderComponent } from './utility/loader/loader.component';
 import { SnackbarComponent } from './utility/snackbar/snackbar.component';
 import { AuthComponent } from './components/auth/auth.component';
-import { HeaderComponent } from './components/common/header/header.component';
 import { FooterComponent } from './components/common/footer/footer.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 
@@ -30,20 +29,24 @@ import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatTabsModule } from '@angular/material/tabs';
 
-
-import {MatIconModule} from '@angular/material/icon';
+import { MatIconModule } from '@angular/material/icon';
+import { TestComponent } from './components/test/test.component';
+import { WithHeaderLayoutComponent } from './components/common/with-header-layout/with-header-layout.component';
+import { WithoutHeaderLayoutComponent } from './components/common/without-header-layout/without-header-layout.component';
 
 
 @NgModule({
   declarations: [
     AppComponent,
-    HeaderComponent,
     FooterComponent,
     DashboardComponent,
     HomeComponent,
     LoaderComponent,
     SnackbarComponent,
     AuthComponent,
+    TestComponent,
+    WithHeaderLayoutComponent,
+    WithoutHeaderLayoutComponent,
   ],
   imports: [
     BrowserModule,
@@ -57,10 +60,9 @@ import {MatIconModule} from '@angular/material/icon';
     MatCardModule,
     MatTabsModule,
     MatFormFieldModule,
-
     MatIconModule
   ],
   providers: [provideHttpClient(withFetch()), provideAnimationsAsync()],
   bootstrap: [AppComponent],
 })
-export class AppModule {}
+export class AppModule { }

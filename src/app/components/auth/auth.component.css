@@ -1,19 +1,38 @@
 mat-card {
-  max-width: 400px;
-  margin: 2rem auto;
-  padding: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #f0f4f8; /* Light background */
 }
-mat-card-title
-{
-  margin-bottom: 1rem;
+
+mat-tab-group {
+  max-width: 450px;
+  width: 100%;
+  padding: 2rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Card shadow */
+  border-radius: 10px;
+  background-color: #ffffff;
 }
 
 mat-form-field {
   width: 100%;
+  margin-bottom: 1rem; /* Spacing between form fields */
 }
 
-button {
+button[mat-raised-button] {
   width: 100%;
-  margin-top: 1rem;
+  padding: 0.75rem;
+  background-color: #1976d2;
+  color: #ffffff;
+  font-weight: bold;
 }
-  
+
+button[mat-raised-button]:hover {
+  background-color: #155fa0;
+}
+
+mat-error {
+  font-size: 0.875rem;
+  color: #d32f2f;
+}

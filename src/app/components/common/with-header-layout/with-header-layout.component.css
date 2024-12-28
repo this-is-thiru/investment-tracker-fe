@@ -1,0 +1,122 @@
+/* General Header Styling */
+.header {
+  width: 100%;
+  padding: 15px 15px;
+  background-color: #1b1b1b;
+  font-family: 'Source Sans Pro', sans-serif;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.header-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* Logo Section */
+.investment-tracker-logo {
+  font-size: 24px;
+  color: #ffffff;
+  font-weight: bold;
+  transition: color 0.3s ease-in-out;
+}
+
+.investment-tracker-logo:hover {
+  color: #155fa0;
+  cursor: pointer;
+}
+
+/* Navigation Links */
+.navigation {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.navigation .pointer {
+  font-size: 16px;
+  color: #ffffff;
+  transition: color 0.3s ease-in-out;
+}
+
+.navigation .pointer:hover {
+  color: #155fa0;
+  cursor: pointer;
+}
+
+/* Login/Logout Button Styling */
+button[mat-raised-button] {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: #1976d2;
+  color: #ffff;
+  font-weight: bold;
+  transition: background-color 0.3s ease-in-out;
+}
+
+button[mat-raised-button]:hover {
+  background-color: #155fa0;
+  border: 0.5px solid;
+}
+
+/* Hamburger Menu Styling */
+.hamburger-menu {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  cursor: pointer;
+}
+
+.hamburger-menu .line {
+  width: 25px;
+  height: 3px;
+  background-color: #ffffff;
+  transition: all 0.3s ease-in-out;
+}
+
+/* Line animations for cancel icon */
+.hamburger-menu .line.rotate-top {
+  transform: rotate(45deg) translateY(8px);
+}
+
+.hamburger-menu .line.hide {
+  opacity: 0;
+}
+
+.hamburger-menu .line.rotate-bottom {
+  transform: rotate(-45deg) translateY(-8px);
+}
+
+/* Show Hamburger Menu on Smaller Screens */
+@media (max-width: 768px) {
+  .hamburger-menu {
+    display: flex;
+  }
+
+  .navigation {
+    display: none;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+    background-color: #1b1b1b;
+    padding: 20px 0;
+  }
+
+  .navigation.open {
+    display: flex;
+  }
+}
+
+@media (max-width: 480px) {
+  .investment-tracker-logo {
+    font-size: 20px;
+  }
+
+  .navigation .pointer {
+    font-size: 14px;
+  }
+}
