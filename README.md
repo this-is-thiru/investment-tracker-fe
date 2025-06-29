@@ -1,3 +1,5 @@
+Figma Design: https://www.figma.com/design/6X64FBCdaWuRd38SQlgLJj/Investment-Tracker?node-id=0-1&t=E7xNouc0fvkMyIxN-1
+
 # InvestmentTrackerFe
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.3.6.
