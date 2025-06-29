@@ -1,0 +1,51 @@
+
+<!-- LOGIN SECTION -->  
+<section
+	class="min-w-[300px] min-h-screen h-full bg-[#fafefc] flex flex-col items-center justify-center px-10 py-7 text-left text-[15px] text-[#1b2821] overflow-y-auto">
+
+	<div class="flex flex-col items-center justify-start gap-9 min-w-[300px] max-w-[450px] w-full">
+
+		<header class="flex flex-col items-start justify-start gap-2 text-center text-[28px] w-full">
+			<h1 class="w-full relative leading-8 font-bold">Access Your Account</h1>
+			<p class="w-full relative text-[15px] leading-5">
+				Easily monitor your investments and streamline your tax filing for free!
+			</p>
+		</header>
+
+		<form class="flex flex-col items-start justify-start gap-[18px] text-[#142e2080] w-full" (ngSubmit)="onLogin()"
+			[formGroup]="loginForm" aria-label="Login form">
+
+			<!-- Email -->
+			<div class="w-full">
+				<label for="login-email" class="sr-only">Email Address</label>
+				<input id="login-email" name="loginEmail" type="email" formControlName="email" autocomplete="email"
+					required placeholder="Email Address"
+					class="w-full rounded-[16px] bg-[rgba(37,126,79,0.09)] border border-transparent px-3 py-2" />
+			</div>
+
+			<!-- Password -->
+			<div class="w-full relative">
+				<label for="login-password" class="sr-only">Password</label>
+				<input id="login-password" name="loginPassword" [type]="hideLoginP ? 'password' : 'text'"
+					formControlName="password" autocomplete="current-password" required
+					placeholder="Enter Your Password"
+					class="w-full rounded-[16px] bg-[rgba(37,126,79,0.09)] border border-transparent px-3 py-2" />
+				<button type="button" (click)="hideLoginP = !hideLoginP"
+					class="absolute top-2 right-3 text-sm text-green-600"> {{ hideLoginP ? 'Show' : 'Hide' }} </button>
+			</div>
+
+			<!-- Submit -->
+			<button type="submit" [disabled]="loginForm.invalid || isLoading"
+				class="w-full rounded-[16px] bg-[#14ae5c] text-[#010502] font-semibold px-[18px] py-2 hover:bg-green-600 transition-colors">
+				Log In
+			</button>
+		</form>
+
+		<!-- Sign Up Link -->
+		<div class="flex items-center justify-center gap-1 text-[13px] text-[rgba(20,46,32,0.62)] w-full">
+			<p class="leading-4">Don't have an account?</p>
+			<a [routerLink]="'/sign-up'" class="text-green-600 font-medium hover:underline">Sign Up →</a>
+		</div>
+
+	</div>
+</section>

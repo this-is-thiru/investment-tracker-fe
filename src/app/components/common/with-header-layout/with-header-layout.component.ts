@@ -48,7 +48,7 @@ export class WithHeaderLayoutComponent {
     localStorage.removeItem('jwtToken'); // Clear token from localStorage
     this.isLoggedIn = false; // Update state
     this.menuOpen = false; // Close menu on logout
-    this.router.navigate(['/auth']); // Redirect to login
+    this.router.navigate(['/sign-in']); // Redirect to login
   }
 
   /**

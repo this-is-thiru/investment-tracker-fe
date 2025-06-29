@@ -33,6 +33,15 @@ import { MatIconModule } from '@angular/material/icon';
 import { TestComponent } from './components/test/test.component';
 import { WithHeaderLayoutComponent } from './components/common/with-header-layout/with-header-layout.component';
 import { WithoutHeaderLayoutComponent } from './components/common/without-header-layout/without-header-layout.component';
+import { SignInComponent } from './components/auth/sign-in/sign-in.component';
+import { SignUpComponent } from './components/auth/sign-up/sign-up.component';
+
+//Prime ng
+import { TableModule } from 'primeng/table';
+import { ButtonModule } from 'primeng/button';
+import { InputTextModule } from 'primeng/inputtext';
+import { DropdownModule } from 'primeng/dropdown';
+
 
 
 @NgModule({
@@ -47,6 +56,8 @@ import { WithoutHeaderLayoutComponent } from './components/common/without-header
     TestComponent,
     WithHeaderLayoutComponent,
     WithoutHeaderLayoutComponent,
+    SignInComponent,
+    SignUpComponent,
   ],
   imports: [
     BrowserModule,
@@ -60,7 +71,11 @@ import { WithoutHeaderLayoutComponent } from './components/common/without-header
     MatCardModule,
     MatTabsModule,
     MatFormFieldModule,
-    MatIconModule
+    MatIconModule,
+    TableModule,
+    ButtonModule,
+    InputTextModule,
+    DropdownModule
   ],
   providers: [provideHttpClient(withFetch()), provideAnimationsAsync()],
   bootstrap: [AppComponent],

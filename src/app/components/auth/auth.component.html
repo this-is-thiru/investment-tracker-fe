@@ -1,89 +1,98 @@
-<mat-card>
-  <mat-tab-group>
-    <!-- Login Tab -->
-    <mat-tab label="Login">
-      <mat-card-content>
-        <form (ngSubmit)="onLogin()" [formGroup]="loginForm">
-          <mat-form-field appearance="outline">
-            <mat-label>Email</mat-label>
-            <input matInput formControlName="email" type="email" placeholder="Enter your email" />
-            <mat-error *ngIf="loginForm.get('email')?.errors?.['required']">
-              Email is required
-            </mat-error>
-            <mat-error *ngIf="loginForm.get('email')?.errors?.['email']">
-              Invalid email format
-            </mat-error>
-          </mat-form-field>
+<!-- <mat-card>
+	<mat-tab-group> -->
+		<!-- Login Tab -->
+		<!-- <mat-tab label="Login">
+			<mat-card-content>
+				<form (ngSubmit)="onLogin()" [formGroup]="loginForm">
+					<mat-form-field appearance="outline">
+						<mat-label>Email</mat-label>
+						<input matInput formControlName="email" type="email" placeholder="Enter your email" />
+						<mat-error *ngIf="loginForm.get('email')?.errors?.['required']">
+							Email is required
+						</mat-error>
+						<mat-error *ngIf="loginForm.get('email')?.errors?.['email']">
+							Invalid email format
+						</mat-error>
+					</mat-form-field>
 
-          <mat-form-field appearance="outline">
-            <mat-label>Password</mat-label>
-            <input matInput formControlName="password" [type]="hideLogin ? 'password' : 'text'" placeholder="Password" />
-            <button mat-icon-button matSuffix (click)="hideLogin = !hideLogin" aria-label="Toggle password visibility">
-              <mat-icon>{{ hideLogin ? 'visibility_off' : 'visibility' }}</mat-icon>
-            </button>
-            <mat-error *ngIf="loginForm.get('password')?.errors?.['required']">
-              Password is required
-            </mat-error>
-            <mat-error *ngIf="loginForm.get('password')?.errors?.['minlength']">
-              Password must be 6-12 characters
-            </mat-error>
-          </mat-form-field>
+					<mat-form-field appearance="outline">
+						<mat-label>Password</mat-label>
+						<input matInput formControlName="password" [type]="hideLogin ? 'password' : 'text'"
+							placeholder="Password" />
+						<button mat-icon-button matSuffix (click)="hideLogin = !hideLogin"
+							aria-label="Toggle password visibility">
+							<mat-icon>{{ hideLogin ? 'visibility_off' : 'visibility' }}</mat-icon>
+						</button>
+						<mat-error *ngIf="loginForm.get('password')?.errors?.['required']">
+							Password is required
+						</mat-error>
+						<mat-error *ngIf="loginForm.get('password')?.errors?.['minlength']">
+							Password must be 6-12 characters
+						</mat-error>
+					</mat-form-field>
 
-          <button mat-raised-button color="primary" type="submit" [disabled]="loginForm.invalid || isLoading">
-            Login
-          </button>
-        </form>
-      </mat-card-content>
-    </mat-tab>
+					<button mat-raised-button color="primary" type="submit" [disabled]="loginForm.invalid || isLoading">
+						Login
+					</button>
+				</form>
+			</mat-card-content>
+		</mat-tab> -->
 
-    <!-- Registration Tab -->
-    <mat-tab label="Register">
-      <mat-card-content>
-        <form (ngSubmit)="onRegistration()" [formGroup]="registrationForm">
-          <mat-form-field appearance="outline">
-            <mat-label>Email</mat-label>
-            <input matInput formControlName="email" type="email" placeholder="Enter your email" />
-            <mat-error *ngIf="registrationForm.get('email')?.errors?.['required']">
-              Email is required
-            </mat-error>
-            <mat-error *ngIf="registrationForm.get('email')?.errors?.['email']">
-              Invalid email format
-            </mat-error>
-          </mat-form-field>
+		<!-- Registration Tab -->
+		<!-- <mat-tab label="Register">
+			<mat-card-content>
+				<form (ngSubmit)="onRegistration()" [formGroup]="registrationForm">
+					<mat-form-field appearance="outline">
+						<mat-label>Email</mat-label>
+						<input matInput formControlName="email" type="email" placeholder="Enter your email" />
+						<mat-error *ngIf="registrationForm.get('email')?.errors?.['required']">
+							Email is required
+						</mat-error>
+						<mat-error *ngIf="registrationForm.get('email')?.errors?.['email']">
+							Invalid email format
+						</mat-error>
+					</mat-form-field>
 
-          <mat-form-field appearance="outline">
-            <mat-label>Password</mat-label>
-            <input matInput formControlName="password" [type]="hideRegistrationP ? 'password' : 'text'" placeholder="Password" />
-            <button mat-icon-button matSuffix (click)="hideRegistrationP = !hideRegistrationP" aria-label="Toggle password visibility">
-              <mat-icon>{{ hideRegistrationP ? 'visibility_off' : 'visibility' }}</mat-icon>
-            </button>
-            <mat-error *ngIf="registrationForm.get('password')?.errors?.['required']">
-              Password is required
-            </mat-error>
-            <mat-error *ngIf="registrationForm.get('password')?.errors?.['minlength']">
-              Password must be 6-12 characters
-            </mat-error>
-          </mat-form-field>
+					<mat-form-field appearance="outline">
+						<mat-label>Password</mat-label>
+						<input matInput formControlName="password" [type]="hideRegistrationP ? 'password' : 'text'"
+							placeholder="Password" />
+						<button mat-icon-button matSuffix (click)="hideRegistrationP = !hideRegistrationP"
+							aria-label="Toggle password visibility">
+							<mat-icon>{{ hideRegistrationP ? 'visibility_off' : 'visibility' }}</mat-icon>
+						</button>
+						<mat-error *ngIf="registrationForm.get('password')?.errors?.['required']">
+							Password is required
+						</mat-error>
+						<mat-error *ngIf="registrationForm.get('password')?.errors?.['minlength']">
+							Password must be 6-12 characters
+						</mat-error>
+					</mat-form-field>
 
-          <mat-form-field appearance="outline">
-            <mat-label>Confirm Password</mat-label>
-            <input matInput formControlName="confirmPassword" [type]="hideRegistrationCP ? 'password' : 'text'" placeholder="Confirm Password" />
-            <button mat-icon-button matSuffix (click)="hideRegistrationCP = !hideRegistrationCP" aria-label="Toggle password visibility">
-              <mat-icon>{{ hideRegistrationCP ? 'visibility_off' : 'visibility' }}</mat-icon>
-            </button>
-            <mat-error *ngIf="registrationForm.get('confirmPassword')?.errors?.['required']">
-              Confirm Password is required
-            </mat-error>
-            <mat-error *ngIf="registrationForm.errors?.['passwordMismatch']">
-              Passwords do not match
-            </mat-error>
-          </mat-form-field>
+					<mat-form-field appearance="outline">
+						<mat-label>Confirm Password</mat-label>
+						<input matInput formControlName="confirmPassword"
+							[type]="hideRegistrationCP ? 'password' : 'text'" placeholder="Confirm Password" />
+						<button mat-icon-button matSuffix (click)="hideRegistrationCP = !hideRegistrationCP"
+							aria-label="Toggle password visibility">
+							<mat-icon>{{ hideRegistrationCP ? 'visibility_off' : 'visibility' }}</mat-icon>
+						</button>
+						<mat-error *ngIf="registrationForm.get('confirmPassword')?.errors?.['required']">
+							Confirm Password is required
+						</mat-error>
+						<mat-error *ngIf="registrationForm.errors?.['passwordMismatch']">
+							Passwords do not match
+						</mat-error>
+					</mat-form-field>
 
-          <button mat-raised-button color="primary" type="submit" [disabled]="registrationForm.invalid || isLoading">
-            Register
-          </button>
-        </form>
-      </mat-card-content>
-    </mat-tab>
-  </mat-tab-group>
+					<button mat-raised-button color="primary" type="submit"
+						[disabled]="registrationForm.invalid || isLoading">
+						Register
+					</button>
+				</form>
+			</mat-card-content>
+		</mat-tab>
+	</mat-tab-group>
 </mat-card>
+
+ -->

@@ -2,7 +2,6 @@
 .home-page-container {
   position: relative;
   height: 100vh; /* Full viewport height */
-  font-family: 'Arial', sans-serif; /* Use a clean, sans-serif font */
 }
 
 /* Overlay to make text readable over the video */
@@ -45,7 +44,7 @@ p {
   font-size: clamp(1rem, 2.5vw, 1.2rem); /* Responsive font size using clamp */
   line-height: 1.6; /* Comfortable line spacing */
   color: #333; /* Dark text for better readability */
-  text-align: justify;
+  /* text-align: justify; */
 }
 
 /* Video background styles */
@@ -74,7 +73,7 @@ p {
   }
 
   p {
-    text-align: justify;
+    /* text-align: justify; */
     line-height: 1.5; /* Slightly tighter line spacing */
   }
 }
@@ -94,7 +93,7 @@ p {
   }
 
   p {
-    text-align: justify;
+    /* text-align: justify; */
     font-size: 0.9rem; /* Reduce font size for paragraphs */
   }
 }

@@ -1,28 +1,81 @@
-<div class="dashboard-container">
-  <h2>Dashboard</h2>
-  <hr />
+<section
+  class="min-w-[300px] min-h-screen h-full bg-[#fafefc] flex flex-col items-center justify-start px-4 py-6 text-sm text-[#1b2821] overflow-y-auto">
 
-  <div class="table-container">
-    <table>
-      <thead>
+  <h2 class="text-lg font-semibold mb-4">Excel Data Dashboard</h2>
+
+  <!-- File Upload -->
+  <div class="w-full max-w-md mb-4">
+    <input
+      type="file"
+      (change)="onFileChange($event)"
+      accept=".xlsx, .xls"
+      class="w-full border rounded px-3 py-2"
+    />
+  </div>
+
+  <!-- Download Template -->
+  <div class="w-full max-w-md mb-4">
+    <button
+      pButton
+      type="button"
+      (click)="downloadTemplate()"
+      label="Download Template"
+      class="w-full"
+    ></button>
+  </div>
+
+  <!-- Table -->
+  <div class="w-full overflow-auto">
+    <p-table
+      *ngIf="excelData.length"
+      [value]="excelData"
+      [paginator]="true"
+      [rows]="10"
+      [rowsPerPageOptions]="[5, 10, 20]"
+      responsiveLayout="scroll"
+      editMode="cell"
+      class="p-datatable-sm p-datatable-gridlines w-full"
+    >
+      <!-- Table Header -->
+      <ng-template pTemplate="header">
         <tr>
-          <th>#</th>
-          <th>Name</th>
-          <th>Status</th>
+          <th *ngFor="let header of headers">{{ header }}</th>
           <th>Actions</th>
         </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let item of data; let i = index">
-          <td>{{ i + 1 }}</td>
-          <td>{{ item.name }}</td>
-          <td>{{ item.status }}</td>
+      </ng-template>
+
+      <!-- Table Body -->
+      <ng-template pTemplate="body" let-rowData let-rowIndex="rowIndex">
+        <tr>
+          <td *ngFor="let header of headers" pEditableColumn>
+            <p-cellEditor>
+              <ng-template pTemplate="input">
+                <input pInputText [(ngModel)]="rowData[header]" />
+              </ng-template>
+              <ng-template pTemplate="output">
+                {{ rowData[header] }}
+              </ng-template>
+            </p-cellEditor>
+          </td>
           <td>
-            <button class="action-btn" (click)="editItem(item)">Edit</button>
-            <button class="action-btn" (click)="deleteItem(i)">Delete</button>
+            <button
+              pButton
+              icon="pi pi-trash"
+              class="p-button-danger p-button-sm"
+              (click)="deleteRow(rowIndex)"
+            ></button>
           </td>
         </tr>
-      </tbody>
-    </table>
+      </ng-template>
+
+      <!-- No Data Template -->
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td [attr.colspan]="headers.length + 1" class="text-center py-4">
+            No data found. Please upload an Excel file.
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
   </div>
-</div>
+</section>
