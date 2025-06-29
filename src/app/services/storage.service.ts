@@ -1,0 +1,56 @@
+// storage.service.ts
+import { Injectable } from '@angular/core';
+
+@Injectable({
+  providedIn: 'root',
+})
+export class StorageService {
+  isBrowser(): boolean {
+    return typeof window !== 'undefined';
+  }
+
+  getItem(key: string): string | null {
+    return this.isBrowser() ? localStorage.getItem(key) : null;
+  }
+
+  setItem(key: string, value: string): void {
+    if (this.isBrowser()) {
+      localStorage.setItem(key, value);
+    }
+  }
+
+  removeItem(key: string): void {
+    if (this.isBrowser()) {
+      localStorage.removeItem(key);
+    }
+  }
+
+  clear(): void {
+    if (this.isBrowser()) {
+      localStorage.clear();
+    }
+  }
+
+  isTokenValid(token: string): boolean {
+    if (!token) return false;
+
+    try {
+      const [, payload] = token.split('.');
+      if (!payload) return false;
+
+      const decoded = JSON.parse(atob(payload));
+      const expiration = decoded.exp;
+      const currentTime = Math.floor(Date.now() / 1000);
+
+      return expiration > currentTime;
+    } catch (error) {
+      console.error('Error validating token:', error);
+      return false;
+    }
+  }
+
+  isUserAuthenticated(): boolean {
+    const token = this.getItem('jwtToken');
+    return !!token && this.isTokenValid(token);
+  }
+}

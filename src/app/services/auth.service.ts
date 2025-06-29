@@ -1,39 +1,54 @@
+// auth.service.ts
 import { Injectable } from '@angular/core';
-import { Observable, tap } from 'rxjs';
-import { AuthResponse } from '../model/AuthResponse';
+import { Observable } from 'rxjs';
+import { map, catchError } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
-import { environment } from '../../environments/environment';
-import { AuthRequest } from '../model/AuthRequest';
+import { Router } from '@angular/router';
+import { LoginRequest } from '../model/LoginRequest';
+import { LoginResponse } from '../model/LoginResponse';
+import { RegisterRequest } from '../model/RegisterRequest';
+import { StorageService } from './storage.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  private BASE_URL?: string;
+  private BASE_URL = 'http://localhost:8080';
 
-  constructor(private http: HttpClient) {
-    this.BASE_URL = environment.apiUrl;
+  constructor(private http: HttpClient, private router: Router, private storageService: StorageService) {}
+
+  login(user: LoginRequest): Observable<LoginResponse> {
+    return this.http.post<LoginResponse>(`${this.BASE_URL}/auth/login`, user).pipe(
+      map((res) => {
+        this.storageService.setItem('jwtToken', res.access_token);
+        return res;
+      }),
+      catchError((error) => {
+        console.error('Login failed:', error);
+        throw error;
+      })
+    );
   }
 
-  public login(user: AuthRequest): Observable<AuthResponse> {
-    return this.http
-      .post<AuthResponse>(this.BASE_URL + 'auth/login', user)
-      .pipe(
-        tap((authResponse: AuthResponse) => {
-          localStorage.setItem('jwtToken', authResponse.token);
-        }),
-      );
+  register(user: RegisterRequest): Observable<string> {
+    return this.http.post<string>(`${this.BASE_URL}/auth/register`, user).pipe(
+      map((res) => {
+        console.log('Registered successfully');
+        return res;
+      }),
+      catchError((error) => {
+        console.error('Registration failed:', error);
+        throw error;
+      })
+    );
   }
 
-  public register(user: AuthRequest): Observable<AuthResponse> {
-    return this.http
-      .post<AuthResponse>(`${this.BASE_URL}/auth/register`, user)
-      .pipe(
-        tap((res: AuthResponse) => {
-          if (res) {
-            console.log(`User: {} registered successfully`, res.email);
-          }
-        }),
-      );
+  logout(): void {
+    this.storageService.removeItem('jwtToken');
+    this.router.navigate(['/login']);
+  }
+
+  isUserAuthenticated(): boolean {
+    return this.storageService.isUserAuthenticated();
   }
 }

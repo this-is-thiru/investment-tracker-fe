@@ -1,0 +1,59 @@
+<header
+  class="fixed top-0 left-0 w-full bg-[#ffffffb2] backdrop-blur-lg flex items-center justify-between px-10 py-5 text-[28px] text-[#14ae5c] z-[9999]">
+  <!-- Left Logo -->
+  <div class="flex items-center gap-14">
+    <div class=" flex items-center gap-1">
+      <img src="../../../assets/imgs/Logomark.svg" alt="Logo" class="w-10 h-10" />
+      <span class="tracking-[-0.02em] leading-none cursor-pointer" routerLink="/home">Tracker</span>
+    </div>
+  </div>
+
+  <!-- Hamburger Menu (Visible on Mobile) -->
+  <div class="md:hidden flex flex-col gap-[5px] cursor-pointer z-20" (click)="toggleMenu()">
+    <div class="w-[25px] h-[3px] bg-[#14ae5c] transition-all duration-300 ease-in-out"
+      [ngClass]="{ 'rotate-45 translate-y-[8px]': menuOpen }"></div>
+    <div class="w-[25px] h-[3px] bg-[#14ae5c] transition-opacity duration-300 ease-in-out"
+      [ngClass]="{ 'opacity-0': menuOpen }"></div>
+    <div class="w-[25px] h-[3px] bg-[#14ae5c] transition-all duration-300 ease-in-out"
+      [ngClass]="{ '-rotate-45 -translate-y-[8px]': menuOpen }"></div>
+  </div>
+
+  <!-- Desktop Menu -->
+  <div class="hidden md:flex items-center gap-10 text-[15px] text-[#1b2821]">
+    <span class="leading-5 cursor-pointer transition-colors duration-200 hover:text-[#14ae5c]" routerLink="/dashboard"
+      (click)="closeMenuAfterNavigation()">Dashboard</span>
+    <img src="../../../assets/imgs/Vector 1.svg" alt="Divider" class="h-8 w-[1.5px] rounded" />
+    <span *ngIf="!isLoggedIn" class="leading-5 cursor-pointer transition-colors duration-200 hover:text-[#14ae5c]"
+      routerLink="/sign-in" (click)="onLogin(); closeMenuAfterNavigation()">Log in</span>
+    <span *ngIf="isLoggedIn" class="leading-5 cursor-pointer transition-colors duration-200 hover:text-[#14ae5c]"
+      routerLink="/sign-up" (click)="onLogout(); closeMenuAfterNavigation()">Log Out</span>
+
+    <button *ngIf="!isLoggedIn"
+      class="rounded-[14px] bg-[#14ae5c] text-[#010402] px-5 py-3 text-[15px] cursor-pointer hover:bg-[#119d4a] transition-all duration-200 hover:scale-105"
+      routerLink="/sign-up" (click)="closeMenuAfterNavigation()">
+      Try it free
+    </button>
+  </div>
+
+  <!-- Mobile Menu -->
+  <div *ngIf="menuOpen"
+    class="absolute top-full left-0 w-full px-10 py-4 z-50 flex flex-col gap-4 text-[15px] text-[#1b2821] shadow-xl border-t border-gray-200"
+    style="background: linear-gradient(0deg, rgba(73, 110, 91, 0.25) 36%, rgba(250, 254, 252, 0.25));">
+    <span class="cursor-pointer hover:text-[#14ae5c]" routerLink="/dashboard"
+      (click)="closeMenuAfterNavigation()">Dashboard</span>
+    <span *ngIf="!isLoggedIn" class="cursor-pointer hover:text-[#14ae5c]" routerLink="/sign-in"
+      (click)="onLogin(); closeMenuAfterNavigation()">Log in</span>
+    <span *ngIf="isLoggedIn" class="cursor-pointer hover:text-[#14ae5c]"  routerLink="/sign-in" (click)="onLogout()">Log
+      out</span>
+    <button *ngIf="!isLoggedIn"
+      class="rounded-[14px] bg-[#14ae5c] text-[#010402] px-5 py-3 text-[15px] hover:bg-[#119d4a] transition-all duration-200 hover:scale-105"
+      routerLink="/sign-up" (click)="closeMenuAfterNavigation()">
+      Try it free
+    </button>
+  </div>
+</header>
+
+<!-- Main Content Area -->
+<main>
+  <router-outlet></router-outlet>
+</main>

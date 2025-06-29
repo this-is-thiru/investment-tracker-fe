@@ -1,0 +1,67 @@
+
+<!-- REGISTRATION SECTION -->
+<section
+	class="min-w-[300px] min-h-screen h-full bg-[#fafefc] flex flex-col items-center justify-center px-10 py-7 text-left text-[15px] text-[#1b2821] overflow-y-auto">
+
+	<div class="flex flex-col items-center justify-start gap-9 min-w-[300px] max-w-[450px] w-full">
+
+		<form class="w-full max-w-[450px] min-w-[340px] flex flex-col gap-9" (ngSubmit)="onRegistration()"
+			[formGroup]="registrationForm" aria-label="Registration Form">
+
+			<header class="text-center flex flex-col gap-2 text-[28px]">
+				<h1 class="leading-8 font-bold">Set Up Your Account</h1>
+				<p class="text-[15px] leading-5">
+					Manage your investments with ease and streamline your tax preparation for free!
+				</p>
+			</header>
+
+			<section class="flex flex-col gap-4 text-[rgba(20,46,32,0.4)]">
+
+				<!-- Email -->
+				<div>
+					<label for="register-email" class="sr-only">Email Address</label>
+					<input id="register-email" name="registerEmail" type="email" formControlName="email"
+						autocomplete="email" required placeholder="Email Address"
+						class="w-full bg-[rgba(37,126,79,0.09)] border border-transparent rounded-2xl px-3 py-2 truncate leading-5" />
+				</div>
+
+				<!-- Password -->
+				<div class="relative">
+					<label for="register-password" class="sr-only">Password</label>
+					<input id="register-password" name="registerPassword" formControlName="password"
+						[type]="hideRegistrationP ? 'password' : 'text'" autocomplete="new-password" required
+						placeholder="Create a Password"
+						class="w-full bg-[rgba(37,126,79,0.09)] border border-transparent rounded-2xl px-3 py-2 truncate leading-5" />
+					<button type="button" (click)="hideRegistrationP = !hideRegistrationP"
+						class="absolute top-2 right-3 text-sm text-green-600"> {{ hideRegistrationP ? 'Show' : 'Hide' }}
+					</button>
+				</div>
+
+				<!-- Confirm Password -->
+				<div class="relative">
+					<label for="register-confirm-password" class="sr-only">Confirm Password</label>
+					<input id="register-confirm-password" name="registerConfirmPassword"
+						formControlName="confirmPassword" [type]="hideRegistrationCP ? 'password' : 'text'" required
+						placeholder="Re-enter Password"
+						class="w-full bg-[rgba(37,126,79,0.09)] border border-transparent rounded-2xl px-3 py-2 truncate leading-5" />
+					<button type="button" (click)="hideRegistrationCP = !hideRegistrationCP"
+						class="absolute top-2 right-3 text-sm text-green-600"> {{ hideRegistrationCP ? 'Show' : 'Hide'
+						}} </button>
+				</div>
+
+				<!-- Submit -->
+				<button type="submit" [disabled]="registrationForm.invalid || isLoading"
+					class="w-full bg-[#14ae5c] text-[#010502] rounded-2xl px-5 py-2 text-center font-semibold hover:bg-green-600 transition">
+					Register Now
+				</button>
+			</section>
+
+			<!-- Sign In Redirect -->
+			<div class="flex items-center justify-center gap-1 text-[13px] text-[rgba(20,46,32,0.62)] w-full">
+				<p class="leading-4">Already have an account?</p>
+				<a [routerLink]="'/sign-in'" class="text-green-600 font-medium hover:underline">Sign In →</a>
+			</div>
+
+		</form>
+	</div>
+</section>
