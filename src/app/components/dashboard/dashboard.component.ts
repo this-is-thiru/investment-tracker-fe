@@ -1,18 +1,20 @@
 import { Component } from '@angular/core';
 import * as XLSX from 'xlsx';
 import { HttpClient } from '@angular/common/http';
+import { MessageService } from 'primeng/api';
 import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css'],
+  providers: [MessageService]
 })
 export class DashboardComponent {
   excelData: any[] = [];
   headers: string[] = [];
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private messageService: MessageService) {}
 
   // Handle Excel File Upload
   onFileChange(event: Event): void {
@@ -24,6 +26,7 @@ export class DashboardComponent {
         const binaryString = e.target?.result as string;
         const workbook = XLSX.read(binaryString, { type: 'binary' });
         this.loadSheetData(workbook);
+        this.messageService.add({ severity: 'success', summary: 'Excel Uploaded', detail: file.name });
       };
       reader.readAsBinaryString(file);
     }
@@ -51,6 +54,7 @@ export class DashboardComponent {
   // Delete a row from the data
   deleteRow(rowIndex: number): void {
     this.excelData.splice(rowIndex, 1);
+    this.messageService.add({ severity: 'info', summary: 'Row Deleted', detail: `Row ${rowIndex + 1}` });
   }
 
   // Download template file from server
@@ -64,6 +68,7 @@ export class DashboardComponent {
         a.download = 'template.xlsx';
         a.click();
         window.URL.revokeObjectURL(url);
+        this.messageService.add({ severity: 'success', summary: 'Download Started', detail: 'Template.xlsx' });
       });
   }
 

@@ -1,59 +1,100 @@
-<header
-  class="fixed top-0 left-0 w-full bg-[#ffffffb2] backdrop-blur-lg flex items-center justify-between px-10 py-5 text-[28px] text-[#14ae5c] z-[9999]">
-  <!-- Left Logo -->
-  <div class="flex items-center gap-14">
-    <div class=" flex items-center gap-1">
-      <img src="../../../assets/imgs/Logomark.svg" alt="Logo" class="w-10 h-10" />
-      <span class="tracking-[-0.02em] leading-none cursor-pointer" routerLink="/home">Tracker</span>
+<header 
+  class="relative top-0 left-0 w-full bg-[#191919] text-white font-['Manrope'] 
+         flex items-center justify-between px-8 py-4 border-b border-[#e5e8eb] z-[9999]">
+
+  <!-- Left Section -->
+  <div class="flex items-center gap-6">
+    <!-- Logo -->
+    <div class="flex items-center gap-2">
+      <img src="../../../assets/imgs/logo.svg" alt="Logo" class="h-6 w-6" />
+      <span class="font-bold text-lg tracking-tight cursor-pointer" routerLink="/home">
+        Investment Tracker
+      </span>
+    </div>
+
+    <!-- Desktop Menu -->
+    <div class="hidden md:flex items-center gap-6 text-sm font-medium">
+      <span class="cursor-pointer hover:bg-white/10 p-1.5 rounded-[8px] transition duration-300 ease-in-out hover:scale-105 active:scale-95" routerLink="/dashboard"
+        (click)="closeMenuAfterNavigation()">Investments</span>
+      <span class="cursor-pointer hover:bg-white/10 p-1.5 rounded-[8px] transition duration-300 ease-in-out hover:scale-105 active:scale-95" routerLink="/tax"
+        (click)="closeMenuAfterNavigation()">Tax Filing</span>
+      <span class="cursor-pointer hover:bg-white/10 p-1.5 rounded-[8px] transition duration-300 ease-in-out hover:scale-105 active:scale-95" routerLink="/support"
+        (click)="closeMenuAfterNavigation()">Support</span>
     </div>
   </div>
 
-  <!-- Hamburger Menu (Visible on Mobile) -->
-  <div class="md:hidden flex flex-col gap-[5px] cursor-pointer z-20" (click)="toggleMenu()">
-    <div class="w-[25px] h-[3px] bg-[#14ae5c] transition-all duration-300 ease-in-out"
-      [ngClass]="{ 'rotate-45 translate-y-[8px]': menuOpen }"></div>
-    <div class="w-[25px] h-[3px] bg-[#14ae5c] transition-opacity duration-300 ease-in-out"
-      [ngClass]="{ 'opacity-0': menuOpen }"></div>
-    <div class="w-[25px] h-[3px] bg-[#14ae5c] transition-all duration-300 ease-in-out"
-      [ngClass]="{ '-rotate-45 -translate-y-[8px]': menuOpen }"></div>
-  </div>
+  <!-- Right Section -->
+  <div class="flex items-center gap-6 relative">
+    <img class="h-8 w-8 cursor-pointer" alt="Notifications" src="../../../assets/imgs/notificationIcon.svg" />
 
-  <!-- Desktop Menu -->
-  <div class="hidden md:flex items-center gap-10 text-[15px] text-[#1b2821]">
-    <span class="leading-5 cursor-pointer transition-colors duration-200 hover:text-[#14ae5c]" routerLink="/dashboard"
-      (click)="closeMenuAfterNavigation()">Dashboard</span>
-    <img src="../../../assets/imgs/Vector 1.svg" alt="Divider" class="h-8 w-[1.5px] rounded" />
-    <span *ngIf="!isLoggedIn" class="leading-5 cursor-pointer transition-colors duration-200 hover:text-[#14ae5c]"
-      routerLink="/sign-in" (click)="onLogin(); closeMenuAfterNavigation()">Log in</span>
-    <span *ngIf="isLoggedIn" class="leading-5 cursor-pointer transition-colors duration-200 hover:text-[#14ae5c]"
-      routerLink="/sign-up" (click)="onLogout(); closeMenuAfterNavigation()">Log Out</span>
+    <!-- Profile Dropdown -->
+    <div class="relative group">
+      <!-- Profile Icon -->
+      <img class="h-10 w-10 rounded-full object-cover cursor-pointer ring-2 ring-transparent 
+                 group-hover:ring-[#757575] transition"
+        alt="Profile" src="../../../assets/imgs/profilepic.svg" />
 
-    <button *ngIf="!isLoggedIn"
-      class="rounded-[14px] bg-[#14ae5c] text-[#010402] px-5 py-3 text-[15px] cursor-pointer hover:bg-[#119d4a] transition-all duration-200 hover:scale-105"
-      routerLink="/sign-up" (click)="closeMenuAfterNavigation()">
-      Try it free
-    </button>
-  </div>
+      <!-- Dropdown -->
+      <div
+        class="absolute right-0 mt-2 w-48 bg-[#191919] text-white rounded-md shadow-lg py-2 z-50 
+               opacity-0 scale-95 transform transition-all duration-200 origin-top-right 
+               group-hover:opacity-100 group-hover:scale-100">
 
-  <!-- Mobile Menu -->
-  <div *ngIf="menuOpen"
-    class="absolute top-full left-0 w-full px-10 py-4 z-50 flex flex-col gap-4 text-[15px] text-[#1b2821] shadow-xl border-t border-gray-200"
-    style="background: linear-gradient(0deg, rgba(73, 110, 91, 0.25) 36%, rgba(250, 254, 252, 0.25));">
-    <span class="cursor-pointer hover:text-[#14ae5c]" routerLink="/dashboard"
-      (click)="closeMenuAfterNavigation()">Dashboard</span>
-    <span *ngIf="!isLoggedIn" class="cursor-pointer hover:text-[#14ae5c]" routerLink="/sign-in"
-      (click)="onLogin(); closeMenuAfterNavigation()">Log in</span>
-    <span *ngIf="isLoggedIn" class="cursor-pointer hover:text-[#14ae5c]"  routerLink="/sign-in" (click)="onLogout()">Log
-      out</span>
-    <button *ngIf="!isLoggedIn"
-      class="rounded-[14px] bg-[#14ae5c] text-[#010402] px-5 py-3 text-[15px] hover:bg-[#119d4a] transition-all duration-200 hover:scale-105"
-      routerLink="/sign-up" (click)="closeMenuAfterNavigation()">
-      Try it free
-    </button>
+        <!-- Arrow above dropdown -->
+        <div class="absolute -top-2 right-6 w-4 h-4 bg-[#191919] transform rotate-45"></div>
+
+        <!-- Dropdown Items -->
+        <ng-container *ngFor="let item of dropdownItems">
+          <span
+            class="group/item flex items-center justify-between px-4 py-2 text-sm cursor-pointer 
+                   rounded transition-all duration-200"
+            routerLink="{{ item.link }}"
+            [ngClass]="{
+              'bg-[#2a2a2a] font-medium': isActive(item.link),
+              'hover:bg-[#2a2a2a]': !isActive(item.link)
+            }">
+
+            <!-- Text -->
+            <span
+              class="transition-all duration-200"
+              [ngClass]="{
+                'translate-x-2': isActive(item.link), 
+                'group-hover/item:translate-x-2': !isActive(item.link)
+              }">
+              {{ item.label }}
+            </span>
+
+            <!-- Arrow -->
+            <span
+              class="transition-all duration-200 opacity-0 group-hover/item:opacity-100"
+              [ngClass]="{ 'opacity-100': isActive(item.link) }">
+              →
+            </span>
+          </span>
+        </ng-container>
+
+        <!-- Auth Options -->
+        <span *ngIf="isLoggedIn"
+          class="group/item flex items-center justify-between px-4 py-2 text-sm cursor-pointer 
+                 hover:bg-[#2a2a2a] rounded transition-all duration-200"
+          (click)="onLogout()">
+          <span class="group-hover/item:translate-x-2 transition-all duration-200">Log out</span>
+          <span class="opacity-0 group-hover/item:opacity-100 transition-opacity duration-200">→</span>
+        </span>
+
+        <span *ngIf="!isLoggedIn"
+          class="group/item flex items-center justify-between px-4 py-2 text-sm cursor-pointer 
+                 hover:bg-[#2a2a2a] rounded transition-all duration-200"
+          routerLink="/sign-in" (click)="onLogin()">
+          <span class="group-hover/item:translate-x-2 transition-all duration-200">Log in</span>
+          <span class="opacity-0 group-hover/item:opacity-100 transition-opacity duration-200">→</span>
+        </span>
+      </div>
+    </div>
   </div>
 </header>
 
-<!-- Main Content Area -->
+<!-- Main Content -->
 <main>
   <router-outlet></router-outlet>
 </main>
