@@ -29,11 +29,9 @@ export class WithHeaderLayoutComponent implements OnInit {
   }
 
   dropdownItems = [
-    { label: 'My Profile', link: '/profile' },
-    { label: 'Settings', link: '/settings' },
-    { label: 'Investments', link: '/dashboard' },
-    { label: 'Tax Filing', link: '/tax' },
-    { label: 'Support', link: '/support' }
+    { label: 'Investments', link: '/dashboard', Src: '../../../../assets/imgs/menuInvestment.svg' },
+    { label: 'Tax Filing', link: '/tax', Src: '../../../../assets/imgs/menuTaxfiling.svg' },
+    { label: 'Support', link: '/support', Src: '../../../../assets/imgs/menuSupport.svg' },
   ];
 
   isActive(path: string): boolean {
@@ -60,16 +58,22 @@ export class WithHeaderLayoutComponent implements OnInit {
     }
     this.isLoggedIn = false;
     this.profileMenuOpen = false;
-    this.router.navigate(['/sign-in']);
+    this.router.navigate(['/home']);
   }
 
   onLogin(): void {
     this.isLoggedIn = true;
+    this.router.navigate(['/sign-in']);
   }
 
   closeMenuAfterNavigation(): void {
     if (this.profileMenuOpen) {
       this.profileMenuOpen = false;
     }
+  }
+
+  onSignUp(): void {
+    this.showSignIn = true;
+    this.router.navigate(['/sign-up']);
   }
 }
