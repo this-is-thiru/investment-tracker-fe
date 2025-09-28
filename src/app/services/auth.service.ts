@@ -4,21 +4,22 @@ import { Observable } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { LoginRequest } from '../model/LoginRequest';
-import { LoginResponse } from '../model/LoginResponse';
-import { RegisterRequest } from '../model/RegisterRequest';
+import { LoginRequest } from '../models/LoginRequest';
+import { LoginResponse } from '../models/LoginResponse';
+import { RegisterRequest } from '../models/RegisterRequest';
 import { StorageService } from './storage.service';
+import { BaseurlService } from './baseurl.service';
+
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  private BASE_URL = 'http://localhost:8080';
 
-  constructor(private http: HttpClient, private router: Router, private storageService: StorageService) {}
+  constructor(private http: HttpClient, private router: Router, private storageService: StorageService, private BASE_URL: BaseurlService) {}
 
   login(user: LoginRequest): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>(`${this.BASE_URL}/auth/login`, user).pipe(
+    return this.http.post<LoginResponse>(`${this.BASE_URL.getBaseUrl()}/auth/login`, user).pipe(
       map((res) => {
         this.storageService.setItem('jwtToken', res.access_token);
         return res;
@@ -31,7 +32,7 @@ export class AuthService {
   }
 
   register(user: RegisterRequest): Observable<string> {
-    return this.http.post<string>(`${this.BASE_URL}/auth/register`, user).pipe(
+    return this.http.post<string>(`${this.BASE_URL.getBaseUrl()}/auth/register`, user).pipe(
       map((res) => {
         console.log('Registered successfully');
         return res;

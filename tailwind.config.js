@@ -3,6 +3,7 @@ module.exports = {
   content: [
     "./src/**/*.{html,ts}"  // Scan all Angular HTML + TS files
   ],
+  darkMode: 'class', // or 'media'
   theme: {
     extend: {
       fontFamily: {
