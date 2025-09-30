@@ -1,102 +1,27 @@
 <main>
   <router-outlet></router-outlet>
 </main>
+<main
+  class="relative flex w-full min-w-[380px] flex-col items-start overflow-hidden bg-[#191919] text-left font-['Manrope'] text-lg text-white">
 
-<div
-  class="font-racing fill-[#2e2f2e] text-5xl text-left min-w-[380px] w-full h-full overflow-hidden justify-start items-start flex-col flex bg-[#fafefc] relative">
-
-  <footer class="flex w-full flex-wrap justify-between gap-10 px-10 py-5 text-[15px] text-green-900/60">
-    <div class="flex flex-col justify-between min-w-56">
-      <div class="flex items-center gap-1">
-        <img class="w-10 h-10" alt="Logo" src="../../../assets/imgs/Logomark.svg" />
-        <div class="text-[24px] text-[#14AE5C] font-bold cursor-pointer" routerLink="/home">
-          Investment Tracker
+  <footer class="flex items-start justify-center self-stretch p-4 text-center text-base text-[#adadad]">
+    <div class="flex w-[960px] max-w-[960px] flex-col items-start gap-6 self-stretch">
+      <div class="flex flex-wrap content-center items-center justify-center gap-6 self-stretch">
+        <div class="flex w-40 min-w-[160px] flex-col items-center">
+          <div class="relative self-stretch leading-[24px]">Terms of Service</div>
+        </div>
+        <div class="flex w-40 min-w-[160px] flex-col items-center">
+          <div class="relative self-stretch leading-[24px]">Privacy Policy</div>
+        </div>
+        <div class="flex w-40 min-w-[160px] flex-col items-center">
+          <div class="relative self-stretch leading-[24px]">Contact Us</div>
         </div>
       </div>
-      <div class="flex gap-3 mt-5">
-        <a href="#">
-          <img class="w-6 h-6 transition-transform duration-200 ease-in-out hover:scale-125" alt="Facebook"
-            src="../../../assets/imgs/Facebook.svg" />
-        </a>
-        <a href="#">
-          <img class="w-6 h-6 transition-transform duration-200 ease-in-out hover:scale-125" alt="Instagram"
-            src="../../../assets/imgs/Instagram.svg" />
-        </a>
-        <a href="#">
-          <img class="w-6 h-6 transition-transform duration-200 ease-in-out hover:scale-125" alt="Twitter"
-            src="../../../assets/imgs/Twitter.svg" />
-        </a>
+      <div class="flex flex-col items-center self-stretch">
+        <div class="relative self-stretch leading-[24px]"> {{ currentYear }} Investment Tracker. All rights reserved.
+        </div>
       </div>
-    </div>
-
-    <div class="flex flex-col gap-2 min-w-40">
-      <div class="font-bold text-[#1b2821] mb-1 text-base">Company</div>
-      <a class="no-underline text-[rgba(20,46,32,0.75)] transition-colors duration-200 ease-in-out hover:text-[#14ae5c]"
-        href="#">
-        About
-      </a>
-      <a class="no-underline text-[rgba(20,46,32,0.75)] transition-colors duration-200 ease-in-out hover:text-[#14ae5c]"
-        href="#">
-        Contact
-      </a>
-      <a class="no-underline text-[rgba(20,46,32,0.75)] transition-colors duration-200 ease-in-out hover:text-[#14ae5c]"
-        href="#">
-        Privacy Policy
-      </a>
-      <a class="no-underline text-[rgba(20,46,32,0.75)] transition-colors duration-200 ease-in-out hover:text-[#14ae5c]"
-        href="#">
-        Terms of Service
-      </a>
-    </div>
-
-    <div class="flex flex-col gap-2 min-w-40">
-      <div class="font-bold text-[#1b2821] mb-1 text-bas">Product</div>
-      <a class="no-underline text-[rgba(20,46,32,0.75)] transition-colors duration-200 ease-in-out hover:text-[#14ae5c]"
-        href="#">
-        Features
-      </a>
-      <a class="no-underline text-[rgba(20,46,32,0.75)] transition-colors duration-200 ease-in-out hover:text-[#14ae5c]"
-        href="#">
-        Pricing
-      </a>
-      <a class="no-underline text-[rgba(20,46,32,0.75)] transition-colors duration-200 ease-in-out hover:text-[#14ae5c]"
-        href="#">
-        Blog
-      </a>
-    </div>
-
-    <div class="flex flex-col gap-2 min-w-40">
-      <div class="font-bold text-[#1b2821] mb-1 text-bas">Support</div>
-      <a class="no-underline text-[rgba(20,46,32,0.75)] transition-colors duration-200 ease-in-out hover:text-[#14ae5c]"
-        href="#">
-        Help Center
-      </a>
-      <a class="no-underline text-[rgba(20,46,32,0.75)] transition-colors duration-200 ease-in-out hover:text-[#14ae5c]"
-        href="#">
-        Community
-      </a>
-      <a class="no-underline text-[rgba(20,46,32,0.75)] transition-colors duration-200 ease-in-out hover:text-[#14ae5c]"
-        href="#">
-        Status
-      </a>
-    </div>
-
-    <div class="flex flex-col gap-2 min-w-40">
-      <div class="font-bold text-[#1b2821] mb-1 text-bas">Legal</div>
-      <a class="no-underline text-[rgba(20,46,32,0.75)] transition-colors duration-200 ease-in-out hover:text-[#14ae5c]"
-        href="#">
-        Terms of Use
-      </a>
-      <a class="no-underline text-[rgba(20,46,32,0.75)] transition-colors duration-200 ease-in-out hover:text-[#14ae5c]"
-        href="#">
-        Privacy Policy
-      </a>
-    </div>
-    <div
-      class="w-full flex flex-col items-center justify-center min-w-[150px] text-center text-[15px] text-[#1b2821] transition-colors duration-200 ease-in-out hover:text-[#14ae5c]">
-      2025 All rights reserved by Investment Tracker
     </div>
   </footer>
 
-</div>
-
+</main>

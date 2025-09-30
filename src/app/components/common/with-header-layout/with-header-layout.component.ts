@@ -1,72 +1,79 @@
-import { Component } from '@angular/core';
-import { AuthService } from '../../../services/auth.service';  // Import the AuthService to call the logout method
+import { Component, Inject, PLATFORM_ID, OnInit } from '@angular/core';
+import { AuthService } from '../../../services/auth.service';
 import { Router } from '@angular/router';
+import { isPlatformBrowser } from '@angular/common';
 
 @Component({
   selector: 'app-with-header-layout',
   templateUrl: './with-header-layout.component.html',
-  styleUrl: './with-header-layout.component.css'
+  styleUrls: ['./with-header-layout.component.css']
 })
-export class WithHeaderLayoutComponent {
-  isLoggedIn: boolean = false; // Tracks login status
-  menuOpen = false; // Tracks the state of the hamburger menu
+export class WithHeaderLayoutComponent implements OnInit {
+  isLoggedIn: boolean = false;
+  profileMenuOpen = false;
+  dropdownOpen: any;
+  showSignIn = false;
 
-  constructor(private authService: AuthService, private router: Router) {
-    this.checkLoginStatus(); // Initial login status check
+
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) { }
+
+  ngOnInit(): void {
+    this.checkLoginStatus(); // Safe to access browser APIs here
+  }
+  closePopup(event: Event) {
+    this.showSignIn = false;
   }
 
-  /**
-   * Checks login status based on token presence in localStorage
-   */
+  dropdownItems = [
+    { label: 'Investments', link: '/dashboard', Src: '../../../../assets/imgs/menuInvestment.svg' },
+    { label: 'Tax Filing', link: '/tax', Src: '../../../../assets/imgs/menuTaxfiling.svg' },
+    { label: 'Support', link: '/support', Src: '../../../../assets/imgs/menuSupport.svg' },
+  ];
+
+  isActive(path: string): boolean {
+    return this.router.url === path;
+  }
+
   private checkLoginStatus(): void {
-    const token = localStorage.getItem('jwtToken');
-    this.isLoggedIn = token !== null && !this.isTokenExpired(token);
-  }
-
-  /**
-   * Placeholder for token expiration check
-   * @param token JWT token from localStorage
-   * @returns boolean indicating if the token is expired
-   */
-  private isTokenExpired(token: string): boolean {
-    // Add actual token validation logic (e.g., decode and check exp field)
-    return false; // Assume valid for now
-  }
-
-  /**
-   * Toggles the visibility of the hamburger menu
-   */
-  toggleMenu(): void {
-    this.menuOpen = !this.menuOpen;
-  }
-
-  /**
-   * Logs the user out and redirects to the login page
-   */
-  onLogout(): void {
-    this.authService.logout(); // Clear user session
-    localStorage.removeItem('jwtToken'); // Clear token from localStorage
-    this.isLoggedIn = false; // Update state
-    this.menuOpen = false; // Close menu on logout
-    this.router.navigate(['/sign-in']); // Redirect to login
-  }
-
-  /**
-   * Placeholder for login action
-   */
-  onLogin(): void {
-    this.isLoggedIn = true; // Update state
-  }
-
-  /**
-   * Closes the menu after navigation
-   */
-  closeMenuAfterNavigation(): void {
-    if (this.menuOpen) {
-      this.menuOpen = false;
+    if (isPlatformBrowser(this.platformId)) {
+      const token = localStorage.getItem('jwtToken');
+      this.isLoggedIn = token !== null && !this.isTokenExpired(token);
     }
   }
+
+  private isTokenExpired(token: string): boolean {
+    // Replace with real expiration logic
+    return false;
+  }
+
+
+  onLogout(): void {
+    this.authService.logout();
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.removeItem('jwtToken');
+    }
+    this.isLoggedIn = false;
+    this.profileMenuOpen = false;
+    this.router.navigate(['/home']);
+  }
+
+  onLogin(): void {
+    this.isLoggedIn = true;
+    this.router.navigate(['/sign-in']);
+  }
+
+  closeMenuAfterNavigation(): void {
+    if (this.profileMenuOpen) {
+      this.profileMenuOpen = false;
+    }
+  }
+
+  onSignUp(): void {
+    this.showSignIn = true;
+    this.router.navigate(['/sign-up']);
+  }
 }
-
-
-

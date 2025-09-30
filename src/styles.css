@@ -2,9 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
-
 body {
     margin: 0;
     line-height: normal;
+    font-family: 'Manrope', sans-serif;
+    background-color: #191919;
 }
-

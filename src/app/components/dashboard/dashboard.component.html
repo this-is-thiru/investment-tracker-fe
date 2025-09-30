@@ -1,53 +1,38 @@
 <section
-  class="min-w-[300px] min-h-screen h-full bg-[#fafefc] flex flex-col items-center justify-start px-4 py-6 text-sm text-[#1b2821] overflow-y-auto">
-
-  <h2 class="text-lg font-semibold mb-4">Excel Data Dashboard</h2>
-
+  class="min-w-[300px] min-h-screen h-full bg-[#fafefc] flex flex-col items-center justify-start px-4 py-6 pt-32 text-sm text-[#1b2821] overflow-y-auto">
   <!-- File Upload -->
   <div class="w-full max-w-md mb-4">
-    <input
-      type="file"
-      (change)="onFileChange($event)"
-      accept=".xlsx, .xls"
-      class="w-full border rounded px-3 py-2"
-    />
+    <input type="file" (change)="onFileChange($event)" accept=".xlsx, .xls" class="w-full border rounded px-3 py-2" />
   </div>
 
   <!-- Download Template -->
   <div class="w-full max-w-md mb-4">
-    <button
-      pButton
-      type="button"
-      (click)="downloadTemplate()"
-      label="Download Template"
-      class="w-full"
-    ></button>
+    <button pButton type="button" (click)="downloadTemplate()" label="Download Template" class="w-full"></button>
   </div>
 
   <!-- Table -->
   <div class="w-full overflow-auto">
-    <p-table
-      *ngIf="excelData.length"
-      [value]="excelData"
-      [paginator]="true"
-      [rows]="10"
-      [rowsPerPageOptions]="[5, 10, 20]"
-      responsiveLayout="scroll"
-      editMode="cell"
-      class="p-datatable-sm p-datatable-gridlines w-full"
-    >
+    <p-table *ngIf="excelData.length" [value]="excelData" [paginator]="true" [rows]="10"
+      [rowsPerPageOptions]="[5, 10, 20]" [globalFilterFields]="headers" [sortMode]="'multiple'"
+      responsiveLayout="scroll" editMode="cell" class="p-datatable-sm p-datatable p-datatable-striped w-full">
       <!-- Table Header -->
+      <!-- Table Header with Filter & Sorting -->
       <ng-template pTemplate="header">
         <tr>
-          <th *ngFor="let header of headers">{{ header }}</th>
+          <th *ngFor="let header of headers" [pSortableColumn]="header">
+            {{ header }}
+            <p-columnFilter [field]= "header" matchMode="contains"></p-columnFilter>
+            <p-sortIcon [field]= "header"></p-sortIcon>
+          </th>
           <th>Actions</th>
         </tr>
       </ng-template>
 
+
       <!-- Table Body -->
       <ng-template pTemplate="body" let-rowData let-rowIndex="rowIndex">
         <tr>
-          <td *ngFor="let header of headers" pEditableColumn>
+          <td  class="w-fit" *ngFor="let header of headers" pEditableColumn>
             <p-cellEditor>
               <ng-template pTemplate="input">
                 <input pInputText [(ngModel)]="rowData[header]" />
@@ -58,12 +43,8 @@
             </p-cellEditor>
           </td>
           <td>
-            <button
-              pButton
-              icon="pi pi-trash"
-              class="p-button-danger p-button-sm"
-              (click)="deleteRow(rowIndex)"
-            ></button>
+            <button pButton icon="pi pi-trash" class="p-button-danger p-button-sm"
+              (click)="deleteRow(rowIndex)"></button>
           </td>
         </tr>
       </ng-template>

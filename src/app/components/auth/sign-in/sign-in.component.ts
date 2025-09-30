@@ -53,4 +53,8 @@ export class SignInComponent implements OnInit {
       },
     });
   }
+  
+  onClose(): void {
+  this.router.navigate(['/home']);
+}
 }
