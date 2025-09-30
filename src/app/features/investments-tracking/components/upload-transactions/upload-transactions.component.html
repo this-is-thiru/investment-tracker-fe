@@ -1,0 +1,72 @@
+<section class="bg-[#191919] font-[Manrope] text-[18px] text-white">
+  <div class="flex min-h-[800px] w-full max-w-[1280px] min-w-[380px] flex-col">
+    <section class="flex justify-center p-5 text-base">
+      <div class="flex w-full max-w-[960px] flex-col">
+
+        <!-- Header -->
+        <div class="flex flex-wrap justify-between p-4 text-2xl">
+          <b>Upload Transactions</b>
+        </div>
+
+        <p class="px-4 pb-3 text-base">Download our Excel template to easily input your transaction data. Fill in the
+          required fields and upload the file to update your transaction history.</p>
+
+        <!-- Download Template -->
+        <div class="px-4 py-3 text-center text-sm">
+          <button type="button" (click)="downloadTemplate()" label="Download Template" class="rounded-md bg-[#363636] px-4 py-2 text-white">Download Template</button>
+        </div>
+
+        <!-- Upload box -->
+        <div class="p-4 text-lg">
+          <div
+            class="flex flex-col items-center gap-6 rounded-md border-2 border-dashed border-[#4d4d4d] p-14 relative w-full"
+            (drop)="onDrop($event)" (dragover)="onDragOver($event)">
+            <!-- Default state -->
+            <ng-container *ngIf="!uploading && !uploadedFile">
+              <div class="flex max-w-[480px] flex-col items-center gap-12">
+                <b>Drag and drop or browse to upload</b>
+                <p class="text-center text-sm">
+                  Supported file types: .xlsx. Please use the provided template
+                  for accurate data processing. Ensure all required fields are filled before uploading.
+                </p>
+              </div>
+              <button class="rounded-md bg-[#363636] px-4 py-2 text-sm text-white" (click)="browseFiles(fileInput)">
+                Browse Files
+              </button>
+              <input #fileInput type="file" class="hidden" accept=".xlsx" (change)="handleFile($event)" />
+            </ng-container>
+
+            <!-- Uploading state -->
+            <ng-container *ngIf="uploading">
+              <span class="font-medium mb-2">Uploading...</span>
+              <div class="h-2 w-full rounded bg-[#4d4d4d]">
+                <div class="h-2 rounded bg-black" [style.width.%]="progress"></div>
+              </div>
+              <span class="text-sm text-gray-400 mt-2">{{ progress }}%</span>
+            </ng-container>
+
+            <!-- Uploaded state -->
+            <ng-container *ngIf="uploadedFile && !uploading">
+              <div class="flex flex-col items-center gap-2">
+                <span class="font-medium text-green-400">Upload Complete ✅</span>
+                <span class="text-sm">File: {{ uploadedFile.name }}</span>
+                <span class="text-sm text-gray-400">
+                  Size: {{ getFileSize(uploadedFile.size) }}
+                </span>
+
+                <!-- Deselect button -->
+                <button class="mt-3 rounded-md bg-gray-200 px-3 py-1 text-sm text-white hover:bg-red-700"
+                  (click)="removeFile()">
+                  Deselect File
+                </button>
+              </div>
+            </ng-container>
+
+          </div>
+        </div>
+        <p class="text-center text-sm text-gray-400">By uploading, you agree to our terms and conditions.</p>
+
+      </div>
+    </section>
+  </div>
+</section>

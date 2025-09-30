@@ -1,0 +1,144 @@
+<!-- REGISTRATION SECTION -->
+<section class="relative bg-[#191919] max-h-screen font-['Manrope'] text-white overflow-y-scroll">
+
+	<!-- Close button -->
+	<button type="button" (click)="onClose()" aria-label="Close" class="z-10 absolute right-6 top-6 bg-transparent p-2 rounded-full
+           text-white hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/30
+           transition-transform duration-200 ease-in-out transform hover:scale-110 hover:rotate-12">
+		<svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+			<!-- "X" lines -->
+			<line x1="5" y1="5" x2="19" y2="19" stroke="white" stroke-width="2.5" stroke-linecap="round" />
+			<line x1="19" y1="5" x2="5" y2="19" stroke="white" stroke-width="2.5" stroke-linecap="round" />
+		</svg>
+	</button>
+
+	<div class="relative mx-auto  flex w-full max-w-[1480px] min-w-[375px] flex-col items-center text-left text-lg">
+		<!-- Main -->
+		<main
+			class="flex min-h-screen  w-full flex-1 flex-col items-start bg-[#191919] px-8 py-4 text-center text-base">
+			<section class="flex w-full flex-1 items-center justify-center">
+				<div class="flex w-[1080px] max-w-[1080px] flex-col items-center overflow-hidden">
+
+					<!-- Title -->
+					<header class="flex h-[67px] w-full flex-col items-center px-4 pt-5 pb-3 text-2xl">
+						<h1 class="leading-9 font-bold">Create your account</h1>
+					</header>
+
+					<!-- Form -->
+					<form class="flex w-full flex-col items-center gap-2" (ngSubmit)="onRegistration()"
+						[formGroup]="registrationForm" aria-label="Registration Form">
+						<!-- Email -->
+						<div class="flex w-full max-w-[480px] flex-wrap items-end px-4 py-3 text-left">
+							<div class="flex min-w-[160px] flex-1 flex-col">
+								<label for="register-email" class="pb-2 leading-6 font-medium">Email</label>
+								<input id="register-email" name="registerEmail" type="email" formControlName="email"
+									autocomplete="email" placeholder="Email Address"
+									class="h-14 w-full rounded-xl border border-[#e0e0e0] bg-[#262626] px-4 text-white placeholder-[#757575] focus:ring-2 focus:ring-blue-500 focus:outline-none"
+									required />
+							</div>
+						</div>
+
+						<!-- Password with eye toggle -->
+						<div class="flex w-full max-w-[480px] flex-wrap items-end px-4 py-3 text-left">
+							<div class="flex min-w-[160px] flex-1 flex-col relative">
+								<label for="register-password" class="pb-2 leading-6 font-medium">Password</label>
+								<input id="register-password" name="registerPassword" formControlName="password"
+									[type]="hideRegistrationP ? 'password' : 'text'" autocomplete="new-password"
+									placeholder="Create a Password"
+									class="h-14 w-full rounded-xl border border-[#e0e0e0] bg-[#262626] pr-12 pl-4 text-white placeholder-[#757575] focus:ring-2 focus:ring-blue-500 focus:outline-none"
+									required />
+								<!-- Eye toggle button -->
+								<button type="button" (click)="hideRegistrationP = !hideRegistrationP"
+									class="absolute right-4 top-[50px] text-gray-400 hover:text-white"
+									aria-label="Toggle password visibility">
+									<ng-container *ngIf="hideRegistrationP; else showIcon">
+										<!-- Eye closed icon -->
+										<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+											viewBox="0 0 24 24" stroke="currentColor">
+											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+												d="M13.875 18.825A10.05 10.05 0 0112 19c-7.5 0-11-7-11-7s1.5-2.975 4.425-5.175M9.88 9.88a3 3 0 104.24 4.24" />
+											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+												d="M6.225 6.225l11.55 11.55" />
+										</svg>
+									</ng-container>
+									<ng-template #showIcon>
+										<!-- Eye open icon -->
+										<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
+											viewBox="0 0 24 24" stroke="currentColor">
+											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+												d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+												d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+										</svg>
+									</ng-template>
+								</button>
+							</div>
+						</div>
+
+						<!-- Confirm Password with eye toggle -->
+						<div class="flex w-full max-w-[480px] flex-wrap items-end px-4 py-3 text-left">
+							<div class="flex min-w-[160px] flex-1 flex-col relative">
+								<label for="register-confirm-password" class="pb-2 leading-6 font-medium">Confirm
+									Password</label>
+								<input id="register-confirm-password" name="registerConfirmPassword"
+									formControlName="confirmPassword" [type]="hideRegistrationCP ? 'password' : 'text'"
+									placeholder="Re-enter Password"
+									class="h-14 w-full rounded-xl border border-[#e0e0e0] bg-[#262626] pr-12 pl-4 text-white placeholder-[#757575] focus:ring-2 focus:ring-blue-500 focus:outline-none"
+									required />
+								<!-- Eye toggle button -->
+								<button type="button" (click)="hideRegistrationCP = !hideRegistrationCP"
+									class="absolute right-4 top-[50px] text-gray-400 hover:text-white"
+									aria-label="Toggle password visibility">
+									<ng-container *ngIf="hideRegistrationCP; else showIcon">
+										<!-- Eye closed icon -->
+										<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+											viewBox="0 0 24 24" stroke="currentColor">
+											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+												d="M13.875 18.825A10.05 10.05 0 0112 19c-7.5 0-11-7-11-7s1.5-2.975 4.425-5.175M9.88 9.88a3 3 0 104.24 4.24" />
+											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+												d="M6.225 6.225l11.55 11.55" />
+										</svg>
+									</ng-container>
+									<ng-template #showIcon>
+										<!-- Eye open icon -->
+										<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
+											viewBox="0 0 24 24" stroke="currentColor">
+											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+												d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+												d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+										</svg>
+									</ng-template>
+								</button>
+							</div>
+						</div>
+
+						<!-- Sign up button -->
+						<div class="flex w-full max-w-[480px] justify-center px-4 py-3">
+							<button type="submit" [disabled]="registrationForm.invalid || isLoading"
+								class="flex h-12 min-w-[84px] flex-1 items-center justify-center rounded-3xl bg-black px-5 font-bold hover:bg-gray-800">
+								Sign up
+							</button>
+						</div>
+
+						<!-- Google button -->
+						<div class="flex w-full max-w-[480px] justify-center px-4 py-3">
+							<button type="button" [disabled]="registrationForm.invalid || isLoading"
+								class="flex h-12 min-w-[84px] flex-1 items-center justify-center gap-2 rounded-3xl bg-[#262626] px-5 hover:bg-[#333]">
+								<img class="h-6 w-6" src="../../../../assets/imgs/googleIcon.svg" alt="Google" />
+								<span class="truncate font-bold">Sign up with Google</span>
+							</button>
+						</div>
+
+						<!-- Sign up message -->
+						<p class="mt-4 text-sm text-[#757575] hover:text-white">
+							Already have an account?
+							<a [routerLink]="'/sign-in'" class="text-white hover:text-blue-500 hover:underline">Sign
+								in</a>
+						</p>
+					</form>
+				</div>
+			</section>
+		</main>
+	</div>
+</section>
