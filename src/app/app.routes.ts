@@ -5,8 +5,6 @@ import { InvestmentsComponent } from './features/investments-tracking/pages/inve
 import { AuthGuard } from './core/auth.guard';
 import { WithHeaderLayoutComponent } from './shared/components/with-header-layout/with-header-layout.component';
 import { HomeComponent } from './features/home/pages/home/home.component';
-import { WithoutHeaderLayoutComponent } from './shared/components/without-header-layout/without-header-layout.component';
-
 
 export const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
@@ -15,19 +13,13 @@ export const routes: Routes = [
     path: '',
     component: WithHeaderLayoutComponent,
     children: [
-      { path: 'investments-tracking', component: InvestmentsComponent, canActivate: [AuthGuard] },
       { path: 'home', component: HomeComponent },
+      { path: 'investments-tracking', component: InvestmentsComponent, canActivate: [AuthGuard] },
+      // 👇 Secondary outlet for modals
+      { path: 'sign-in', component: SignInComponent, outlet: 'modal' },
+      { path: 'sign-up', component: SignUpComponent, outlet: 'modal' },
     ],
   },
 
-  {
-    path: '', 
-    component: WithoutHeaderLayoutComponent,
-    children: [
-      { path: 'sign-in', component: SignInComponent },
-      { path: 'sign-up', component: SignUpComponent }
-    ],
-  },
-
-  { path: '**', redirectTo: '/home' }, // fallback
+  { path: '**', redirectTo: '/home' },
 ];

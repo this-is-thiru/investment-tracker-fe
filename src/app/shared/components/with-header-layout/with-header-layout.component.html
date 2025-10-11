@@ -1,105 +1,109 @@
-<header class="relative top-0 left-0 w-full bg-[#191919] text-white font-['Manrope'] 
-         flex items-center justify-between px-4 py-3 border-b border-[#e5e8eb] z-[9999]">
+<header class="fixed top-0 left-0 w-full bg-background border-b border-border z-50
+         flex items-center justify-between px-4 md:px-6 py-3 font-sans text-textPrimary select-none">
 
   <!-- Left Section -->
-  <div class="flex items-center gap-4">
+  <div class="flex items-center gap-6">
     <!-- Logo -->
-    <div class="flex items-center gap-2">
+    <div class="flex items-center gap-2 cursor-pointer" routerLink="/home">
       <img src="../../../assets/imgs/logo.svg" alt="Logo" class="h-5 w-5" />
-      <span class="font-bold text-base tracking-tight cursor-pointer" routerLink="/home">
+      <span class="font-semibold text-base tracking-tight hover:text-textSecondary transition-colors duration-150">
         Investment Tracker
       </span>
     </div>
 
-    <!-- Desktop Menu -->
-    <div class="hidden md:flex items-center gap-4 text-sm font-medium">
-      <span
-        class="cursor-pointer hover:bg-white/10 px-2 py-1 rounded-md transition duration-200 ease-in-out hover:scale-105 active:scale-95"
-        routerLink="/investments-tracking" (click)="closeMenuAfterNavigation()">Investments</span>
-      <span
-        class="cursor-pointer hover:bg-white/10 px-2 py-1 rounded-md transition duration-200 ease-in-out hover:scale-105 active:scale-95"
-        routerLink="/tax" (click)="closeMenuAfterNavigation()">Tax Filing</span>
-      <span
-        class="cursor-pointer hover:bg-white/10 px-2 py-1 rounded-md transition duration-200 ease-in-out hover:scale-105 active:scale-95"
-        routerLink="/support" (click)="closeMenuAfterNavigation()">Support</span>
-    </div>
+    <!-- Desktop Navigation -->
+    <nav class="hidden md:flex items-center gap-5 text-sm text-textSecondary font-medium">
+      <span routerLink="/investments-tracking" (click)="closeMenuAfterNavigation()"
+        class="cursor-pointer px-3 py-1 rounded-md transition-colors duration-150 hover:bg-surfaceHover hover:text-textPrimary">
+        Investments
+      </span>
+      <span routerLink="/tax" (click)="closeMenuAfterNavigation()"
+        class="cursor-pointer px-3 py-1 rounded-md transition-colors duration-150 hover:bg-surfaceHover hover:text-textPrimary">
+        Tax Filing
+      </span>
+      <span routerLink="/support" (click)="closeMenuAfterNavigation()"
+        class="cursor-pointer px-3 py-1 rounded-md transition-colors duration-150 hover:bg-surfaceHover hover:text-textPrimary">
+        Support
+      </span>
+    </nav>
   </div>
 
   <!-- Right Section -->
-  <div class="flex items-center gap-4 relative">
-    <!-- Notifications -->
-    <img class="h-6 w-6 cursor-pointer" alt="Notifications" src="../../../assets/imgs/notificationIcon.svg" />
+  <div class="flex items-center gap-4">
+    <!-- Notification Icon -->
+    <button type="button"
+      class="relative flex items-center justify-center h-9 w-9 rounded-lg hover:bg-surfaceHover transition-all duration-150 cursor-pointer group"
+      aria-label="Notifications">
+      <img src="../../../assets/imgs/notificationIcon.svg" alt="Notifications"
+        class="h-5 w-5 opacity-80 group-hover:opacity-100 transition-opacity duration-150" />
+      <span
+        class="absolute inset-0 rounded-lg ring-1 ring-transparent group-hover:ring-border transition-all duration-150"></span>
+    </button>
 
-    <!-- Profile Menu -->
-    <div class="relative group">
-      <!-- Profile Icon -->
-      <img class="h-8 w-8 rounded-full object-cover cursor-pointer ring-2 ring-transparent 
-           hover:ring-[#ffffff] transition" alt="Profile" src="../../../../assets/imgs/profilePic.svg" />
+    <!-- Profile Dropdown -->
+    <div class="relative">
+      <img src="../../../../assets/imgs/profilePic.svg" alt="Profile"
+        class="h-8 w-8 rounded-full object-cover cursor-pointer ring-1 ring-transparent hover:ring-border transition-all duration-150"
+        (click)="toggleProfileMenu()" />
 
-      <!-- Invisible Hover Bridge -->
-      <div class="absolute top-full right-0 h-3 w-full"></div>
+      <!-- Dropdown Menu -->
+      <div *ngIf="profileMenuOpen"
+        class="absolute right-0 mt-2 w-48 bg-[#1F1F1F]  rounded-xl shadow-lg z-50 overflow-hidden">
 
-      <!-- Dropdown -->
-      <div class="absolute right-0 text-sm w-[220px] bg-[#191919] text-white rounded-lg shadow-lg mt-3
-         opacity-0 scale-95 transform transition-all duration-200 origin-top-right
-         pointer-events-none group-hover:opacity-100 group-hover:scale-100 group-hover:pointer-events-auto">
+        <!-- Banner -->
+        <!-- <div class="relative rounded-t-xl overflow-hidden">
+          <img src="../../../../assets/imgs/largeProfilePic.svg" alt="Banner"
+            class="h-20 w-full object-cover brightness-90 transition duration-200" /> -->
 
-        <!-- Banner with Edit Option -->
-        <div class="relative group/banner">
-          <img class="h-[80px] w-full object-cover rounded-t-lg transition duration-200 ease-in-out
-           group-hover/banner:brightness-75" src="../../../../assets/imgs/largeProfilePic.svg" alt="Banner" />
-
-          <button class="absolute top-1 right-1 p-1 bg-black/70 rounded-md shadow-sm backdrop-blur-sm
-           opacity-0 scale-75 group-hover/banner:opacity-100 group-hover/banner:scale-100
-           transition-all duration-200 ease-in-out hover:scale-105 hover:bg-black active:scale-95">
-            <img class="h-4 w-4" src="../../../../assets/imgs/editIcon.svg" alt="Edit" />
+          <!-- Edit button -->
+          <!-- <button class="absolute top-1 right-1 p-1 bg-black/60 rounded-md backdrop-blur-sm hover:bg-black/70">
+            <img src="../../../../assets/imgs/editIcon.svg" alt="Edit" class="h-4 w-4" />
           </button>
-        </div>
+        </div> -->
 
-        <div class="flex flex-col gap-1.5 p-2">
+        <!-- Menu Items -->
+        <div class="flex flex-col gap-1 py-1 px-1 max-h-64 overflow-y-auto">
           <ng-container *ngFor="let item of dropdownItems">
-            <a [routerLink]="item.link" routerLinkActive="bg-[#303030]" class="flex items-center justify-between bg-[#141414] rounded-md px-2 py-1.5 cursor-pointer
-              hover:bg-[#303030] transition duration-200 ease-in-out group/item">
-              <div class="flex items-center gap-2.5">
-                <img class="h-7 w-7 rounded-md bg-black p-1 object-cover" [src]="item.src" [alt]="item.label" />
-                <span class="truncate leading-5 transition-all duration-200 ease-in-out group-hover/item:translate-x-1">
-                  {{ item.label }}
-                </span>
+            <a [routerLink]="item.link" routerLinkActive="bg-[#2A2A2A]"
+              class="flex items-center justify-between rounded-lg px-2 py-1 cursor-pointer hover:bg-[#2A2A2A] transition-colors duration-150 text-sm">
+              <div class="flex items-center gap-2">
+                <img [src]="item.src" [alt]="item.label"
+                  class="h-5 w-5 rounded-md bg-black p-1 object-cover opacity-90" />
+                <span class="truncate">{{ item.label }}</span>
               </div>
-              <img class="h-5 w-5 opacity-70 transition-all duration-200 ease-in-out 
-           group-hover/item:translate-x-1.5 group-hover/item:opacity-100" src="assets/imgs/menuArrow.svg"
-                alt="arrow" />
+              <img src="assets/imgs/menuArrow.svg" alt="arrow" class="h-3 w-3 opacity-60" />
             </a>
           </ng-container>
         </div>
 
-
         <!-- Auth Options -->
-        <div *ngIf="!isLoggedIn" class="flex flex-col items-center gap-1.5 p-2">
-          <div class="flex items-center justify-center w-full gap-1 h-8 rounded-lg bg-[#303030] cursor-pointer
-                hover:bg-[#404040] hover:scale-[1.02] active:scale-95 transition-all" (click)="onLogin()">
-            <img class="h-6 w-6 rounded-md p-1 object-cover" src="../../../../assets/imgs/menuLogin.svg" alt="" />
-            <b class="text-sm">Login</b>
+        <div *ngIf="!isLoggedIn()" class="flex flex-col gap-1 py-1 px-1">
+          <div (click)="onLogin()"
+            class="flex items-center justify-center gap-2 h-8 w-full rounded-lg bg-[#2A2A2A] hover:bg-[#3A3A3A] cursor-pointer transition-all duration-150 text-sm">
+            <img src="../../../../assets/imgs/menuLogin.svg" alt="Login" class="h-4 w-4 object-cover" />
+            <b>Login</b>
           </div>
-          <div class="flex items-center justify-center w-full gap-1 h-8 rounded-lg bg-black cursor-pointer
-                hover:bg-gray-800 hover:scale-[1.02] active:scale-95 transition-all" (click)="onSignUp()">
-            <img class="h-6 w-6 rounded-md p-1 object-cover" src="../../../../assets/imgs/menuSignup.svg" alt="" />
-            <b class="text-sm">Sign Up</b>
+
+          <div (click)="onSignUp()"
+            class="flex items-center justify-center gap-2 h-8 w-full rounded-lg bg-[#10A37F] hover:bg-[#0E8A6C] cursor-pointer text-white transition-all duration-150 text-sm">
+            <img src="../../../../assets/imgs/menuSignup.svg" alt="Signup" class="h-4 w-4 object-cover" />
+            <b>Sign Up</b>
           </div>
         </div>
 
-        <div *ngIf="isLoggedIn" class="flex items-center justify-center p-2">
-          <div class="flex items-center justify-center gap-1 w-full h-8 rounded-lg bg-[#303030] cursor-pointer
-                hover:bg-[#404040] hover:scale-[1.02] active:scale-95 transition-all" (click)="onLogout()">
-            <img class="h-6 w-6 rounded-md p-1 object-cover" src="../../../../assets/imgs/menuLogin.svg" alt="" />
-            <b class="text-sm">Logout</b>
+        <div *ngIf="isLoggedIn()" class="flex items-center justify-center py-1 px-1">
+          <div (click)="onLogout()"
+            class="flex items-center justify-center gap-2 h-8 w-full rounded-lg bg-[#2A2A2A] hover:bg-[#3A3A3A] cursor-pointer transition-all duration-150 text-sm">
+            <img src="../../../../assets/imgs/menuLogin.svg" alt="Logout" class="h-4 w-4 object-cover" />
+            <b>Logout</b>
           </div>
         </div>
       </div>
+
     </div>
   </div>
 </header>
 
-<main>
-  <router-outlet></router-outlet>
-</main>
+<!-- Main content -->
+<router-outlet></router-outlet>
+<router-outlet name="modal"></router-outlet>

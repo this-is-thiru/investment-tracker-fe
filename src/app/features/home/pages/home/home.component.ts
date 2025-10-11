@@ -21,7 +21,8 @@ export class HomeComponent {
     if (this.auth.isUserAuthenticated()) {
       this.router.navigate(['/investments-tracking']);
     } else {
-      this.router.navigate(['/sign-in']);
+      this.router.navigate([{ outlets: { modal: ['sign-in'] } }]);
+
     }
   }
 }

@@ -1,6 +1,6 @@
-import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { CanActivate, Router } from '@angular/router';
-import { isPlatformBrowser } from '@angular/common';
+import { StorageService } from '../services/storage.service';
 
 @Injectable({
   providedIn: 'root',
@@ -8,20 +8,18 @@ import { isPlatformBrowser } from '@angular/common';
 export class AuthGuard implements CanActivate {
   constructor(
     private router: Router,
-    @Inject(PLATFORM_ID) private platformId: Object
-  ) {}
+    private storageService: StorageService
+  ) { }
 
   canActivate(): boolean {
-    // Only check localStorage on the browser
-    if (isPlatformBrowser(this.platformId)) {
-      const token = localStorage.getItem('jwtToken');
-      if (token) {
-        return true;
-      }
+    const token = this.storageService.getItem('jwtToken');
+    if (token && this.storageService.isTokenValid(token)) {
+      return true;
     }
 
-    // Redirect to login if not authenticated or SSR
-    this.router.navigate(['/sign-in']);
+    // Expired or not found → redirect
+    this.router.navigate([{ outlets: { modal: ['sign-in'] } }]);
+
     return false;
   }
 }

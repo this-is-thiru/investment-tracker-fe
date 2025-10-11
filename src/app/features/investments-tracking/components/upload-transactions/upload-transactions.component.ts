@@ -2,6 +2,11 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { MessageService } from 'primeng/api';
+import { BaseurlService } from '../../../../services/baseurl.service';
+import { TransactionService } from '../../../../services/transaction.service';
+import { AuthService } from '../../../../services/auth.service';
+import { finalize } from 'rxjs';
+
 
 @Component({
   selector: 'app-upload-transactions',
@@ -15,9 +20,15 @@ export class UploadTransactionsComponent {
   progress = 0;
   uploadedFile: File | null = null;
 
-  
-  constructor(private http: HttpClient, private messageService: MessageService) {}
-  
+
+  constructor(
+    private http: HttpClient,
+    private messageService: MessageService,
+    private BASE_URL: BaseurlService,
+    private transactionService: TransactionService,
+    private authService: AuthService,
+  ) { }
+
 
   // Trigger file input
   browseFiles(input: HTMLInputElement) {
@@ -43,22 +54,62 @@ export class UploadTransactionsComponent {
     event.preventDefault();
   }
 
-  // Simulate upload
+  
+    // ✅ Main change: upload using FormData without manual Content-Type
   private startUpload(file: File) {
-    this.uploadedFile = null; // reset previous file
+    this.uploadedFile = null;
     this.uploading = true;
     this.progress = 0;
 
-    const interval = setInterval(() => {
-      if (this.progress >= 100) {
-        clearInterval(interval);
-        this.uploading = false;
-        this.uploadedFile = file; // show file details
-      } else {
-        this.progress += 10;
-      }
-    }, 300);
+    const email = this.authService.getUserEmail();
+    if (!email) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Not Logged In',
+        detail: 'Please log in before uploading transactions.',
+      });
+      this.uploading = false;
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    // Let browser handle Content-Type for FormData
+    this.http
+      .post(`${this.BASE_URL.getBaseUrl()}/portfolio/user/${email}/upload-transactions`, formData, {
+        reportProgress: true,
+        observe: 'events', // allows progress tracking
+      })
+      .pipe(finalize(() => (this.uploading = false)))
+      .subscribe({
+        next: (event: any) => {
+          // Track progress
+          if (event.type === 1 && event.total) {
+            this.progress = Math.round((100 * event.loaded) / event.total);
+          }
+          // Handle success
+          if (event.type === 4) {
+            this.uploadedFile = file;
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Upload Complete',
+              detail: `${file.name} uploaded successfully!`,
+            });
+          }
+        },
+        error: (err) => {
+          console.error('Upload failed:', err);
+          this.progress = 0;
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Upload Failed',
+            detail: 'Something went wrong while uploading. Please try again.',
+          });
+        },
+      });
   }
+
 
   // Format file size nicely
   getFileSize(size: number): string {
@@ -68,15 +119,15 @@ export class UploadTransactionsComponent {
   }
 
   removeFile() {
-  this.uploadedFile = null;
-  this.progress = 0;
-  this.uploading = false;
-}
+    this.uploadedFile = null;
+    this.progress = 0;
+    this.uploading = false;
+  }
 
   // Download template file from server
   downloadTemplate(): void {
     this.http
-      .get('http://localhost:8080/helper/template', { responseType: 'blob' })
+      .get(`${this.BASE_URL.getBaseUrl()}/helper/template`, { responseType: 'blob' })
       .subscribe((response: Blob) => {
         const url = window.URL.createObjectURL(response);
         const a = document.createElement('a');

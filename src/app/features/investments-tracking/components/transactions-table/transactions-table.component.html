@@ -1,0 +1,68 @@
+<section class="w-full bg-background text-textPrimary p-6 font-sans">
+  <div class="flex flex-col md:flex-row items-start md:items-center justify-between mb-4 gap-4">
+    <h2 class="text-xl font-semibold">View Transactions</h2>
+
+    <div class="flex items-center gap-2">
+      <span class="text-sm text-textSecondary">Add Transactions:</span>
+      <button pButton label="Single" class="!bg-surfaceHover !text-textPrimary !border-border hover:!bg-surface"></button>
+      <button pButton label="Multiple" class="!bg-accent !text-white hover:!bg-accentHover"></button>
+    </div>
+  </div>
+
+  <!-- Search Bar -->
+  <div class="w-full mb-4">
+    <div class="relative">
+      <input
+        type="text"
+        placeholder="Search transactions"
+        (input)="onSearch($event)"
+        class="w-full rounded-lg bg-surface border border-border text-textPrimary placeholder-textSecondary px-4 py-2.5 focus:ring-2 focus:ring-accent focus:outline-none"
+      />
+    </div>
+  </div>
+
+  <!-- Table -->
+  <p-table
+    [value]="filteredTransactions"
+    [paginator]="true"
+    [rows]="rowsPerPage"
+    [first]="first"
+    (onPage)="onPageChange($event)"
+    [rowsPerPageOptions]="[5, 10, 20]"
+    [responsiveLayout]="'scroll'"
+    [styleClass]="'w-full rounded-lg overflow-hidden shadow-card bg-surface text-textPrimary border border-border'">
+
+    <ng-template pTemplate="header">
+      <tr class="bg-surface text-textSecondary text-sm">
+        <th>Date</th>
+        <th>Symbol</th>
+        <th>Type</th>
+        <th>Quantity</th>
+        <th>Price</th>
+        <th>Total</th>
+        <th>Status</th>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-t>
+      <tr class="border-b border-divider hover:bg-surfaceHover transition-colors duration-150">
+        <td>{{ t.date }}</td>
+        <td class="font-medium">{{ t.symbol }}</td>
+        <td>
+          <span [ngClass]="{
+              'text-accent': t.type === 'Buy',
+              'text-danger': t.type === 'Sell'
+            }">{{ t.type }}</span>
+        </td>
+        <td>{{ t.quantity }}</td>
+        <td>\${{ t.price.toFixed(2) }}</td>
+        <td>\${{ t.total.toFixed(2) }}</td>
+        <td>
+          <span class="px-3 py-1 rounded-lg text-xs bg-[#2A2A2A] text-textSecondary border border-border">
+            {{ t.status }}
+          </span>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</section>

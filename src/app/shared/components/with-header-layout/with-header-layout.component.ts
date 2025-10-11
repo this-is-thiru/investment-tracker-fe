@@ -1,88 +1,64 @@
-import { Component, Inject, PLATFORM_ID, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { AuthService } from '../../../services/auth.service';
-import { Router } from '@angular/router';
-import { isPlatformBrowser } from '@angular/common';
-import { RouterOutlet } from '@angular/router';
-import { CommonModule } from '@angular/common';
+import { Router, RouterModule, RouterOutlet } from '@angular/router';
 import { DropdownItem } from '../../../models/DropdownItem';
-import { RouterModule } from '@angular/router';
-
-
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-with-header-layout',
   standalone: true,
-  imports: [RouterOutlet,CommonModule,RouterModule],
   templateUrl: './with-header-layout.component.html',
-  styleUrls: ['./with-header-layout.component.css']
+  styleUrls: ['./with-header-layout.component.css'],
+  imports: [RouterOutlet,CommonModule, RouterModule, FormsModule],
 })
 export class WithHeaderLayoutComponent implements OnInit {
-  isLoggedIn: boolean = false;
+  isLoggedIn = this.authService.isLoggedIn;
   profileMenuOpen = false;
-  dropdownOpen: any;
   showSignIn = false;
+  showSignUp = false;
 
+  dropdownItems: DropdownItem[] = [
+    { label: 'Investments', link: '/investments-tracking', src: 'assets/imgs/menuInvestment.svg' },
+    { label: 'Tax Filing', link: '/tax-filing', src: 'assets/imgs/menuTaxfiling.svg' },
+    { label: 'Support', link: '/support', src: 'assets/imgs/menuSupport.svg' },
+  ];
 
-  constructor(
-    private authService: AuthService,
-    private router: Router,
-    @Inject(PLATFORM_ID) private platformId: Object
-  ) { }
+  constructor(private authService: AuthService, private router: Router) {}
 
-  ngOnInit(): void {
-    this.checkLoginStatus(); // Safe to access browser APIs here
+  ngOnInit(): void {}
+
+  toggleProfileMenu(): void {
+    this.profileMenuOpen = !this.profileMenuOpen;
   }
-  closePopup(event: Event) {
-    this.showSignIn = false;
-  }
-
-
-dropdownItems: DropdownItem[] = [
-  { label: 'Investments', link: '/investments-tracking', src: 'assets/imgs/menuInvestment.svg' },
-  { label: 'Tax Filing', link: '/tax-filing', src: 'assets/imgs/menuTaxfiling.svg' },
-  { label: 'Support', link: '/support', src: 'assets/imgs/menuSupport.svg' },
-];
-
-  isActive(path: string): boolean {
-    return this.router.url === path;
-  }
-
-  private checkLoginStatus(): void {
-    if (isPlatformBrowser(this.platformId)) {
-      const token = localStorage.getItem('jwtToken');
-      this.isLoggedIn = token !== null && !this.isTokenExpired(token);
-    }
-  }
-
-  private isTokenExpired(token: string): boolean {
-    // Replace with real expiration logic
-    return false;
-  }
-
 
   onLogout(): void {
     this.authService.logout();
-    if (isPlatformBrowser(this.platformId)) {
-      localStorage.removeItem('jwtToken');
-    }
-    this.isLoggedIn = false;
+    this.isLoggedIn.set(false);
     this.profileMenuOpen = false;
     this.router.navigate(['/home']);
   }
 
   onLogin(): void {
-    this.isLoggedIn = true;
-    this.router.navigate(['/sign-in']);
-  }
-
-  closeMenuAfterNavigation(): void {
-    if (this.profileMenuOpen) {
-      this.profileMenuOpen = false;
-    }
+    this.showSignIn = true;
+    this.router.navigate([{ outlets: { modal: ['sign-in'] } }]);
   }
 
   onSignUp(): void {
-    this.showSignIn = true;
-    this.router.navigate(['/sign-up']);
+    this.showSignUp = true;
+    this.router.navigate([{ outlets: { modal: ['sign-up'] } }]);
+  }
+
+  closeMenuAfterNavigation(): void {
+    this.profileMenuOpen = false;
+  }
+
+  // Detect click outside
+  @HostListener('document:click', ['$event.target'])
+  onClickOutside(targetElement: HTMLElement) {
+    const clickedInside = targetElement.closest('.relative');
+    if (!clickedInside) {
+      this.profileMenuOpen = false;
+    }
   }
 }

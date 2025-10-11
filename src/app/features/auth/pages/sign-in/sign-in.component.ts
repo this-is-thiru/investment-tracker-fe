@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../../services/auth.service';
@@ -6,7 +6,6 @@ import { LoginRequest } from '../../../../models/LoginRequest';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-
 
 
 @Component({
@@ -27,9 +26,9 @@ export class SignInComponent implements OnInit {
   errorMessage: string | null = null;
 
   constructor(
-    private router: Router,
+    public router: Router,
     private authService: AuthService,
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
   ) {
     this.loginForm = this.initLoginForm();
   }
@@ -48,19 +47,26 @@ export class SignInComponent implements OnInit {
     this.isLoading = true;
 
     const loginRequest: LoginRequest = this.loginForm.value;
+
     this.authService.login(loginRequest).subscribe({
-      next: () => {
+      next: (res) => {
+        console.log('Login success:', res);
         this.isLoading = false;
-        this.router.navigate(['/home']);
+        // Close modal outlet and go to home
+        this.router.navigate([{ outlets: { primary: ['home'], modal: null } }]);
       },
       error: (err) => {
+        console.error('Login error:', err);
         this.isLoading = false;
-        console.error('Login Error:', err);
+        this.errorMessage = 'Invalid credentials. Please try again.';
       },
     });
   }
-  
+
+
   onClose(): void {
-  this.router.navigate(['/home']);
-}
+    // Close only the modal outlet, not the entire route
+    this.router.navigate([{ outlets: { modal: null } }], { relativeTo: this.router.routerState.root });
+  }
+
 }

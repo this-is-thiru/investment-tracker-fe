@@ -1,19 +1,60 @@
-mat-form-field {
-    width: 100%;
-    margin-bottom: 20px;
-  }
-  
-  table {
-    width: 100%;
-  }
-  
-  button {
-    margin-top: 10px;
-  }
-  
-  .table-container {
-    max-height: 400px; /* Adjust the height as needed */
-    overflow-y: auto; /* Enables vertical scroll when content overflows */
-    display: block;
-  }
-  
+/* ===== Table ===== */
+:host ::ng-deep .custom-dark-table {
+  background-color: var(--surface);
+  color: var(--textPrimary);
+  border-radius: 0.75rem;
+  border: 1px solid var(--border);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+}
+
+/* Header */
+:host ::ng-deep .custom-dark-table thead tr {
+  background-color: #232323;
+  color: #b3b3b3;
+  font-weight: 600;
+}
+
+:host ::ng-deep .custom-dark-table thead th {
+  border: none;
+  padding: 0.75rem 1rem;
+}
+
+/* Rows */
+:host ::ng-deep .custom-dark-table tbody tr {
+  border-bottom: 1px solid var(--divider);
+  transition: background-color 0.2s ease-in-out;
+}
+
+:host ::ng-deep .custom-dark-table tbody tr:hover {
+  background-color: #2e2e2e;
+}
+
+:host ::ng-deep .custom-dark-table tbody td {
+  padding: 0.75rem 1rem;
+  color: #e5e5e5;
+}
+
+/* Paginator */
+:host ::ng-deep .p-paginator {
+  background-color: transparent;
+  border: none;
+  justify-content: center;
+}
+
+:host ::ng-deep .p-paginator .p-paginator-pages .p-paginator-page {
+  background-color: transparent;
+  color: #b3b3b3;
+  border-radius: 9999px;
+  transition: all 0.2s ease-in-out;
+}
+
+:host ::ng-deep .p-paginator .p-paginator-pages .p-paginator-page.p-highlight {
+  background-color: #10a37f;
+  color: #ffffff;
+}
+
+:host ::ng-deep .p-paginator .p-paginator-page:hover {
+  background-color: #1aa97d;
+  color: #ffffff;
+}

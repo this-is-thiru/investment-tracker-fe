@@ -1,0 +1,20 @@
+:host ::ng-deep .p-paginator {
+  background: transparent !important;
+  border: none !important;
+  color: #b3b3b3 !important;
+}
+
+:host ::ng-deep .p-paginator .p-paginator-page.p-highlight {
+  background-color: #10A37F !important;
+  color: white !important;
+  border-radius: 9999px !important;
+}
+
+:host ::ng-deep .p-paginator .p-paginator-page:hover {
+  background-color: #2A2A2A !important;
+}
+
+:host ::ng-deep .p-datatable-tbody > tr > td {
+  padding: 0.75rem 1rem !important;
+  font-size: 0.875rem;
+}

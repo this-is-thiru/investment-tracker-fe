@@ -1,110 +1,92 @@
-<main
-  class="relative flex w-full min-w-[380px] flex-col items-start overflow-hidden bg-[#191919] text-left font-['Manrope'] text-lg text-white">
-  <div class="flex items-start justify-center self-stretch p-4 text-4xl">
+<main class="relative flex w-full min-w-[380px] flex-col items-start overflow-hidden bg-background text-left font-['Manrope'] text-sm text-white pt-12">
+  <div class="flex items-start justify-center self-stretch p-4">
     <div class="flex w-[960px] max-w-[960px] flex-col items-start overflow-hidden">
 
-      <!-- Hero -->
-      <section id="Hero" class="flex flex-col items-start self-stretch p-4 text-6xl">
+      <!-- Hero Section -->
+      <section id="Hero" class="flex flex-col items-start self-stretch p-4">
         <div
-          class="box-border flex min-h-[450px] flex-col items-start justify-end gap-7 self-stretch overflow-hidden rounded-[12px] bg-cover bg-top bg-no-repeat p-4"
-          style="background-image: url('../../../assets/imgs/heroImage.svg')">
+          class="box-border flex min-h-[400px] flex-col items-start justify-end gap-2 self-stretch overflow-hidden rounded-xl bg-cover bg-top bg-no-repeat p-4"
+          style="background: linear-gradient(to bottom, rgba(0,0,0,0.6), rgba(0,0,0,0.3)), url('../../../assets/imgs/heroImage.svg')">
           <div class="flex flex-col items-start gap-2 self-stretch p-2">
-            <div class="flex flex-col items-start self-stretch">
-              <div class="relative self-stretch leading-[60px] font-extrabold tracking-[-2px]">Your Financial Journey,
-                Simplified</div>
-            </div>
-            <div class="flex flex-col items-start self-stretch text-base">
-              <div class="relative self-stretch leading-[24px]">Manage your investments and file your taxes effortlessly
-                with Investment Tracker. Get started today and take control of your financial future.</div>
-            </div>
+            <h1 class="leading-[52px] font-extrabold text-5xl tracking-[-1.5px]">
+              Your Financial Journey, Simplified
+            </h1>
+            <p class="leading-[24px] text-[#adadad] max-w-[720px]">
+              Manage your investments and file your taxes effortlessly with Investment Tracker. Get started today and take control of your financial future.
+            </p>
           </div>
-          <div class="box-border flex h-12 max-w-[480px] min-w-[84px] flex-shrink-0 items-center justify-center overflow-hidden rounded-[12px] bg-black px-5 py-0 text-center text-base 
-                   transition duration-300 ease-in-out hover:scale-105 active:scale-95 cursor-pointer"
+
+          <!-- CTA Button -->
+          <div
+            class="flex h-10 w-[174px] max-w-[480px] min-w-[84px] items-center justify-center rounded-xl bg-surface px-5 py-2 cursor-pointer
+                   border border-transparent text-white font-medium text-sm
+                   transition-colors duration-200 ease-in-out hover:bg-surfaceHover hover:border-white"
             (click)="onGetStarted()">
-            <div class="flex flex-col items-center overflow-hidden">
-              <b class="relative self-stretch overflow-hidden leading-[24px] text-ellipsis whitespace-nowrap">Get
-                Started</b>
-            </div>
+            Get Started
           </div>
         </div>
       </section>
 
-      <!-- Features -->
-      <section id="Features" class="flex flex-col items-start gap-10 self-stretch px-4 py-10">
-        <div class="flex flex-col items-start gap-4 self-stretch">
-          <div class="flex w-full max-w-[720px] flex-col items-start">
-            <div class="relative self-stretch leading-[45px] font-extrabold tracking-[-1px]">Comprehensive Financial
-              Tools</div>
-          </div>
-          <div class="flex w-full max-w-[720px] flex-col items-start text-base">
-            <b class="relative self-stretch leading-[24px]">Investment Tracker provides a suite of tools to help you
-              manage your finances effectively.</b>
-          </div>
+      <!-- Features Section -->
+      <section id="Features" class="flex flex-col items-start gap-6 self-stretch px-4 py-10">
+        <div class="flex flex-col items-start self-stretch gap-2">
+          <h2 class="text-xl font-extrabold tracking-[-1px] leading-[45px]">Comprehensive Financial Tools</h2>
+          <p class="text-[#adadad] leading-6 max-w-[720px]">
+            Investment Tracker provides a suite of tools to help you manage your finances effectively.
+          </p>
         </div>
-        <div class="flex items-start justify-center self-stretch text-base">
-          <div class="flex flex-1 flex-wrap content-start items-start justify-center gap-3">
+
+        <!-- Feature Cards -->
+        <div class="flex items-start justify-center self-stretch">
+          <div class="flex flex-1 flex-wrap content-start items-start justify-center gap-4">
 
             <!-- Card 1 -->
-            <div class="box-border flex min-w-[280px] flex-1 flex-col items-start gap-3 rounded-md border border-[#4d4d4d] bg-[#262626] p-4 cursor-pointer 
-                     transition duration-300 ease-in-out hover:scale-105 active:scale-95 hover:bg-[#333]"
+            <div
+              class="box-border flex min-w-[280px] flex-1 flex-col items-start gap-3 rounded-xl border border-[#4d4d4d] bg-surface p-4 cursor-pointer
+                     transition-colors duration-200 ease-in-out hover:bg-surfaceHover hover:border-white"
               (click)="onGetStarted()">
-              <img class="h-6 max-w-full flex-shrink-0 self-start overflow-hidden" alt=""
-                src="../../../assets/imgs/InvestmentIcon.svg" />
-              <div class="flex flex-col items-start gap-1 self-stretch">
-                <div class="flex flex-col items-start self-stretch">
-                  <b class="relative self-stretch leading-5">Investment Tracking</b>
-                </div>
-                <div class="flex flex-col items-start self-stretch text-sm text-[#adadad]">
-                  <div class="relative self-stretch leading-[21px]">Monitor your investment portfolio's performance in
-                    real-time with detailed analytics and insights.</div>
-                </div>
-              </div>
+              <img class="h-8 w-8 flex-shrink-0 self-start" alt="" src="../../../assets/imgs/InvestmentIcon.svg" />
+              <b class="leading-5 text-white">Investment Tracking</b>
+              <p class="text-[#adadad] leading-[21px]">
+                Monitor your investment portfolio's performance in real-time with detailed analytics and insights.
+              </p>
             </div>
 
             <!-- Card 2 -->
-            <div class="box-border flex min-w-[280px] flex-1 flex-col items-start gap-3 rounded-md border border-[#4d4d4d] bg-[#262626] p-4 cursor-pointer 
-                     transition duration-300 ease-in-out hover:scale-105 active:scale-95 hover:bg-[#333]"
+            <div
+              class="box-border flex min-w-[280px] flex-1 flex-col items-start gap-3 rounded-xl border border-[#4d4d4d] bg-surface p-4 cursor-pointer
+                     transition-colors duration-200 ease-in-out hover:bg-surfaceHover hover:border-white"
               (click)="onGetStarted()">
-              <img class="h-6 max-w-full flex-shrink-0 self-start overflow-hidden" alt=""
-                src="../../../assets/imgs/taxIcon.svg" />
-              <div class="flex flex-col items-start gap-1 self-stretch">
-                <div class="flex flex-col items-start self-stretch">
-                  <b class="relative self-stretch leading-5">Tax Filing Assistance</b>
-                </div>
-                <div class="flex flex-col items-start self-stretch text-sm text-[#adadad]">
-                  <div class="relative self-stretch leading-[21px]">Simplify your tax filing process with our
-                    step-by-step guidance and automated calculations.</div>
-                </div>
-              </div>
+              <img class="h-8 w-8 flex-shrink-0 self-start" alt="" src="../../../assets/imgs/taxIcon.svg" />
+              <b class="leading-5 text-white">Tax Filing Assistance</b>
+              <p class="text-[#adadad] leading-[21px]">
+                Simplify your tax filing process with our step-by-step guidance and automated calculations.
+              </p>
             </div>
 
           </div>
         </div>
       </section>
 
-      <!-- Explore Features -->
-      <section id="Start Point to Explore Features " class="flex flex-col items-start self-stretch text-center">
-        <div class="flex flex-col items-center justify-center gap-8 self-stretch px-4 py-10">
-          <div class="flex flex-col items-center gap-2 self-stretch">
-            <div class="flex w-full max-w-[720px] flex-col items-center">
-              <div class="relative self-stretch leading-[45px] font-extrabold tracking-[-1px]">Ready to Elevate Your
-                Financial Management?</div>
-            </div>
-            <div class="flex flex-col items-center self-stretch text-base">
-              <div class="relative self-stretch leading-[24px]">Discover the full range of features Investment Tracker
-                offers to help you achieve your financial goals.</div>
-            </div>
-          </div>
-          <div class="box-border flex h-12 w-[174px] max-w-[480px] min-w-[84px] flex-shrink-0 items-center justify-center overflow-hidden rounded-[12px] bg-black px-5 py-0 text-base 
-                   transition duration-300 ease-in-out hover:scale-105 active:scale-95 cursor-pointer"
-            (click)="onGetStarted()">
-            <div class="flex flex-col items-center overflow-hidden">
-              <b class="relative self-stretch overflow-hidden leading-[24px] text-ellipsis whitespace-nowrap">Explore
-                Features</b>
-            </div>
-          </div>
+      <!-- Explore Features Section -->
+      <section class="flex flex-col items-center self-stretch text-center px-4 py-10 gap-6">
+        <h2 class="text-xl font-extrabold leading-[45px] tracking-[-1px] max-w-[720px]">
+          Ready to Elevate Your Financial Management?
+        </h2>
+        <p class="font-extrabold text-[#adadad] leading-[24px] max-w-[720px]">
+          Discover the full range of features Investment Tracker offers to help you achieve your financial goals.
+        </p>
+
+        <!-- CTA Button -->
+        <div
+          class="flex h-10 w-[174px] max-w-[480px] min-w-[84px] items-center justify-center rounded-xl bg-surface px-5 py-2 cursor-pointer
+                 border border-transparent text-white font-medium text-sm
+                 transition-colors duration-200 ease-in-out hover:bg-surfaceHover hover:border-white"
+          (click)="onGetStarted()">
+          Explore Features
         </div>
       </section>
+
     </div>
   </div>
 </main>
