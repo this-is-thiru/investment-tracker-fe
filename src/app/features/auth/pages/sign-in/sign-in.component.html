@@ -34,6 +34,7 @@
           type="email"
           formControlName="email"
           placeholder="Email Address"
+          autocomplete="username"
           class="h-10 w-full rounded-lg border border-border bg-background px-3 text-white placeholder-text-muted
                  focus:ring-2 focus:ring-border focus:outline-none transition"
           required />
@@ -47,6 +48,7 @@
           [type]="hideLoginP ? 'password' : 'text'"
           formControlName="password"
           placeholder="Enter your password"
+          autocomplete="current-password"
           class="h-10 w-full rounded-lg border border-border bg-background px-3 pr-10 text-white placeholder-text-muted
                  focus:ring-2 focus:ring-border focus:outline-none transition"
           required />

@@ -26,7 +26,7 @@
       <!-- Email -->
       <div>
         <label for="register-email" class="block text-xs font-medium mb-1 text-white">Email</label>
-        <input id="register-email" type="email" formControlName="email" placeholder="Email Address" class="h-10 w-full rounded-lg border border-border bg-background px-3 text-white placeholder-text-muted
+        <input id="register-email" type="email" formControlName="email" placeholder="Email Address" autocomplete="username"  class="h-10 w-full rounded-lg border border-border bg-background px-3 text-white placeholder-text-muted
                  focus:ring-2 focus:ring-border focus:outline-none transition" required />
       </div>
 
@@ -34,7 +34,7 @@
       <div class="relative">
         <label for="register-password" class="block text-xs font-medium mb-1 text-white">Password</label>
         <input id="register-password" [type]="hideRegistrationP ? 'password' : 'text'" formControlName="password"
-          placeholder="Create a Password" class="h-10 w-full rounded-lg border border-border bg-background px-3 pr-10 text-white placeholder-text-muted
+          placeholder="Create a Password" autocomplete="new-password" class="h-10 w-full rounded-lg border border-border bg-background px-3 pr-10 text-white placeholder-text-muted
                 focus:ring-2 focus:ring-border focus:outline-none transition" required />
         <button type="button" (click)="hideRegistrationP = !hideRegistrationP"
           class="absolute right-2 top-8 text-text-secondary hover:text-white transition">
@@ -65,7 +65,7 @@
         <label for="register-confirm-password" class="block text-xs font-medium mb-1 text-white">Confirm
           Password</label>
         <input id="register-confirm-password" [type]="hideRegistrationCP ? 'password' : 'text'"
-          formControlName="confirmPassword" placeholder="Re-enter Password" class="h-10 w-full rounded-lg border border-border bg-background px-3 pr-10 text-white placeholder-text-muted
+          formControlName="confirmPassword" placeholder="Re-enter Password" autocomplete="new-password" class="h-10 w-full rounded-lg border border-border bg-background px-3 pr-10 text-white placeholder-text-muted
                 focus:ring-2 focus:ring-border focus:outline-none transition" required />
         <button type="button" (click)="hideRegistrationCP = !hideRegistrationCP"
           class="absolute right-2 top-8 text-text-secondary hover:text-white transition">

@@ -1,16 +1,22 @@
+// transaction.service.ts
 import { Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { catchError, tap } from 'rxjs/operators';
 import { HttpClient, HttpEvent, HttpEventType } from '@angular/common/http';
 import { BaseurlService } from './baseurl.service';
+import { TransactionsResponse } from '../models/TranscationsResponse';
 
 @Injectable({
   providedIn: 'root',
 })
 export class TransactionService {
-  constructor(private http: HttpClient, private BASE_URL: BaseurlService) { }
+  constructor(
+    private http: HttpClient,
+    private BASE_URL: BaseurlService,
 
-  // Fetch all transactions for a user
+  ) { }
+
+  // existing APIs left unchanged...
   getUserTransactions(email: string): Observable<any> {
     const url = `${this.BASE_URL.getBaseUrl()}/${email}/all/transactions`;
     return this.http.get(url).pipe(
@@ -21,10 +27,9 @@ export class TransactionService {
     );
   }
 
-  // Add a new transaction
   addTransaction(email: string, transactionData: any): Observable<any> {
     const url = `${this.BASE_URL.getBaseUrl()}/${email}/transaction`;
-    return this.http.post(url, transactionData, { headers: { 'Content-Type': 'application/json' } }).pipe(
+    return this.http.post(url, transactionData).pipe(
       catchError((error) => {
         console.error('Error adding transaction:', error);
         return throwError(() => new Error('Failed to add transaction'));
@@ -32,26 +37,49 @@ export class TransactionService {
     );
   }
 
-  // Upload transactions file
-  uploadTransactions(email: string, file: File): Observable<number> {
+  /**
+   * Upload transactions file with progress events.
+   * Returns Observable<HttpEvent<any>> so caller can react to progress and response.
+   */
+  uploadTransactions(email: string, file: File): Observable<HttpEvent<any>> {
+
     const formData = new FormData();
     formData.append('file', file);
 
-    return this.http.post(
-      `${this.BASE_URL.getBaseUrl()}/portfolio/user/${email}/upload-transactions`,
-      formData,
-      { reportProgress: true, observe: 'events' }
-    ).pipe(
-      map(event => {
-        switch (event.type) {
-          case HttpEventType.UploadProgress:
-            return Math.round((100 * event.loaded) / (event.total ?? 1));
-          case HttpEventType.Response:
-            return 100;
-          default:
-            return 0;
-        }
+    const url = `${this.BASE_URL.getBaseUrl()}/portfolio/user/${email}/upload-transactions`;
+
+    return this.http.post(url, formData, {
+      reportProgress: true,
+      observe: 'events',
+    }).pipe(
+      tap({
+        next: (event) => {
+          // event handling is done in component; this tap just logs.
+        },
+        error: (err) => console.error('❌ [Service] upload error raw:', err),
+      }),
+      catchError((err) => {
+        // rethrow original error so component can show meaningful message
+        return throwError(() => err);
       })
     );
+  }
+
+  // Download Excel template
+  downloadTemplate(): Observable<Blob> {
+    const url = `${this.BASE_URL.getBaseUrl()}/helper/template`;
+    return this.http.get(url, { responseType: 'blob' });
+  }
+
+  /** Fetch current transactions */
+  getCurrentTransactions(email: string): Observable<TransactionsResponse[]> {
+    const url = `${this.BASE_URL.getBaseUrl()}/transactions/user/${email}`;
+    return this.http.get<TransactionsResponse[]>(url);
+  }
+
+  /** Fetch temporary transactions */
+  getTemporaryTransactions(email: string): Observable<TransactionsResponse[]> {
+    const url = `${this.BASE_URL.getBaseUrl()}/temporary-transactions/user/${email}/all`;
+    return this.http.get<TransactionsResponse[]>(url);
   }
 }

@@ -1,7 +1,7 @@
 <section class="font-[Manrope] text-white text-sm min-h-full flex justify-center items-center bg-background pt-10">
   <div class="flex w-full min-w-[380px] flex-col items-center">
     <section class="flex justify-center p-5 w-full">
-      <div class="flex w-full max-w-[960px] flex-col">
+      <div class="flex w-full flex-col">
 
         <!-- Header -->
         <div class="flex flex-wrap justify-between px-4 py-2 text-lg font-bold">
@@ -9,7 +9,8 @@
         </div>
 
         <p class="px-4 text-[#adadad] pb-4">
-          Download our Excel template to easily input your transaction data. Fill in the required fields and upload the file to update your transaction history.
+          Download our Excel template to easily input your transaction data. Fill in the required fields and upload the
+          file to update your transaction history.
         </p>
 
         <!-- Download Template Button -->
@@ -22,10 +23,9 @@
 
         <!-- Upload Box -->
         <div class="p-4">
-          <div
-            class="flex flex-col items-center gap-6 rounded-xl border-2 border-dashed border-[#4d4d4d] p-8 relative w-full
-                   transition-colors duration-200 hover:border-white"
-            (drop)="onDrop($event)" (dragover)="onDragOver($event)">
+          <div class="flex flex-col items-center gap-6 rounded-xl border-2 border-dashed border-[#4d4d4d] p-8 relative w-full
+                   transition-colors duration-200 hover:border-white" (drop)="onDrop($event)"
+            (dragover)="onDragOver($event)">
 
             <!-- Default state -->
             <ng-container *ngIf="!uploading && !uploadedFile">
@@ -55,6 +55,7 @@
               <span class="text-[#adadad] mt-2">{{ progress }}%</span>
             </ng-container>
 
+
             <!-- Uploaded state -->
             <ng-container *ngIf="uploadedFile && !uploading">
               <div class="flex flex-col items-center gap-2">
@@ -75,8 +76,11 @@
           </div>
         </div>
 
-        <p class="text-center text-[#adadad] mt-2">By uploading, you agree to our terms and conditions.</p>
-
+        <footer class="text-center text-[#adadad] mt-3 text-xs">
+          By uploading, you agree to our
+          <a routerLink="/terms" class="underline hover:text-white transition-colors duration-150">Terms &
+            Conditions</a>.
+        </footer>
       </div>
     </section>
   </div>

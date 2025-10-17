@@ -44,10 +44,10 @@ export class AuthService {
           this.storageService.setItem('jwtToken', res.access_token);
 
           // ✅ Extract email from backend or token
-          const email = res.email || this.storageService.getUserEmailFromToken(res.access_token);
-          if (email) {
-            this.storageService.setItem('userEmail', email);
-            this.userEmail.set(email);
+          const backendEmail = res.email || this.storageService.getUserEmailFromToken(res.access_token);
+          if (backendEmail) {
+            this.storageService.setItem('userEmail', backendEmail);
+            this.userEmail.set(backendEmail);
           }
 
           this.startAutoLogout(res.access_token);

@@ -4,54 +4,88 @@ import { TableModule } from 'primeng/table';
 import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
 import { PaginatorModule } from 'primeng/paginator';
-
-interface Transaction {
-  date: string;
-  symbol: string;
-  type: string;
-  quantity: number;
-  price: number;
-  total: number;
-  status: string;
-}
+import { DropdownModule } from 'primeng/dropdown';
+import { MessageService } from 'primeng/api';
+import { TransactionService } from '../../../../services/transaction.service';
+import { TransactionsResponse } from '../../../../models/TranscationsResponse';
 
 @Component({
   selector: 'app-transactions-table',
   standalone: true,
-  imports: [CommonModule, TableModule, InputTextModule, ButtonModule, PaginatorModule],
+  imports: [
+    CommonModule,
+    TableModule,
+    InputTextModule,
+    ButtonModule,
+    PaginatorModule,
+    DropdownModule
+  ],
   templateUrl: './transactions-table.component.html',
-  styleUrls: ['./transactions-table.component.css']
+  styleUrls: ['./transactions-table.component.css'],
+  providers: [MessageService]
 })
 export class TransactionsTableComponent implements OnInit {
-  transactions: Transaction[] = [];
-  filteredTransactions: Transaction[] = [];
+  transactions: TransactionsResponse[] = [];
+  filteredTransactions: TransactionsResponse[] = [];
   searchQuery = '';
-  rowsPerPage = 10;
+  rowsPerPage = 5;
   first = 0;
+  loading = false;
+  activeTab: 'current' | 'temporary' = 'current';
+  userEmail = ''; // Replace or inject dynamically later
+
+  constructor(
+    private transactionService: TransactionService,
+    private messageService: MessageService
+  ) {}
 
   ngOnInit(): void {
-    // Simulate large dataset
-    for (let i = 0; i < 200; i++) {
-      this.transactions.push({
-        date: `2024-${String((i % 12) + 1).padStart(2, '0')}-${String((i % 28) + 1).padStart(2, '0')}`,
-        symbol: `SYM${i}`,
-        type: i % 2 === 0 ? 'Buy' : 'Sell',
-        quantity: Math.floor(Math.random() * 200) + 10,
-        price: Math.floor(Math.random() * 300) + 50,
-        total: Math.floor(Math.random() * 10000) + 1000,
-        status: 'Completed'
-      });
-    }
-
-    this.filteredTransactions = [...this.transactions];
+    this.userEmail = localStorage.getItem('userEmail') || '';
+    this.fetchTransactions();
   }
 
+  /** Load transactions based on selected tab */
+  fetchTransactions(): void {
+    this.loading = true;
+    const fetch$ =
+      this.activeTab === 'current'
+        ? this.transactionService.getCurrentTransactions(this.userEmail)
+        : this.transactionService.getTemporaryTransactions(this.userEmail);
+
+    fetch$.subscribe({
+      next: (data) => {
+        this.transactions = data;
+        this.filteredTransactions = [...data];
+        this.loading = false;
+      },
+      error: (err) => {
+        this.loading = false;
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Failed to load transactions.'
+        });
+        console.error(err);
+      }
+    });
+  }
+
+  /** Switch between Current / Temporary */
+  setTab(type: 'current' | 'temporary') {
+    if (this.activeTab !== type) {
+      this.activeTab = type;
+      this.fetchTransactions();
+    }
+  }
+
+  /** Local search filtering */
   onSearch(event: Event): void {
     const query = (event.target as HTMLInputElement).value.toLowerCase();
     this.filteredTransactions = this.transactions.filter(
-      t =>
-        t.symbol.toLowerCase().includes(query) ||
-        t.type.toLowerCase().includes(query)
+      (t) =>
+        t.stockCode.toLowerCase().includes(query) ||
+        t.stockName.toLowerCase().includes(query) ||
+        t.transactionType.toLowerCase().includes(query)
     );
   }
 

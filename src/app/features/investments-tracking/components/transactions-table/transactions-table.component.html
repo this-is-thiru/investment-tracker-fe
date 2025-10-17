@@ -1,67 +1,98 @@
-<section class="w-full bg-background text-textPrimary p-6 font-sans">
+<section class="w-full bg-background text-textPrimary p-6 font-sans rounded-xl shadow-card">
+  <!-- Header & Tabs -->
   <div class="flex flex-col md:flex-row items-start md:items-center justify-between mb-4 gap-4">
-    <h2 class="text-xl font-semibold">View Transactions</h2>
+    <h2 class="text-xl font-semibold">Transactions</h2>
 
     <div class="flex items-center gap-2">
-      <span class="text-sm text-textSecondary">Add Transactions:</span>
-      <button pButton label="Single" class="!bg-surfaceHover !text-textPrimary !border-border hover:!bg-surface"></button>
-      <button pButton label="Multiple" class="!bg-accent !text-white hover:!bg-accentHover"></button>
+      <button
+        (click)="setTab('current')"
+        [ngClass]="activeTab === 'current' ? 'bg-accent text-white' : 'bg-surfaceHover text-textSecondary hover:bg-surface'"
+        class="px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-150"
+      >
+        Current
+      </button>
+      <button
+        (click)="setTab('temporary')"
+        [ngClass]="activeTab === 'temporary' ? 'bg-accent text-white' : 'bg-surfaceHover text-textSecondary hover:bg-surface'"
+        class="px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-150"
+      >
+        Temporary
+      </button>
     </div>
   </div>
 
-  <!-- Search Bar -->
+  <!-- Search -->
   <div class="w-full mb-4">
-    <div class="relative">
-      <input
-        type="text"
-        placeholder="Search transactions"
-        (input)="onSearch($event)"
-        class="w-full rounded-lg bg-surface border border-border text-textPrimary placeholder-textSecondary px-4 py-2.5 focus:ring-2 focus:ring-accent focus:outline-none"
-      />
-    </div>
+    <input
+      type="text"
+      placeholder="Search transactions..."
+      (input)="onSearch($event)"
+      class="w-full rounded-lg bg-surface border border-border text-textPrimary placeholder-textSecondary px-4 py-2.5 focus:ring-2 focus:ring-accent focus:outline-none"
+    />
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="text-center text-textSecondary py-6">
+    Loading transactions...
   </div>
 
   <!-- Table -->
   <p-table
+    *ngIf="!loading"
     [value]="filteredTransactions"
     [paginator]="true"
     [rows]="rowsPerPage"
     [first]="first"
     (onPage)="onPageChange($event)"
-    [rowsPerPageOptions]="[5, 10, 20]"
+    [rowsPerPageOptions]="[5,10,20]"
     [responsiveLayout]="'scroll'"
-    [styleClass]="'w-full rounded-lg overflow-hidden shadow-card bg-surface text-textPrimary border border-border'">
-
+    [styleClass]="'w-full rounded-lg overflow-hidden shadow-card border border-border text-textPrimary'"
+  >
+    <!-- Header -->
     <ng-template pTemplate="header">
-      <tr class="bg-surface text-textSecondary text-sm">
-        <th>Date</th>
-        <th>Symbol</th>
-        <th>Type</th>
-        <th>Quantity</th>
-        <th>Price</th>
-        <th>Total</th>
-        <th>Status</th>
+      <tr class="bg-surface text-textSecondary text-sm border-b border-divider">
+        <th class="px-2 py-1">EMAIL</th>
+        <th class="px-2 py-1">STOCK CODE</th>
+        <th class="px-2 py-1">STOCK NAME</th>
+        <th class="px-2 py-1">ASSET TYPE</th>
+        <th class="px-2 py-1">EXCHANGE</th>
+        <th class="px-2 py-1">BROKER</th>
+        <th class="px-2 py-1">TYPE</th>
+        <th class="px-2 py-1">QTY</th>
+        <th class="px-2 py-1">PRICE</th>
+        <th class="px-2 py-1">TOTAL</th>
+        <th class="px-2 py-1">MATURITY DATE</th>
+        <th class="px-2 py-1">BROKER CHARGES</th>
+        <th class="px-2 py-1">MISC CHARGES</th>
+        <th class="px-2 py-1">DATE</th>
       </tr>
     </ng-template>
 
+    <!-- Body -->
     <ng-template pTemplate="body" let-t>
       <tr class="border-b border-divider hover:bg-surfaceHover transition-colors duration-150">
-        <td>{{ t.date }}</td>
-        <td class="font-medium">{{ t.symbol }}</td>
-        <td>
-          <span [ngClass]="{
-              'text-accent': t.type === 'Buy',
-              'text-danger': t.type === 'Sell'
-            }">{{ t.type }}</span>
+        <td class="px-2 py-1">{{ t.email }}</td>
+        <td class="px-2 py-1 font-medium">{{ t.stockCode }}</td>
+        <td class="px-2 py-1">{{ t.stockName }}</td>
+        <td class="px-2 py-1">{{ t.assetType }}</td>
+        <td class="px-2 py-1">{{ t.exchangeName }}</td>
+        <td class="px-2 py-1">{{ t.brokerName }}</td>
+        <td
+          class="px-2 py-1"
+          [ngClass]="{
+            'buy-cell': t.transactionType === 'BUY',
+            'sell-cell': t.transactionType === 'SELL'
+          }"
+        >
+          {{ t.transactionType }}
         </td>
-        <td>{{ t.quantity }}</td>
-        <td>\${{ t.price.toFixed(2) }}</td>
-        <td>\${{ t.total.toFixed(2) }}</td>
-        <td>
-          <span class="px-3 py-1 rounded-lg text-xs bg-[#2A2A2A] text-textSecondary border border-border">
-            {{ t.status }}
-          </span>
-        </td>
+        <td class="px-2 py-1">{{ t.quantity }}</td>
+        <td class="px-2 py-1">₹{{ t.price | number: '1.2-2' }}</td>
+        <td class="px-2 py-1">₹{{ t.totalValue | number: '1.2-2' }}</td>
+        <td class="px-2 py-1">{{ t.maturityDate || '-' }}</td>
+        <td class="px-2 py-1">₹{{ t.brokerCharges || 0 }}</td>
+        <td class="px-2 py-1">₹{{ t.miscCharges || 0 }}</td>
+        <td class="px-2 py-1">{{ t.transactionDate }}</td>
       </tr>
     </ng-template>
   </p-table>
