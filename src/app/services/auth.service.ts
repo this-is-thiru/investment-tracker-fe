@@ -29,6 +29,7 @@ export class AuthService {
 
     if (token && this.storageService.isTokenValid(token)) {
       const email = savedEmail || this.storageService.getUserEmailFromToken(token);
+      console.log(token, email);
       if (email) this.userEmail.set(email);
       this.isLoggedIn.set(true);
     } else {

@@ -21,6 +21,7 @@
     "@angular/platform-browser": "^18.2.13",
     "@angular/platform-browser-dynamic": "^18.2.13",
     "@angular/router": "^18.2.13",
+    "lucide-angular": "^0.546.0",
     "primeflex": "^4.0.0",
     "primeicons": "^7.0.0",
     "primeng": "^18.0.2",

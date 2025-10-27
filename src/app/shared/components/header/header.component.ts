@@ -8,11 +8,11 @@ import { FormsModule } from '@angular/forms';
 @Component({
   selector: 'app-with-header-layout',
   standalone: true,
-  templateUrl: './with-header-layout.component.html',
-  styleUrls: ['./with-header-layout.component.css'],
+  templateUrl: './header.component.html',
+  styleUrls: ['./header.component.css'],
   imports: [RouterOutlet,CommonModule, RouterModule, FormsModule],
 })
-export class WithHeaderLayoutComponent implements OnInit {
+export class HeaderComponent implements OnInit {
   isLoggedIn = this.authService.isLoggedIn;
   profileMenuOpen = false;
   showSignIn = false;

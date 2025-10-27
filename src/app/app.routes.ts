@@ -3,7 +3,7 @@ import { SignInComponent } from './features/auth/pages/sign-in/sign-in.component
 import { SignUpComponent } from './features/auth/pages/sign-up/sign-up.component';
 import { InvestmentsComponent } from './features/investments-tracking/pages/investments/investments.component';
 import { AuthGuard } from './core/auth.guard';
-import { WithHeaderLayoutComponent } from './shared/components/with-header-layout/with-header-layout.component';
+import { HeaderComponent } from './shared/components/header/header.component';
 import { HomeComponent } from './features/home/pages/home/home.component';
 
 export const routes: Routes = [
@@ -11,7 +11,7 @@ export const routes: Routes = [
 
   {
     path: '',
-    component: WithHeaderLayoutComponent,
+    component: HeaderComponent,
     children: [
       { path: 'home', component: HomeComponent },
       { path: 'investments-tracking', component: InvestmentsComponent, canActivate: [AuthGuard] },

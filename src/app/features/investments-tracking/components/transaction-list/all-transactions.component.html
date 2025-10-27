@@ -1,67 +1,412 @@
-<div class="flex flex-col gap-6 w-full min-h-screen bg-background text-textPrimary p-6 font-sans max-w-[960px]">
-  <!-- Header -->
-  <div class="flex items-center justify-between">
-    <h2 class="text-xl font-semibold">View Transactions</h2>
+<div *ngIf="toast" class="fixed top-4 right-4 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-in slide-in-from-top"
+  [ngClass]="{
+    'bg-green-500/60': toast.type === 'success',
+    'bg-red-500/60': toast.type === 'error',
+    'bg-blue-500/60': toast.type === 'info'
+  }">
+  {{ toast.message }}
+</div>
 
-    <form [formGroup]="transactionForm" (ngSubmit)="fetchTransactions()" class="flex gap-2">
-      <input
-        type="email"
-        pInputText
-        formControlName="email"
-        placeholder="Enter email"
-        class="bg-surface text-textPrimary border border-border rounded-md px-3 py-2 focus:ring-1 focus:ring-accent w-64"
-      />
-      <button
-        pButton
-        type="submit"
-        label="Fetch"
-        [disabled]="loading"
-        class="!bg-accent hover:!bg-accentHover text-white px-4 py-2 rounded-md"
-      ></button>
-    </form>
+<div class="min-h-screen bg-[#191919]">
+  <div class="max-w-7xl mx-auto p-4 md:p-6 lg:p-8 space-y-6">
+    <div class="space-y-2">
+      <div class="flex items-center gap-3">
+        <div class="bg-gradient-to-br from-[#10A37F]/40 to-[#1AA97D]/40 p-2.5 rounded-xl">
+          <lucide-icon [img]="TrendingUpIcon" class="h-6 w-6 text-white/80"></lucide-icon>
+        </div>
+        <div>
+          <h1 class="text-3xl font-semibold text-white">
+            Corporate Action Processor
+          </h1>
+          <p class="text-[#B3B3B3] text-sm">
+            Upload and process corporate actions efficiently
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-[#232323] border border-[#3A3A3A] rounded-lg p-1 grid grid-cols-2 gap-1">
+      <button (click)="activeTab = 'upload'"
+        [ngClass]="activeTab === 'upload' ? 'bg-gradient-to-r from-[#3B82F6]/50 to-[#2563EB]/50 text-white/90' : 'text-[#B3B3B3] hover:bg-[#2E2E2E]'"
+        class="flex items-center justify-center gap-2 px-4 py-2 rounded-md transition-all">
+        <lucide-icon [img]="UploadIcon" class="h-4 w-4"></lucide-icon>
+        Upload Transactions
+      </button>
+      <button (click)="activeTab = 'process'"
+        [ngClass]="activeTab === 'process' ? 'bg-gradient-to-r from-[#10A37F]/50 to-[#1AA97D]/50 text-white/90' : 'text-[#B3B3B3] hover:bg-[#2E2E2E]'"
+        class="flex items-center justify-center gap-2 px-4 py-2 rounded-md transition-all">
+        <lucide-icon [img]="TrendingUpIcon" class="h-4 w-4"></lucide-icon>
+        Process Actions
+      </button>
+    </div>
+
+    <div *ngIf="activeTab === 'upload'" class="space-y-4 mt-6">
+      <div class="bg-[#232323] border border-[#3A3A3A] rounded-xl flex flex-col gap-6">
+        <div class="px-6 pt-6 grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5">
+          <h4 class="leading-none text-white">
+            Upload Transaction File
+          </h4>
+          <p class="text-muted-foreground text-[#B3B3B3]">
+            Upload your Excel file containing transaction data
+          </p>
+        </div>
+        <div class="px-6 pb-6 space-y-4">
+          <div *ngIf="!hasUploadedFile && !isUploading" (dragover)="handleDragOver($event)" (drop)="handleDrop($event)"
+            (click)="fileInput.click()"
+            class="border-2 border-dashed border-[#3A3A3A] rounded-xl p-12 text-center cursor-pointer hover:border-[#3B82F6]/50 hover:bg-[#3B82F6]/5 transition-all">
+            <div class="flex flex-col items-center gap-4">
+              <div class="bg-[#3B82F6]/10 p-6 rounded-xl">
+                <lucide-icon [img]="UploadIcon" class="h-16 w-16 text-[#3B82F6]/70"></lucide-icon>
+              </div>
+              <div>
+                <p class="text-white text-lg mb-1">
+                  Drag & drop your file here
+                </p>
+                <p class="text-[#666666] text-sm">
+                  or click to browse
+                </p>
+              </div>
+              <p class="text-xs text-[#666666]">
+                Supports: .xlsx, .xls (Max 10MB)
+              </p>
+            </div>
+            <input #fileInput type="file" accept=".xlsx,.xls" class="hidden" (change)="handleFileSelect($event)" />
+          </div>
+
+          <div *ngIf="isUploading" class="space-y-2">
+            <div class="flex items-center justify-between">
+              <p class="text-sm text-[#B3B3B3]">
+                {{ uploadedFileName }}
+              </p>
+              <p class="text-sm text-[#3B82F6]/80">
+                {{ uploadProgress }}%
+              </p>
+            </div>
+            <div class="bg-[#3A3A3A] relative h-2 w-full overflow-hidden rounded-full">
+              <div class="bg-gradient-to-r from-[#10A37F]/60 to-[#1AA97D]/60 h-full transition-all"
+                [style.width.%]="uploadProgress">
+              </div>
+            </div>
+          </div>
+
+          <div *ngIf="hasUploadedFile && !isUploading" class="bg-[#3B82F6]/10 border border-[#3B82F6]/20 rounded-xl p-4">
+            <div class="flex items-start justify-between">
+              <div class="flex items-start gap-3">
+                <lucide-icon [img]="CheckCircle2Icon" class="h-6 w-6 text-[#3B82F6]/80 mt-0.5" ></lucide-icon>
+                <div>
+                  <h4 class="text-[#3B82F6]/90 font-semibold mb-1">
+                    File Uploaded Successfully!
+                  </h4>
+                  <p class="text-[#B3B3B3] text-sm">
+                    {{ uploadedFileName }}
+                  </p>
+                </div>
+              </div>
+              <button (click)="removeFile()" class="text-[#666666] hover:text-[#EF4444]/70 transition-colors">
+                <lucide-icon [img]="XIcon" class="h-5 w-5" ></lucide-icon>
+              </button>
+            </div>
+          </div>
+
+          <div class="pt-4 border-t border-[#3A3A3A]">
+            <button (click)="showToast('Template download started', 'success')"
+              class="flex items-center gap-2 text-[#3B82F6]/80 hover:text-[#2563EB]/90 transition-colors">
+              <lucide-icon  [img]="DownloadIcon" class="h-4 w-4" ></lucide-icon>
+              <span class="text-sm">
+                Download Template
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="hasUploadedFile" class="bg-[#10A37F]/10 border border-[#10A37F]/20 rounded-xl p-4">
+        <div class="flex items-start gap-3">
+          <lucide-icon [img]="CheckCircle2Icon" class="h-5 w-5 text-[#10A37F]/80 mt-0.5"></lucide-icon>
+          <div>
+            <h4 class="text-[#10A37F]/90 font-semibold mb-1">
+              Ready for Processing
+            </h4>
+            <p class="text-[#B3B3B3] text-sm">
+              Your file has been uploaded successfully. Switch to the "Process Actions" tab to continue.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="activeTab === 'process'" class="space-y-6 mt-6">
+      <div class="bg-[#232323] border border-[#3A3A3A] rounded-xl p-6">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <h2 class="text-xl text-white mb-1">
+              Select Corporate Action Type
+            </h2>
+            <p class="text-sm text-[#B3B3B3]">
+              Choose the type of corporate action to process
+            </p>
+          </div>
+          <select [(ngModel)]="selectedAction"
+            class="w-full md:w-[200px] h-9 px-3 py-2 bg-[#2E2E2E] border border-[#3A3A3A] text-white rounded-md focus:outline-none focus:ring-2 focus:ring-[#10A37F]/50">
+            <option value="bonus">Bonus Issue</option>
+            <option value="dividend">Dividend Payment</option>
+            <option value="split">Stock Split</option>
+            <option value="merger">Merger/Acquisition</option>
+          </select>
+        </div>
+      </div>
+
+      <div [ngClass]="{
+          'border-[#22C55E]/20 bg-[#22C55E]/5': currentStep > 1,
+          'border-[#10A37F]/50 bg-[#10A37F]/5': currentStep === 1,
+          'border-[#3A3A3A] bg-[#232323]': currentStep < 1
+        }" class="border rounded-xl transition-all">
+        <div class="px-6 pt-6">
+          <div class="flex items-center gap-4">
+            <div [ngClass]="{
+                'bg-[#22C55E]/70 text-white': currentStep > 1,
+                'bg-gradient-to-br from-[#10A37F]/60 to-[#1AA97D]/60 text-white': currentStep === 1,
+                'bg-[#3A3A3A] text-[#666666]': currentStep < 1
+              }" class="flex items-center justify-center rounded-full w-12 h-12">
+              <lucide-icon [img]="CheckCircle2Icon" *ngIf="currentStep > 1" class="h-6 w-6"></lucide-icon>
+              <span *ngIf="currentStep <= 1" class="text-xl font-semibold">1</span>
+            </div>
+            <div>
+              <h4 class="leading-none text-white">Load Transactions</h4>
+              <p class="text-[#B3B3B3] text-sm mt-1.5">Import transaction data into temporary storage</p>
+            </div>
+          </div>
+        </div>
+        <div class="px-6 pb-6 mt-6">
+          <div class="space-y-4">
+            <div class="bg-[#3B82F6]/10 border border-[#3B82F6]/20 rounded-lg p-4">
+              <div class="flex items-start gap-3">
+                <lucide-icon [img]="PlayCircleIcon" class="h-5 w-5 text-[#3B82F6]/80 mt-0.5"></lucide-icon>
+                <div>
+                  <h4 class="text-[#3B82F6]/90 font-semibold mb-1">First Step</h4>
+                  <p class="text-[#B3B3B3] text-sm">
+                    Click "Load Transactions" to fetch and load transaction data into temporary storage.
+                  </p>
+                </div>
+              </div>
+            </div>
+            <button (click)="handleLoadTransactions()" [disabled]="isLoading || currentStep > 1 || !hasUploadedFile"
+              [ngClass]="currentStep === 1 && hasUploadedFile ? 'bg-gradient-to-r from-[#10A37F]/60 to-[#1AA97D]/60 hover:shadow-lg' : currentStep > 1 ? 'bg-[#10A37F]/20 text-[#10A37F]/80 border border-[#10A37F]/20' : 'bg-[#232323] text-[#666666] border border-[#3A3A3A]'"
+              class="w-full px-6 py-3 rounded-lg text-white transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+              <ng-container *ngIf="isLoading && currentStep === 1">
+                <lucide-icon [img]="RotateCwIcon" class="h-4 w-4 animate-spin" ></lucide-icon>
+                <span>Loading...</span>
+              </ng-container>
+              <ng-container *ngIf="!(isLoading && currentStep === 1)">
+                <lucide-icon [img]="UploadIcon" class="h-4 w-4" ></lucide-icon>
+                <span>Load Transactions</span>
+              </ng-container>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div [ngClass]="{
+          'border-[#22C55E]/20 bg-[#22C55E]/5': currentStep > 2,
+          'border-[#10A37F]/50 bg-[#10A37F]/5': currentStep === 2,
+          'border-[#3A3A3A] bg-[#232323]': currentStep < 2
+        }" class="border rounded-xl transition-all">
+        <div class="px-6 pt-6">
+          <div class="flex items-center gap-4">
+            <div [ngClass]="{
+                'bg-[#22C55E]/70 text-white': currentStep > 2,
+                'bg-gradient-to-br from-[#10A37F]/60 to-[#1AA97D]/60 text-white': currentStep === 2,
+                'bg-[#3A3A3A] text-[#666666]': currentStep < 2
+              }" class="flex items-center justify-center rounded-full w-12 h-12">
+              <lucide-icon [img]="CheckCircle2Icon" *ngIf="currentStep > 2" class="h-6 w-6" ></lucide-icon>
+              <span *ngIf="currentStep <= 2" class="text-xl font-semibold">2</span>
+            </div>
+            <div>
+              <h4 class="leading-none text-white">Re-drive Processing</h4>
+              <p class="text-[#B3B3B3] text-sm mt-1.5">Retry failed or pending transactions</p>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="hasLoadedTransactions" class="px-6 pb-6 mt-6">
+          <div class="space-y-4">
+            <div class="bg-[#FACC15]/10 border border-[#FACC15]/20 rounded-lg p-4">
+              <div class="flex items-start gap-3">
+                <lucide-icon [img]="RotateCwIcon" class="h-5 w-5 text-[#FACC15]/80 mt-0.5" ></lucide-icon>
+                <div>
+                  <h4 class="text-[#FACC15]/90 font-semibold mb-1">Re-drive Transactions</h4>
+                  <p class="text-[#B3B3B3] text-sm">
+                    Found {{ temporaryTransactions.length }} temporary transaction(s). Use Re-drive to retry.
+                  </p>
+                </div>
+              </div>
+            </div>
+            <button (click)="handleRedrive()" [disabled]="isLoading || currentStep !== 2"
+              [ngClass]="currentStep === 2 ? 'bg-gradient-to-r from-[#10A37F]/60 to-[#1AA97D]/60 hover:shadow-lg' : currentStep > 2 ? 'bg-[#10A37F]/20 text-[#10A37F]/80 border border-[#10A37F]/20' : 'bg-[#232323] text-[#666666] border border-[#3A3A3A]'"
+              class="w-full px-6 py-3 rounded-lg text-white transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+              <ng-container *ngIf="isLoading && currentStep === 2">
+                <lucide-icon [img]="RotateCwIcon" class="h-4 w-4 animate-spin" ></lucide-icon>
+                <span>Re-driving...</span>
+              </ng-container>
+              <ng-container *ngIf="!(isLoading && currentStep === 2)">
+                <lucide-icon [img]="RotateCwIcon" class="h-4 w-4" ></lucide-icon>
+                <span>Re-drive Transactions</span>
+              </ng-container>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div [ngClass]="{
+          'border-[#22C55E]/20 bg-[#22C55E]/5': currentStep > 3,
+          'border-[#10A37F]/50 bg-[#10A37F]/5': currentStep === 3,
+          'border-[#3A3A3A] bg-[#232323]': currentStep < 3
+        }" class="border rounded-xl transition-all">
+        <div class="px-6 pt-6">
+          <div class="flex items-center gap-4">
+            <div [ngClass]="{
+                'bg-[#22C55E] text-white': currentStep > 3,
+                'bg-gradient-to-br from-[#10A37F] to-[#1AA97D] text-white': currentStep === 3,
+                'bg-[#3A3A3A] text-[#666666]': currentStep < 3
+              }" class="flex items-center justify-center rounded-full w-12 h-12">
+              <lucide-icon [img]="CheckCircle2Icon"  *ngIf="currentStep > 3" class="h-6 w-6" ></lucide-icon>
+              <span *ngIf="currentStep <= 3" class="text-xl font-semibold">3</span>
+            </div>
+            <div>
+              <h4 class="leading-none text-white">Perform Corporate Action</h4>
+              <p class="text-[#B3B3B3] text-sm mt-1.5">Execute the selected corporate action</p>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="hasLoadedTransactions" class="px-6 pb-6 mt-6">
+          <div class="space-y-4">
+            <div class="bg-[#10A37F]/10 border border-[#10A37F]/30 rounded-lg p-4">
+              <div class="flex items-start gap-3">
+                <lucide-icon [img]="ZapIcon" class="h-5 w-5 text-[#10A37F] mt-0.5" ></lucide-icon>
+                <div>
+                  <h4 class="text-[#10A37F] font-semibold mb-1">Final Step</h4>
+                  <p class="text-[#B3B3B3] text-sm">
+                    Execute the {{ actionButtonText }} action on all temporary transactions.
+                  </p>
+                </div>
+              </div>
+            </div>
+            <button (click)="handlePerformCorporateAction()"
+              [disabled]="isLoading || currentStep !== 3 || temporaryTransactions.length === 0"
+              [ngClass]="currentStep === 3 && temporaryTransactions.length > 0 ? 'bg-gradient-to-r from-[#10A37F] to-[#1AA97D] hover:shadow-lg' : 'bg-[#232323] text-[#666666] border border-[#3A3A3A]'"
+              class="w-full px-6 py-3 rounded-lg text-white transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+              <ng-container *ngIf="isLoading && currentStep === 3">
+                <lucide-icon [img]="RotateCwIcon" class="h-4 w-4 animate-spin" ></lucide-icon>
+                <span>Processing...</span>
+              </ng-container>
+              <ng-container *ngIf="!(isLoading && currentStep === 3)">
+                <lucide-icon [img]="CheckCircle2Icon" class="h-4 w-4" ></lucide-icon>
+                <span>Perform {{ actionButtonText }} Action</span>
+              </ng-container>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="hasLoadedTransactions" class="bg-[#232323] border border-[#3A3A3A] rounded-xl p-6 space-y-4">
+        <h2 class="text-xl text-white">
+          Transaction Records
+        </h2>
+        <div class="bg-[#191919] border border-[#3A3A3A] rounded-lg p-1 grid grid-cols-2 gap-1 max-w-sm">
+          <button (click)="activeTableTab = 'temporary'"
+            [ngClass]="activeTableTab === 'temporary' ? 'bg-[#3B82F6]/30 text-white font-medium' : 'text-[#B3B3B3] hover:bg-[#2E2E2E]'"
+            class="flex items-center justify-center gap-2 px-3 py-1.5 rounded-md text-sm transition-all">
+            Temporary ({{ temporaryTransactions.length }})
+          </button>
+          <button (click)="activeTableTab = 'portfolio'"
+            [ngClass]="activeTableTab === 'portfolio' ? 'bg-[#10A37F]/30 text-white font-medium' : 'text-[#B3B3B3] hover:bg-[#2E2E2E]'"
+            class="flex items-center justify-center gap-2 px-3 py-1.5 rounded-md text-sm transition-all">
+            Portfolio ({{ portfolioTransactions.length }})
+          </button>
+        </div>
+
+        <div class="overflow-x-auto rounded-lg border border-[#3A3A3A]">
+          <table class="min-w-full divide-y divide-[#2A2A2A]">
+            <thead class="bg-[#2E2E2E]">
+              <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-[#B3B3B3] uppercase tracking-wider">
+                  ID
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-[#B3B3B3] uppercase tracking-wider">
+                  Stock
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-[#B3B3B3] uppercase tracking-wider">
+                  Quantity
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-[#B3B3B3] uppercase tracking-wider">
+                  Status
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-[#B3B3B3] uppercase tracking-wider">
+                  Date
+                </th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-[#2A2A2A]">
+              <ng-container *ngIf="activeTableTab === 'temporary'; else portfolioTable">
+                <tr *ngFor="let tx of temporaryTransactions" class="hover:bg-[#2E2E2E] transition-colors">
+                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
+                    {{ tx.id }}
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-[#B3B3B3]">
+                    {{ tx.stock }}
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-[#B3B3B3]">
+                    {{ tx.quantity }}
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm">
+                    <span
+                      class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-[#FACC15]/20 text-[#FACC15]">
+                      {{ tx.status }}
+                    </span>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-[#666666]">
+                    {{ tx.actionDate }}
+                  </td>
+                </tr>
+                <tr *ngIf="temporaryTransactions.length === 0">
+                  <td colSpan="5" class="px-6 py-12 text-center text-[#666666] text-lg">
+                    <lucide-icon [img]="AlertCircleIcon" class="h-6 w-6 inline-block mr-2" ></lucide-icon>
+                    No temporary transactions found.
+                  </td>
+                </tr>
+              </ng-container>
+
+              <ng-template #portfolioTable>
+                <tr *ngFor="let tx of portfolioTransactions" class="hover:bg-[#2E2E2E] transition-colors">
+                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
+                    {{ tx.id }}
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-[#B3B3B3]">
+                    {{ tx.stock }}
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-[#B3B3B3]">
+                    {{ tx.quantity }}
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm">
+                    <span
+                      class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-[#22C55E]/20 text-[#22C55E]">
+                      {{ tx.status }}
+                    </span>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-[#666666]">
+                    {{ tx.actionDate }}
+                  </td>
+                </tr>
+                <tr *ngIf="portfolioTransactions.length === 0">
+                  <td colSpan="5" class="px-6 py-12 text-center text-[#666666] text-lg">
+                    <lucide-icon [img]="AlertCircleIcon" class="h-6 w-6 inline-block mr-2" ></lucide-icon>
+                    No completed portfolio transactions.
+                  </td>
+                </tr>
+              </ng-template>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
   </div>
-
-  <!-- Search box -->
-  <div class="relative w-full max-w-3xl">
-    <i class="pi pi-search absolute left-3 top-1/2 -translate-y-1/2 text-textSecondary"></i>
-    <input
-      type="text"
-      pInputText
-      placeholder="Search transactions"
-      (input)="onSearch($event)"
-      class="w-full bg-surface text-textPrimary border border-border rounded-md pl-10 pr-3 py-2 focus:ring-1 focus:ring-accent"
-    />
-  </div>
-
-  <!-- Table -->
-  <p-table
-    *ngIf="filteredTransactions.length > 0"
-    [value]="filteredTransactions"
-    [paginator]="true"
-    [rows]="rowsPerPage"
-    [first]="first"
-    [rowsPerPageOptions]="[10, 20, 50]"
-    (onPage)="onPageChange($event)"
-    [showCurrentPageReport]="false"
-    [loading]="loading"
-    class="custom-dark-table"
-  >
-    <ng-template pTemplate="header">
-      <tr>
-        <th *ngFor="let column of displayedColumns" class="capitalize">{{ column }}</th>
-      </tr>
-    </ng-template>
-
-    <ng-template pTemplate="body" let-row>
-      <tr>
-        <td *ngFor="let column of displayedColumns">
-          {{ row[column] }}
-        </td>
-      </tr>
-    </ng-template>
-  </p-table>
-
-  <p *ngIf="!filteredTransactions.length && !loading" class="text-textSecondary text-sm">
-    No transactions found.
-  </p>
 </div>
