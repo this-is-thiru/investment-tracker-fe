@@ -1,0 +1,99 @@
+<section class="w-full bg-background text-textPrimary p-6 font-sans rounded-xl shadow-card">
+  <!-- Header & Tabs -->
+  <div class="flex flex-col md:flex-row items-start md:items-center justify-between mb-4 gap-4">
+    <h2 class="text-xl font-semibold">Transactions</h2>
+
+    <div class="flex items-center gap-2">
+      <button
+        (click)="setTab('current')"
+        [ngClass]="activeTab === 'current' ? 'bg-accent text-white' : 'bg-surfaceHover text-textSecondary hover:bg-surface'"
+        class="px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-150"
+      >
+        Current
+      </button>
+      <button
+        (click)="setTab('temporary')"
+        [ngClass]="activeTab === 'temporary' ? 'bg-accent text-white' : 'bg-surfaceHover text-textSecondary hover:bg-surface'"
+        class="px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-150"
+      >
+        Temporary
+      </button>
+    </div>
+  </div>
+
+  <!-- Search -->
+  <div class="w-full mb-4">
+    <input
+      type="text"
+      placeholder="Search transactions..."
+      (input)="onSearch($event)"
+      class="w-full rounded-lg bg-surface border border-border text-textPrimary placeholder-textSecondary px-4 py-2.5 focus:ring-2 focus:ring-accent focus:outline-none"
+    />
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="text-center text-textSecondary py-6">
+    Loading transactions...
+  </div>
+
+  <!-- Table -->
+  <p-table
+    *ngIf="!loading"
+    [value]="filteredTransactions"
+    [paginator]="true"
+    [rows]="rowsPerPage"
+    [first]="first"
+    (onPage)="onPageChange($event)"
+    [rowsPerPageOptions]="[5,10,20]"
+    [responsiveLayout]="'scroll'"
+    [styleClass]="'w-full rounded-lg overflow-hidden shadow-card border border-border text-textPrimary'"
+  >
+    <!-- Header -->
+    <ng-template pTemplate="header">
+      <tr class="bg-surface text-textSecondary text-sm border-b border-divider">
+        <th class="px-2 py-1">EMAIL</th>
+        <th class="px-2 py-1">STOCK CODE</th>
+        <th class="px-2 py-1">STOCK NAME</th>
+        <th class="px-2 py-1">ASSET TYPE</th>
+        <th class="px-2 py-1">EXCHANGE</th>
+        <th class="px-2 py-1">BROKER</th>
+        <th class="px-2 py-1">TYPE</th>
+        <th class="px-2 py-1">QTY</th>
+        <th class="px-2 py-1">PRICE</th>
+        <th class="px-2 py-1">TOTAL</th>
+        <th class="px-2 py-1">MATURITY DATE</th>
+        <th class="px-2 py-1">BROKER CHARGES</th>
+        <th class="px-2 py-1">MISC CHARGES</th>
+        <th class="px-2 py-1">DATE</th>
+      </tr>
+    </ng-template>
+
+    <!-- Body -->
+    <ng-template pTemplate="body" let-t>
+      <tr class="border-b border-divider hover:bg-surfaceHover transition-colors duration-150">
+        <td class="px-2 py-1">{{ t.email }}</td>
+        <td class="px-2 py-1 font-medium">{{ t.stockCode }}</td>
+        <td class="px-2 py-1">{{ t.stockName }}</td>
+        <td class="px-2 py-1">{{ t.assetType }}</td>
+        <td class="px-2 py-1">{{ t.exchangeName }}</td>
+        <td class="px-2 py-1">{{ t.brokerName }}</td>
+        <td
+          class="px-2 py-1"
+          [ngClass]="{
+            'buy-cell': t.transactionType === 'BUY',
+            'sell-cell': t.transactionType === 'SELL'
+          }"
+        >
+          {{ t.transactionType }}
+        </td>
+        <td class="px-2 py-1">{{ t.quantity }}</td>
+        <td class="px-2 py-1">₹{{ t.price | number: '1.2-2' }}</td>
+        <td class="px-2 py-1">₹{{ t.totalValue | number: '1.2-2' }}</td>
+        <td class="px-2 py-1">{{ t.maturityDate || '-' }}</td>
+        <td class="px-2 py-1">₹{{ t.brokerCharges || 0 }}</td>
+        <td class="px-2 py-1">₹{{ t.miscCharges || 0 }}</td>
+        <td class="px-2 py-1">{{ t.transactionDate }}</td>
+      </tr>
+    </ng-template>
+  </p-table>
+</section>

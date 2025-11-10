@@ -53,4 +53,33 @@ export class StorageService {
     const token = this.getItem('jwtToken');
     return !!token && this.isTokenValid(token);
   }
+
+  getTokenExpiry(token: string): number | null {
+    try {
+      const [, payload] = token.split('.');
+      if (!payload) return null;
+
+      const decoded = JSON.parse(atob(payload));
+      return decoded.exp ? decoded.exp * 1000 : null; // return in ms
+    } catch {
+      return null;
+    }
+  }
+
+  getUserEmailFromToken(token: string): string | null {
+    try {
+      const [, payload] = token.split('.');
+      if (!payload) return null;
+
+      const decoded = JSON.parse(atob(payload));
+
+      // Common JWT email fields
+      return decoded.email || decoded.sub || null;
+    } catch (error) {
+      console.error('Error decoding token for email:', error);
+      return null;
+    }
+  }
+
+
 }

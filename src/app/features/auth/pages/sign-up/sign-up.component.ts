@@ -27,7 +27,7 @@ export class SignUpComponent implements OnInit {
   errorMessage: string | null = null;
 
   constructor(
-    private router: Router,
+    public router: Router,
     private authService: AuthService,
     private formBuilder: FormBuilder
   ) {
@@ -73,6 +73,8 @@ export class SignUpComponent implements OnInit {
     });
   }
   onClose(): void {
-    this.router.navigate(['/home']);
+    // Close only the modal outlet, not the entire route
+    this.router.navigate([{ outlets: { modal: null } }], { relativeTo: this.router.routerState.root });
   }
+
 }

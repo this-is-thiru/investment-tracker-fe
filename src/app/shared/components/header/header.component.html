@@ -1,0 +1,109 @@
+<header class="fixed top-0 left-0 w-full bg-background border-b border-border z-50
+         flex items-center justify-between px-4 md:px-6 py-3 font-sans text-textPrimary select-none">
+
+  <!-- Left Section -->
+  <div class="flex items-center gap-6">
+    <!-- Logo -->
+    <div class="flex items-center gap-2 cursor-pointer" routerLink="/home">
+      <img src="../../../assets/imgs/logo.svg" alt="Logo" class="h-5 w-5" />
+      <span class="font-semibold text-base tracking-tight hover:text-textSecondary transition-colors duration-150">
+        Investment Tracker
+      </span>
+    </div>
+
+    <!-- Desktop Navigation -->
+    <nav class="hidden md:flex items-center gap-5 text-sm text-textSecondary font-medium">
+      <span routerLink="/investments-tracking" (click)="closeMenuAfterNavigation()"
+        class="cursor-pointer px-3 py-1 rounded-md transition-colors duration-150 hover:bg-surfaceHover hover:text-textPrimary">
+        Investments
+      </span>
+      <span routerLink="/tax" (click)="closeMenuAfterNavigation()"
+        class="cursor-pointer px-3 py-1 rounded-md transition-colors duration-150 hover:bg-surfaceHover hover:text-textPrimary">
+        Tax Filing
+      </span>
+      <span routerLink="/support" (click)="closeMenuAfterNavigation()"
+        class="cursor-pointer px-3 py-1 rounded-md transition-colors duration-150 hover:bg-surfaceHover hover:text-textPrimary">
+        Support
+      </span>
+    </nav>
+  </div>
+
+  <!-- Right Section -->
+  <div class="flex items-center gap-4">
+    <!-- Notification Icon -->
+    <button type="button"
+      class="relative flex items-center justify-center h-9 w-9 rounded-lg hover:bg-surfaceHover transition-all duration-150 cursor-pointer group"
+      aria-label="Notifications">
+      <img src="../../../assets/imgs/notificationIcon.svg" alt="Notifications"
+        class="h-5 w-5 opacity-80 group-hover:opacity-100 transition-opacity duration-150" />
+      <span
+        class="absolute inset-0 rounded-lg ring-1 ring-transparent group-hover:ring-border transition-all duration-150"></span>
+    </button>
+
+    <!-- Profile Dropdown -->
+    <div class="relative">
+      <img src="../../../../assets/imgs/profilepic.svg" alt="Profile"
+        class="h-8 w-8 rounded-full object-cover cursor-pointer ring-1 ring-transparent hover:ring-border transition-all duration-150"
+        (click)="toggleProfileMenu()" />
+
+      <!-- Dropdown Menu -->
+      <div *ngIf="profileMenuOpen"
+        class="absolute right-0 mt-2 w-48 bg-[#1F1F1F]  rounded-xl shadow-lg z-50 overflow-hidden">
+
+        <!-- Banner -->
+        <!-- <div class="relative rounded-t-xl overflow-hidden">
+          <img src="../../../../assets/imgs/largeProfilePic.svg" alt="Banner"
+            class="h-20 w-full object-cover brightness-90 transition duration-200" /> -->
+
+          <!-- Edit button -->
+          <!-- <button class="absolute top-1 right-1 p-1 bg-black/60 rounded-md backdrop-blur-sm hover:bg-black/70">
+            <img src="../../../../assets/imgs/editIcon.svg" alt="Edit" class="h-4 w-4" />
+          </button>
+        </div> -->
+
+        <!-- Menu Items -->
+        <div class="flex flex-col gap-1 py-1 px-1 max-h-64 overflow-y-auto">
+          <ng-container *ngFor="let item of dropdownItems">
+            <a [routerLink]="item.link" routerLinkActive="bg-[#2A2A2A]"
+              class="flex items-center justify-between rounded-lg px-2 py-1 cursor-pointer hover:bg-[#2A2A2A] transition-colors duration-150 text-sm">
+              <div class="flex items-center gap-2">
+                <img [src]="item.src" [alt]="item.label"
+                  class="h-5 w-5 rounded-md bg-black p-1 object-cover opacity-90" />
+                <span class="truncate">{{ item.label }}</span>
+              </div>
+              <img src="assets/imgs/menuArrow.svg" alt="arrow" class="h-3 w-3 opacity-60" />
+            </a>
+          </ng-container>
+        </div>
+
+        <!-- Auth Options -->
+        <div *ngIf="!isLoggedIn()" class="flex flex-col gap-1 py-1 px-1">
+          <div (click)="onLogin()"
+            class="flex items-center justify-center gap-2 h-8 w-full rounded-lg bg-[#2A2A2A] hover:bg-[#3A3A3A] cursor-pointer transition-all duration-150 text-sm">
+            <img src="../../../../assets/imgs/menuLogin.svg" alt="Login" class="h-4 w-4 object-cover" />
+            <b>Login</b>
+          </div>
+
+          <div (click)="onSignUp()"
+            class="flex items-center justify-center gap-2 h-8 w-full rounded-lg bg-[#10A37F] hover:bg-[#0E8A6C] cursor-pointer text-white transition-all duration-150 text-sm">
+            <img src="../../../../assets/imgs/menuSignup.svg" alt="Signup" class="h-4 w-4 object-cover" />
+            <b>Sign Up</b>
+          </div>
+        </div>
+
+        <div *ngIf="isLoggedIn()" class="flex items-center justify-center py-1 px-1">
+          <div (click)="onLogout()"
+            class="flex items-center justify-center gap-2 h-8 w-full rounded-lg bg-[#2A2A2A] hover:bg-[#3A3A3A] cursor-pointer transition-all duration-150 text-sm">
+            <img src="../../../../assets/imgs/menuLogin.svg" alt="Logout" class="h-4 w-4 object-cover" />
+            <b>Logout</b>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</header>
+
+<!-- Main content -->
+<router-outlet></router-outlet>
+<router-outlet name="modal"></router-outlet>

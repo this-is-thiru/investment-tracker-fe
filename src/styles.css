@@ -2,6 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
+
 body {
     margin: 0;
     line-height: normal;
@@ -37,4 +38,10 @@ body {
   .dark * {
     scrollbar-color: theme('colors.gray.600') theme('colors.gray.900');
   }
+
+  :has(router-outlet[name="modal"]:not(:empty)) main {
+  filter: blur(3px);
+  pointer-events: none;
+}
+
 }

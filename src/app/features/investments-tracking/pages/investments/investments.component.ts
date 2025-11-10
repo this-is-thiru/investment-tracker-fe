@@ -12,12 +12,14 @@ import { InputTextModule } from 'primeng/inputtext';
 import { DropdownModule } from 'primeng/dropdown';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-
+import { BaseurlService } from '../../../../services/baseurl.service';
+import { TransactionsTableComponent } from "../../components/transactions-table/transactions-table.component";
+import { AllTransactionsComponent } from '../../components/transaction-list/all-transactions.component';
 
 @Component({
   selector: 'app-investments',
   standalone: true,
-  imports: [TableModule, ButtonModule, InputTextModule, DropdownModule, CommonModule, FormsModule, UploadTransactionsComponent, FooterComponent],
+  imports: [TableModule, ButtonModule, InputTextModule, DropdownModule, CommonModule, FormsModule, UploadTransactionsComponent, FooterComponent, TransactionsTableComponent, AllTransactionsComponent],
   templateUrl: './investments.component.html',
   styleUrls: ['./investments.component.css'],
   providers: [MessageService]
@@ -26,7 +28,7 @@ export class InvestmentsComponent {
   excelData: any[] = [];
   headers: string[] = [];
 
-  constructor(private http: HttpClient, private messageService: MessageService) {}
+  constructor(private http: HttpClient, private messageService: MessageService, private BASE_URL: BaseurlService) {}
 
   // Handle Excel File Upload
   onFileChange(event: Event): void {
@@ -72,7 +74,7 @@ export class InvestmentsComponent {
   // Download template file from server
   downloadTemplate(): void {
     this.http
-      .get('http://localhost:8080/helper/template', { responseType: 'blob' })
+      .get(`${this.BASE_URL.getBaseUrl()}/helper/template`, { responseType: 'blob' })
       .subscribe((response: Blob) => {
         const url = window.URL.createObjectURL(response);
         const a = document.createElement('a');
@@ -89,7 +91,7 @@ export class InvestmentsComponent {
     const formData = new FormData();
     formData.append('file', file);
     return this.http.post(
-      `http://localhost:8080/portfolio/user/${email}/upload-transactions`,
+      `${this.BASE_URL.getBaseUrl()}/portfolio/user/${email}/upload-transactions`,
       formData
     );
   }
