@@ -1,87 +1,147 @@
-<section class="font-[Manrope] text-white text-sm min-h-full flex justify-center items-center bg-background pt-10">
-  <div class="flex w-full min-w-[380px] flex-col items-center">
-    <section class="flex justify-center p-5 w-full">
-      <div class="flex w-full flex-col">
-
-        <!-- Header -->
-        <div class="flex flex-wrap justify-between px-4 py-2 text-lg font-bold">
-          <b>Upload Transactions</b>
-        </div>
-
-        <p class="px-4 text-[#adadad] pb-4">
-          Download our Excel template to easily input your transaction data. Fill in the required fields and upload the
-          file to update your transaction history.
-        </p>
-
-        <!-- Download Template Button -->
-        <button
-          class="mx-4 flex h-10 max-w-44 items-center justify-center rounded-xl bg-surface px-5 py-2 text-center font-medium
-                 text-white border border-transparent hover:bg-surfaceHover hover:border-white transition-colors duration-200 ease-in-out cursor-pointer"
-          (click)="downloadTemplate()">
-          Download Template
-        </button>
-
-        <!-- Upload Box -->
-        <div class="p-4">
-          <div class="flex flex-col items-center gap-6 rounded-xl border-2 border-dashed border-[#4d4d4d] p-8 relative w-full
-                   transition-colors duration-200 hover:border-white" (drop)="onDrop($event)"
-            (dragover)="onDragOver($event)">
-
-            <!-- Default state -->
-            <ng-container *ngIf="!uploading && !uploadedFile">
-              <div class="flex max-w-[480px] flex-col items-center gap-3 text-center">
-                <b>Drag and drop or browse to upload</b>
-                <p class="text-[#adadad] text-sm">
-                  Supported file types: .xlsx. Please use the provided template for accurate data processing.
-                </p>
-              </div>
-
-              <!-- Browse Files Button -->
-              <button
-                class="mt-2 flex h-10 max-w-[480px] min-w-[84px] items-center justify-center rounded-xl bg-surface px-5 py-2 text-center font-medium
-                       text-white border border-transparent hover:bg-surfaceHover hover:border-white transition-colors duration-200 ease-in-out cursor-pointer"
-                (click)="browseFiles(fileInput)">
-                Browse Files
-              </button>
-              <input #fileInput type="file" class="hidden" accept=".xlsx" (change)="handleFile($event)" />
-            </ng-container>
-
-            <!-- Uploading state -->
-            <ng-container *ngIf="uploading">
-              <span class="font-medium mb-2">Uploading...</span>
-              <div class="h-2 w-full rounded bg-[#4d4d4d]">
-                <div class="h-2 rounded bg-black" [style.width.%]="progress"></div>
-              </div>
-              <span class="text-[#adadad] mt-2">{{ progress }}%</span>
-            </ng-container>
-
-
-            <!-- Uploaded state -->
-            <ng-container *ngIf="uploadedFile && !uploading">
-              <div class="flex flex-col items-center gap-2">
-                <span class="font-medium">Upload Complete ✅</span>
-                <span>File: {{ uploadedFile.name }}</span>
-                <span class="text-[#adadad]">Size: {{ getFileSize(uploadedFile.size) }}</span>
-
-                <!-- Deselect Button -->
-                <button
-                  class="mt-2 flex h-10 max-w-[480px] min-w-[84px] items-center justify-center rounded-xl bg-surface px-5 py-2 text-center font-medium
-                         text-white border border-transparent hover:bg-surfaceHover hover:border-white transition-colors duration-200 ease-in-out cursor-pointer"
-                  (click)="removeFile()">
-                  Deselect File
-                </button>
-              </div>
-            </ng-container>
-
-          </div>
-        </div>
-
-        <footer class="text-center text-[#adadad] mt-3 text-xs">
-          By uploading, you agree to our
-          <a routerLink="/terms" class="underline hover:text-white transition-colors duration-150">Terms &
-            Conditions</a>.
-        </footer>
-      </div>
-    </section>
+<div class="space-y-6">
+  <div
+    *ngIf="!hasUploadedFile && !isUploading && !selectedFile"
+    (dragover)="handleDragOver($event)"
+    (drop)="handleDrop($event)"
+    (click)="fileInput.click()"
+    class="border-2 border-dashed border-[#3A3A3A] rounded-xl p-12 text-center hover:border-[#10A37F]/50 hover:bg-[#10A37F]/5 transition-all cursor-pointer group"
+  >
+    <div
+      class="bg-[#10A37F]/10 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform"
+    >
+      <lucide-icon [name]="Upload" class="h-8 w-8 text-[#10A37F]"></lucide-icon>
+    </div>
+    <p class="text-white mb-2 font-medium">
+      Drag and drop your transaction file here
+    </p>
+    <p class="text-[#B3B3B3] text-sm mb-4">or click to browse files</p>
+    <button
+      class="px-6 py-2.5 bg-gradient-to-r from-[#10A37F]/60 to-[#0D8968]/60 text-white rounded-lg font-medium hover:shadow-lg transition-all hover-scale"
+    >
+      Select Files
+    </button>
+    <p class="text-xs text-[#666666] mt-4">
+      Supported formats: XLSX, XLS (Max 10MB)
+    </p>
+    <input
+      #fileInput
+      type="file"
+      accept=".xlsx,.xls"
+      class="hidden"
+      (change)="handleFileSelect($event)"
+    />
   </div>
-</section>
+
+  <div
+    *ngIf="selectedFile && !isUploading && !hasUploadedFile"
+    class="bg-gradient-to-br from-[#353535] to-[#2E2E2E] border border-[#505050] rounded-xl p-4 animate-fade-in-up shadow-lg"
+  >
+    <div class="flex items-start justify-between mb-4">
+      <div class="flex items-start gap-3">
+        <div
+          class="bg-gradient-to-br from-[#10A37F]/20 to-[#0D8968]/20 p-2.5 rounded-lg border border-[#10A37F]/30"
+        >
+          <lucide-icon
+            [name]="Upload"
+            class="h-5 w-5 text-[#10A37F]"
+          ></lucide-icon>
+        </div>
+        <div>
+          <h4 class="text-white font-semibold mb-1">File Selected</h4>
+          <p class="text-[#CCCCCC] text-sm">{{ uploadedFileName }}</p>
+          <p class="text-[#888888] text-xs mt-1">
+            {{ formatFileSize(selectedFile.size) }}
+          </p>
+        </div>
+      </div>
+      <button
+        (click)="handleCancelFile()"
+        class="text-[#888888] hover:text-[#EF4444] transition-colors"
+      >
+        <lucide-icon [name]="X" class="h-5 w-5"></lucide-icon>
+      </button>
+    </div>
+    <div class="flex gap-3">
+      <button
+        (click)="handleSendFile()"
+        class="flex-1 bg-gradient-to-r from-[#10A37F] to-[#0D8968] text-white px-4 py-2.5 rounded-lg hover:shadow-xl hover:shadow-[#10A37F]/20 transition-all flex items-center justify-center gap-2 hover-scale"
+      >
+        <lucide-icon [name]="Upload" class="h-4 w-4"></lucide-icon>
+        Send File
+      </button>
+    </div>
+  </div>
+
+  <div
+    *ngIf="isUploading"
+    class="space-y-3 animate-fade-in bg-[#232323] border border-[#3A3A3A] rounded-xl p-6"
+  >
+    <div class="flex items-center justify-between">
+      <p class="text-sm text-[#CCCCCC]">Uploading {{ uploadedFileName }}...</p>
+      <p class="text-sm text-[#10A37F] font-semibold">{{ uploadProgress }}%</p>
+    </div>
+    <div
+      class="bg-[#2E2E2E] relative h-2.5 w-full overflow-hidden rounded-full border border-[#404040]"
+    >
+      <div
+        class="bg-gradient-to-r from-[#10A37F] to-[#0D8968] h-full transition-all duration-200 shadow-lg shadow-[#10A37F]/50"
+        [style.width.%]="uploadProgress"
+      ></div>
+    </div>
+  </div>
+
+  <div
+    *ngIf="hasUploadedFile && !isUploading"
+    class="bg-gradient-to-br from-[#10A37F]/15 to-[#0D8968]/10 border border-[#10A37F]/40 rounded-xl p-4 animate-scale-in shadow-lg"
+  >
+    <div class="flex items-start justify-between">
+      <div class="flex items-start gap-3">
+        <lucide-icon
+          [name]="CheckCircle2Icon"
+          class="h-6 w-6 text-[#10A37F] mt-0.5"
+        ></lucide-icon>
+        <div>
+          <h4 class="text-[#10A37F] font-semibold mb-1">
+            File Uploaded Successfully!
+          </h4>
+          <p class="text-[#CCCCCC] text-sm">{{ uploadedFileName }}</p>
+        </div>
+      </div>
+      <button
+        (click)="removeFile()"
+        class="text-[#888888] hover:text-[#EF4444] transition-colors"
+      >
+        <lucide-icon [name]="X" class="h-5 w-5"></lucide-icon>
+      </button>
+    </div>
+  </div>
+
+  <div class="pt-2">
+    <button
+      (click)="handleDownloadTemplate()"
+      class="flex items-center gap-2 text-[#10A37F] hover:text-[#0D8968] hover:-translate-y-0.5 active:scale-95 transition-all"
+    >
+      <lucide-icon [name]="Download" class="h-4 w-4"></lucide-icon>
+      <span class="text-sm">Download Template</span>
+    </button>
+  </div>
+
+  <div
+    *ngIf="hasUploadedFile"
+    class="bg-gradient-to-br from-[#10A37F]/15 to-[#0D8968]/10 border border-[#10A37F]/40 rounded-xl p-4 animate-fade-in-up shadow-lg"
+  >
+    <div class="flex items-start gap-3">
+      <lucide-icon
+        [name]="CheckCircle2Icon"
+        class="h-5 w-5 text-[#10A37F] mt-0.5"
+      ></lucide-icon>
+      <div>
+        <h4 class="text-[#10A37F] font-semibold mb-1">Ready for Processing</h4>
+        <p class="text-[#CCCCCC] text-sm">
+          Your file has been uploaded successfully. You can now process
+          corporate actions below.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>

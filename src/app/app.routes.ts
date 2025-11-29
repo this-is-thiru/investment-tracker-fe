@@ -1,10 +1,11 @@
 import { Routes } from '@angular/router';
-import { SignInComponent } from './features/auth/pages/sign-in/sign-in.component';
-import { SignUpComponent } from './features/auth/pages/sign-up/sign-up.component';
+import { SignInComponent } from './features/auth/components/sign-in/sign-in.component';
+import { SignUpComponent } from './features/auth/components/sign-up/sign-up.component';
 import { InvestmentsComponent } from './features/investments-tracking/pages/investments/investments.component';
 import { AuthGuard } from './core/auth.guard';
 import { HeaderComponent } from './shared/components/header/header.component';
 import { HomeComponent } from './features/home/pages/home/home.component';
+import { ForgotPasswordComponent } from './features/auth/components/forgot-password/forgot-password.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
@@ -18,6 +19,7 @@ export const routes: Routes = [
       // 👇 Secondary outlet for modals
       { path: 'sign-in', component: SignInComponent, outlet: 'modal' },
       { path: 'sign-up', component: SignUpComponent, outlet: 'modal' },
+      { path: 'forgot-password', component: ForgotPasswordComponent, outlet: 'modal'}
     ],
   },
 

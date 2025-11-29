@@ -1,4 +1,4 @@
-// auth.service.ts
+
 import { Injectable, signal } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
@@ -79,7 +79,7 @@ export class AuthService {
       );
   }
 
-  logout(): void {
+  logOut(): void {
     this.clearLogoutTimer();
     this.storageService.removeItem('jwtToken');
     this.storageService.removeItem('userEmail');
@@ -105,9 +105,9 @@ export class AuthService {
 
     const timeout = expiry - Date.now();
     if (timeout > 0) {
-      this.logoutTimer = setTimeout(() => this.logout(), timeout);
+      this.logoutTimer = setTimeout(() => this.logOut(), timeout);
     } else {
-      this.logout();
+      this.logOut();
     }
   }
 
@@ -117,4 +117,41 @@ export class AuthService {
       this.logoutTimer = null;
     }
   }
+  
+  // // new ui auth service methods for modals
+  // private signInModalOpenSubject = new BehaviorSubject<boolean>(false);
+  // private signUpModalOpenSubject = new BehaviorSubject<boolean>(false);
+
+  // isSignInOpen$ = this.signInModalOpenSubject.asObservable();
+  // isSignUpOpen$ = this.signUpModalOpenSubject.asObservable();
+
+
+  // openSignIn() {
+  //   this.signUpModalOpenSubject.next(false);
+  //   this.signInModalOpenSubject.next(true);
+  // }
+
+  // closeSignIn() {
+  //   this.signInModalOpenSubject.next(false);
+  // }
+
+  // openSignUp() {
+  //   this.signInModalOpenSubject.next(false);
+  //   this.signUpModalOpenSubject.next(true);
+  // }
+
+  // closeSignUp() {
+  //   this.signUpModalOpenSubject.next(false);
+  // }
+
+  // // Auth stub methods
+  // handleSignIn(email: string, password: string) {
+  //   console.log('Angular Sign in:', { email, password });
+  //   this.closeSignIn();
+  // }
+
+  // handleSignUp(email: string, password: string) {
+  //   console.log('Angular Sign up:', { email, password });
+  //   this.closeSignUp();
+  // }
 }

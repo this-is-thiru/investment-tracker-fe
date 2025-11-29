@@ -1,0 +1,24 @@
+/* Smooth fade + expand transition */
+:host {
+  display: block;
+  transition: all 0.4s ease;
+}
+
+.rotate-180 {
+  transform: rotate(180deg);
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s ease both;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

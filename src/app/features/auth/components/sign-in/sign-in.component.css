@@ -1,0 +1,38 @@
+/* Custom keyframes adopted from the new UI's global styles 
+  to ensure 'animate-fade-in' and 'animate-scale-in' work.
+*/
+
+/* Keyframes for the backdrop fade in (animate-fade-in) */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Keyframes for the modal scale in (animate-scale-in) - this animation is the 'revealScale' effect */
+@keyframes revealScale {
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Applying the animations to the classes used in the template */
+
+/* This class is on the outermost div (backdrop) */
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+/* This class is on the modal content div */
+.animate-scale-in {
+  animation: revealScale 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* Ensure the modal content is initially hidden before animation starts */
+.animate-scale-in {
+    opacity: 0;
+}

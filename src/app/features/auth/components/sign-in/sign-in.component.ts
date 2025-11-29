@@ -1,4 +1,8 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnInit,
+} from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../../services/auth.service';
@@ -7,7 +11,6 @@ import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 
-
 @Component({
   selector: 'app-sign-in',
   standalone: true,
@@ -15,10 +18,8 @@ import { RouterModule } from '@angular/router';
   templateUrl: './sign-in.component.html',
   styleUrl: './sign-in.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
-
 })
 export class SignInComponent implements OnInit {
-
   loginForm: FormGroup;
   isLoading = false;
   hideLogin = true;
@@ -69,4 +70,12 @@ export class SignInComponent implements OnInit {
     this.router.navigate([{ outlets: { modal: null } }], { relativeTo: this.router.routerState.root });
   }
 
+  onForgotPassword(): void {
+    // Navigate to the forgot password modal
+    this.router.navigate([{ outlets: { modal: ['forgot-password'] } }]);
+  }
+
+  // handleGoogleSignIn() {
+  //   throw new Error('Method not implemented.');
+  // }
 }

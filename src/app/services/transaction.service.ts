@@ -74,12 +74,14 @@ export class TransactionService {
   /** Fetch current transactions */
   getCurrentTransactions(email: string): Observable<TransactionsResponse[]> {
     const url = `${this.BASE_URL.getBaseUrl()}/transactions/user/${email}`;
+    console.log('Token being sent:', localStorage.getItem('jwtToken'));
     return this.http.get<TransactionsResponse[]>(url);
   }
 
   /** Fetch temporary transactions */
   getTemporaryTransactions(email: string): Observable<TransactionsResponse[]> {
     const url = `${this.BASE_URL.getBaseUrl()}/temporary-transactions/user/${email}/all`;
+    console.log('Token being sent:', localStorage.getItem('jwtToken'));
     return this.http.get<TransactionsResponse[]>(url);
   }
 }

@@ -41,6 +41,7 @@ export class TransactionsTableComponent implements OnInit {
 
   ngOnInit(): void {
     this.userEmail = localStorage.getItem('userEmail') || '';
+    console.log('User Email in TransactionsTableComponent:', this.userEmail);
     this.fetchTransactions();
   }
 

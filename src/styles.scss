@@ -1,0 +1,292 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-gray-100 dark:bg-gray-900; 
+    border-radius: 8px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-gray-400 dark:bg-gray-600 rounded-lg;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-gray-500 dark:bg-gray-500;
+  }
+
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: theme('colors.gray.400') theme('colors.gray.100');
+  }
+  .dark * {
+    scrollbar-color: theme('colors.gray.600') theme('colors.gray.900');
+  }
+
+  :has(router-outlet[name="modal"]:not(:empty)) main {
+  filter: blur(3px);
+  pointer-events: none;
+}
+
+}
+
+/* --- Custom Variables (from :root and @theme inline) --- */
+
+/* Custom theme colors */
+$background: #191919;
+$surface: #232323;
+$surface-hover: #2E2E2E;
+$border: #3A3A3A;
+$divider: #2A2A2A;
+
+$text-primary: #FFFFFF;
+$text-secondary: #B3B3B3;
+$text-disabled: #666666;
+
+$accent: #10A37F;
+$accent-hover: #1AA97D;
+$blue-accent: #3B82F6;
+$blue-accent-hover: #2563EB;
+
+$success: #22C55E;
+$warning: #FACC15;
+$danger: #EF4444;
+$purple-accent: #8B5CF6; /* Extracted from hero-icon-hover-purple */
+
+/* Standard variables / Aliases */
+$foreground: $text-primary;
+$ring: $accent;
+$radius: 0.625rem;
+$font-weight-medium: 500;
+$font-weight-normal: 400;
+
+:host {
+    display: block;
+    width: 100%;
+}
+
+/* Base Styles */
+body {
+    background-color: $background;
+    color: $foreground;
+}
+
+html {
+    font-size: 16px; /* Matching --font-size: 16px; */
+}
+
+/* --- Custom Keyframe Animations --- */
+@keyframes floatUp {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+@keyframes floatDown {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-15px); }
+}
+
+@keyframes floatRotate {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-12px) rotate(5deg); }
+}
+
+@keyframes pulse-opacity {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 0.8; }
+}
+
+@keyframes gradient-shift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+}
+
+@keyframes blob-1 {
+    0%, 100% { transform: translate(0, 0); }
+    50% { transform: translate(100px, 50px); }
+}
+
+@keyframes blob-2 {
+    0%, 100% { transform: translate(0, 0); }
+    50% { transform: translate(-100px, -50px); }
+}
+
+@keyframes particle-float {
+    0%, 100% {
+        transform: translateY(0);
+        opacity: 0.2;
+    }
+    50% {
+        transform: translateY(-20px);
+        opacity: 0.8;
+    }
+}
+
+@keyframes wiggle {
+    0%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(-10deg); }
+    50% { transform: rotate(10deg); }
+    75% { transform: rotate(-10deg); }
+}
+
+@keyframes pageEnter {
+    0% { opacity: 0; filter: blur(10px); }
+    100% { opacity: 1; filter: blur(0); }
+}
+
+@keyframes slideRightFadeIn {
+    0% { opacity: 0; transform: translateX(-30px); }
+    100% { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideLeftFadeIn {
+    0% { opacity: 0; transform: translateX(30px); }
+    100% { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes revealScale {
+    0% { opacity: 0; transform: scale(0.9); }
+    100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes slideUp {
+    0% { opacity: 0; transform: translateY(40px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+/* --- Animation Utility Classes --- */
+
+.animate-float-up { animation: floatUp 3s ease-in-out infinite; }
+.animate-float-down { animation: floatDown 4s ease-in-out infinite; }
+.animate-float-rotate { animation: floatRotate 5s ease-in-out infinite; }
+.animate-pulse-opacity { animation: pulse-opacity 3s ease-in-out infinite; }
+.animate-gradient {
+    background-size: 200% 200%;
+    animation: gradient-shift 5s ease infinite;
+}
+.animate-blob-1 { animation: blob-1 10s ease-in-out infinite; }
+.animate-blob-2 { animation: blob-2 10s ease-in-out infinite 5s; }
+.animate-particle { animation: particle-float 3s ease-in-out infinite; }
+
+/* Flow Animation Classes */
+.flow-page-enter { animation: pageEnter 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+.flow-slide-right {
+    opacity: 0;
+    animation: slideRightFadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.flow-slide-left {
+    opacity: 0;
+    animation: slideLeftFadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.flow-reveal-scale {
+    opacity: 0;
+    animation: revealScale 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.flow-slide-up {
+    opacity: 0;
+    animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Flow Animation Delays */
+@for $i from 1 through 10 {
+    .flow-delay-#{$i} { animation-delay: #{$i * 0.1}s; }
+}
+
+/* Scroll Reveal */
+.scroll-reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.scroll-reveal.revealed {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Hero Icon Hover Effects */
+.hero-icon-hover {
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+                box-shadow 0.4s ease,
+                border-color 0.4s ease,
+                background-color 0.4s ease;
+    cursor: pointer;
+}
+
+.hero-icon-hover-green:hover {
+    transform: scale(1.15);
+    box-shadow: 0 8px 24px rgba($accent, 0.3),
+                0 0 0 4px rgba($accent, 0.1);
+    border-color: rgba($accent, 0.4);
+    background-color: rgba($accent, 0.15);
+}
+
+.hero-icon-hover-blue:hover {
+    transform: scale(1.15);
+    box-shadow: 0 8px 24px rgba($blue-accent, 0.3),
+                0 0 0 4px rgba($blue-accent, 0.1);
+    border-color: rgba($blue-accent, 0.4);
+    background-color: rgba($blue-accent, 0.15);
+}
+
+.hero-icon-hover-purple:hover {
+    transform: scale(1.15);
+    box-shadow: 0 8px 24px rgba($purple-accent, 0.3),
+                0 0 0 4px rgba($purple-accent, 0.1);
+    border-color: rgba($purple-accent, 0.4);
+    background-color: rgba($purple-accent, 0.15);
+}
+
+.icon-scale-inner {
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.hero-icon-hover:hover .icon-scale-inner {
+    transform: scale(1.1);
+}
+
+/* Benefit Icon Container - Smooth Transitions */
+.benefit-icon-container {
+    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+                background-color 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: transform, box-shadow;
+}
+
+/* Wiggle animation trigger */
+.hover-icon-wiggle:hover {
+    animation: wiggle 0.5s ease;
+}
+
+/* Tailwind-equivalent utilities used in the component - if Tailwind is not used */
+/* Note: For simplicity and assuming Tailwind is *not* used in the Angular project,
+   I've included only the most complex or custom styles above. For a complete
+   conversion, all Tailwind classes (like 'text-4xl', 'bg-white', 'p-8', etc.)
+   would need to be manually implemented or managed by a utility framework.
+   For this example, I'll rely on the class names in the HTML and assume they
+   map to existing/implied styles or a utility framework.
+*/
+
+/* Custom SCSS for the benefit icon hover transition */
+.benefit-icon-wrapper:hover .benefit-icon-container {
+    transform: scale(1.1);
+}
+
+.benefit-icon-wrapper:hover .benefit-icon-inner {
+    transform: scale(1.1) rotate(360deg);
+}
+
+.benefit-icon-wrapper:hover .benefit-title {
+    color: $accent;
+}
