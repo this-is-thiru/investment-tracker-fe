@@ -5,18 +5,13 @@ import {
   EventEmitter,
   OnDestroy,
 } from '@angular/core';
+import { ExpansionPanelComponent } from '../../../../shared/components/expansion-panel/expansion-panel.component';
 import { CommonModule } from '@angular/common';
 import { MessageService } from 'primeng/api';
 import { Subscription } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 import { HttpEvent, HttpEventType } from '@angular/common/http';
-import {
-  LucideAngularModule,
-  Upload,
-  CheckCircle2,
-  Download,
-  X,
-} from 'lucide-angular';
+import { LucideIconsModule } from '../../../../core/icons/lucide-icons.module';
 
 import { ToastType } from '../../../../models/transaction';
 import { TransactionService } from '../../../../services/transaction.service';
@@ -25,7 +20,7 @@ import { AuthService } from '../../../../services/auth.service';
 @Component({
   selector: 'app-upload-transactions',
   standalone: true,
-  imports: [CommonModule, LucideAngularModule],
+  imports: [CommonModule, LucideIconsModule, ExpansionPanelComponent],
   providers: [MessageService],
   templateUrl: './upload-transactions.component.html',
 })
@@ -41,11 +36,6 @@ export class UploadTransactionsComponent implements OnDestroy {
   isUploading = false;
   hasUploadedFile = false;
   private uploadSub?: Subscription;
-
-  readonly Upload = Upload;
-  readonly Download = Download;
-  readonly X = X;
-  readonly CheckCircle2Icon = CheckCircle2;
 
   private readonly MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024; // 10MB
 

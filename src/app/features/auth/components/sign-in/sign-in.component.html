@@ -15,19 +15,7 @@
       aria-label="Close"
       class="absolute top-3 right-3 text-[#999999] hover:text-white transition-colors p-1"
     >
-      <svg
-        width="18"
-        height="18"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      >
-        <line x1="18" y1="6" x2="6" y2="18"></line>
-        <line x1="6" y1="6" x2="18" y2="18"></line>
-      </svg>
+      <lucide-icon name="X" class="h-4 w-4"></lucide-icon>
     </button>
 
     <div class="p-5">
@@ -35,6 +23,23 @@
         <h1 class="text-lg text-white mb-0.5 font-semibold">Welcome back</h1>
         <p class="text-xs text-[#999999]">Access your investment tracker</p>
       </header>
+
+      <!-- ARIA live region for server-side messages -->
+      <div aria-live="polite" class="mb-3">
+        <div
+          *ngIf="successMessage"
+          class="text-sm text-green-400 text-center mb-2"
+        >
+          {{ successMessage }}
+        </div>
+        <div
+          *ngIf="errorMessage"
+          class="text-sm text-red-400 text-center mb-2"
+          [class.shake]="errorMessage"
+        >
+          {{ errorMessage }}
+        </div>
+      </div>
 
       <form (ngSubmit)="onLogin()" [formGroup]="loginForm" class="space-y-4">
         <div>
@@ -50,6 +55,24 @@
             class="w-full bg-[#2A2A2A] border border-[#3A3A3A] rounded-lg px-3 py-2 text-sm text-white placeholder-[#666666] focus:outline-none focus:border-[#10A37F] focus:ring-2 focus:ring-[#10A37F]/40 transition-all"
             required
           />
+          <p
+            *ngIf="
+              loginForm.get('email')?.touched &&
+              loginForm.get('email')?.hasError('required')
+            "
+            class="text-xs text-red-400 mt-1"
+          >
+            Email is required.
+          </p>
+          <p
+            *ngIf="
+              loginForm.get('email')?.touched &&
+              loginForm.get('email')?.hasError('email')
+            "
+            class="text-xs text-red-400 mt-1"
+          >
+            Please enter a valid email address.
+          </p>
         </div>
 
         <div>
@@ -81,44 +104,46 @@
               class="absolute right-2 top-1/2 -translate-y-1/2 text-[#666666] hover:text-[#999999] transition"
               aria-label="Toggle password visibility"
             >
-              <svg
+              <lucide-icon
                 *ngIf="hideLoginP"
-                xmlns="http://www.w3.org/2000/svg"
+                name="Eye"
                 class="h-4 w-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M13.875 18.825A10.05 10.05 0 0112 19c-7.5 0-11-7-11-7s1.5-2.975 4.425-5.175M9.88 9.88a3 3 0 104.24 4.24M6.225 6.225l11.55 11.55"
-                />
-              </svg>
-              <svg
+              ></lucide-icon>
+              <lucide-icon
                 *ngIf="!hideLoginP"
-                xmlns="http://www.w3.org/2000/svg"
+                name="EyeOff"
                 class="h-4 w-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                />
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                />
-              </svg>
+              ></lucide-icon>
             </button>
           </div>
+
+          <p
+            *ngIf="
+              loginForm.get('password')?.touched &&
+              loginForm.get('password')?.hasError('required')
+            "
+            class="text-xs text-red-400 mt-1"
+          >
+            Password is required.
+          </p>
+          <p
+            *ngIf="
+              loginForm.get('password')?.touched &&
+              loginForm.get('password')?.hasError('minlength')
+            "
+            class="text-xs text-red-400 mt-1"
+          >
+            Password must be at least 6 characters.
+          </p>
+          <p
+            *ngIf="
+              loginForm.get('password')?.touched &&
+              loginForm.get('password')?.hasError('maxlength')
+            "
+            class="text-xs text-red-400 mt-1"
+          >
+            Password cannot exceed 12 characters.
+          </p>
         </div>
 
         <button
@@ -172,10 +197,6 @@
           >
             Sign up
           </a>
-        </p>
-
-        <p *ngIf="errorMessage" class="text-xs text-center text-red-500 mt-2">
-          {{ errorMessage }}
         </p>
       </form>
     </div>

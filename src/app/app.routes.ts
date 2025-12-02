@@ -5,7 +5,7 @@ import { InvestmentsComponent } from './features/investments-tracking/pages/inve
 import { AuthGuard } from './core/auth.guard';
 import { HeaderComponent } from './shared/components/header/header.component';
 import { HomeComponent } from './features/home/pages/home/home.component';
-import { ForgotPasswordComponent } from './features/auth/components/forgot-password/forgot-password.component';
+import { ChangePasswordComponent } from './features/auth/components/change-password/change-password.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
@@ -19,7 +19,7 @@ export const routes: Routes = [
       // 👇 Secondary outlet for modals
       { path: 'sign-in', component: SignInComponent, outlet: 'modal' },
       { path: 'sign-up', component: SignUpComponent, outlet: 'modal' },
-      { path: 'forgot-password', component: ForgotPasswordComponent, outlet: 'modal'}
+      { path: 'forgot-password', component: ChangePasswordComponent, outlet: 'modal'}
     ],
   },
 

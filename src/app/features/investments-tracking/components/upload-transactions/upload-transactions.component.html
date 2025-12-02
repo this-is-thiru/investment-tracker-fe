@@ -1,3 +1,12 @@
+<app-expansion-panel
+  [title]="'Upload Transactions'"
+  [subtitle]="'Start by uploading your transaction files'"
+  [titleIcon]="'Database'"
+  [iconBgClass]="
+    'bg-gradient-to-br from-[#10A37F] to-[#0D8968] p-2 rounded-lg text-white'
+  "
+  class="animate-fade-in-up stagger-2"
+>
 <div class="space-y-6">
   <div
     *ngIf="!hasUploadedFile && !isUploading && !selectedFile"
@@ -9,7 +18,7 @@
     <div
       class="bg-[#10A37F]/10 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform"
     >
-      <lucide-icon [name]="Upload" class="h-8 w-8 text-[#10A37F]"></lucide-icon>
+      <lucide-icon name="Upload" class="h-8 w-8 text-[#10A37F]"></lucide-icon>
     </div>
     <p class="text-white mb-2 font-medium">
       Drag and drop your transaction file here
@@ -42,7 +51,7 @@
           class="bg-gradient-to-br from-[#10A37F]/20 to-[#0D8968]/20 p-2.5 rounded-lg border border-[#10A37F]/30"
         >
           <lucide-icon
-            [name]="Upload"
+            name="Upload"
             class="h-5 w-5 text-[#10A37F]"
           ></lucide-icon>
         </div>
@@ -58,7 +67,7 @@
         (click)="handleCancelFile()"
         class="text-[#888888] hover:text-[#EF4444] transition-colors"
       >
-        <lucide-icon [name]="X" class="h-5 w-5"></lucide-icon>
+        <lucide-icon name="X" class="h-5 w-5"></lucide-icon>
       </button>
     </div>
     <div class="flex gap-3">
@@ -66,7 +75,7 @@
         (click)="handleSendFile()"
         class="flex-1 bg-gradient-to-r from-[#10A37F] to-[#0D8968] text-white px-4 py-2.5 rounded-lg hover:shadow-xl hover:shadow-[#10A37F]/20 transition-all flex items-center justify-center gap-2 hover-scale"
       >
-        <lucide-icon [name]="Upload" class="h-4 w-4"></lucide-icon>
+        <lucide-icon name="Upload" class="h-4 w-4"></lucide-icon>
         Send File
       </button>
     </div>
@@ -97,7 +106,7 @@
     <div class="flex items-start justify-between">
       <div class="flex items-start gap-3">
         <lucide-icon
-          [name]="CheckCircle2Icon"
+          name="CheckCircle2Icon"
           class="h-6 w-6 text-[#10A37F] mt-0.5"
         ></lucide-icon>
         <div>
@@ -111,7 +120,7 @@
         (click)="removeFile()"
         class="text-[#888888] hover:text-[#EF4444] transition-colors"
       >
-        <lucide-icon [name]="X" class="h-5 w-5"></lucide-icon>
+        <lucide-icon name="X" class="h-5 w-5"></lucide-icon>
       </button>
     </div>
   </div>
@@ -121,7 +130,7 @@
       (click)="handleDownloadTemplate()"
       class="flex items-center gap-2 text-[#10A37F] hover:text-[#0D8968] hover:-translate-y-0.5 active:scale-95 transition-all"
     >
-      <lucide-icon [name]="Download" class="h-4 w-4"></lucide-icon>
+      <lucide-icon name="Download" class="h-4 w-4"></lucide-icon>
       <span class="text-sm">Download Template</span>
     </button>
   </div>
@@ -132,7 +141,7 @@
   >
     <div class="flex items-start gap-3">
       <lucide-icon
-        [name]="CheckCircle2Icon"
+        name="CheckCircle2Icon"
         class="h-5 w-5 text-[#10A37F] mt-0.5"
       ></lucide-icon>
       <div>
@@ -145,3 +154,4 @@
     </div>
   </div>
 </div>
+</app-expansion-panel>

@@ -1,13 +1,7 @@
 import { Component, HostListener, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
-import {
-  LucideAngularModule,
-  TrendingUp,
-  Bell,
-  User,
-  ChevronDown,
-} from 'lucide-angular';
+import { LucideIconsModule } from '../../../core/icons/lucide-icons.module';
 import { AuthService } from '../../../services/auth.service';
 import { Notification } from '../../../models/Notification';
 import { NavItem } from '../../../models/Navitem';
@@ -16,7 +10,7 @@ import { NavItem } from '../../../models/Navitem';
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule, LucideAngularModule, RouterModule],
+  imports: [CommonModule, LucideIconsModule, RouterModule],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.css'],
 })
@@ -32,11 +26,6 @@ export class HeaderComponent {
   // --- Auth state (signal) ---
   isAuthenticated = this.authService.isLoggedIn;
 
-  // --- Lucide Icons ---
-  readonly TrendingUp = TrendingUp;
-  readonly Bell = Bell;
-  readonly User = User;
-  readonly ChevronDown = ChevronDown;
 
   // --- Nav Items ---
   navItems: NavItem[] = [

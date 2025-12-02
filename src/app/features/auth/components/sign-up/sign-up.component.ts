@@ -11,13 +11,14 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { finalize } from 'rxjs/operators';
 import { RegisterRequest } from '../../../../models/RegisterRequest';
+import { LucideIconsModule } from '../../../../core/icons/lucide-icons.module';
 
 @Component({
   selector: 'app-sign-up',
   templateUrl: './sign-up.component.html',
   styleUrls: ['./sign-up.component.css'],
   standalone: true,
-  imports: [ReactiveFormsModule, CommonModule, RouterModule],
+  imports: [ReactiveFormsModule, CommonModule, RouterModule, LucideIconsModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SignUpComponent {

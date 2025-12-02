@@ -1,18 +1,14 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ChevronDown, Upload, Database, LucideAngularModule } from 'lucide-angular'; // Reusing Lucide icons
-
+import { LucideIconsModule } from '../../../core/icons/lucide-icons.module';
 @Component({
   selector: 'app-expansion-panel',
   standalone: true,
-  imports: [CommonModule, LucideAngularModule],
+  imports: [CommonModule, LucideIconsModule],
   templateUrl: './expansion-panel.component.html',
   styleUrls: ['./expansion-panel.component.scss'],
 })
-export class ExpansionPanelComponent {
-  readonly ChevronDown = ChevronDown;
-  readonly uploadIcon = Upload; 
-  readonly databaseIcon = Database;
+export class ExpansionPanelComponent implements OnInit {
 
   // Panel title and optional subtitle
   @Input({ required: true }) title!: string;
@@ -26,6 +22,10 @@ export class ExpansionPanelComponent {
 
   // Default expansion state
   @Input() isExpanded: boolean = true;
+
+  ngOnInit(): void {
+    console.log(this.titleIcon);
+  }
 
   toggleExpansion(): void {
     this.isExpanded = !this.isExpanded;

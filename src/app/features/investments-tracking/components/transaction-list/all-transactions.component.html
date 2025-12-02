@@ -12,7 +12,7 @@
     <div class="space-y-2">
       <div class="flex items-center gap-3">
         <div class="bg-gradient-to-br from-[#10A37F]/40 to-[#1AA97D]/40 p-2.5 rounded-xl">
-          <lucide-icon [img]="TrendingUpIcon" class="h-6 w-6 text-white/80"></lucide-icon>
+          <lucide-icon name="TrendingUp" class="h-6 w-6 text-white/80"></lucide-icon>
         </div>
         <div>
           <h1 class="text-3xl font-semibold text-white">
@@ -29,13 +29,13 @@
       <button (click)="activeTab = 'upload'"
         [ngClass]="activeTab === 'upload' ? 'bg-gradient-to-r from-[#3B82F6]/50 to-[#2563EB]/50 text-white/90' : 'text-[#B3B3B3] hover:bg-[#2E2E2E]'"
         class="flex items-center justify-center gap-2 px-4 py-2 rounded-md transition-all">
-        <lucide-icon [img]="UploadIcon" class="h-4 w-4"></lucide-icon>
+        <lucide-icon name="Upload" class="h-4 w-4"></lucide-icon>
         Upload Transactions
       </button>
       <button (click)="activeTab = 'process'"
         [ngClass]="activeTab === 'process' ? 'bg-gradient-to-r from-[#10A37F]/50 to-[#1AA97D]/50 text-white/90' : 'text-[#B3B3B3] hover:bg-[#2E2E2E]'"
         class="flex items-center justify-center gap-2 px-4 py-2 rounded-md transition-all">
-        <lucide-icon [img]="TrendingUpIcon" class="h-4 w-4"></lucide-icon>
+        <lucide-icon name="TrendingUp" class="h-4 w-4"></lucide-icon>
         Process Actions
       </button>
     </div>
@@ -56,7 +56,7 @@
             class="border-2 border-dashed border-[#3A3A3A] rounded-xl p-12 text-center cursor-pointer hover:border-[#3B82F6]/50 hover:bg-[#3B82F6]/5 transition-all">
             <div class="flex flex-col items-center gap-4">
               <div class="bg-[#3B82F6]/10 p-6 rounded-xl">
-                <lucide-icon [img]="UploadIcon" class="h-16 w-16 text-[#3B82F6]/70"></lucide-icon>
+                <lucide-icon name="Upload" class="h-16 w-16 text-[#3B82F6]/70"></lucide-icon>
               </div>
               <div>
                 <p class="text-white text-lg mb-1">
@@ -92,7 +92,7 @@
           <div *ngIf="hasUploadedFile && !isUploading" class="bg-[#3B82F6]/10 border border-[#3B82F6]/20 rounded-xl p-4">
             <div class="flex items-start justify-between">
               <div class="flex items-start gap-3">
-                <lucide-icon [img]="CheckCircle2Icon" class="h-6 w-6 text-[#3B82F6]/80 mt-0.5" ></lucide-icon>
+                <lucide-icon name="CheckCircle2" class="h-6 w-6 text-[#3B82F6]/80 mt-0.5" ></lucide-icon>
                 <div>
                   <h4 class="text-[#3B82F6]/90 font-semibold mb-1">
                     File Uploaded Successfully!
@@ -103,7 +103,7 @@
                 </div>
               </div>
               <button (click)="removeFile()" class="text-[#666666] hover:text-[#EF4444]/70 transition-colors">
-                <lucide-icon [img]="XIcon" class="h-5 w-5" ></lucide-icon>
+                <lucide-icon name="X" class="h-5 w-5" ></lucide-icon>
               </button>
             </div>
           </div>
@@ -111,7 +111,7 @@
           <div class="pt-4 border-t border-[#3A3A3A]">
             <button (click)="showToast('Template download started', 'success')"
               class="flex items-center gap-2 text-[#3B82F6]/80 hover:text-[#2563EB]/90 transition-colors">
-              <lucide-icon  [img]="DownloadIcon" class="h-4 w-4" ></lucide-icon>
+              <lucide-icon  name="Download" class="h-4 w-4" ></lucide-icon>
               <span class="text-sm">
                 Download Template
               </span>
@@ -122,7 +122,7 @@
 
       <div *ngIf="hasUploadedFile" class="bg-[#10A37F]/10 border border-[#10A37F]/20 rounded-xl p-4">
         <div class="flex items-start gap-3">
-          <lucide-icon [img]="CheckCircle2Icon" class="h-5 w-5 text-[#10A37F]/80 mt-0.5"></lucide-icon>
+          <lucide-icon name="CheckCircle2" class="h-5 w-5 text-[#10A37F]/80 mt-0.5"></lucide-icon>
           <div>
             <h4 class="text-[#10A37F]/90 font-semibold mb-1">
               Ready for Processing
@@ -168,7 +168,7 @@
                 'bg-gradient-to-br from-[#10A37F]/60 to-[#1AA97D]/60 text-white': currentStep === 1,
                 'bg-[#3A3A3A] text-[#666666]': currentStep < 1
               }" class="flex items-center justify-center rounded-full w-12 h-12">
-              <lucide-icon [img]="CheckCircle2Icon" *ngIf="currentStep > 1" class="h-6 w-6"></lucide-icon>
+              <lucide-icon name="CheckCircle2" *ngIf="currentStep > 1" class="h-6 w-6"></lucide-icon>
               <span *ngIf="currentStep <= 1" class="text-xl font-semibold">1</span>
             </div>
             <div>
@@ -181,7 +181,7 @@
           <div class="space-y-4">
             <div class="bg-[#3B82F6]/10 border border-[#3B82F6]/20 rounded-lg p-4">
               <div class="flex items-start gap-3">
-                <lucide-icon [img]="PlayCircleIcon" class="h-5 w-5 text-[#3B82F6]/80 mt-0.5"></lucide-icon>
+                <lucide-icon name="PlayCircle" class="h-5 w-5 text-[#3B82F6]/80 mt-0.5"></lucide-icon>
                 <div>
                   <h4 class="text-[#3B82F6]/90 font-semibold mb-1">First Step</h4>
                   <p class="text-[#B3B3B3] text-sm">
@@ -194,11 +194,11 @@
               [ngClass]="currentStep === 1 && hasUploadedFile ? 'bg-gradient-to-r from-[#10A37F]/60 to-[#1AA97D]/60 hover:shadow-lg' : currentStep > 1 ? 'bg-[#10A37F]/20 text-[#10A37F]/80 border border-[#10A37F]/20' : 'bg-[#232323] text-[#666666] border border-[#3A3A3A]'"
               class="w-full px-6 py-3 rounded-lg text-white transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
               <ng-container *ngIf="isLoading && currentStep === 1">
-                <lucide-icon [img]="RotateCwIcon" class="h-4 w-4 animate-spin" ></lucide-icon>
+                <lucide-icon name="RotateCw" class="h-4 w-4 animate-spin" ></lucide-icon>
                 <span>Loading...</span>
               </ng-container>
               <ng-container *ngIf="!(isLoading && currentStep === 1)">
-                <lucide-icon [img]="UploadIcon" class="h-4 w-4" ></lucide-icon>
+                <lucide-icon name="Upload" class="h-4 w-4" ></lucide-icon>
                 <span>Load Transactions</span>
               </ng-container>
             </button>
@@ -218,8 +218,8 @@
                 'bg-gradient-to-br from-[#10A37F]/60 to-[#1AA97D]/60 text-white': currentStep === 2,
                 'bg-[#3A3A3A] text-[#666666]': currentStep < 2
               }" class="flex items-center justify-center rounded-full w-12 h-12">
-              <lucide-icon [img]="CheckCircle2Icon" *ngIf="currentStep > 2" class="h-6 w-6" ></lucide-icon>
-              <span *ngIf="currentStep <= 2" class="text-xl font-semibold">2</span>
+              <lucide-icon name="CheckCircle2" *ngIf="currentStep > 2" class="h-6 w-6" ></lucide-icon>
+              <span *ngIf="currentStep <= 2"class="text-xl font-semibold">2</span>
             </div>
             <div>
               <h4 class="leading-none text-white">Re-drive Processing</h4>
@@ -231,7 +231,7 @@
           <div class="space-y-4">
             <div class="bg-[#FACC15]/10 border border-[#FACC15]/20 rounded-lg p-4">
               <div class="flex items-start gap-3">
-                <lucide-icon [img]="RotateCwIcon" class="h-5 w-5 text-[#FACC15]/80 mt-0.5" ></lucide-icon>
+                <lucide-icon name="RotateCw" class="h-5 w-5 text-[#FACC15]/80 mt-0.5" ></lucide-icon>
                 <div>
                   <h4 class="text-[#FACC15]/90 font-semibold mb-1">Re-drive Transactions</h4>
                   <p class="text-[#B3B3B3] text-sm">
@@ -244,11 +244,11 @@
               [ngClass]="currentStep === 2 ? 'bg-gradient-to-r from-[#10A37F]/60 to-[#1AA97D]/60 hover:shadow-lg' : currentStep > 2 ? 'bg-[#10A37F]/20 text-[#10A37F]/80 border border-[#10A37F]/20' : 'bg-[#232323] text-[#666666] border border-[#3A3A3A]'"
               class="w-full px-6 py-3 rounded-lg text-white transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
               <ng-container *ngIf="isLoading && currentStep === 2">
-                <lucide-icon [img]="RotateCwIcon" class="h-4 w-4 animate-spin" ></lucide-icon>
+                <lucide-icon name="RotateCw" class="h-4 w-4 animate-spin" ></lucide-icon>
                 <span>Re-driving...</span>
               </ng-container>
               <ng-container *ngIf="!(isLoading && currentStep === 2)">
-                <lucide-icon [img]="RotateCwIcon" class="h-4 w-4" ></lucide-icon>
+                <lucide-icon name="RotateCw" class="h-4 w-4" ></lucide-icon>
                 <span>Re-drive Transactions</span>
               </ng-container>
             </button>
@@ -268,7 +268,7 @@
                 'bg-gradient-to-br from-[#10A37F] to-[#1AA97D] text-white': currentStep === 3,
                 'bg-[#3A3A3A] text-[#666666]': currentStep < 3
               }" class="flex items-center justify-center rounded-full w-12 h-12">
-              <lucide-icon [img]="CheckCircle2Icon"  *ngIf="currentStep > 3" class="h-6 w-6" ></lucide-icon>
+              <lucide-icon name="CheckCircle2"  *ngIf="currentStep > 3" class="h-6 w-6" ></lucide-icon>
               <span *ngIf="currentStep <= 3" class="text-xl font-semibold">3</span>
             </div>
             <div>
@@ -281,7 +281,7 @@
           <div class="space-y-4">
             <div class="bg-[#10A37F]/10 border border-[#10A37F]/30 rounded-lg p-4">
               <div class="flex items-start gap-3">
-                <lucide-icon [img]="ZapIcon" class="h-5 w-5 text-[#10A37F] mt-0.5" ></lucide-icon>
+                <lucide-icon name="Zap" class="h-5 w-5 text-[#10A37F] mt-0.5" ></lucide-icon>
                 <div>
                   <h4 class="text-[#10A37F] font-semibold mb-1">Final Step</h4>
                   <p class="text-[#B3B3B3] text-sm">
@@ -295,11 +295,11 @@
               [ngClass]="currentStep === 3 && temporaryTransactions.length > 0 ? 'bg-gradient-to-r from-[#10A37F] to-[#1AA97D] hover:shadow-lg' : 'bg-[#232323] text-[#666666] border border-[#3A3A3A]'"
               class="w-full px-6 py-3 rounded-lg text-white transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
               <ng-container *ngIf="isLoading && currentStep === 3">
-                <lucide-icon [img]="RotateCwIcon" class="h-4 w-4 animate-spin" ></lucide-icon>
+                <lucide-icon name="RotateCw" class="h-4 w-4 animate-spin" ></lucide-icon>
                 <span>Processing...</span>
               </ng-container>
               <ng-container *ngIf="!(isLoading && currentStep === 3)">
-                <lucide-icon [img]="CheckCircle2Icon" class="h-4 w-4" ></lucide-icon>
+                <lucide-icon name="CheckCircle2" class="h-4 w-4" ></lucide-icon>
                 <span>Perform {{ actionButtonText }} Action</span>
               </ng-container>
             </button>
@@ -369,7 +369,7 @@
                 </tr>
                 <tr *ngIf="temporaryTransactions.length === 0">
                   <td colSpan="5" class="px-6 py-12 text-center text-[#666666] text-lg">
-                    <lucide-icon [img]="AlertCircleIcon" class="h-6 w-6 inline-block mr-2" ></lucide-icon>
+                    <lucide-icon name="AlertCircle" class="h-6 w-6 inline-block mr-2" ></lucide-icon>
                     No temporary transactions found.
                   </td>
                 </tr>
@@ -398,7 +398,7 @@
                 </tr>
                 <tr *ngIf="portfolioTransactions.length === 0">
                   <td colSpan="5" class="px-6 py-12 text-center text-[#666666] text-lg">
-                    <lucide-icon [img]="AlertCircleIcon" class="h-6 w-6 inline-block mr-2" ></lucide-icon>
+                    <lucide-icon name="AlertCircle" class="h-6 w-6 inline-block mr-2" ></lucide-icon>
                     No completed portfolio transactions.
                   </td>
                 </tr>

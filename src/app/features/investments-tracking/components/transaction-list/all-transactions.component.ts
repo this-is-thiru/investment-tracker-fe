@@ -2,8 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { interval, Subject, takeUntil } from 'rxjs';
-import { AlertCircleIcon, CheckCircle2Icon, DownloadIcon, LucideAngularModule, PlayCircleIcon, RotateCwIcon, TrendingUpIcon, UploadIcon, XIcon, ZapIcon } from 'lucide-angular'; // import module
-
+import { LucideIconsModule } from '../../../../core/icons/lucide-icons.module';
 
 // Interfaces
 export interface Transaction {
@@ -22,26 +21,11 @@ export interface Toast {
 @Component({
   selector: 'app-all-transactions',
   standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    LucideAngularModule
-    ],
+  imports: [CommonModule, FormsModule, LucideIconsModule],
   templateUrl: './all-transactions.component.html',
   styleUrls: ['./all-transactions.component.css'],
 })
-
 export class AllTransactionsComponent implements OnInit, OnDestroy {
-  // 2. ⬅️ EXPOSE ICONS TO TEMPLATE
-  readonly TrendingUpIcon = TrendingUpIcon;
-  readonly UploadIcon = UploadIcon;
-  readonly CheckCircle2Icon = CheckCircle2Icon;
-  readonly XIcon = XIcon;
-  readonly DownloadIcon = DownloadIcon;
-  readonly PlayCircleIcon = PlayCircleIcon;
-  readonly RotateCwIcon = RotateCwIcon;
-  readonly ZapIcon = ZapIcon;
-  readonly AlertCircleIcon = AlertCircleIcon;
   // --- State Variables ---
   activeTab: 'upload' | 'process' = 'upload';
   selectedAction: string = 'bonus';
@@ -88,15 +72,23 @@ export class AllTransactionsComponent implements OnInit, OnDestroy {
   // --- File Upload Logic ---
 
   handleFileSelect(event: Event | File): void {
-    const file = event instanceof File ? event : (event.target as HTMLInputElement).files?.[0];
+    const file =
+      event instanceof File
+        ? event
+        : (event.target as HTMLInputElement).files?.[0];
 
     if (!file) return;
 
     const allowedExtensions = ['.xlsx', '.xls'];
-    const fileExtension = file.name.toLowerCase().slice(file.name.lastIndexOf('.'));
+    const fileExtension = file.name
+      .toLowerCase()
+      .slice(file.name.lastIndexOf('.'));
 
     if (!allowedExtensions.includes(fileExtension)) {
-      this.showToast('Invalid file type. Please upload an Excel file (.xlsx or .xls)', 'error');
+      this.showToast(
+        'Invalid file type. Please upload an Excel file (.xlsx or .xls)',
+        'error',
+      );
       return;
     }
 
@@ -155,15 +147,57 @@ export class AllTransactionsComponent implements OnInit, OnDestroy {
 
     // Mock Data
     const mockPortfolio: Transaction[] = [
-      { id: 'PT001', stock: 'AAPL', quantity: 100, status: 'Completed', actionDate: '2025-10-15' },
-      { id: 'PT002', stock: 'GOOGL', quantity: 50, status: 'Completed', actionDate: '2025-10-14' },
-      { id: 'PT003', stock: 'MSFT', quantity: 75, status: 'Completed', actionDate: '2025-10-13' },
+      {
+        id: 'PT001',
+        stock: 'AAPL',
+        quantity: 100,
+        status: 'Completed',
+        actionDate: '2025-10-15',
+      },
+      {
+        id: 'PT002',
+        stock: 'GOOGL',
+        quantity: 50,
+        status: 'Completed',
+        actionDate: '2025-10-14',
+      },
+      {
+        id: 'PT003',
+        stock: 'MSFT',
+        quantity: 75,
+        status: 'Completed',
+        actionDate: '2025-10-13',
+      },
     ];
     const mockTemp: Transaction[] = [
-      { id: 'TT001', stock: 'TSLA', quantity: 200, status: 'Pending', actionDate: '2025-10-20' },
-      { id: 'TT002', stock: 'AMZN', quantity: 150, status: 'Pending', actionDate: '2025-10-19' },
-      { id: 'TT003', stock: 'NVDA', quantity: 300, status: 'Pending', actionDate: '2025-10-18' },
-      { id: 'TT004', stock: 'META', quantity: 120, status: 'Pending', actionDate: '2025-10-17' },
+      {
+        id: 'TT001',
+        stock: 'TSLA',
+        quantity: 200,
+        status: 'Pending',
+        actionDate: '2025-10-20',
+      },
+      {
+        id: 'TT002',
+        stock: 'AMZN',
+        quantity: 150,
+        status: 'Pending',
+        actionDate: '2025-10-19',
+      },
+      {
+        id: 'TT003',
+        stock: 'NVDA',
+        quantity: 300,
+        status: 'Pending',
+        actionDate: '2025-10-18',
+      },
+      {
+        id: 'TT004',
+        stock: 'META',
+        quantity: 120,
+        status: 'Pending',
+        actionDate: '2025-10-17',
+      },
     ];
 
     this.portfolioTransactions = mockPortfolio;
@@ -175,7 +209,8 @@ export class AllTransactionsComponent implements OnInit, OnDestroy {
   }
 
   async handleRedrive(): Promise<void> {
-    if (!this.hasLoadedTransactions || this.temporaryTransactions.length === 0) return;
+    if (!this.hasLoadedTransactions || this.temporaryTransactions.length === 0)
+      return;
 
     this.isLoading = true;
     this.showToast('Re-driving transactions...', 'info');
@@ -187,11 +222,15 @@ export class AllTransactionsComponent implements OnInit, OnDestroy {
     this.temporaryTransactions = filtered;
     this.currentStep = 3;
     this.isLoading = false;
-    this.showToast(`Re-drive completed. ${filtered.length} transactions require action.`, 'success');
+    this.showToast(
+      `Re-drive completed. ${filtered.length} transactions require action.`,
+      'success',
+    );
   }
 
   async handlePerformCorporateAction(): Promise<void> {
-    if (!this.hasLoadedTransactions || this.temporaryTransactions.length === 0) return;
+    if (!this.hasLoadedTransactions || this.temporaryTransactions.length === 0)
+      return;
 
     this.isLoading = true;
     this.showToast('Processing corporate action...', 'info');
@@ -214,6 +253,8 @@ export class AllTransactionsComponent implements OnInit, OnDestroy {
   // --- Helper Getters for Template ---
 
   get actionButtonText(): string {
-    return this.selectedAction.charAt(0).toUpperCase() + this.selectedAction.slice(1);
+    return (
+      this.selectedAction.charAt(0).toUpperCase() + this.selectedAction.slice(1)
+    );
   }
 }

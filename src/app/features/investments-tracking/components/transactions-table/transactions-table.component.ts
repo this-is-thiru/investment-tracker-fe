@@ -1,30 +1,35 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TableModule } from 'primeng/table';
-import { InputTextModule } from 'primeng/inputtext';
-import { ButtonModule } from 'primeng/button';
-import { PaginatorModule } from 'primeng/paginator';
-import { DropdownModule } from 'primeng/dropdown';
 import { MessageService } from 'primeng/api';
 import { TransactionService } from '../../../../services/transaction.service';
 import { TransactionsResponse } from '../../../../models/TranscationsResponse';
+import { ExpansionPanelComponent } from '../../../../shared/components/expansion-panel/expansion-panel.component';
+import { LucideIconsModule } from '../../../../core/icons/lucide-icons.module';
+import { Transaction } from '../../../../models/transaction';
+import { PrimeNgModule } from '../../../../core/prime-ng.module';
 
 @Component({
   selector: 'app-transactions-table',
   standalone: true,
   imports: [
+    LucideIconsModule,
+    ExpansionPanelComponent,
     CommonModule,
-    TableModule,
-    InputTextModule,
-    ButtonModule,
-    PaginatorModule,
-    DropdownModule
+    PrimeNgModule,
   ],
   templateUrl: './transactions-table.component.html',
   styleUrls: ['./transactions-table.component.css'],
-  providers: [MessageService]
+  providers: [MessageService],
 })
 export class TransactionsTableComponent implements OnInit {
+  isExpanded: boolean = true; 
+  @Input() temporaryTransactions: Transaction[] = [];
+  @Input() portfolioTransactions: Transaction[] = [];
+
+  toggleExpansion(): void {
+    this.isExpanded = !this.isExpanded;
+  }
+
   transactions: TransactionsResponse[] = [];
   filteredTransactions: TransactionsResponse[] = [];
   searchQuery = '';
@@ -32,11 +37,10 @@ export class TransactionsTableComponent implements OnInit {
   first = 0;
   loading = false;
   activeTab: 'current' | 'temporary' = 'current';
-  userEmail = ''; // Replace or inject dynamically later
-
+  userEmail = '';
   constructor(
     private transactionService: TransactionService,
-    private messageService: MessageService
+    private messageService: MessageService,
   ) {}
 
   ngOnInit(): void {
@@ -45,7 +49,6 @@ export class TransactionsTableComponent implements OnInit {
     this.fetchTransactions();
   }
 
-  /** Load transactions based on selected tab */
   fetchTransactions(): void {
     this.loading = true;
     const fetch$ =
@@ -64,14 +67,13 @@ export class TransactionsTableComponent implements OnInit {
         this.messageService.add({
           severity: 'error',
           summary: 'Error',
-          detail: 'Failed to load transactions.'
+          detail: 'Failed to load transactions.',
         });
         console.error(err);
-      }
+      },
     });
   }
 
-  /** Switch between Current / Temporary */
   setTab(type: 'current' | 'temporary') {
     if (this.activeTab !== type) {
       this.activeTab = type;
@@ -79,14 +81,13 @@ export class TransactionsTableComponent implements OnInit {
     }
   }
 
-  /** Local search filtering */
   onSearch(event: Event): void {
     const query = (event.target as HTMLInputElement).value.toLowerCase();
     this.filteredTransactions = this.transactions.filter(
       (t) =>
         t.stockCode.toLowerCase().includes(query) ||
         t.stockName.toLowerCase().includes(query) ||
-        t.transactionType.toLowerCase().includes(query)
+        t.transactionType.toLowerCase().includes(query),
     );
   }
 

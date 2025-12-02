@@ -1,4 +1,3 @@
-
 import { Injectable, signal } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
@@ -22,13 +21,14 @@ export class AuthService {
     private http: HttpClient,
     private router: Router,
     private storageService: StorageService,
-    private BASE_URL: BaseurlService
+    private BASE_URL: BaseurlService,
   ) {
     const token = this.storageService.getItem('jwtToken');
     const savedEmail = this.storageService.getItem('userEmail');
 
     if (token && this.storageService.isTokenValid(token)) {
-      const email = savedEmail || this.storageService.getUserEmailFromToken(token);
+      const email =
+        savedEmail || this.storageService.getUserEmailFromToken(token);
       console.log(token, email);
       if (email) this.userEmail.set(email);
       this.isLoggedIn.set(true);
@@ -45,7 +45,9 @@ export class AuthService {
           this.storageService.setItem('jwtToken', res.access_token);
 
           // ✅ Extract email from backend or token
-          const backendEmail = res.email || this.storageService.getUserEmailFromToken(res.access_token);
+          const backendEmail =
+            res.email ||
+            this.storageService.getUserEmailFromToken(res.access_token);
           if (backendEmail) {
             this.storageService.setItem('userEmail', backendEmail);
             this.userEmail.set(backendEmail);
@@ -59,10 +61,9 @@ export class AuthService {
         catchError((error) => {
           console.error('Login failed:', error);
           throw error;
-        })
+        }),
       );
   }
-
 
   register(user: RegisterRequest): Observable<string> {
     return this.http
@@ -75,7 +76,7 @@ export class AuthService {
         catchError((error) => {
           console.error('Registration failed:', error);
           throw error;
-        })
+        }),
       );
   }
 
@@ -97,7 +98,6 @@ export class AuthService {
     return this.userEmail();
   }
 
-
   private startAutoLogout(token: string) {
     this.clearLogoutTimer();
     const expiry = this.storageService.getTokenExpiry(token);
@@ -117,41 +117,15 @@ export class AuthService {
       this.logoutTimer = null;
     }
   }
-  
-  // // new ui auth service methods for modals
-  // private signInModalOpenSubject = new BehaviorSubject<boolean>(false);
-  // private signUpModalOpenSubject = new BehaviorSubject<boolean>(false);
 
-  // isSignInOpen$ = this.signInModalOpenSubject.asObservable();
-  // isSignUpOpen$ = this.signUpModalOpenSubject.asObservable();
-
-
-  // openSignIn() {
-  //   this.signUpModalOpenSubject.next(false);
-  //   this.signInModalOpenSubject.next(true);
-  // }
-
-  // closeSignIn() {
-  //   this.signInModalOpenSubject.next(false);
-  // }
-
-  // openSignUp() {
-  //   this.signInModalOpenSubject.next(false);
-  //   this.signUpModalOpenSubject.next(true);
-  // }
-
-  // closeSignUp() {
-  //   this.signUpModalOpenSubject.next(false);
-  // }
-
-  // // Auth stub methods
-  // handleSignIn(email: string, password: string) {
-  //   console.log('Angular Sign in:', { email, password });
-  //   this.closeSignIn();
-  // }
-
-  // handleSignUp(email: string, password: string) {
-  //   console.log('Angular Sign up:', { email, password });
-  //   this.closeSignUp();
-  // }
+  changePassword(email: string, oldPassword: string, newPassword: string) {
+    return this.http.post(
+      `${this.BASE_URL.getBaseUrl()}/auth/user/${email}/change/password`,
+      {
+        email, // user's email
+        password: oldPassword,
+        newPassword, // new password
+      },
+    );
+  }
 }

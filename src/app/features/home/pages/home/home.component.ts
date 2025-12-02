@@ -4,28 +4,15 @@ import { Router } from '@angular/router';
 import { FooterComponent } from '../../../../shared/components/footer/footer.component';
 import { AuthService } from '../../../../services/auth.service';
 import { Benefit } from '../../../../models/Benefit';
-
-// ✅ Import Lucide withIcons and all necessary icons
-import {
-  ArrowRightIcon,
-  BarChart3Icon,
-  CheckCircle2Icon,
-  ClockIcon,
-  FileTextIcon,
-  LucideAngularModule,
-  SparklesIcon,
-  TrendingUpIcon,
-  ZapIcon,
-} from 'lucide-angular';
-
+import { LucideIconsModule } from '../../../../core/icons/lucide-icons.module';
 
 @Component({
   selector: 'app-home',
   standalone: true,
   imports: [
     CommonModule,
-    FooterComponent, // 👇 CORRECT SETUP: Use withIcons to register the needed icons
-    LucideAngularModule,
+    FooterComponent,
+    LucideIconsModule,
   ],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css'],
@@ -34,41 +21,31 @@ export class HomeComponent implements OnInit, AfterViewInit {
   private auth = inject(AuthService);
   private router = inject(Router);
 
-  //lucide icons
-  readonly TrendingUpIcon = TrendingUpIcon;
-  readonly FileTextIcon = FileTextIcon;
-  readonly BarChart3Icon = BarChart3Icon;
-  readonly ArrowRightIcon = ArrowRightIcon;
-  readonly ClockIcon = ClockIcon;
-  readonly CheckCircle2Icon = CheckCircle2Icon;
-  readonly SparklesIcon = SparklesIcon;
-  readonly ZapIcon = ZapIcon;
-
   hoveredCard: string | null = null;
   hoveredBenefit: number | null = null;
   isLoaded = false;
 
   benefits: Benefit[] = [
     {
-      icon: 'zap',
+      icon: 'Zap',
       color: '#10A37F',
       title: 'Lightning Fast',
       desc: 'Process thousands of transactions in seconds with our optimized engine',
     },
     {
-      icon: 'bar-chart-3',
+      icon: 'BarChart3',
       color: '#3B82F6',
       title: 'Comprehensive Reports',
       desc: 'Generate detailed reports for tax filing, compliance, and analysis',
     },
     {
-      icon: 'clock',
+      icon: 'Clock',
       color: '#8B5CF6',
       title: 'Save Time',
       desc: 'Automate repetitive tasks and focus on what matters most',
     },
     {
-      icon: 'check-circle-2',
+      icon: 'CheckCircle2',
       color: '#FACC15',
       title: 'Accuracy Guaranteed',
       desc: 'Eliminate errors with validated calculations and smart checks',

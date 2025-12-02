@@ -1,5 +1,5 @@
 <section
-  class="border border-[#333333] rounded-xl bg-[#191919] overflow-hidden animate-fade-in-up"
+  class="border border-[#333333] max-w-7xl mx-auto rounded-xl bg-[#191919] overflow-hidden animate-fade-in-up"
 >
   <!-- Header -->
   <div
@@ -9,11 +9,12 @@
     <div class="flex items-center gap-3">
       <!-- Icon -->
       <div [class]="iconBgClass" class="p-2 rounded-lg text-white flex items-center justify-center">
-        <lucide-icon
-          *ngIf="titleIcon"
-          [name]="titleIcon"
-          class="h-5 w-5 text-white"
-        ></lucide-icon>
+        @if(titleIcon){
+          <lucide-icon
+            [name]="titleIcon"
+            class="h-5 w-5 text-white"
+          ></lucide-icon>
+        }
       </div>
 
       <!-- Title + Subtitle -->
@@ -35,7 +36,7 @@
     >
       <span class="text-sm">{{ isExpanded ? 'Collapse' : 'Expand' }}</span>
       <lucide-icon
-        [name]="ChevronDown"
+        name="ChevronDown"
         class="h-4 w-4 transition-transform duration-300"
         [class.rotate-180]="isExpanded"
       ></lucide-icon>

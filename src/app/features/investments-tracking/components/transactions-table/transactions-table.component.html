@@ -1,99 +1,173 @@
-<section class="w-full bg-background text-textPrimary p-6 font-sans rounded-xl shadow-card">
-  <!-- Header & Tabs -->
-  <div class="flex flex-col md:flex-row items-start md:items-center justify-between mb-4 gap-4">
-    <h2 class="text-xl font-semibold">Transactions</h2>
-
-    <div class="flex items-center gap-2">
-      <button
-        (click)="setTab('current')"
-        [ngClass]="activeTab === 'current' ? 'bg-accent text-white' : 'bg-surfaceHover text-textSecondary hover:bg-surface'"
-        class="px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-150"
-      >
-        Current
-      </button>
-      <button
-        (click)="setTab('temporary')"
-        [ngClass]="activeTab === 'temporary' ? 'bg-accent text-white' : 'bg-surfaceHover text-textSecondary hover:bg-surface'"
-        class="px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-150"
-      >
-        Temporary
-      </button>
-    </div>
-  </div>
-
-  <!-- Search -->
-  <div class="w-full mb-4">
-    <input
-      type="text"
-      placeholder="Search transactions..."
-      (input)="onSearch($event)"
-      class="w-full rounded-lg bg-surface border border-border text-textPrimary placeholder-textSecondary px-4 py-2.5 focus:ring-2 focus:ring-accent focus:outline-none"
-    />
-  </div>
-
-  <!-- Loading -->
-  <div *ngIf="loading" class="text-center text-textSecondary py-6">
-    Loading transactions...
-  </div>
-
-  <!-- Table -->
-  <p-table
-    *ngIf="!loading"
-    [value]="filteredTransactions"
-    [paginator]="true"
-    [rows]="rowsPerPage"
-    [first]="first"
-    (onPage)="onPageChange($event)"
-    [rowsPerPageOptions]="[5,10,20]"
-    [responsiveLayout]="'scroll'"
-    [styleClass]="'w-full rounded-lg overflow-hidden shadow-card border border-border text-textPrimary'"
+<app-expansion-panel
+  [title]="'Transactions'"
+  [subtitle]="'View temporary and portfolio transaction tables'"
+  [titleIcon]="'Database'"
+  [iconBgClass]="
+    'bg-gradient-to-br from-[#10A37F] to-[#0D8968] p-2 rounded-lg text-white'
+  "
+  class="animate-fade-in-up stagger-2"
+>
+  <section
+    class="w-full bg-background text-textPrimary p-6 font-sans rounded-xl shadow-card"
   >
-    <!-- Header -->
-    <ng-template pTemplate="header">
-      <tr class="bg-surface text-textSecondary text-sm border-b border-divider">
-        <th class="px-2 py-1">EMAIL</th>
-        <th class="px-2 py-1">STOCK CODE</th>
-        <th class="px-2 py-1">STOCK NAME</th>
-        <th class="px-2 py-1">ASSET TYPE</th>
-        <th class="px-2 py-1">EXCHANGE</th>
-        <th class="px-2 py-1">BROKER</th>
-        <th class="px-2 py-1">TYPE</th>
-        <th class="px-2 py-1">QTY</th>
-        <th class="px-2 py-1">PRICE</th>
-        <th class="px-2 py-1">TOTAL</th>
-        <th class="px-2 py-1">MATURITY DATE</th>
-        <th class="px-2 py-1">BROKER CHARGES</th>
-        <th class="px-2 py-1">MISC CHARGES</th>
-        <th class="px-2 py-1">DATE</th>
-      </tr>
-    </ng-template>
+    <div
+      class="flex flex-col md:flex-row items-start md:items-center justify-between mb-4 gap-4"
+    >
+      <h2 class="text-xl font-semibold">Transactions</h2>
 
-    <!-- Body -->
-    <ng-template pTemplate="body" let-t>
-      <tr class="border-b border-divider hover:bg-surfaceHover transition-colors duration-150">
-        <td class="px-2 py-1">{{ t.email }}</td>
-        <td class="px-2 py-1 font-medium">{{ t.stockCode }}</td>
-        <td class="px-2 py-1">{{ t.stockName }}</td>
-        <td class="px-2 py-1">{{ t.assetType }}</td>
-        <td class="px-2 py-1">{{ t.exchangeName }}</td>
-        <td class="px-2 py-1">{{ t.brokerName }}</td>
-        <td
-          class="px-2 py-1"
-          [ngClass]="{
-            'buy-cell': t.transactionType === 'BUY',
-            'sell-cell': t.transactionType === 'SELL'
-          }"
+      <div class="flex items-center gap-2">
+        <button
+          (click)="setTab('current')"
+          [ngClass]="
+            activeTab === 'current'
+              ? 'bg-accent text-white'
+              : 'bg-surfaceHover text-textSecondary hover:bg-surface'
+          "
+          class="px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-150"
         >
-          {{ t.transactionType }}
-        </td>
-        <td class="px-2 py-1">{{ t.quantity }}</td>
-        <td class="px-2 py-1">₹{{ t.price | number: '1.2-2' }}</td>
-        <td class="px-2 py-1">₹{{ t.totalValue | number: '1.2-2' }}</td>
-        <td class="px-2 py-1">{{ t.maturityDate || '-' }}</td>
-        <td class="px-2 py-1">₹{{ t.brokerCharges || 0 }}</td>
-        <td class="px-2 py-1">₹{{ t.miscCharges || 0 }}</td>
-        <td class="px-2 py-1">{{ t.transactionDate }}</td>
-      </tr>
-    </ng-template>
-  </p-table>
-</section>
+          Current
+        </button>
+        <button
+          (click)="setTab('temporary')"
+          [ngClass]="
+            activeTab === 'temporary'
+              ? 'bg-accent text-white'
+              : 'bg-surfaceHover text-textSecondary hover:bg-surface'
+          "
+          class="px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-150"
+        >
+          Temporary
+        </button>
+      </div>
+    </div>
+
+    <div class="w-full mb-4">
+      <input
+        type="text"
+        placeholder="Search transactions..."
+        (input)="onSearch($event)"
+        class="w-full rounded-lg bg-surface border border-border text-textPrimary placeholder-textSecondary px-4 py-2.5 focus:ring-2 focus:ring-accent focus:outline-none"
+      />
+    </div>
+
+    <div *ngIf="loading" class="text-center text-textSecondary py-6">
+      Loading transactions...
+    </div>
+
+    <p-table
+      *ngIf="!loading"
+      [value]="filteredTransactions"
+      [paginator]="true"
+      [rows]="rowsPerPage"
+      [first]="first"
+      (onPage)="onPageChange($event)"
+      [rowsPerPageOptions]="[5, 10, 20]"
+      [responsiveLayout]="'scroll'"
+      [styleClass]="
+        'w-full rounded-lg overflow-hidden shadow-card border border-border text-textPrimary'
+      "
+    >
+      <ng-template pTemplate="header">
+        <tr
+          class="bg-surface text-textSecondary text-sm border-b border-divider"
+        >
+          <th class="px-2 py-1">STOCK NAME</th>
+          <th class="px-2 py-1">ASSET TYPE</th>
+          <th class="px-2 py-1">EXCHANGE</th>
+          <th class="px-2 py-1">BROKER</th>
+          <th class="px-2 py-1">TYPE</th>
+          <th class="px-2 py-1">QTY</th>
+          <th class="px-2 py-1">PRICE</th>
+          <th class="px-2 py-1">TOTAL</th>
+          <th class="px-2 py-1">BROKER CHARGES</th>
+          <th class="px-2 py-1">MISC CHARGES</th>
+          <th class="px-2 py-1">DATE</th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-t>
+        <tr
+          class="border-b border-divider hover:bg-surfaceHover transition-colors duration-150"
+        >
+          <td class="px-2 py-1">{{ t.stockName }}</td>
+          <td class="px-2 py-1">{{ t.assetType }}</td>
+          <td class="px-2 py-1">{{ t.exchangeName }}</td>
+          <td class="px-2 py-1">{{ t.brokerName }}</td>
+          <td
+            class="px-2 py-1"
+            [ngClass]="{
+              'buy-cell': t.transactionType === 'BUY',
+              'sell-cell': t.transactionType === 'SELL',
+            }"
+          >
+            {{ t.transactionType }}
+          </td>
+          <td class="px-2 py-1">{{ t.quantity }}</td>
+          <td class="px-2 py-1">₹{{ t.price | number: '1.2-2' }}</td>
+          <td class="px-2 py-1">₹{{ t.totalValue | number: '1.2-2' }}</td>
+          <td class="px-2 py-1">₹{{ t.brokerCharges || 0 }}</td>
+          <td class="px-2 py-1">₹{{ t.miscCharges || 0 }}</td>
+          <td class="px-2 py-1">{{ t.transactionDate }}</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </section>
+
+  <section
+    class="border border-[#333333] rounded-xl bg-[#191919] overflow-hidden animate-fade-in-up stagger-4"
+  >
+    <div
+      class="overflow-hidden transition-all duration-500 ease-in-out"
+      [style.maxHeight]="isExpanded ? '3000px' : '0'"
+      [style.opacity]="isExpanded ? 1 : 0"
+    >
+      <div class="p-6">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div
+            class="border border-[#404040] rounded-xl bg-[#232323] overflow-hidden"
+          >
+            <div class="p-4">
+              <div class="relative w-full overflow-auto">
+                <table class="w-full caption-bottom text-sm">
+                  <tbody>
+                    <tr *ngIf="temporaryTransactions.length === 0">
+                      <td colspan="4" class="text-center py-8 text-[#888888]">
+                        <lucide-icon
+                          name="AlertCircle"
+                          class="h-8 w-8 mx-auto mb-2 opacity-50"
+                        ></lucide-icon>
+                        <p class="text-xs">No temporary transactions</p>
+                      </td>
+                    </tr>
+                    <tr
+                      *ngFor="let t of temporaryTransactions"
+                      [attr.key]="t.id"
+                      class="border-b border-[#404040] hover:bg-[#2A2A2A] transition-colors"
+                    >
+                      <td class="p-2 align-middle text-white font-mono text-xs">
+                        {{ t.id }}
+                      </td>
+                      <td class="p-2 align-middle text-white font-semibold">
+                        {{ t.stock }}
+                      </td>
+                      <td class="p-2 align-middle text-white">
+                        {{ t.quantity | number }}
+                      </td>
+                      <td class="p-2 align-middle">
+                        <span
+                          class="inline-flex items-center justify-center px-2 py-0.5 text-xs rounded-md bg-[#FACC15]/20 text-[#FACC15] border border-[#FACC15]/40"
+                        >
+                          {{ t.status }}
+                        </span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</app-expansion-panel>

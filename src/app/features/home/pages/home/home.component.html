@@ -18,7 +18,7 @@
             class="inline-flex items-center gap-2 bg-[#10A37F]/10 border border-[#10A37F]/20 rounded-full px-4 py-2 mb-6 flow-slide-right flow-delay-1"
           >
             <lucide-icon
-              [img]="SparklesIcon"
+              name="Sparkles"
               class="h-4 w-4 text-[#10A37F]"
             ></lucide-icon>
             <span class="text-sm text-[#10A37F]">
@@ -53,7 +53,7 @@
             ></div>
             <span class="relative z-10">Get Started</span>
             <lucide-icon
-              [img]="ArrowRightIcon"
+              name="ArrowRight"
               class="h-5 w-5 relative z-10 group-hover:translate-x-1 transition-transform"
             ></lucide-icon>
           </button>
@@ -76,7 +76,7 @@
                 (click)="onNavigate('investments-tracking')"
               >
                 <lucide-icon
-                  [img]="FileTextIcon"
+                name="FileText"
                   class="h-8 w-8 text-[#3B82F6] icon-scale-inner"
                 ></lucide-icon>
               </div>
@@ -87,7 +87,7 @@
                 (click)="onNavigate('investments-tracking')"
               >
                 <lucide-icon
-                  [img]="BarChart3Icon"
+                name="BarChart3"
                   class="h-10 w-10 text-[#8B5CF6] icon-scale-inner"
                 ></lucide-icon>
               </div>
@@ -98,7 +98,7 @@
                 (click)="onNavigate('investments-tracking')"
               >
                 <lucide-icon
-                  [img]="TrendingUpIcon"
+                name="TrendingUp"
                   class="h-8 w-8 text-[#10A37F] icon-scale-inner"
                 ></lucide-icon>
               </div>
@@ -149,7 +149,7 @@
           class="bg-gradient-to-br from-[#10A37F]/20 to-[#1AA97D]/20 w-14 h-14 rounded-xl flex items-center justify-center mb-6 relative z-10 hover-icon-wiggle"
         >
           <lucide-icon
-            [img]="TrendingUpIcon"
+            name="TrendingUp"
             class="h-7 w-7 text-[#10A37F]"
           ></lucide-icon>
         </div>
@@ -164,7 +164,7 @@
           class="flex items-center gap-2 text-[#10A37F] font-medium relative z-10 group-hover:gap-3 transition-all"
         >
           Explore
-          <lucide-icon [img]="ArrowRightIcon" class="h-4 w-4"></lucide-icon>
+          <lucide-icon name="ArrowRight" class="h-4 w-4"></lucide-icon>
         </div>
       </button>
 
@@ -183,7 +183,7 @@
           class="bg-gradient-to-br from-[#3B82F6]/20 to-[#2563EB]/20 w-14 h-14 rounded-xl flex items-center justify-center mb-6 relative z-10 hover-icon-wiggle"
         >
           <lucide-icon
-            [img]="FileTextIcon"
+            name="FileText"
             class="h-7 w-7 text-[#3B82F6]"
           ></lucide-icon>
         </div>
@@ -198,7 +198,7 @@
           class="flex items-center gap-2 text-[#3B82F6] font-medium relative z-10 group-hover:gap-3 transition-all"
         >
           Explore
-          <lucide-icon [img]="ArrowRightIcon" class="h-4 w-4"></lucide-icon>
+          <lucide-icon name="ArrowRight" class="h-4 w-4"></lucide-icon>
         </div>
       </button>
 
@@ -217,7 +217,7 @@
           class="bg-gradient-to-br from-[#8B5CF6]/20 to-[#7C3AED]/20 w-14 h-14 rounded-xl flex items-center justify-center mb-6 relative z-10 hover-icon-wiggle"
         >
           <lucide-icon
-            [img]="BarChart3Icon"
+            name="BarChart3"
             class="h-7 w-7 text-[#8B5CF6]"
           ></lucide-icon>
         </div>
@@ -232,7 +232,7 @@
           class="flex items-center gap-2 text-[#8B5CF6] font-medium relative z-10 group-hover:gap-3 transition-all"
         >
           Explore
-          <lucide-icon [img]="ArrowRightIcon" class="h-4 w-4"></lucide-icon>
+          <lucide-icon name="ArrowRight" class="h-4 w-4"></lucide-icon>
         </div>
       </button>
     </div>
@@ -263,25 +263,25 @@
           >
             <ng-container [ngSwitch]="benefit.title">
               <lucide-icon
-                [img]="ZapIcon"
+                name="Zap"
                 *ngSwitchCase="'Lightning Fast'"
                 class="h-8 w-8 group-hover:scale-110 group-hover:rotate-[360deg] transition-all duration-700 ease-out"
                 [style.color]="benefit.color"
               ></lucide-icon>
               <lucide-icon
-                [img]="BarChart3Icon"
+                name="BarChart3"
                 *ngSwitchCase="'Comprehensive Reports'"
                 class="h-8 w-8 group-hover:scale-110 group-hover:rotate-[360deg] transition-all duration-700 ease-out"
                 [style.color]="benefit.color"
               ></lucide-icon>
               <lucide-icon
-                [img]="ClockIcon"
+                name="Clock"
                 *ngSwitchCase="'Save Time'"
                 class="h-8 w-8 group-hover:scale-110 group-hover:rotate-[360deg] transition-all duration-700 ease-out"
                 [style.color]="benefit.color"
               ></lucide-icon>
               <lucide-icon
-                [img]="CheckCircle2Icon"
+                name="CheckCircle2"
                 *ngSwitchCase="'Accuracy Guaranteed'"
                 class="h-8 w-8 group-hover:scale-110 group-hover:rotate-[360deg] transition-all duration-700 ease-out"
                 [style.color]="benefit.color"
@@ -331,7 +331,7 @@
           ></div>
           <span class="relative z-10">Start Free Today</span>
           <lucide-icon
-            [name]="ArrowRightIcon"
+            name="ArrowRight"
             class="h-6 w-6 relative z-10 group-hover:translate-x-1 transition-transform"
           ></lucide-icon>
         </button>

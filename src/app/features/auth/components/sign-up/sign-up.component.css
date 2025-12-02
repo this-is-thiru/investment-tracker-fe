@@ -20,6 +20,13 @@
   }
 }
 
+/* Animation for error shake */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }
+  20%, 40%, 60%, 80% { transform: translateX(4px); }
+}
+
 /* Applying the animations to the classes used in the template */
 
 /* This class is on the outermost div (backdrop) */
@@ -35,4 +42,13 @@
 /* Ensure the modal content is initially hidden before animation starts */
 .animate-scale-in {
     opacity: 0;
+}
+
+.shake {
+  animation: shake 0.6s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+/* Success message fade in */
+.success-message {
+  animation: fadeIn 0.3s ease-out forwards;
 }

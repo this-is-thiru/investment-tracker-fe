@@ -19,17 +19,3 @@
     hover:bg-surfaceHover hover:border-white transition-colors duration-200
     ease-in-out cursor-pointer;
 }
-
-/* styles.css or tailwind.config.js */
-@layer components {
-  .bg-surface {
-    @apply bg-[#2b2b2b];
-  }
-  .bg-surfaceHover {
-    @apply bg-[#3a3a3a];
-  }
-  .bg-primary {
-    @apply bg-blue-500;
-  }
-}
-
