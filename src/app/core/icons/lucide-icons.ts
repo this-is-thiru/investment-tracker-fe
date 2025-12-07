@@ -28,6 +28,7 @@ import {
   RotateCw,
   Upload,
   Briefcase,
+  SettingsIcon,
 } from 'lucide-angular';
 
 export const LUCIDE_ICONS = {
@@ -60,4 +61,5 @@ export const LUCIDE_ICONS = {
   RotateCw, 
   Upload,
   Briefcase,
+  SettingsIcon
 };

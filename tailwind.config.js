@@ -47,11 +47,6 @@ module.exports = {
         modal: '0 4px 16px rgba(0, 0, 0, 0.45)',
         inner: 'inset 0 1px 0 rgba(255, 255, 255, 0.05)',
       },
-
-      // 📐 Typography
-      fontFamily: {
-        sans: ['Inter', 'Manrope', 'system-ui', 'sans-serif'],
-      },
       fontSize: {
         xs: ['0.75rem', '1rem'],
         sm: ['0.875rem', '1.25rem'],

@@ -6,6 +6,7 @@ import { AuthGuard } from './core/auth.guard';
 import { HeaderComponent } from './shared/components/header/header.component';
 import { HomeComponent } from './features/home/pages/home/home.component';
 import { ChangePasswordComponent } from './features/auth/components/change-password/change-password.component';
+import { SettingsComponent } from './shared/components/settings/settings.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
@@ -19,7 +20,8 @@ export const routes: Routes = [
       // 👇 Secondary outlet for modals
       { path: 'sign-in', component: SignInComponent, outlet: 'modal' },
       { path: 'sign-up', component: SignUpComponent, outlet: 'modal' },
-      { path: 'forgot-password', component: ChangePasswordComponent, outlet: 'modal'}
+      { path: 'forgot-password', component: ChangePasswordComponent, outlet: 'modal'},
+      { path: 'settings', component: SettingsComponent, canActivate: [AuthGuard]}
     ],
   },
 

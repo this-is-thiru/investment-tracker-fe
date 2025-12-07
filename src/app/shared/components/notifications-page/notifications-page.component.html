@@ -1,0 +1,83 @@
+<div class="max-w-7xl mx-auto p-4 md:p-6 lg:p-8">
+  <div class="max-w-4xl mx-auto">
+    <div class="flex justify-between items-center mb-6">
+      <h1 class="text-3xl font-bold text-white">Notifications</h1>
+      
+      <div class="flex items-center space-x-3">
+        <button
+          (click)="markAllAsRead()"
+          class="px-4 py-2 bg-[#2A2A2A] text-[#B3B3B3] rounded-lg text-sm hover:bg-[#353535] transition-colors"
+          [disabled]="(unreadCount$ | async) === 0"
+        >
+          Mark all as read
+        </button>
+        <button
+          (click)="clearAllNotifications()"
+          class="px-4 py-2 bg-red-500/10 text-red-400 border border-red-500/20 rounded-lg text-sm hover:bg-red-500/20 transition-colors"
+        >
+          Clear all
+        </button>
+      </div>
+    </div>
+
+    <div class="bg-[#1D1D1D] border border-[#3A3A3A] rounded-xl overflow-hidden shadow-2xl">
+      <div *ngIf="(notifications$ | async)?.length === 0" class="p-8 text-center text-[#B3B3B3]">
+        <p>You have no notifications yet.</p>
+        <p class="text-sm mt-1">We'll let you know about important updates here.</p>
+      </div>
+
+      <div *ngFor="let notification of (notifications$ | async)" class="group transition-all">
+        <div 
+          class="flex items-start justify-between p-4 md:p-5 border-b border-[#3A3A3A] transition-all"
+          [ngClass]="{'bg-[#1D1D1D] hover:bg-[#202020]': notification.read, 'bg-[#232323] hover:bg-[#252525]': !notification.read}"
+        >
+          <div class="flex items-start gap-4 flex-1 min-w-0">
+            <div [ngClass]="getIconClass(notification.type)">
+                <svg *ngIf="notification.type === 'success'" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <svg *ngIf="notification.type === 'error'" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+                <svg *ngIf="notification.type === 'info' || notification.type === 'warning'" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+            </div>
+            
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center justify-between mb-1">
+                <h3 class="text-white font-semibold">{{ notification.title }}</h3>
+                <span class="text-xs text-[#737373]">{{ formatTimestamp(notification.timestamp) }}</span>
+              </div>
+              <p class="text-sm text-[#B3B3B3] break-words">{{ notification.message }}</p>
+
+              <span
+                class="mt-2 inline-block px-2 py-0.5 text-xs font-medium rounded-full"
+                [ngClass]="{
+                  'bg-[#10A37F]/10 text-[#10A37F]': notification.type === 'success',
+                  'bg-red-500/10 text-red-400': notification.type === 'error',
+                  'bg-yellow-500/10 text-yellow-400': notification.type === 'warning',
+                  'bg-blue-500/10 text-blue-400': notification.type === 'info'
+                }"
+              >
+                {{ notification.type }}
+              </span>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2 ml-4 opacity-0 group-hover:opacity-100 transition-opacity">
+            <button
+              *ngIf="!notification.read"
+              (click)="markAsRead(notification.id)"
+              class="p-2 text-[#B3B3B3] hover:text-[#10A37F] hover:bg-[#10A37F]/10 rounded-lg transition-all"
+              title="Mark as read"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+            </button>
+            <button
+              (click)="clearNotification(notification.id)"
+              class="p-2 text-[#B3B3B3] hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all"
+              title="Delete notification"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

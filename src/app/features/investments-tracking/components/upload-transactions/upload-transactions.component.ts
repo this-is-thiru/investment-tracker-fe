@@ -103,48 +103,60 @@ export class UploadTransactionsComponent implements OnDestroy {
               }
               break;
 
+            // case HttpEventType.Response:
+            //   this.uploadProgress = 100;
+            //   this.hasUploadedFile = true;
+            //   this.selectedFile = null;
+
+            //   let responseBody: any;
+            //   try {
+            //     // Try parsing as JSON
+            //     responseBody = JSON.parse(event.body);
+            //   } catch {
+            //     // If plain text, assign directly
+            //     responseBody = event.body;
+            //   }
+
+            //   // ✅ Case 1: JSON (normal success)
+            //   if (typeof responseBody === 'object' && responseBody !== null) {
+            //     this.showToast(
+            //       `${this.uploadedFileName} uploaded successfully!`,
+            //       'success',
+            //     );
+            //     this.uploadStatus = 'success';
+            //     this.onUploadComplete.emit(this.uploadedFileName);
+            //   }
+            //   // ⚠️ Case 2: Plain text (filtered transactions)
+            //   else if (typeof responseBody === 'string') {
+            //     if (responseBody.toLowerCase().includes('filtered')) {
+            //       this.showToast(
+            //         'Some transactions were filtered out. Please review them.',
+            //         'warn',
+            //       );
+            //       this.uploadStatus = 'filtered';
+            //       this.onUploadComplete.emit('filtered');
+            //     } else {
+            //       // fallback if plain text but not filtered info
+            //       this.showToast(
+            //         `${this.uploadedFileName} uploaded successfully!`,
+            //         'success',
+            //       );
+            //       this.uploadStatus = 'success';
+            //       this.onUploadComplete.emit(this.uploadedFileName);
+            //     }
+            //   }
+            //   break;
+
             case HttpEventType.Response:
               this.uploadProgress = 100;
               this.hasUploadedFile = true;
+
+              const message = event.body; // ALWAYS text from backend
+
+              this.showToast(message, 'info'); // show it directly
+
+              this.onUploadComplete.emit(message);
               this.selectedFile = null;
-
-              let responseBody: any;
-              try {
-                // Try parsing as JSON
-                responseBody = JSON.parse(event.body);
-              } catch {
-                // If plain text, assign directly
-                responseBody = event.body;
-              }
-
-              // ✅ Case 1: JSON (normal success)
-              if (typeof responseBody === 'object' && responseBody !== null) {
-                this.showToast(
-                  `${this.uploadedFileName} uploaded successfully!`,
-                  'success',
-                );
-                this.uploadStatus = 'success';
-                this.onUploadComplete.emit(this.uploadedFileName);
-              }
-              // ⚠️ Case 2: Plain text (filtered transactions)
-              else if (typeof responseBody === 'string') {
-                if (responseBody.toLowerCase().includes('filtered')) {
-                  this.showToast(
-                    'Some transactions were filtered out. Please review them.',
-                    'warn',
-                  );
-                  this.uploadStatus = 'filtered';
-                  this.onUploadComplete.emit('filtered');
-                } else {
-                  // fallback if plain text but not filtered info
-                  this.showToast(
-                    `${this.uploadedFileName} uploaded successfully!`,
-                    'success',
-                  );
-                  this.uploadStatus = 'success';
-                  this.onUploadComplete.emit(this.uploadedFileName);
-                }
-              }
               break;
           }
         },

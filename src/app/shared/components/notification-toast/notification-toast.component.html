@@ -1,0 +1,38 @@
+<ng-container *ngIf="notification">
+  <div
+    [ngClass]="[
+      'fixed right-4 z-[100] w-80 backdrop-blur-md border rounded-xl shadow-2xl transition-all duration-300',
+      isExiting ? 'opacity-0 translate-x-full' : 'opacity-100 translate-x-0',
+      getStyles().bg,
+      getStyles().border
+    ]"
+    [style.top.px]="80 + (index * 90)"
+  >
+    <div class="p-4">
+      <div class="flex items-start gap-3">
+        <div [ngClass]="getStyles().iconClass">
+            <svg *ngIf="notification.type === 'success'" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5 shrink-0"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            <svg *ngIf="notification.type === 'error'" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5 shrink-0"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+            <svg *ngIf="notification.type === 'info' || notification.type === 'warning'" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5 shrink-0"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+        </div>
+        
+        <div class="flex-1 min-w-0">
+          <h4 class="text-white font-semibold mb-1">{{ notification.title }}</h4>
+          <p class="text-white/90 text-sm break-words">{{ notification.message }}</p>
+        </div>
+        <button
+          (click)="handleClose()"
+          class="text-white/70 hover:text-white transition-colors p-1 -mt-1 -mr-1 shrink-0"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+    </div>
+    <div class="h-1 bg-white/20 rounded-b-xl overflow-hidden">
+      <div 
+        class="h-full bg-white transition-all duration-5000 ease-linear" 
+        style="width: 100%; animation: toast-countdown 5s linear forwards;"
+      ></div>
+    </div>
+  </div>
+</ng-container>

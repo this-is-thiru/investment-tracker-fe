@@ -18,7 +18,7 @@
             class="inline-flex items-center gap-2 bg-[#10A37F]/10 border border-[#10A37F]/20 rounded-full px-4 py-2 mb-6 flow-slide-right flow-delay-1"
           >
             <lucide-icon
-              name="Sparkles"
+              name="sparkles"
               class="h-4 w-4 text-[#10A37F]"
             ></lucide-icon>
             <span class="text-sm text-[#10A37F]">
@@ -53,7 +53,7 @@
             ></div>
             <span class="relative z-10">Get Started</span>
             <lucide-icon
-              name="ArrowRight"
+              name="arrow-right"
               class="h-5 w-5 relative z-10 group-hover:translate-x-1 transition-transform"
             ></lucide-icon>
           </button>
@@ -70,35 +70,32 @@
                 ></div>
               </div>
 
-              <!-- Bottom Left Icon -->
               <div
                 class="absolute bottom-[12%] left-[10%] w-16 h-16 bg-[#3B82F6]/10 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-[#3B82F6]/20 animate-float-rotate hero-icon-hover hero-icon-hover-blue"
                 (click)="onNavigate('investments-tracking')"
               >
                 <lucide-icon
-                name="FileText"
+                name="file-text"
                   class="h-8 w-8 text-[#3B82F6] icon-scale-inner"
                 ></lucide-icon>
               </div>
 
-              <!-- Center Icon -->
               <div
                 class="absolute top-[45%] left-[45%] w-20 h-20 -translate-x-1/2 -translate-y-1/2 bg-[#8B5CF6]/10 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-[#8B5CF6]/20 animate-float-rotate hero-icon-hover hero-icon-hover-purple"
                 (click)="onNavigate('investments-tracking')"
               >
                 <lucide-icon
-                name="BarChart3"
+                name="bar-chart-3"
                   class="h-10 w-10 text-[#8B5CF6] icon-scale-inner"
                 ></lucide-icon>
               </div>
 
-              <!-- Top Right Icon -->
               <div
                 class="absolute top-[12%] right-[10%] w-16 h-16 bg-[#10A37F]/10 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-[#10A37F]/20 animate-float-rotate hero-icon-hover hero-icon-hover-green"
                 (click)="onNavigate('investments-tracking')"
               >
                 <lucide-icon
-                name="TrendingUp"
+                name="trending-up"
                   class="h-8 w-8 text-[#10A37F] icon-scale-inner"
                 ></lucide-icon>
               </div>
@@ -149,7 +146,7 @@
           class="bg-gradient-to-br from-[#10A37F]/20 to-[#1AA97D]/20 w-14 h-14 rounded-xl flex items-center justify-center mb-6 relative z-10 hover-icon-wiggle"
         >
           <lucide-icon
-            name="TrendingUp"
+            name="trending-up"
             class="h-7 w-7 text-[#10A37F]"
           ></lucide-icon>
         </div>
@@ -164,7 +161,7 @@
           class="flex items-center gap-2 text-[#10A37F] font-medium relative z-10 group-hover:gap-3 transition-all"
         >
           Explore
-          <lucide-icon name="ArrowRight" class="h-4 w-4"></lucide-icon>
+          <lucide-icon name="arrow-right" class="h-4 w-4"></lucide-icon>
         </div>
       </button>
 
@@ -183,7 +180,7 @@
           class="bg-gradient-to-br from-[#3B82F6]/20 to-[#2563EB]/20 w-14 h-14 rounded-xl flex items-center justify-center mb-6 relative z-10 hover-icon-wiggle"
         >
           <lucide-icon
-            name="FileText"
+            name="file-text"
             class="h-7 w-7 text-[#3B82F6]"
           ></lucide-icon>
         </div>
@@ -198,7 +195,7 @@
           class="flex items-center gap-2 text-[#3B82F6] font-medium relative z-10 group-hover:gap-3 transition-all"
         >
           Explore
-          <lucide-icon name="ArrowRight" class="h-4 w-4"></lucide-icon>
+          <lucide-icon name="arrow-right" class="h-4 w-4"></lucide-icon>
         </div>
       </button>
 
@@ -217,7 +214,7 @@
           class="bg-gradient-to-br from-[#8B5CF6]/20 to-[#7C3AED]/20 w-14 h-14 rounded-xl flex items-center justify-center mb-6 relative z-10 hover-icon-wiggle"
         >
           <lucide-icon
-            name="BarChart3"
+            name="bar-chart-3"
             class="h-7 w-7 text-[#8B5CF6]"
           ></lucide-icon>
         </div>
@@ -232,7 +229,7 @@
           class="flex items-center gap-2 text-[#8B5CF6] font-medium relative z-10 group-hover:gap-3 transition-all"
         >
           Explore
-          <lucide-icon name="ArrowRight" class="h-4 w-4"></lucide-icon>
+          <lucide-icon name="arrow-right" class="h-4 w-4"></lucide-icon>
         </div>
       </button>
     </div>
@@ -263,25 +260,25 @@
           >
             <ng-container [ngSwitch]="benefit.title">
               <lucide-icon
-                name="Zap"
+                name="zap"
                 *ngSwitchCase="'Lightning Fast'"
                 class="h-8 w-8 group-hover:scale-110 group-hover:rotate-[360deg] transition-all duration-700 ease-out"
                 [style.color]="benefit.color"
               ></lucide-icon>
               <lucide-icon
-                name="BarChart3"
+                name="bar-chart-3"
                 *ngSwitchCase="'Comprehensive Reports'"
                 class="h-8 w-8 group-hover:scale-110 group-hover:rotate-[360deg] transition-all duration-700 ease-out"
                 [style.color]="benefit.color"
               ></lucide-icon>
               <lucide-icon
-                name="Clock"
+                name="clock"
                 *ngSwitchCase="'Save Time'"
                 class="h-8 w-8 group-hover:scale-110 group-hover:rotate-[360deg] transition-all duration-700 ease-out"
                 [style.color]="benefit.color"
               ></lucide-icon>
               <lucide-icon
-                name="CheckCircle2"
+                name="check-circle-2"
                 *ngSwitchCase="'Accuracy Guaranteed'"
                 class="h-8 w-8 group-hover:scale-110 group-hover:rotate-[360deg] transition-all duration-700 ease-out"
                 [style.color]="benefit.color"
@@ -331,7 +328,7 @@
           ></div>
           <span class="relative z-10">Start Free Today</span>
           <lucide-icon
-            name="ArrowRight"
+            name="arrow-right"
             class="h-6 w-6 relative z-10 group-hover:translate-x-1 transition-transform"
           ></lucide-icon>
         </button>

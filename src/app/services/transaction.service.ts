@@ -13,8 +13,7 @@ export class TransactionService {
   constructor(
     private http: HttpClient,
     private BASE_URL: BaseurlService,
-
-  ) { }
+  ) {}
 
   // existing APIs left unchanged...
   getUserTransactions(email: string): Observable<any> {
@@ -23,7 +22,7 @@ export class TransactionService {
       catchError((error) => {
         console.error('Error fetching transactions:', error);
         return throwError(() => new Error('Failed to fetch transactions'));
-      })
+      }),
     );
   }
 
@@ -33,7 +32,7 @@ export class TransactionService {
       catchError((error) => {
         console.error('Error adding transaction:', error);
         return throwError(() => new Error('Failed to add transaction'));
-      })
+      }),
     );
   }
 
@@ -41,31 +40,45 @@ export class TransactionService {
    * Upload transactions file with progress events.
    * Returns Observable<HttpEvent<any>> so caller can react to progress and response.
    */
-  uploadTransactions(email: string, file: File): Observable<HttpEvent<any>> {
+  // uploadTransactions(email: string, file: File): Observable<HttpEvent<any>> {
 
+  //   const formData = new FormData();
+  //   formData.append('file', file);
+
+  //   const url = `${this.BASE_URL.getBaseUrl()}/portfolio/user/${email}/upload-transactions`;
+
+  //   return this.http.post(url, formData, {
+  //     responseType: 'text' as 'json',
+  //     reportProgress: true,
+  //     observe: 'events',
+  //   }).pipe(
+  //     tap({
+  //       next: (event) => {
+  //         // event handling is done in component; this tap just logs.
+  //       },
+  //       error: (err) => console.error('❌ [Service] upload error raw:', err),
+  //     }),
+  //     catchError((err) => {
+  //       // rethrow original error so component can show meaningful message
+  //       return throwError(() => err);
+  //     })
+  //   );
+  // }
+
+  // Download Excel template
+  uploadTransactions(email: string, file: File): Observable<HttpEvent<any>> {
     const formData = new FormData();
     formData.append('file', file);
 
     const url = `${this.BASE_URL.getBaseUrl()}/portfolio/user/${email}/upload-transactions`;
 
     return this.http.post(url, formData, {
-      reportProgress: true,
+      responseType: 'text', // ALWAYS return plain text
       observe: 'events',
-    }).pipe(
-      tap({
-        next: (event) => {
-          // event handling is done in component; this tap just logs.
-        },
-        error: (err) => console.error('❌ [Service] upload error raw:', err),
-      }),
-      catchError((err) => {
-        // rethrow original error so component can show meaningful message
-        return throwError(() => err);
-      })
-    );
+      reportProgress: true,
+    });
   }
 
-  // Download Excel template
   downloadTemplate(): Observable<Blob> {
     const url = `${this.BASE_URL.getBaseUrl()}/helper/template`;
     return this.http.get(url, { responseType: 'blob' });
