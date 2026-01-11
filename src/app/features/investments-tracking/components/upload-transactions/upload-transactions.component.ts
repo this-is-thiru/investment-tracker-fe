@@ -1,90 +1,241 @@
-import { Component } from '@angular/core';
+import {
+  Component,
+  Input,
+  Output,
+  EventEmitter,
+  OnDestroy,
+} from '@angular/core';
+import { ExpansionPanelComponent } from '../../../../shared/components/expansion-panel/expansion-panel.component';
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
 import { MessageService } from 'primeng/api';
+import { Subscription } from 'rxjs';
+import { finalize } from 'rxjs/operators';
+import { HttpEvent, HttpEventType } from '@angular/common/http';
+import { LucideIconsModule } from '../../../../core/icons/lucide-icons.module';
+
+import { ToastType } from '../../../../models/transaction';
+import { TransactionService } from '../../../../services/transaction.service';
+import { AuthService } from '../../../../services/auth.service';
 
 @Component({
   selector: 'app-upload-transactions',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, LucideIconsModule, ExpansionPanelComponent],
   providers: [MessageService],
   templateUrl: './upload-transactions.component.html',
 })
-export class UploadTransactionsComponent {
-  uploading = false;
-  progress = 0;
-  uploadedFile: File | null = null;
+export class UploadTransactionsComponent implements OnDestroy {
+  @Output() onUploadComplete = new EventEmitter<string>();
+  @Input() showToast!: (message: string, type: ToastType) => void;
 
-  
-  constructor(private http: HttpClient, private messageService: MessageService) {}
-  
+  uploadStatus: 'success' | 'filtered' | 'uploading' | null = null;
 
-  // Trigger file input
-  browseFiles(input: HTMLInputElement) {
-    input.click();
+  selectedFile: File | null = null;
+  uploadedFileName: string = '';
+  uploadProgress: number = 0;
+  isUploading = false;
+  hasUploadedFile = false;
+  private uploadSub?: Subscription;
+
+  private readonly MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024; // 10MB
+
+  constructor(
+    private transactionService: TransactionService,
+    private authService: AuthService,
+  ) {}
+
+  // ========== File Selection ==========
+  handleFileSelect(event: Event | File): void {
+    const file =
+      event instanceof File
+        ? event
+        : (event.target as HTMLInputElement).files?.[0];
+
+    if (!file) return;
+
+    const allowedExtensions = ['.xlsx', '.xls'];
+    const ext = file.name.slice(file.name.lastIndexOf('.')).toLowerCase();
+
+    if (!allowedExtensions.includes(ext)) {
+      this.showToast('Invalid file type. Please upload .xlsx or .xls', 'error');
+      return;
+    }
+
+    if (file.size > this.MAX_FILE_SIZE_BYTES) {
+      this.showToast('File size exceeds 10MB limit', 'error');
+      return;
+    }
+
+    this.selectedFile = file;
+    this.uploadedFileName = file.name;
   }
 
-  // Handle file selection
-  handleFile(event: Event) {
-    const target = event.target as HTMLInputElement;
-    if (!target.files?.length) return;
-    this.startUpload(target.files[0]);
+  // ========== Upload Handler ==========
+  handleSendFile(): void {
+    if (!this.selectedFile) return;
+
+    const email = this.authService.getUserEmail();
+    if (!email) {
+      this.showToast('Please log in before uploading', 'warn');
+      return;
+    }
+
+    this.cancelUploadIfAny();
+    this.isUploading = true;
+    this.uploadProgress = 0;
+
+    this.uploadSub = this.transactionService
+      .uploadTransactions(email, this.selectedFile)
+      .pipe(
+        finalize(() => {
+          this.isUploading = false;
+          this.uploadSub = undefined;
+        }),
+      )
+      .subscribe({
+        next: (event: HttpEvent<any>) => {
+          switch (event.type) {
+            case HttpEventType.UploadProgress:
+              if (event.total) {
+                this.uploadProgress = Math.round(
+                  (100 * event.loaded) / event.total,
+                );
+              }
+              break;
+
+            // case HttpEventType.Response:
+            //   this.uploadProgress = 100;
+            //   this.hasUploadedFile = true;
+            //   this.selectedFile = null;
+
+            //   let responseBody: any;
+            //   try {
+            //     // Try parsing as JSON
+            //     responseBody = JSON.parse(event.body);
+            //   } catch {
+            //     // If plain text, assign directly
+            //     responseBody = event.body;
+            //   }
+
+            //   // ✅ Case 1: JSON (normal success)
+            //   if (typeof responseBody === 'object' && responseBody !== null) {
+            //     this.showToast(
+            //       `${this.uploadedFileName} uploaded successfully!`,
+            //       'success',
+            //     );
+            //     this.uploadStatus = 'success';
+            //     this.onUploadComplete.emit(this.uploadedFileName);
+            //   }
+            //   // ⚠️ Case 2: Plain text (filtered transactions)
+            //   else if (typeof responseBody === 'string') {
+            //     if (responseBody.toLowerCase().includes('filtered')) {
+            //       this.showToast(
+            //         'Some transactions were filtered out. Please review them.',
+            //         'warn',
+            //       );
+            //       this.uploadStatus = 'filtered';
+            //       this.onUploadComplete.emit('filtered');
+            //     } else {
+            //       // fallback if plain text but not filtered info
+            //       this.showToast(
+            //         `${this.uploadedFileName} uploaded successfully!`,
+            //         'success',
+            //       );
+            //       this.uploadStatus = 'success';
+            //       this.onUploadComplete.emit(this.uploadedFileName);
+            //     }
+            //   }
+            //   break;
+
+            case HttpEventType.Response:
+              this.uploadProgress = 100;
+              this.hasUploadedFile = true;
+
+              const message = event.body; // ALWAYS text from backend
+
+              this.showToast(message, 'info'); // show it directly
+
+              this.onUploadComplete.emit(message);
+              this.selectedFile = null;
+              break;
+          }
+        },
+        error: (err) => {
+          console.error('❌ Upload error:', err);
+          this.showToast(
+            err?.error?.message || 'Upload failed. Please try again.',
+            'error',
+          );
+          this.isUploading = false;
+          this.uploadStatus = null;
+        },
+      });
   }
 
-  // Drag & drop
-  onDrop(event: DragEvent) {
-    event.preventDefault();
-    if (event.dataTransfer?.files?.length) {
-      this.startUpload(event.dataTransfer.files[0]);
+  // ========== Cancel Upload ==========
+  private cancelUploadIfAny() {
+    if (this.uploadSub) {
+      this.uploadSub.unsubscribe();
+      this.uploadSub = undefined;
+      console.debug('🛑 Upload cancelled');
     }
   }
 
-  onDragOver(event: DragEvent) {
-    event.preventDefault();
+  handleCancelFile(): void {
+    this.cancelUploadIfAny();
+    this.selectedFile = null;
+    this.uploadedFileName = '';
+    this.uploadProgress = 0;
+    this.showToast('File selection cancelled', 'info');
   }
 
-  // Simulate upload
-  private startUpload(file: File) {
-    this.uploadedFile = null; // reset previous file
-    this.uploading = true;
-    this.progress = 0;
-
-    const interval = setInterval(() => {
-      if (this.progress >= 100) {
-        clearInterval(interval);
-        this.uploading = false;
-        this.uploadedFile = file; // show file details
-      } else {
-        this.progress += 10;
-      }
-    }, 300);
+  removeFile(): void {
+    this.cancelUploadIfAny();
+    this.hasUploadedFile = false;
+    this.uploadedFileName = '';
+    this.uploadProgress = 0;
+    this.showToast('File removed', 'info');
   }
 
-  // Format file size nicely
-  getFileSize(size: number): string {
-    if (size < 1024) return size + ' B';
-    if (size < 1024 * 1024) return (size / 1024).toFixed(1) + ' KB';
-    return (size / (1024 * 1024)).toFixed(1) + ' MB';
+  // ========== Drag & Drop ==========
+  handleDragOver(e: DragEvent): void {
+    e.preventDefault();
   }
 
-  removeFile() {
-  this.uploadedFile = null;
-  this.progress = 0;
-  this.uploading = false;
-}
+  handleDrop(e: DragEvent): void {
+    e.preventDefault();
+    if (e.dataTransfer?.files.length) {
+      this.handleFileSelect(e.dataTransfer.files[0]);
+    }
+  }
 
-  // Download template file from server
-  downloadTemplate(): void {
-    this.http
-      .get('http://localhost:8080/helper/template', { responseType: 'blob' })
-      .subscribe((response: Blob) => {
-        const url = window.URL.createObjectURL(response);
+  // ========== File Utilities ==========
+  formatFileSize(size: number): string {
+    return size < 1024 * 1024
+      ? `${(size / 1024).toFixed(2)} KB`
+      : `${(size / (1024 * 1024)).toFixed(2)} MB`;
+  }
+
+  // ========== Download Template ==========
+  handleDownloadTemplate(): void {
+    this.transactionService.downloadTemplate().subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
         a.download = 'template.xlsx';
         a.click();
         window.URL.revokeObjectURL(url);
-        this.messageService.add({ severity: 'success', summary: 'Download Started', detail: 'Template.xlsx' });
-      });
+        this.showToast('Template download started', 'success');
+      },
+      error: (err) => {
+        console.error('Template download failed:', err);
+        this.showToast('Failed to download template', 'error');
+      },
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.cancelUploadIfAny();
   }
 }

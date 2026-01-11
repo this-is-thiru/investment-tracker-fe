@@ -1,112 +1,340 @@
-<main
-  class="relative flex w-full min-w-[380px] flex-col items-start overflow-hidden bg-[#191919] text-left font-['Manrope'] text-lg text-white">
-  <div class="flex items-start justify-center self-stretch p-4 text-4xl">
-    <div class="flex w-[960px] max-w-[960px] flex-col items-start overflow-hidden">
-
-      <!-- Hero -->
-      <section id="Hero" class="flex flex-col items-start self-stretch p-4 text-6xl">
-        <div
-          class="box-border flex min-h-[450px] flex-col items-start justify-end gap-7 self-stretch overflow-hidden rounded-[12px] bg-cover bg-top bg-no-repeat p-4"
-          style="background-image: url('../../../assets/imgs/heroImage.svg')">
-          <div class="flex flex-col items-start gap-2 self-stretch p-2">
-            <div class="flex flex-col items-start self-stretch">
-              <div class="relative self-stretch leading-[60px] font-extrabold tracking-[-2px]">Your Financial Journey,
-                Simplified</div>
-            </div>
-            <div class="flex flex-col items-start self-stretch text-base">
-              <div class="relative self-stretch leading-[24px]">Manage your investments and file your taxes effortlessly
-                with Investment Tracker. Get started today and take control of your financial future.</div>
-            </div>
-          </div>
-          <div class="box-border flex h-12 max-w-[480px] min-w-[84px] flex-shrink-0 items-center justify-center overflow-hidden rounded-[12px] bg-black px-5 py-0 text-center text-base 
-                   transition duration-300 ease-in-out hover:scale-105 active:scale-95 cursor-pointer"
-            (click)="onGetStarted()">
-            <div class="flex flex-col items-center overflow-hidden">
-              <b class="relative self-stretch overflow-hidden leading-[24px] text-ellipsis whitespace-nowrap">Get
-                Started</b>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Features -->
-      <section id="Features" class="flex flex-col items-start gap-10 self-stretch px-4 py-10">
-        <div class="flex flex-col items-start gap-4 self-stretch">
-          <div class="flex w-full max-w-[720px] flex-col items-start">
-            <div class="relative self-stretch leading-[45px] font-extrabold tracking-[-1px]">Comprehensive Financial
-              Tools</div>
-          </div>
-          <div class="flex w-full max-w-[720px] flex-col items-start text-base">
-            <b class="relative self-stretch leading-[24px]">Investment Tracker provides a suite of tools to help you
-              manage your finances effectively.</b>
-          </div>
-        </div>
-        <div class="flex items-start justify-center self-stretch text-base">
-          <div class="flex flex-1 flex-wrap content-start items-start justify-center gap-3">
-
-            <!-- Card 1 -->
-            <div class="box-border flex min-w-[280px] flex-1 flex-col items-start gap-3 rounded-md border border-[#4d4d4d] bg-[#262626] p-4 cursor-pointer 
-                     transition duration-300 ease-in-out hover:scale-105 active:scale-95 hover:bg-[#333]"
-              (click)="onGetStarted()">
-              <img class="h-6 max-w-full flex-shrink-0 self-start overflow-hidden" alt=""
-                src="../../../assets/imgs/InvestmentIcon.svg" />
-              <div class="flex flex-col items-start gap-1 self-stretch">
-                <div class="flex flex-col items-start self-stretch">
-                  <b class="relative self-stretch leading-5">Investment Tracking</b>
-                </div>
-                <div class="flex flex-col items-start self-stretch text-sm text-[#adadad]">
-                  <div class="relative self-stretch leading-[21px]">Monitor your investment portfolio's performance in
-                    real-time with detailed analytics and insights.</div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Card 2 -->
-            <div class="box-border flex min-w-[280px] flex-1 flex-col items-start gap-3 rounded-md border border-[#4d4d4d] bg-[#262626] p-4 cursor-pointer 
-                     transition duration-300 ease-in-out hover:scale-105 active:scale-95 hover:bg-[#333]"
-              (click)="onGetStarted()">
-              <img class="h-6 max-w-full flex-shrink-0 self-start overflow-hidden" alt=""
-                src="../../../assets/imgs/taxIcon.svg" />
-              <div class="flex flex-col items-start gap-1 self-stretch">
-                <div class="flex flex-col items-start self-stretch">
-                  <b class="relative self-stretch leading-5">Tax Filing Assistance</b>
-                </div>
-                <div class="flex flex-col items-start self-stretch text-sm text-[#adadad]">
-                  <div class="relative self-stretch leading-[21px]">Simplify your tax filing process with our
-                    step-by-step guidance and automated calculations.</div>
-                </div>
-              </div>
-            </div>
-
-          </div>
-        </div>
-      </section>
-
-      <!-- Explore Features -->
-      <section id="Start Point to Explore Features " class="flex flex-col items-start self-stretch text-center">
-        <div class="flex flex-col items-center justify-center gap-8 self-stretch px-4 py-10">
-          <div class="flex flex-col items-center gap-2 self-stretch">
-            <div class="flex w-full max-w-[720px] flex-col items-center">
-              <div class="relative self-stretch leading-[45px] font-extrabold tracking-[-1px]">Ready to Elevate Your
-                Financial Management?</div>
-            </div>
-            <div class="flex flex-col items-center self-stretch text-base">
-              <div class="relative self-stretch leading-[24px]">Discover the full range of features Investment Tracker
-                offers to help you achieve your financial goals.</div>
-            </div>
-          </div>
-          <div class="box-border flex h-12 w-[174px] max-w-[480px] min-w-[84px] flex-shrink-0 items-center justify-center overflow-hidden rounded-[12px] bg-black px-5 py-0 text-base 
-                   transition duration-300 ease-in-out hover:scale-105 active:scale-95 cursor-pointer"
-            (click)="onGetStarted()">
-            <div class="flex flex-col items-center overflow-hidden">
-              <b class="relative self-stretch overflow-hidden leading-[24px] text-ellipsis whitespace-nowrap">Explore
-                Features</b>
-            </div>
-          </div>
-        </div>
-      </section>
+<div
+  [ngClass]="{ 'flow-page-enter': isLoaded, 'opacity-0': !isLoaded }"
+  class="w-full"
+>
+  <section class="relative bg-[#191919] overflow-hidden">
+    <div class="absolute inset-0 opacity-30">
+      <div
+        class="relative bg-gradient-to-br from-[#0F0F0F] via-[#121212] to-[#191919] border border-[#2A2A2A] rounded-2xl p-12 overflow-hidden w-full h-96"
+      ></div>
     </div>
-  </div>
-</main>
+
+    <div
+      class="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-16 md:py-24 relative z-10"
+    >
+      <div class="grid grid-cols-1 lg:grid-cols-5 gap-12 items-center">
+        <div class="lg:col-span-3">
+          <div
+            class="inline-flex items-center gap-2 bg-[#10A37F]/10 border border-[#10A37F]/20 rounded-full px-4 py-2 mb-6 flow-slide-right flow-delay-1"
+          >
+            <lucide-icon
+              name="sparkles"
+              class="h-4 w-4 text-[#10A37F]"
+            ></lucide-icon>
+            <span class="text-sm text-[#10A37F]">
+              Trusted by 10,000+ investors
+            </span>
+          </div>
+
+          <h1
+            class="text-4xl md:text-5xl lg:text-6xl text-white mb-6 flow-slide-right flow-delay-2"
+          >
+            Manage your investments with
+            <span
+              class="text-transparent bg-clip-text bg-gradient-to-r from-[#10A37F] to-[#1AA97D] animate-gradient"
+            >
+              confidence
+            </span>
+          </h1>
+
+          <p
+            class="text-lg text-[#B3B3B3] mb-10 leading-relaxed flow-slide-right flow-delay-3"
+          >
+            Investment Tracker helps you track portfolios, manage tax filings,
+            and analyze performance—all in one simple platform.
+          </p>
+
+          <button
+            (click)="onNavigate('investments-tracking')"
+            class="group px-8 py-4 bg-gradient-to-r from-[#10A37F] to-[#0D8A6B] text-white rounded-lg shadow-lg hover:shadow-xl hover:shadow-[#10A37F]/30 transition-all duration-200 hover:scale-105 inline-flex items-center gap-2 relative overflow-hidden flow-slide-right flow-delay-4"
+          >
+            <div
+              class="absolute inset-0 bg-gradient-to-r from-[#0D8A6B] to-[#0B7A5E] translate-x-[-100%] group-hover:translate-x-0 transition-transform duration-300"
+            ></div>
+            <span class="relative z-10">Get Started</span>
+            <lucide-icon
+              name="arrow-right"
+              class="h-5 w-5 relative z-10 group-hover:translate-x-1 transition-transform"
+            ></lucide-icon>
+          </button>
+        </div>
+
+        <div class="lg:col-span-2 flow-slide-left flow-delay-5">
+          <div class="relative h-full flex items-center justify-center">
+            <div
+              class="relative bg-gradient-to-br from-[#232323] to-[#1A1A1A] border border-[#3A3A3A] rounded-3xl p-12 w-full h-96 overflow-hidden hover:border-[rgba(16,163,127,0.3)] transition-all duration-300"
+            >
+              <div class="absolute inset-0 opacity-20 animate-blob-1">
+                <div
+                  class="absolute inset-0 bg-gradient-radial from-[rgba(16,163,127,0.3)] to-transparent"
+                ></div>
+              </div>
+
+              <div
+                class="absolute bottom-[12%] left-[10%] w-16 h-16 bg-[#3B82F6]/10 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-[#3B82F6]/20 animate-float-rotate hero-icon-hover hero-icon-hover-blue"
+                (click)="onNavigate('investments-tracking')"
+              >
+                <lucide-icon
+                name="file-text"
+                  class="h-8 w-8 text-[#3B82F6] icon-scale-inner"
+                ></lucide-icon>
+              </div>
+
+              <div
+                class="absolute top-[45%] left-[45%] w-20 h-20 -translate-x-1/2 -translate-y-1/2 bg-[#8B5CF6]/10 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-[#8B5CF6]/20 animate-float-rotate hero-icon-hover hero-icon-hover-purple"
+                (click)="onNavigate('investments-tracking')"
+              >
+                <lucide-icon
+                name="bar-chart-3"
+                  class="h-10 w-10 text-[#8B5CF6] icon-scale-inner"
+                ></lucide-icon>
+              </div>
+
+              <div
+                class="absolute top-[12%] right-[10%] w-16 h-16 bg-[#10A37F]/10 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-[#10A37F]/20 animate-float-rotate hero-icon-hover hero-icon-hover-green"
+                (click)="onNavigate('investments-tracking')"
+              >
+                <lucide-icon
+                name="trending-up"
+                  class="h-8 w-8 text-[#10A37F] icon-scale-inner"
+                ></lucide-icon>
+              </div>
+
+              <div
+                class="absolute top-1/4 left-1/4 w-24 h-0.5 bg-gradient-to-r from-transparent via-[#10A37F]/40 to-transparent animate-pulse-opacity"
+              ></div>
+              <div
+                class="absolute bottom-1/4 right-1/4 w-32 h-0.5 bg-gradient-to-r from-transparent via-[#3B82F6]/40 to-transparent animate-pulse-opacity stagger-3"
+              ></div>
+
+              <div
+                *ngFor="let i of [0, 1, 2, 3, 4, 5]"
+                class="absolute w-1 h-1 bg-[#10A37F] rounded-full animate-particle"
+                [ngStyle]="getParticleStyle(i)"
+              ></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-20">
+    <div class="text-center mb-16 scroll-reveal">
+      <h2 class="text-3xl md:text-4xl font-semibold text-white mb-4">
+        Everything You Need in One Place
+      </h2>
+      <p class="text-lg text-[#B3B3B3] max-w-2xl mx-auto">
+        Powerful tools designed to simplify your financial operations and
+        maximize returns
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <button
+        (click)="onNavigate('investments-tracking')"
+        (mouseenter)="hoveredCard = 'investment'"
+        (mouseleave)="hoveredCard = null"
+        class="group bg-[#232323] border border-[#3A3A3A] rounded-2xl p-8 hover:border-[#10A37F]/50 transition-all duration-300 hover:-translate-y-2 text-left relative overflow-hidden hover:shadow-xl hover:shadow-[#10A37F]/20 scroll-reveal"
+        style="transition-delay: 0.1s"
+      >
+        <div
+          class="absolute inset-0 bg-gradient-to-br from-[#10A37F]/5 to-transparent transition-opacity duration-300"
+          [style.opacity]="hoveredCard === 'investment' ? 1 : 0"
+        ></div>
+        <div
+          class="bg-gradient-to-br from-[#10A37F]/20 to-[#1AA97D]/20 w-14 h-14 rounded-xl flex items-center justify-center mb-6 relative z-10 hover-icon-wiggle"
+        >
+          <lucide-icon
+            name="trending-up"
+            class="h-7 w-7 text-[#10A37F]"
+          ></lucide-icon>
+        </div>
+        <h3 class="text-xl font-semibold text-white mb-3 relative z-10">
+          Investment Tracking
+        </h3>
+        <p class="text-[#B3B3B3] mb-6 leading-relaxed relative z-10">
+          Upload transactions, process corporate actions, and manage your
+          portfolio with intelligent automation.
+        </p>
+        <div
+          class="flex items-center gap-2 text-[#10A37F] font-medium relative z-10 group-hover:gap-3 transition-all"
+        >
+          Explore
+          <lucide-icon name="arrow-right" class="h-4 w-4"></lucide-icon>
+        </div>
+      </button>
+
+      <button
+        (click)="onNavigate('tax-filing')"
+        (mouseenter)="hoveredCard = 'tax'"
+        (mouseleave)="hoveredCard = null"
+        class="group bg-[#232323] border border-[#3A3A3A] rounded-2xl p-8 hover:border-[#3B82F6]/50 transition-all duration-300 hover:-translate-y-2 text-left relative overflow-hidden hover:shadow-xl hover:shadow-[#3B82F6]/20 scroll-reveal"
+        style="transition-delay: 0.2s"
+      >
+        <div
+          class="absolute inset-0 bg-gradient-to-br from-[#3B82F6]/5 to-transparent transition-opacity duration-300"
+          [style.opacity]="hoveredCard === 'tax' ? 1 : 0"
+        ></div>
+        <div
+          class="bg-gradient-to-br from-[#3B82F6]/20 to-[#2563EB]/20 w-14 h-14 rounded-xl flex items-center justify-center mb-6 relative z-10 hover-icon-wiggle"
+        >
+          <lucide-icon
+            name="file-text"
+            class="h-7 w-7 text-[#3B82F6]"
+          ></lucide-icon>
+        </div>
+        <h3 class="text-xl font-semibold text-white mb-3 relative z-10">
+          Tax Filing Assistance
+        </h3>
+        <p class="text-[#B3B3B3] mb-6 leading-relaxed relative z-10">
+          Automated tax calculations, deduction tracking, and comprehensive
+          reports for effortless tax season.
+        </p>
+        <div
+          class="flex items-center gap-2 text-[#3B82F6] font-medium relative z-10 group-hover:gap-3 transition-all"
+        >
+          Explore
+          <lucide-icon name="arrow-right" class="h-4 w-4"></lucide-icon>
+        </div>
+      </button>
+
+      <button
+        (click)="onNavigate('portfolio-analytics')"
+        (mouseenter)="hoveredCard = 'analytics'"
+        (mouseleave)="hoveredCard = null"
+        class="group bg-[#232323] border border-[#3A3A3A] rounded-2xl p-8 hover:border-[#8B5CF6]/50 transition-all duration-300 hover:-translate-y-2 text-left relative overflow-hidden hover:shadow-xl hover:shadow-[#8B5CF6]/20 scroll-reveal"
+        style="transition-delay: 0.3s"
+      >
+        <div
+          class="absolute inset-0 bg-gradient-to-br from-[#8B5CF6]/5 to-transparent transition-opacity duration-300"
+          [style.opacity]="hoveredCard === 'analytics' ? 1 : 0"
+        ></div>
+        <div
+          class="bg-gradient-to-br from-[#8B5CF6]/20 to-[#7C3AED]/20 w-14 h-14 rounded-xl flex items-center justify-center mb-6 relative z-10 hover-icon-wiggle"
+        >
+          <lucide-icon
+            name="bar-chart-3"
+            class="h-7 w-7 text-[#8B5CF6]"
+          ></lucide-icon>
+        </div>
+        <h3 class="text-xl font-semibold text-white mb-3 relative z-10">
+          Portfolio Analytics
+        </h3>
+        <p class="text-[#B3B3B3] mb-6 leading-relaxed relative z-10">
+          Real-time insights, performance metrics, and AI-powered
+          recommendations for smarter investing.
+        </p>
+        <div
+          class="flex items-center gap-2 text-[#8B5CF6] font-medium relative z-10 group-hover:gap-3 transition-all"
+        >
+          Explore
+          <lucide-icon name="arrow-right" class="h-4 w-4"></lucide-icon>
+        </div>
+      </button>
+    </div>
+  </section>
+
+  <section class="bg-[#232323]/50">
+    <div class="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-20">
+      <div class="text-center mb-16 scroll-reveal">
+        <h2 class="text-3xl md:text-4xl font-semibold text-white mb-4">
+          Why Choose Investment Tracker?
+        </h2>
+        <p class="text-lg text-[#B3B3B3] max-w-2xl mx-auto">
+          Built for modern investors who demand efficiency and precision
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div
+          *ngFor="let benefit of benefits; let i = index"
+          (mouseenter)="hoveredBenefit = i"
+          (mouseleave)="hoveredBenefit = null"
+          class="text-center group scroll-reveal cursor-pointer transition-all duration-500 ease-out hover:-translate-y-3"
+          [style.transitionDelay]="i * 0.1 + 's'"
+        >
+          <div
+            class="benefit-icon-container w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 backdrop-blur-sm group-hover:scale-110 transition-all duration-500 ease-out"
+            [ngStyle]="getBenefitStyle(benefit, i)"
+          >
+            <ng-container [ngSwitch]="benefit.title">
+              <lucide-icon
+                name="zap"
+                *ngSwitchCase="'Lightning Fast'"
+                class="h-8 w-8 group-hover:scale-110 group-hover:rotate-[360deg] transition-all duration-700 ease-out"
+                [style.color]="benefit.color"
+              ></lucide-icon>
+              <lucide-icon
+                name="bar-chart-3"
+                *ngSwitchCase="'Comprehensive Reports'"
+                class="h-8 w-8 group-hover:scale-110 group-hover:rotate-[360deg] transition-all duration-700 ease-out"
+                [style.color]="benefit.color"
+              ></lucide-icon>
+              <lucide-icon
+                name="clock"
+                *ngSwitchCase="'Save Time'"
+                class="h-8 w-8 group-hover:scale-110 group-hover:rotate-[360deg] transition-all duration-700 ease-out"
+                [style.color]="benefit.color"
+              ></lucide-icon>
+              <lucide-icon
+                name="check-circle-2"
+                *ngSwitchCase="'Accuracy Guaranteed'"
+                class="h-8 w-8 group-hover:scale-110 group-hover:rotate-[360deg] transition-all duration-700 ease-out"
+                [style.color]="benefit.color"
+              ></lucide-icon>
+            </ng-container>
+          </div>
+          <h3
+            class="text-lg font-semibold text-white mb-2 group-hover:text-[#10A37F] transition-colors duration-500 ease-out"
+          >
+            {{ benefit.title }}
+          </h3>
+          <p
+            class="text-[#B3B3B3] text-sm group-hover:text-[#D4D4D4] transition-colors duration-500 ease-out"
+          >
+            {{ benefit.desc }}
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-20">
+    <div
+      class="bg-gradient-to-r from-[#10A37F]/10 to-[#1AA97D]/10 border border-[#10A37F]/20 rounded-3xl p-12 md:p-16 text-center relative overflow-hidden scroll-reveal"
+    >
+      <div
+        class="absolute top-0 left-0 w-64 h-64 bg-[#10A37F]/10 rounded-full blur-3xl animate-blob-1"
+      ></div>
+      <div
+        class="absolute bottom-0 right-0 w-64 h-64 bg-[#3B82F6]/10 rounded-full blur-3xl animate-blob-2"
+      ></div>
+
+      <div class="relative z-10">
+        <h2 class="text-3xl md:text-5xl font-semibold text-white mb-6">
+          Ready to Transform Your Finances?
+        </h2>
+        <p class="text-xl text-[#B3B3B3] mb-10 max-w-2xl mx-auto">
+          Join thousands of investors who trust Investment Tracker for their
+          financial operations
+        </p>
+        <button
+          (click)="onNavigate('investments-tracking')"
+          class="px-10 py-5 bg-gradient-to-r from-[#10A37F] to-[#1AA97D] text-white rounded-xl font-medium text-lg shadow-lg shadow-[#10A37F]/20 inline-flex items-center gap-3 relative overflow-hidden group transition-all duration-200 hover:scale-105 hover:shadow-2xl hover:shadow-[#10A37F]/40"
+        >
+          <div
+            class="absolute inset-0 bg-gradient-to-r from-[#0D8A6B] to-[#0B7A5E] translate-x-[-100%] group-hover:translate-x-0 transition-transform duration-300"
+          ></div>
+          <span class="relative z-10">Start Free Today</span>
+          <lucide-icon
+            name="arrow-right"
+            class="h-6 w-6 relative z-10 group-hover:translate-x-1 transition-transform"
+          ></lucide-icon>
+        </button>
+      </div>
+    </div>
+  </section>
+</div>
 
 <app-footer></app-footer>

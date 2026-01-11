@@ -1,0 +1,56 @@
+<section
+  class="border border-[#333333] max-w-7xl mx-auto rounded-xl bg-[#191919] overflow-hidden animate-fade-in-up"
+>
+  <!-- Header -->
+  <div
+    class="flex items-center justify-between p-4 bg-gradient-to-r from-[#232323] to-[#1E1E1E] border-b border-[#333333] cursor-pointer"
+    (click)="toggleExpansion()"
+  >
+    <div class="flex items-center gap-3">
+      <!-- Icon -->
+      <div [class]="iconBgClass" class="p-2 rounded-lg text-white flex items-center justify-center">
+        @if(titleIcon){
+          <lucide-icon
+            [name]="titleIcon"
+            class="h-5 w-5 text-white"
+          ></lucide-icon>
+        }
+      </div>
+
+      <!-- Title + Subtitle -->
+      <div>
+        <h3 class="text-lg font-semibold text-white leading-tight">
+          {{ title }}
+        </h3>
+        <p *ngIf="subtitle" class="text-sm text-[#AAAAAA] mt-0.5">
+          {{ subtitle }}
+        </p>
+      </div>
+    </div>
+
+    <!-- Expand/Collapse Button -->
+    <button
+      type="button"
+      class="flex items-center gap-2 px-3 py-1 bg-[#282828] text-white rounded-lg transition-all border border-[#404040] hover:border-[#505050]"
+      (click)="$event.stopPropagation(); toggleExpansion()"
+    >
+      <span class="text-sm">{{ isExpanded ? 'Collapse' : 'Expand' }}</span>
+      <lucide-icon
+        name="chevron-down"
+        class="h-4 w-4 transition-transform duration-300"
+        [class.rotate-180]="isExpanded"
+      ></lucide-icon>
+    </button>
+  </div>
+
+  <!-- Collapsible Body -->
+  <div
+    class="overflow-hidden transition-all duration-500 ease-in-out"
+    [style.maxHeight]="isExpanded ? '3000px' : '0'"
+    [style.opacity]="isExpanded ? 1 : 0"
+  >
+    <div class="p-6">
+      <ng-content></ng-content>
+    </div>
+  </div>
+</section>

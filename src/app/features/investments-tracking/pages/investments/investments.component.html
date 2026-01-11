@@ -1,67 +1,69 @@
-<section
-  class="min-w-[300px] min-h-screen h-full bg-[#191919] flex flex-col items-center justify-start px-4 py-6 pt-32 text-sm text-[#1b2821] overflow-y-auto">
-  <!-- File Upload -->
-  <div class="w-full max-w-md mb-4">
-    <input type="file" (change)="onFileChange($event)" accept=".xlsx, .xls" class="w-full border rounded px-3 py-2" />
-  </div>
+<section class="flex flex-col w-full gap-4 px-4 md:px-6 max-w-7xl mx-auto lg:px-8 py-6 bg-background text-white">
+  <!-- Upload Transactions -->
+  <app-upload-transactions></app-upload-transactions>
 
-  <!-- Download Template -->
-  <div class="w-full max-w-md mb-4">
-    <button pButton type="button" (click)="downloadTemplate()" label="Download Template" class="w-full"></button>
-  </div>
 
-  <!-- Table -->
-  <div class="w-full overflow-auto">
-    <p-table *ngIf="excelData.length" [value]="excelData" [paginator]="true" [rows]="10"
-      [rowsPerPageOptions]="[5, 10, 20]" [globalFilterFields]="headers" [sortMode]="'multiple'"
-      responsiveLayout="scroll" editMode="cell" class="p-datatable-sm p-datatable p-datatable-striped w-full">
-      <!-- Table Header -->
-      <!-- Table Header with Filter & Sorting -->
-      <ng-template pTemplate="header">
-        <tr>
-          <th *ngFor="let header of headers" [pSortableColumn]="header">
+  <app-transactions-table></app-transactions-table>
+
+  <app-all-transactions></app-all-transactions>
+
+  <!-- Table Wrapper -->
+  <!-- <div class="w-full overflow-auto rounded-xl border border-[#4d4d4d] bg-surface shadow-sm">
+    <p-table 
+      *ngIf="excelData.length" 
+      [value]="excelData" 
+      [paginator]="true" 
+      [rows]="10"
+      [rowsPerPageOptions]="[5, 10, 20]" 
+      [globalFilterFields]="headers" 
+      [sortMode]="'multiple'"
+      responsiveLayout="scroll" 
+      editMode="cell" 
+      class="p-datatable-sm p-datatable w-full text-white"> -->
+
+  <!-- Table Header -->
+  <!-- <ng-template pTemplate="header">
+        <tr class="bg-surfaceHover">
+          <th *ngFor="let header of headers" [pSortableColumn]="header" class="px-3 py-2 text-left">
             {{ header }}
-            <p-columnFilter [field]= "header" matchMode="contains"></p-columnFilter>
-            <p-sortIcon [field]= "header"></p-sortIcon>
+            <p-columnFilter [field]="header" matchMode="contains"></p-columnFilter>
+            <p-sortIcon [field]="header"></p-sortIcon>
           </th>
-          <th>Actions</th>
+          <th class="px-3 py-2 text-left">Actions</th>
         </tr>
-      </ng-template>
+      </ng-template> -->
 
-
-      <!-- Table Body -->
-      <ng-template pTemplate="body" let-rowData let-rowIndex="rowIndex">
-        <tr>
-          <td  class="w-fit" *ngFor="let header of headers" pEditableColumn>
+  <!-- Table Body -->
+  <!-- <ng-template pTemplate="body" let-rowData let-rowIndex="rowIndex">
+        <tr class="hover:bg-[#333] transition-colors duration-200">
+          <td class="px-3 py-2" *ngFor="let header of headers" pEditableColumn>
             <p-cellEditor>
               <ng-template pTemplate="input">
-                <input pInputText [(ngModel)]="rowData[header]" />
+                <input pInputText [(ngModel)]="rowData[header]" 
+                       class="bg-background text-white border border-border rounded px-2 py-1 focus:ring-2 focus:ring-border focus:outline-none"/>
               </ng-template>
               <ng-template pTemplate="output">
                 {{ rowData[header] }}
               </ng-template>
             </p-cellEditor>
           </td>
-          <td>
-            <button pButton icon="pi pi-trash" class="p-button-danger p-button-sm"
-              (click)="deleteRow(rowIndex)"></button>
+          <td class="px-3 py-2">
+            <button pButton icon="pi pi-trash" class="p-button-sm p-button-danger hover:bg-red-700 transition-colors"
+                    (click)="deleteRow(rowIndex)"></button>
           </td>
         </tr>
-      </ng-template>
+      </ng-template> -->
 
-      <!-- No Data Template -->
-      <ng-template pTemplate="emptymessage">
+  <!-- No Data Template -->
+  <!-- <ng-template pTemplate="emptymessage">
         <tr>
-          <td [attr.colspan]="headers.length + 1" class="text-center py-4">
+          <td [attr.colspan]="headers.length + 1" class="text-center py-4 text-text-secondary">
             No data found. Please upload an Excel file.
           </td>
         </tr>
       </ng-template>
     </p-table>
-  </div>
+  </div> -->
 </section>
-
-
-<app-upload-transactions></app-upload-transactions>
 
 <app-footer></app-footer>

@@ -1,19 +1,71 @@
-mat-form-field {
-    width: 100%;
-    margin-bottom: 20px;
-  }
+
+/* Custom CSS Variables / Dark Theme Setup */
+:root {
+  --font-size: 16px;
   
-  table {
-    width: 100%;
-  }
+  /* Custom theme colors */
+  --background: #191919;
+  --surface: #232323;
+  --surface-hover: #2E2E2E;
+  --border: #3A3A3A;
+  --divider: #2A2A2A;
   
-  button {
-    margin-top: 10px;
-  }
+  --text-primary: #FFFFFF;
+  --text-secondary: #B3B3B3;
+  --text-disabled: #666666;
   
-  .table-container {
-    max-height: 400px; /* Adjust the height as needed */
-    overflow-y: auto; /* Enables vertical scroll when content overflows */
-    display: block;
-  }
+  --accent: #10A37F;
+  --accent-hover: #1AA97D;
+  --blue-accent: #3B82F6;
+  --blue-accent-hover: #2563EB;
   
+  --success: #22C55E;
+  --warning: #FACC15;
+  --danger: #EF4444;
+
+  /* Standard variables */
+  --foreground: var(--text-primary);
+  --card: var(--surface);
+  --card-foreground: var(--text-primary);
+  --popover: var(--surface);
+  --popover-foreground: var(--text-primary);
+  --primary: var(--text-primary);
+  --primary-foreground: var(--background);
+  --secondary: var(--surface-hover);
+  --secondary-foreground: var(--text-primary);
+  --muted: var(--surface-hover);
+  --muted-foreground: var(--text-secondary);
+  --accent-foreground: var(--text-primary);
+  --destructive: var(--danger);
+  --destructive-foreground: var(--text-primary);
+  --input: transparent;
+  --input-background: var(--surface);
+  --switch-background: var(--surface-hover);
+  --font-weight-medium: 500;
+  --font-weight-normal: 400;
+  --ring: var(--accent);
+  --chart-1: #10A37F;
+  --chart-2: #3B82F6;
+  --chart-3: #FACC15;
+  --chart-4: #22C55E;
+  --chart-5: #EF4444;
+  --radius: 0.625rem;
+  --sidebar: var(--surface);
+  --sidebar-foreground: var(--text-primary);
+  --sidebar-primary: var(--accent);
+  --sidebar-primary-foreground: var(--text-primary);
+  --sidebar-accent: var(--surface-hover);
+  --sidebar-accent-foreground: var(--text-primary);
+  --sidebar-border: var(--border);
+  --sidebar-ring: var(--ring);
+
+  /* Font size definitions are missing, adding common ones for typography to work */
+  --text-base: var(--font-size);
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+}
+
+html {
+  font-size: var(--font-size);
+}

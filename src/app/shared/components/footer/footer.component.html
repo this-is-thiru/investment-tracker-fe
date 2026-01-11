@@ -1,27 +1,21 @@
-<main>
-  <router-outlet></router-outlet>
-</main>
-<main
-  class="relative flex w-full min-w-[380px] flex-col items-start overflow-hidden bg-[#191919] text-left font-['Manrope'] text-lg text-white">
+<footer class="w-full bg-[#191919] border-t border-[#3A3A3A] mt-16">
+  <div class="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-8">
+    <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+      <div class="flex flex-wrap items-center justify-center gap-6">
+        <button class="text-sm text-[#B3B3B3] hover:text-white transition-all hover:-translate-y-0.5 active:scale-95">
+          Terms of Service
+        </button>
+        <button class="text-sm text-[#B3B3B3] hover:text-white transition-all hover:-translate-y-0.5 active:scale-95">
+          Privacy Policy
+        </button>
+        <button class="text-sm text-[#B3B3B3] hover:text-white transition-all hover:-translate-y-0.5 active:scale-95">
+          Contact Us
+        </button>
+      </div>
 
-  <footer class="flex items-start justify-center self-stretch p-4 text-center text-base text-[#adadad]">
-    <div class="flex w-[960px] max-w-[960px] flex-col items-start gap-6 self-stretch">
-      <div class="flex flex-wrap content-center items-center justify-center gap-6 self-stretch">
-        <div class="flex w-40 min-w-[160px] flex-col items-center">
-          <div class="relative self-stretch leading-[24px]">Terms of Service</div>
-        </div>
-        <div class="flex w-40 min-w-[160px] flex-col items-center">
-          <div class="relative self-stretch leading-[24px]">Privacy Policy</div>
-        </div>
-        <div class="flex w-40 min-w-[160px] flex-col items-center">
-          <div class="relative self-stretch leading-[24px]">Contact Us</div>
-        </div>
-      </div>
-      <div class="flex flex-col items-center self-stretch">
-        <div class="relative self-stretch leading-[24px]"> {{ currentYear }} Investment Tracker. All rights reserved.
-        </div>
-      </div>
+      <p class="text-sm text-[#B3B3B3]">
+        © 2025 Investment Tracker. All rights reserved.
+      </p>
     </div>
-  </footer>
-
-</main>
+  </div>
+</footer>

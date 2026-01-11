@@ -1,0 +1,385 @@
+<!-- <app-expansion-panel
+  [title]="'Transactions'"
+  [subtitle]="'View temporary and portfolio transaction tables'"
+  [titleIcon]="'Database'"
+  [iconBgClass]="
+    'bg-gradient-to-br from-[#10A37F] to-[#0D8968] p-2 rounded-lg text-white'
+  "
+  class="animate-fade-in-up stagger-2"
+>
+  <section
+    class="w-full bg-background rounded-xl shadow-card"
+  >
+    <div
+      class="flex flex-col md:flex-row items-start md:items-center justify-between mb-4 gap-4"
+    >
+      <h2 class="text-xl font-semibold">Transactions</h2>
+
+      <div class="flex items-center gap-2">
+        <button
+          (click)="setTab('current')"
+          [ngClass]="
+            activeTab === 'current'
+              ? 'bg-accent text-white'
+              : 'bg-surfaceHover text-textSecondary hover:bg-surface'
+          "
+          class="px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-150"
+        >
+          Current
+        </button>
+        <button
+          (click)="setTab('temporary')"
+          [ngClass]="
+            activeTab === 'temporary'
+              ? 'bg-accent text-white'
+              : 'bg-surfaceHover text-textSecondary hover:bg-surface'
+          "
+          class="px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-150"
+        >
+          Temporary
+        </button>
+      </div>
+    </div>
+
+    <div class="w-full mb-4">
+      <input
+        type="text"
+        placeholder="Search transactions..."
+        (input)="onSearch($event)"
+        class="w-full rounded-lg bg-surface border border-border text-textPrimary placeholder-textSecondary px-4 py-2.5 focus:ring-2 focus:ring-accent focus:outline-none"
+      />
+    </div>
+
+    <div *ngIf="loading" class="text-center text-textSecondary py-6">
+      Loading transactions...
+    </div>
+
+    <p-table
+      *ngIf="!loading"
+      [value]="filteredTransactions"
+      [paginator]="true"
+      [rows]="rowsPerPage"
+      [first]="first"
+      (onPage)="onPageChange($event)"
+      [rowsPerPageOptions]="[5, 10, 20]"
+      [responsiveLayout]="'scroll'"
+      [styleClass]="
+        'w-full rounded-lg overflow-hidden shadow-card border border-border text-textPrimary'
+      "
+    >
+      <ng-template pTemplate="header">
+        <tr
+          class="bg-surface text-textSecondary text-sm border-b border-divider"
+        >
+          <th class="px-2 py-1">STOCK NAME</th>
+          <th class="px-2 py-1">ASSET TYPE</th>
+          <th class="px-2 py-1">EXCHANGE</th>
+          <th class="px-2 py-1">BROKER</th>
+          <th class="px-2 py-1">TYPE</th>
+          <th class="px-2 py-1">QTY</th>
+          <th class="px-2 py-1">PRICE</th>
+          <th class="px-2 py-1">TOTAL</th>
+          <th class="px-2 py-1">BROKER CHARGES</th>
+          <th class="px-2 py-1">MISC CHARGES</th>
+          <th class="px-2 py-1">DATE</th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-t>
+        <tr
+          class="border-b border-divider hover:bg-surfaceHover transition-colors duration-150"
+        >
+          <td class="px-2 py-1">{{ t.stockName }}</td>
+          <td class="px-2 py-1">{{ t.assetType }}</td>
+          <td class="px-2 py-1">{{ t.exchangeName }}</td>
+          <td class="px-2 py-1">{{ t.brokerName }}</td>
+          <td
+            class="px-2 py-1"
+            [ngClass]="{
+              'buy-cell': t.transactionType === 'BUY',
+              'sell-cell': t.transactionType === 'SELL',
+            }"
+          >
+            {{ t.transactionType }}
+          </td>
+          <td class="px-2 py-1">{{ t.quantity }}</td>
+          <td class="px-2 py-1">₹{{ t.price | number: '1.2-2' }}</td>
+          <td class="px-2 py-1">₹{{ t.totalValue | number: '1.2-2' }}</td>
+          <td class="px-2 py-1">₹{{ t.brokerCharges || 0 }}</td>
+          <td class="px-2 py-1">₹{{ t.miscCharges || 0 }}</td>
+          <td class="px-2 py-1">{{ t.transactionDate }}</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </section>
+
+  <section
+    class="border border-[#333333] rounded-xl bg-[#191919] overflow-hidden animate-fade-in-up stagger-4"
+  >
+    <div
+      class="overflow-hidden transition-all duration-500 ease-in-out"
+      [style.maxHeight]="isExpanded ? '3000px' : '0'"
+      [style.opacity]="isExpanded ? 1 : 0"
+    >
+      <div class="p-6">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+  
+          <div
+            class="rounded-xl border border-[#3A3A3A] bg-gradient-to-b from-[#1f1f1f] to-[#171717] shadow-lg overflow-hidden"
+          >
+            <div class="flex items-center gap-3 p-5 border-b border-[#2a2a2a]">
+              <div class="bg-yellow-400 p-3 rounded-xl">
+                <lucide-icon
+                  name="database"
+                  class="w-6 h-6"
+                ></lucide-icon>
+              </div>
+              <div>
+                <h3 class="text-lg font-semibold text-white">
+                  Temporary Transactions
+                </h3>
+                <p class="text-xs text-gray-400">
+                  {{ temporaryTransactions.length }} pending
+                </p>
+              </div>
+            </div>
+
+            <div class="p-4">
+              <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr class="text-gray-400 border-b border-[#2a2a2a]">
+                      <th class="p-2 text-left">ID</th>
+                      <th class="p-2 text-left">Stock</th>
+                      <th class="p-2 text-left">Qty</th>
+                      <th class="p-2 text-left">Status</th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    <tr *ngIf="temporaryTransactions.length === 0">
+                      <td colspan="4" class="text-center py-8 text-gray-500">
+                        <lucide-icon
+                          name="alert-circle"
+                          class="w-8 h-8 mx-auto mb-2 opacity-50"
+                        ></lucide-icon>
+                        <p>No temporary transactions</p>
+                      </td>
+                    </tr>
+
+                    <tr
+                      *ngFor="let t of temporaryTransactions"
+                      class="border-b border-[#2a2a2a] hover:bg-[#222222] transition-colors"
+                    >
+                      <td class="p-2 text-gray-300">{{ t.id }}</td>
+                      <td class="p-2 text-white font-semibold">
+                        {{ t.stock }}
+                      </td>
+                      <td class="p-2 text-white">{{ t.quantity }}</td>
+                      <td class="p-2">
+                        <span
+                          class="inline-flex items-center px-2 py-1 rounded-md text-xs border border-yellow-400/40 bg-yellow-400/10 text-yellow-400"
+                        >
+                          {{ t.status }}
+                        </span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+
+          <div
+            class="rounded-xl border border-[#3A3A3A] bg-gradient-to-b from-[#1f1f1f] to-[#171717] shadow-lg overflow-hidden"
+          >
+            <div class="flex items-center gap-3 p-5 border-b border-[#2a2a2a]">
+              <div class="bg-blue-400 p-3 rounded-xl">
+                <lucide-icon
+                  name="briefcase"
+                  class="w-6 h-6"
+                ></lucide-icon>
+              </div>
+              <div>
+                <h3 class="text-lg font-semibold text-white">
+                  Portfolio Transactions
+                </h3>
+                <p class="text-xs text-gray-400">
+                  {{ portfolioTransactions.length }} completed
+                </p>
+              </div>
+            </div>
+
+            <div class="p-4">
+              <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr class="text-gray-400 border-b border-[#2a2a2a]">
+                      <th class="p-2 text-left">ID</th>
+                      <th class="p-2 text-left">Stock</th>
+                      <th class="p-2 text-left">Qty</th>
+                      <th class="p-2 text-left">Status</th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    <tr *ngIf="portfolioTransactions.length === 0">
+                      <td colspan="4" class="text-center py-8 text-gray-500">
+                        <lucide-icon
+                          name="alert-circle"
+                          class="w-8 h-8 mx-auto mb-2 opacity-50"
+                        ></lucide-icon>
+                        <p>No portfolio transactions</p>
+                      </td>
+                    </tr>
+
+                    <tr
+                      *ngFor="let t of portfolioTransactions"
+                      class="border-b border-[#2a2a2a] hover:bg-[#222222] transition-colors"
+                    >
+                      <td class="p-2 text-gray-300">{{ t.id }}</td>
+                      <td class="p-2 text-white font-semibold">
+                        {{ t.stock }}
+                      </td>
+                      <td class="p-2 text-white">{{ t.quantity }}</td>
+                      <td class="p-2">
+                        <span
+                          class="inline-flex items-center px-2 py-1 rounded-md text-xs border border-blue-400/40 bg-blue-400/10 text-blue-400"
+                        >
+                          {{ t.status }}
+                        </span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</app-expansion-panel> -->
+
+<app-expansion-panel
+  [title]="'Transactions'"
+  [subtitle]="'View temporary and current transactions'"
+  [titleIcon]="'Database'"
+  [iconBgClass]="'bg-gradient-to-br from-[#10A37F] to-[#0D8968] p-2 rounded-lg text-white'"
+  class="animate-fade-in-up stagger-2"
+>
+  <section class="border border-[#333] rounded-xl bg-[#191919] overflow-hidden animate-fade-in-up">
+    <div class="overflow-hidden transition-all duration-500" [style.maxHeight]="isExpanded ? '3000px' : '0'">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+          <!-- ========================= -->
+          <!-- TEMPORARY TRANSACTIONS -->
+          <!-- ========================= -->
+          <div class="rounded-xl border border-[#3A3A3A] bg-gradient-to-b from-[#1f1f1f] to-[#171717] shadow-lg overflow-hidden">
+            <div class="flex items-center gap-3 p-5 border-b border-[#2a2a2a]">
+              <div class="bg-yellow-400 p-3 rounded-xl">
+                <lucide-icon name="database" class="w-6 h-6"></lucide-icon>
+              </div>
+
+              <div>
+                <h3 class="text-lg font-semibold text-white">Temporary Transactions</h3>
+                <p class="text-xs text-gray-400">
+                  {{ temporaryTransactions.length }} pending
+                </p>
+              </div>
+            </div>
+
+            <div class="p-4">
+
+              <div *ngIf="loadingTemp" class="text-center py-6 text-gray-400">Loading...</div>
+
+              <div class="overflow-x-auto" *ngIf="!loadingTemp">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr class="text-gray-400 border-b border-[#2a2a2a]">
+                      <th class="p-2 text-left">Stock</th>
+                      <th class="p-2 text-left">Qty</th>
+                      <th class="p-2 text-left">Type</th>
+                      <th class="p-2 text-left">Price</th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    <tr *ngIf="temporaryTransactions.length === 0">
+                      <td colspan="4" class="py-6 text-center text-gray-600">
+                        No temporary transactions
+                      </td>
+                    </tr>
+
+                    <tr *ngFor="let t of temporaryTransactions" class="border-b border-[#2a2a2a] hover:bg-[#222]">
+                      <td class="p-2 text-white">{{ t.stockName }}</td>
+                      <td class="p-2">{{ t.quantity }}</td>
+                      <td class="p-2">{{ t.transactionType }}</td>
+                      <td class="p-2">₹{{ t.price | number: '1.2-2' }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- ========================= -->
+          <!-- PORTFOLIO TRANSACTIONS -->
+          <!-- ========================= -->
+          <div class="rounded-xl border border-[#3A3A3A] bg-gradient-to-b from-[#1f1f1f] to-[#171717] shadow-lg overflow-hidden">
+            
+            <div class="flex items-center gap-3 p-5 border-b border-[#2a2a2a]">
+              <div class="bg-blue-400 p-3 rounded-xl">
+                <lucide-icon name="briefcase" class="w-6 h-6"></lucide-icon>
+              </div>
+
+              <div>
+                <h3 class="text-lg font-semibold text-white">Current Transactions</h3>
+                <p class="text-xs text-gray-400">
+                  {{ portfolioTransactions.length }} records
+                </p>
+              </div>
+            </div>
+
+            <div class="p-4">
+
+              <div *ngIf="loadingPortfolio" class="text-center py-6 text-gray-400">Loading...</div>
+
+              <div class="overflow-x-auto" *ngIf="!loadingPortfolio">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr class="text-gray-400 border-b border-[#2a2a2a]">
+                      <th class="p-2 text-left">Stock</th>
+                      <th class="p-2 text-left">Qty</th>
+                      <th class="p-2 text-left">Type</th>
+                      <th class="p-2 text-left">Price</th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    <tr *ngIf="portfolioTransactions.length === 0">
+                      <td colspan="4" class="py-6 text-center text-gray-600">
+                        No current transactions
+                      </td>
+                    </tr>
+
+                    <tr *ngFor="let t of portfolioTransactions" class="border-b border-[#2a2a2a] hover:bg-[#222]">
+                      <td class="p-2 text-white">{{ t.stockName }}</td>
+                      <td class="p-2">{{ t.quantity }}</td>
+                      <td class="p-2">{{ t.transactionType }}</td>
+                      <td class="p-2">₹{{ t.price | number: '1.2-2' }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+      </div>
+  </section>
+</app-expansion-panel>
+
