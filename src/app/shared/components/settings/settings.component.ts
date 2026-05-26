@@ -1,21 +1,23 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 import { NotificationService } from '../../../services/notification.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-// Note: Icon imports omitted for brevity.
+import { LucideIconsModule } from '../../../core/icons/lucide-icons.module';
+import { AuthService } from '../../../services/auth.service';
 
 @Component({
   selector: 'app-settings',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, LucideIconsModule],
   templateUrl: './settings.component.html',
   styleUrl: './settings.component.css'
 })
 export class SettingsComponent {
-  // State properties (replaces useState)
-  activeTab: 'account' | 'notifications' | 'security' | 'preferences' = 'account';
+  @Output() navigate = new EventEmitter<string>();
+
+  activeTab: 'account' | 'notifications' | 'security' | 'preferences' | 'billing' = 'account';
   
-  // Account settings state (bound via [(ngModel)] in template)
+  // Account settings state
   fullName: string = 'John Doe';
   email: string = 'john.doe@example.com';
   phone: string = '+1 (555) 123-4567';
@@ -28,6 +30,9 @@ export class SettingsComponent {
   
   // Security state
   twoFactorEnabled: boolean = false;
+  oldPassword: string = '';
+  newPasswordValue: string = '';
+  confirmPasswordValue: string = '';
   
   // Preferences state
   theme: string = 'dark';
@@ -35,63 +40,91 @@ export class SettingsComponent {
   currency: string = 'USD';
   dateFormat: string = 'MM/DD/YYYY';
 
-  constructor(private notificationService: NotificationService) { 
-    // showToast prop is replaced by injecting NotificationService
+  tabs = [
+    { id: 'account' as const, label: 'Account', icon: 'user' },
+    { id: 'billing' as const, label: 'Billing', icon: 'credit-card' },
+    { id: 'notifications' as const, label: 'Notifications', icon: 'bell' },
+    { id: 'security' as const, label: 'Security', icon: 'shield' },
+    { id: 'preferences' as const, label: 'Preferences', icon: 'palette' },
+  ];
+
+  constructor(
+    private notificationService: NotificationService,
+    private authService: AuthService
+  ) {
+    const userEmail = this.authService.getUserEmail();
+    if (userEmail) {
+      this.email = userEmail;
+    }
   }
 
-  setActiveTab(tab: 'account' | 'notifications' | 'security' | 'preferences'): void {
+  setActiveTab(tab: 'account' | 'notifications' | 'security' | 'preferences' | 'billing'): void {
     this.activeTab = tab;
   }
 
-  // --- Handlers replacing functions that called showToast ---
-
   handleSaveAccount(): void {
-    // In a real app, you would send this data to a backend service here.
-    this.notificationService.addNotification(
-      'Account settings saved successfully', 
-      `Saved details for ${this.fullName}.`, 
-      'success'
-    );
+    this.notificationService.addNotification('Account settings saved successfully', '', 'success');
   }
 
   handleSaveNotifications(): void {
+    this.notificationService.addNotification('Notification preferences updated', '', 'success');
+  }
+
+  handleEnableTwoFactor(): void {
+    this.twoFactorEnabled = !this.twoFactorEnabled;
     this.notificationService.addNotification(
-      'Notification preferences updated', 
-      'Your communication settings have been saved.', 
-      'info'
+      this.twoFactorEnabled ? 'Two-factor authentication enabled' : 'Two-factor authentication disabled',
+      '',
+      this.twoFactorEnabled ? 'success' : 'warning'
     );
   }
 
-  handleSaveSecurity(): void {
-    this.notificationService.addNotification(
-      'Security preferences updated', 
-      'Your security settings have been saved.', 
-      'success'
-    );
+  handleChangePassword(): void {
+    if (!this.oldPassword || !this.newPasswordValue || !this.confirmPasswordValue) {
+      this.notificationService.addNotification('All password fields are required', '', 'error');
+      return;
+    }
+
+    if (this.newPasswordValue !== this.confirmPasswordValue) {
+      this.notificationService.addNotification('New passwords do not match', '', 'error');
+      return;
+    }
+
+    const email = this.authService.getUserEmail();
+    if (!email) {
+      this.notificationService.addNotification('User email not found. Please log in again.', '', 'error');
+      return;
+    }
+
+    this.authService.changePassword(email, this.oldPassword, this.newPasswordValue).subscribe({
+      next: () => {
+        this.notificationService.addNotification('Password changed successfully', '', 'success');
+        this.oldPassword = '';
+        this.newPasswordValue = '';
+        this.confirmPasswordValue = '';
+      },
+      error: (err) => {
+        const errorMsg = err?.error?.message || 'Password change failed. Please check your current password.';
+        this.notificationService.addNotification(errorMsg, '', 'error');
+      }
+    });
   }
 
   handleSavePreferences(): void {
-    this.notificationService.addNotification(
-      'General preferences updated', 
-      `New theme: ${this.theme}, Language: ${this.language}`, 
-      'success'
-    );
+    this.notificationService.addNotification('Preferences saved successfully', '', 'success');
   }
 
   handleExportData(): void {
-    this.notificationService.addNotification(
-      'Data Export Initiated', 
-      'Your data export is processing. You will receive an email shortly.', 
-      'info'
-    );
+    this.notificationService.addNotification('Your data export has been initiated. You will receive an email shortly.', '', 'info');
   }
 
   handleDeleteAccount(): void {
-    // Confirmation logic would go here
-    this.notificationService.addNotification(
-      'Account Deletion Requested', 
-      'You will receive a confirmation link via email to proceed.', 
-      'warning'
-    );
+    this.notificationService.addNotification('Account deletion is a sensitive operation. Please contact support.', '', 'warning');
+  }
+
+  onNavigate(page: string): void {
+    this.navigate.emit(page);
   }
 }
+
+

@@ -22,13 +22,25 @@ import {
   EyeOff,
   LogOut,
   ChevronDown,
-  AlertCircle,
-  Download,
-  PlayCircle,
-  RotateCw,
+  AlertCircle, 
+  Download, 
+  PlayCircle, 
+  RotateCw, 
   Upload,
   Briefcase,
   SettingsIcon,
+  Mail,
+  Lock,
+  Shield,
+  Palette,
+  Globe,
+  Trash2,
+  CreditCard,
+  Crown,
+  XCircle,
+  AlertTriangle,
+  Info,
+  CheckCheck
 } from 'lucide-angular';
 
 export const LUCIDE_ICONS = {
@@ -61,5 +73,17 @@ export const LUCIDE_ICONS = {
   RotateCw, 
   Upload,
   Briefcase,
-  SettingsIcon
+  SettingsIcon,
+  Mail,
+  Lock,
+  Shield,
+  Palette,
+  Globe,
+  Trash2,
+  CreditCard,
+  Crown,
+  XCircle,
+  AlertTriangle,
+  Info,
+  CheckCheck
 };

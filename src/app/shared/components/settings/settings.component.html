@@ -1,146 +1,529 @@
-<section class="min-h-screen bg-[#191919] py-8">
-<div class="max-w-6xl mx-auto p-4 md:p-6 lg:p-8">
-  <div class="max-w-4xl mx-auto">
-    <h1 class="text-3xl font-bold text-white mb-6">User Settings</h1>
-
-    <div class="bg-[#1D1D1D] border border-[#3A3A3A] rounded-xl p-3 mb-8">
-      <nav class="flex space-x-2" role="tablist">
-        <button
-          (click)="setActiveTab('account')"
-          [ngClass]="{
-            'bg-[#2A2A2A] text-white': activeTab === 'account',
-            'text-[#B3B3B3] hover:text-white hover:bg-[#202020]': activeTab !== 'account'
-          }"
-          class="px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-          Account
-        </button>
-        <button
-          (click)="setActiveTab('notifications')"
-          [ngClass]="{
-            'bg-[#2A2A2A] text-white': activeTab === 'notifications',
-            'text-[#B3B3B3] hover:text-white hover:bg-[#202020]': activeTab !== 'notifications'
-          }"
-          class="px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg>
-          Notifications
-        </button>
-        </nav>
+<div class="min-h-screen bg-[#191919] py-8">
+  <div class="max-w-6xl mx-auto px-4 md:px-6 lg:px-8">
+    <!-- Header -->
+    <div class="mb-8 flow-slide-up flow-delay-1">
+      <h1 class="text-2xl md:text-3xl text-white mb-2">Settings</h1>
+      <p class="text-[#B3B3B3]">Manage your account settings and preferences</p>
     </div>
 
-    <div class="space-y-8">
-      <div *ngIf="activeTab === 'account'">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div class="bg-[#232323] border border-[#3A3A3A] rounded-xl p-6 space-y-4">
-            <div>
-              <h2 class="text-xl text-white mb-1">Personal Information</h2>
-              <p class="text-sm text-[#B3B3B3]">Update your name and contact details.</p>
-            </div>
-
-            <div>
-              <label for="fullName" class="text-sm font-medium text-white mb-2 block">Full Name</label>
-              <input
-                id="fullName"
-                type="text"
-                [(ngModel)]="fullName"
-                class="w-full px-4 py-3 bg-[#1D1D1D] text-white border border-[#3A3A3A] rounded-lg focus:border-[#10A37F] focus:ring-[#10A37F]/50 outline-none transition-colors"
-                placeholder="John Doe"
-              />
-            </div>
-
-            <div>
-              <label for="email" class="text-sm font-medium text-white mb-2 block">Email</label>
-              <input
-                id="email"
-                type="email"
-                [(ngModel)]="email"
-                class="w-full px-4 py-3 bg-[#1D1D1D] text-white border border-[#3A3A3A] rounded-lg focus:border-[#10A37F] focus:ring-[#10A37F]/50 outline-none transition-colors"
-                placeholder="john.doe@example.com"
-              />
-            </div>
-
-            <div>
-              <label for="phone" class="text-sm font-medium text-white mb-2 block">Phone</label>
-              <input
-                id="phone"
-                type="text"
-                [(ngModel)]="phone"
-                class="w-full px-4 py-3 bg-[#1D1D1D] text-white border border-[#3A3A3A] rounded-lg focus:border-[#10A37F] focus:ring-[#10A37F]/50 outline-none transition-colors"
-                placeholder="+1 (555) 123-4567"
-              />
-            </div>
-            
+    <div class="flex flex-col lg:flex-row gap-6">
+      <!-- Sidebar Tabs -->
+      <div class="lg:w-64 flow-slide-right flow-delay-2">
+        <!-- Mobile & Tablet: Horizontal tabs -->
+        <div class="lg:hidden bg-[#232323] border border-[#3A3A3A] rounded-xl p-2">
+          <div class="flex gap-2 overflow-x-auto scrollbar-hide">
             <button
-              (click)="handleSaveAccount()"
-              class="w-full px-6 py-3 bg-[#10A37F] text-white rounded-lg hover:bg-[#0E8A6F] transition-all flex items-center justify-center gap-2 mt-6"
+              *ngFor="let tab of tabs"
+              (click)="setActiveTab(tab.id)"
+              [ngClass]="{
+                'bg-gradient-to-r from-[#10A37F]/20 to-[#1AA97D]/20 text-white border border-[#10A37F]/30': activeTab === tab.id,
+                'text-[#B3B3B3] hover:text-white hover:bg-[#2A2A2A] border-transparent': activeTab !== tab.id
+              }"
+              class="flex items-center gap-2 px-4 py-3 rounded-lg transition-all whitespace-nowrap border"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-              Save Account Details
+              <lucide-icon [name]="tab.icon" class="h-5 w-5 flex-shrink-0"></lucide-icon>
+              <span class="font-medium hidden sm:inline">{{ tab.label }}</span>
             </button>
           </div>
-
-          <div class="space-y-6">
-             <div class="bg-[#232323] border border-[#3A3A3A] rounded-xl p-6 space-y-4">
-                  <div>
-                    <h2 class="text-xl text-white mb-1">Data Management</h2>
-                    <p class="text-sm text-[#B3B3B3]">Manage your account data</p>
-                  </div>
-
-                  <button
-                    (click)="handleExportData()"
-                    class="w-full px-6 py-3 bg-[#2A2A2A] border border-[#3A3A3A] text-white rounded-lg hover:bg-[#353535] transition-all flex items-center justify-center gap-2"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                    Export My Data
-                  </button>
-
-                  <button
-                    (click)="handleDeleteAccount()"
-                    class="w-full px-6 py-3 bg-red-500/10 text-red-400 border border-red-500/20 rounded-lg hover:bg-red-500/20 hover:border-red-500/30 transition-all flex items-center justify-center gap-2"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg>
-                    Delete Account
-                  </button>
-                </div>
-          </div>
         </div>
-      </div>
 
-      <div *ngIf="activeTab === 'notifications'">
-        <div class="bg-[#232323] border border-[#3A3A3A] rounded-xl p-6 space-y-4">
-          <div>
-            <h2 class="text-xl text-white mb-1">Notification Preferences</h2>
-            <p class="text-sm text-[#B3B3B3]">Choose how you want to be notified.</p>
-          </div>
-          
-          <div class="flex justify-between items-center py-2 border-b border-[#2A2A2A]">
-            <label class="text-white">Email Notifications</label>
-            <input type="checkbox" [(ngModel)]="emailNotifications" class="h-5 w-5 rounded text-[#10A37F] focus:ring-[#10A37F]">
-          </div>
-
-          <div class="flex justify-between items-center py-2 border-b border-[#2A2A2A]">
-            <label class="text-white">Push Notifications</label>
-            <input type="checkbox" [(ngModel)]="pushNotifications" class="h-5 w-5 rounded text-[#10A37F] focus:ring-[#10A37F]">
-          </div>
-
-          <div class="flex justify-between items-center py-2">
-            <label class="text-white">Portfolio Alerts (e.g., major price changes)</label>
-            <input type="checkbox" [(ngModel)]="portfolioAlerts" class="h-5 w-5 rounded text-[#10A37F] focus:ring-[#10A37F]">
-          </div>
-
+        <!-- Desktop: Vertical tabs -->
+        <div class="hidden lg:block bg-[#232323] border border-[#3A3A3A] rounded-xl p-2 space-y-1">
           <button
-              (click)="handleSaveNotifications()"
-              class="px-6 py-3 bg-[#10A37F] text-white rounded-lg hover:bg-[#0E8A6F] transition-all flex items-center justify-center gap-2 mt-6"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-              Save Preferences
+            *ngFor="let tab of tabs"
+            (click)="setActiveTab(tab.id)"
+            [ngClass]="{
+              'bg-gradient-to-r from-[#10A37F]/20 to-[#1AA97D]/20 text-white border border-[#10A37F]/30': activeTab === tab.id,
+              'text-[#B3B3B3] hover:text-white hover:bg-[#2A2A2A] border-transparent': activeTab !== tab.id
+            }"
+            class="w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all text-left border"
+          >
+            <lucide-icon [name]="tab.icon" class="h-5 w-5"></lucide-icon>
+            <span class="font-medium">{{ tab.label }}</span>
           </button>
         </div>
       </div>
-      
+
+      <!-- Content Area -->
+      <div class="flex-1 flow-slide-left flow-delay-3">
+        <!-- Account Tab -->
+        <div *ngIf="activeTab === 'account'" class="bg-[#232323] border border-[#3A3A3A] rounded-xl p-6 space-y-6">
+          <div>
+            <h2 class="text-xl text-white mb-1">Account Information</h2>
+            <p class="text-sm text-[#B3B3B3]">Update your personal details</p>
+          </div>
+
+          <div class="space-y-4">
+            <!-- Full Name -->
+            <div>
+              <label class="block text-sm text-[#B3B3B3] mb-2">Full Name</label>
+              <div class="relative">
+                <lucide-icon name="user" class="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-[#666666]"></lucide-icon>
+                <input
+                  type="text"
+                  [(ngModel)]="fullName"
+                  class="w-full pl-10 pr-4 py-3 bg-[#2A2A2A] border border-[#3A3A3A] rounded-lg text-white placeholder-[#666666] focus:outline-none focus:border-[#10A37F] transition-colors"
+                  placeholder="Enter your full name"
+                />
+              </div>
+            </div>
+
+            <!-- Email -->
+            <div>
+              <label class="block text-sm text-[#B3B3B3] mb-2">Email Address</label>
+              <div class="relative">
+                <lucide-icon name="mail" class="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-[#666666]"></lucide-icon>
+                <input
+                  type="email"
+                  [(ngModel)]="email"
+                  class="w-full pl-10 pr-4 py-3 bg-[#2A2A2A] border border-[#3A3A3A] rounded-lg text-white placeholder-[#666666] focus:outline-none focus:border-[#10A37F] transition-colors"
+                  placeholder="Enter your email"
+                />
+              </div>
+            </div>
+
+            <!-- Phone -->
+            <div>
+              <label class="block text-sm text-[#B3B3B3] mb-2">Phone Number</label>
+              <input
+                type="tel"
+                [(ngModel)]="phone"
+                class="w-full px-4 py-3 bg-[#2A2A2A] border border-[#3A3A3A] rounded-lg text-white placeholder-[#666666] focus:outline-none focus:border-[#10A37F] transition-colors"
+                placeholder="Enter your phone number"
+              />
+            </div>
+
+            <!-- Save Button -->
+            <button
+              (click)="handleSaveAccount()"
+              class="w-full px-6 py-3 bg-gradient-to-r from-[#10A37F] to-[#0D8968] text-white rounded-lg hover:shadow-lg hover:shadow-[#10A37F]/30 transition-all flex items-center justify-center gap-2"
+            >
+              <lucide-icon name="check-circle-2" class="h-5 w-5"></lucide-icon>
+              Save Changes
+            </button>
+          </div>
+        </div>
+
+        <!-- Billing Tab -->
+        <div *ngIf="activeTab === 'billing'" class="bg-[#232323] border border-[#3A3A3A] rounded-xl p-6 space-y-6">
+          <div>
+            <h2 class="text-xl text-white mb-1">Billing & Subscription</h2>
+            <p class="text-sm text-[#B3B3B3]">Manage your subscription and billing details</p>
+          </div>
+
+          <!-- Current Plan Overview -->
+          <div class="p-6 bg-gradient-to-br from-[#10A37F]/10 to-[#8B5CF6]/10 border border-[#10A37F]/20 rounded-xl">
+            <div class="flex items-start justify-between mb-4">
+              <div>
+                <div class="flex items-center gap-2 mb-2">
+                  <lucide-icon name="crown" class="h-5 w-5 text-[#10A37F]"></lucide-icon>
+                  <h3 class="text-lg text-white font-medium">Free Plan</h3>
+                </div>
+                <p class="text-sm text-[#B3B3B3]">Perfect for getting started</p>
+              </div>
+              <div class="text-right">
+                <p class="text-2xl text-white font-semibold">₹0</p>
+                <p class="text-xs text-[#B3B3B3]">per month</p>
+              </div>
+            </div>
+            
+            <div class="space-y-2 mb-4">
+              <div class="flex items-center gap-2 text-sm text-[#E5E5E5]">
+                <lucide-icon name="check-circle-2" class="h-4 w-4 text-[#10A37F]"></lucide-icon>
+                <span>Up to 50 transactions</span>
+              </div>
+              <div class="flex items-center gap-2 text-sm text-[#E5E5E5]">
+                <lucide-icon name="check-circle-2" class="h-4 w-4 text-[#10A37F]"></lucide-icon>
+                <span>Basic portfolio tracking</span>
+              </div>
+              <div class="flex items-center gap-2 text-sm text-[#E5E5E5]">
+                <lucide-icon name="check-circle-2" class="h-4 w-4 text-[#10A37F]"></lucide-icon>
+                <span>Standard analytics</span>
+              </div>
+            </div>
+
+            <button
+              (click)="onNavigate('subscription')"
+              class="w-full px-6 py-3 bg-gradient-to-r from-[#10A37F] to-[#1AA97D] text-white rounded-lg hover:shadow-lg hover:shadow-[#10A37F]/20 transition-all flex items-center justify-center gap-2"
+            >
+              <lucide-icon name="crown" class="h-5 w-5"></lucide-icon>
+              Upgrade to Pro or Premium
+              <lucide-icon name="arrow-right" class="h-4 w-4"></lucide-icon>
+            </button>
+          </div>
+
+          <!-- Billing Information -->
+          <div class="space-y-3">
+            <h3 class="text-white font-medium">Billing Information</h3>
+            
+            <div class="p-4 bg-[#2A2A2A] border border-[#3A3A3A] rounded-lg">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 bg-[#10A37F]/10 rounded-lg flex items-center justify-center">
+                    <lucide-icon name="credit-card" class="h-5 w-5 text-[#10A37F]"></lucide-icon>
+                  </div>
+                  <div>
+                    <p class="text-white font-medium">No payment method</p>
+                    <p class="text-sm text-[#B3B3B3]">Add a payment method to upgrade</p>
+                  </div>
+                </div>
+                <button class="text-[#10A37F] hover:text-[#1AA97D] text-sm font-medium transition-colors">
+                  Add
+                </button>
+              </div>
+            </div>
+
+            <div class="p-4 bg-[#2A2A2A] border border-[#3A3A3A] rounded-lg">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-white font-medium mb-1">Billing History</p>
+                  <p class="text-sm text-[#B3B3B3]">No transactions yet</p>
+                </div>
+                <button class="text-[#10A37F] hover:text-[#1AA97D] text-sm font-medium transition-colors">
+                  View All
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Plan Comparison -->
+          <div class="p-6 bg-[#2A2A2A] border border-[#3A3A3A] rounded-xl">
+            <h3 class="text-white font-medium mb-4">Compare Plans</h3>
+            <div class="space-y-3 mb-4">
+              <div class="flex items-center justify-between text-sm">
+                <span class="text-[#B3B3B3]">Pro Plan</span>
+                <span class="text-white font-medium">₹499/month</span>
+              </div>
+              <div class="flex items-center justify-between text-sm">
+                <span class="text-[#B3B3B3]">Premium Plan</span>
+                <span class="text-white font-medium">₹999/month</span>
+              </div>
+            </div>
+            <button
+              (click)="onNavigate('subscription')"
+              class="w-full px-6 py-3 bg-[#353535] border border-[#3A3A3A] text-white rounded-lg hover:bg-[#3A3A3A] transition-all flex items-center justify-center gap-2"
+            >
+              View All Plans
+              <lucide-icon name="arrow-right" class="h-4 w-4"></lucide-icon>
+            </button>
+          </div>
+        </div>
+
+        <!-- Notifications Tab -->
+        <div *ngIf="activeTab === 'notifications'" class="bg-[#232323] border border-[#3A3A3A] rounded-xl p-6 space-y-6">
+          <div>
+            <h2 class="text-xl text-white mb-1">Notification Preferences</h2>
+            <p class="text-sm text-[#B3B3B3]">Manage how you receive notifications</p>
+          </div>
+
+          <div class="space-y-4">
+            <!-- Email Notifications -->
+            <div class="flex items-center justify-between p-4 bg-[#2A2A2A] border border-[#3A3A3A] rounded-lg">
+              <div class="flex-1">
+                <h4 class="text-white font-medium mb-1">Email Notifications</h4>
+                <p class="text-sm text-[#B3B3B3]">Receive notifications via email</p>
+              </div>
+              <button
+                (click)="emailNotifications = !emailNotifications"
+                class="relative w-12 h-6 rounded-full transition-colors"
+                [ngClass]="emailNotifications ? 'bg-[#10A37F]' : 'bg-[#3A3A3A]'"
+              >
+                <div
+                  class="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform"
+                  [ngClass]="emailNotifications ? 'translate-x-6' : 'translate-x-0'"
+                ></div>
+              </button>
+            </div>
+
+            <!-- Push Notifications -->
+            <div class="flex items-center justify-between p-4 bg-[#2A2A2A] border border-[#3A3A3A] rounded-lg">
+              <div class="flex-1">
+                <h4 class="text-white font-medium mb-1">Push Notifications</h4>
+                <p class="text-sm text-[#B3B3B3]">Receive in-app notifications</p>
+              </div>
+              <button
+                (click)="pushNotifications = !pushNotifications"
+                class="relative w-12 h-6 rounded-full transition-colors"
+                [ngClass]="pushNotifications ? 'bg-[#10A37F]' : 'bg-[#3A3A3A]'"
+              >
+                <div
+                  class="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform"
+                  [ngClass]="pushNotifications ? 'translate-x-6' : 'translate-x-0'"
+                ></div>
+              </button>
+            </div>
+
+            <!-- Weekly Reports -->
+            <div class="flex items-center justify-between p-4 bg-[#2A2A2A] border border-[#3A3A3A] rounded-lg">
+              <div class="flex-1">
+                <h4 class="text-white font-medium mb-1">Weekly Reports</h4>
+                <p class="text-sm text-[#B3B3B3]">Get weekly portfolio summaries</p>
+              </div>
+              <button
+                (click)="weeklyReports = !weeklyReports"
+                class="relative w-12 h-6 rounded-full transition-colors"
+                [ngClass]="weeklyReports ? 'bg-[#10A37F]' : 'bg-[#3A3A3A]'"
+              >
+                <div
+                  class="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform"
+                  [ngClass]="weeklyReports ? 'translate-x-6' : 'translate-x-0'"
+                ></div>
+              </button>
+            </div>
+
+            <!-- Portfolio Alerts -->
+            <div class="flex items-center justify-between p-4 bg-[#2A2A2A] border border-[#3A3A3A] rounded-lg">
+              <div class="flex-1">
+                <h4 class="text-white font-medium mb-1">Portfolio Alerts</h4>
+                <p class="text-sm text-[#B3B3B3]">Get alerts for significant changes</p>
+              </div>
+              <button
+                (click)="portfolioAlerts = !portfolioAlerts"
+                class="relative w-12 h-6 rounded-full transition-colors"
+                [ngClass]="portfolioAlerts ? 'bg-[#10A37F]' : 'bg-[#3A3A3A]'"
+              >
+                <div
+                  class="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform"
+                  [ngClass]="portfolioAlerts ? 'translate-x-6' : 'translate-x-0'"
+                ></div>
+              </button>
+            </div>
+
+            <!-- Save Button -->
+            <button
+              (click)="handleSaveNotifications()"
+              class="w-full px-6 py-3 bg-gradient-to-r from-[#10A37F] to-[#0D8968] text-white rounded-lg hover:shadow-lg hover:shadow-[#10A37F]/30 transition-all flex items-center justify-center gap-2"
+            >
+              <lucide-icon name="check-circle-2" class="h-5 w-5"></lucide-icon>
+              Save Preferences
+            </button>
+          </div>
+        </div>
+
+        <!-- Security Tab -->
+        <div *ngIf="activeTab === 'security'" class="space-y-4">
+          <!-- Two-Factor Authentication -->
+          <div class="bg-[#232323] border border-[#3A3A3A] rounded-xl p-6">
+            <div class="flex items-start justify-between gap-4">
+              <div class="flex-1">
+                <h3 class="text-lg text-white mb-2">Two-Factor Authentication</h3>
+                <p class="text-sm text-[#B3B3B3] mb-4">
+                  Add an extra layer of security to your account
+                </p>
+                <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm"
+                  [ngClass]="twoFactorEnabled 
+                    ? 'bg-[#10A37F]/10 text-[#10A37F] border border-[#10A37F]/20' 
+                    : 'bg-[#666666]/10 text-[#666666] border border-[#666666]/20'">
+                  {{ twoFactorEnabled ? 'Enabled' : 'Disabled' }}
+                </div>
+              </div>
+              <lucide-icon name="shield" 
+                class="h-12 w-12" 
+                [ngClass]="twoFactorEnabled ? 'text-[#10A37F]' : 'text-[#666666]'">
+              </lucide-icon>
+            </div>
+            <button
+              (click)="handleEnableTwoFactor()"
+              class="w-full mt-4 px-6 py-3 rounded-lg transition-all flex items-center justify-center gap-2"
+              [ngClass]="twoFactorEnabled
+                ? 'bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20'
+                : 'bg-gradient-to-r from-[#10A37F] to-[#0D8968] text-white hover:shadow-lg hover:shadow-[#10A37F]/30'"
+            >
+              {{ twoFactorEnabled ? 'Disable' : 'Enable' }} Two-Factor Authentication
+            </button>
+          </div>
+
+          <!-- Change Password -->
+          <div class="bg-[#232323] border border-[#3A3A3A] rounded-xl p-6 space-y-6">
+            <div class="flex items-start justify-between gap-4">
+              <div class="flex-1">
+                <h3 class="text-lg text-white mb-2">Change Password</h3>
+                <p class="text-sm text-[#B3B3B3]">
+                  Enter your current password and choose a new one
+                </p>
+              </div>
+              <lucide-icon name="lock" class="h-12 w-12 text-[#666666]"></lucide-icon>
+            </div>
+
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm text-[#B3B3B3] mb-2">Current Password</label>
+                <div class="relative">
+                  <lucide-icon name="lock" class="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-[#666666]"></lucide-icon>
+                  <input
+                    type="password"
+                    [(ngModel)]="oldPassword"
+                    class="w-full pl-10 pr-4 py-3 bg-[#2A2A2A] border border-[#3A3A3A] rounded-lg text-white placeholder-[#666666] focus:outline-none focus:border-[#10A37F] transition-colors"
+                    placeholder="Enter current password"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-sm text-[#B3B3B3] mb-2">New Password</label>
+                <div class="relative">
+                  <lucide-icon name="shield" class="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-[#666666]"></lucide-icon>
+                  <input
+                    type="password"
+                    [(ngModel)]="newPasswordValue"
+                    class="w-full pl-10 pr-4 py-3 bg-[#2A2A2A] border border-[#3A3A3A] rounded-lg text-white placeholder-[#666666] focus:outline-none focus:border-[#10A37F] transition-colors"
+                    placeholder="Enter new password"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-sm text-[#B3B3B3] mb-2">Confirm New Password</label>
+                <div class="relative">
+                  <lucide-icon name="check-circle-2" class="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-[#666666]"></lucide-icon>
+                  <input
+                    type="password"
+                    [(ngModel)]="confirmPasswordValue"
+                    class="w-full pl-10 pr-4 py-3 bg-[#2A2A2A] border border-[#3A3A3A] rounded-lg text-white placeholder-[#666666] focus:outline-none focus:border-[#10A37F] transition-colors"
+                    placeholder="Confirm new password"
+                  />
+                </div>
+              </div>
+
+              <button
+                (click)="handleChangePassword()"
+                class="w-full px-6 py-3 bg-gradient-to-r from-[#10A37F] to-[#0D8968] text-white rounded-lg hover:shadow-lg hover:shadow-[#10A37F]/30 transition-all flex items-center justify-center gap-2 mt-4"
+              >
+                <lucide-icon name="lock" class="h-5 w-5"></lucide-icon>
+                Update Password
+              </button>
+            </div>
+          </div>
+
+
+          <!-- Active Sessions -->
+          <div class="bg-[#232323] border border-[#3A3A3A] rounded-xl p-6">
+            <h3 class="text-lg text-white mb-4">Active Sessions</h3>
+            <div class="space-y-3">
+              <div class="p-4 bg-[#2A2A2A] border border-[#3A3A3A] rounded-lg">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <p class="text-white font-medium">Chrome on Windows</p>
+                    <p class="text-sm text-[#B3B3B3]">San Francisco, CA • Current session</p>
+                  </div>
+                  <span class="text-xs text-[#10A37F] px-2 py-1 bg-[#10A37F]/10 rounded">Active</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Preferences Tab -->
+        <div *ngIf="activeTab === 'preferences'" class="space-y-4">
+          <!-- Display Preferences -->
+          <div class="bg-[#232323] border border-[#3A3A3A] rounded-xl p-6 space-y-4">
+            <div>
+              <h2 class="text-xl text-white mb-1">Display Preferences</h2>
+              <p class="text-sm text-[#B3B3B3]">Customize your app appearance</p>
+            </div>
+
+            <!-- Theme -->
+            <div>
+              <label class="block text-sm text-[#B3B3B3] mb-2">Theme</label>
+              <select
+                [(ngModel)]="theme"
+                class="w-full px-4 py-3 bg-[#2A2A2A] border border-[#3A3A3A] rounded-lg text-white focus:outline-none focus:border-[#10A37F] transition-colors"
+              >
+                <option value="dark">Dark Mode</option>
+                <option value="light">Light Mode</option>
+                <option value="auto">Auto (System)</option>
+              </select>
+            </div>
+
+            <!-- Language -->
+            <div>
+              <label class="block text-sm text-[#B3B3B3] mb-2">Language</label>
+              <div class="relative">
+                <lucide-icon name="globe" class="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-[#666666]"></lucide-icon>
+                <select
+                  [(ngModel)]="language"
+                  class="w-full pl-10 pr-4 py-3 bg-[#2A2A2A] border border-[#3A3A3A] rounded-lg text-white focus:outline-none focus:border-[#10A37F] transition-colors"
+                >
+                  <option value="en">English</option>
+                  <option value="es">Spanish</option>
+                  <option value="fr">French</option>
+                  <option value="de">German</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Regional Preferences -->
+          <div class="bg-[#232323] border border-[#3A3A3A] rounded-xl p-6 space-y-4">
+            <div>
+              <h2 class="text-xl text-white mb-1">Regional Settings</h2>
+              <p class="text-sm text-[#B3B3B3]">Configure regional preferences</p>
+            </div>
+
+            <!-- Currency -->
+            <div>
+              <label class="block text-sm text-[#B3B3B3] mb-2">Default Currency</label>
+              <select
+                [(ngModel)]="currency"
+                class="w-full px-4 py-3 bg-[#2A2A2A] border border-[#3A3A3A] rounded-lg text-white focus:outline-none focus:border-[#10A37F] transition-colors"
+              >
+                <option value="USD">USD - US Dollar</option>
+                <option value="EUR">EUR - Euro</option>
+                <option value="GBP">GBP - British Pound</option>
+                <option value="JPY">JPY - Japanese Yen</option>
+              </select>
+            </div>
+
+            <!-- Date Format -->
+            <div>
+              <label class="block text-sm text-[#B3B3B3] mb-2">Date Format</label>
+              <select
+                [(ngModel)]="dateFormat"
+                class="w-full px-4 py-3 bg-[#2A2A2A] border border-[#3A3A3A] rounded-lg text-white focus:outline-none focus:border-[#10A37F] transition-colors"
+              >
+                <option value="MM/DD/YYYY">MM/DD/YYYY</option>
+                <option value="DD/MM/YYYY">DD/MM/YYYY</option>
+                <option value="YYYY-MM-DD">YYYY-MM-DD</option>
+              </select>
+            </div>
+
+            <!-- Save Button -->
+            <button
+              (click)="handleSavePreferences()"
+              class="w-full px-6 py-3 bg-gradient-to-r from-[#10A37F] to-[#0D8968] text-white rounded-lg hover:shadow-lg hover:shadow-[#10A37F]/30 transition-all flex items-center justify-center gap-2"
+            >
+              <lucide-icon name="check-circle-2" class="h-5 w-5"></lucide-icon>
+              Save Preferences
+            </button>
+          </div>
+
+          <!-- Data Management -->
+          <div class="bg-[#232323] border border-[#3A3A3A] rounded-xl p-6 space-y-4">
+            <div>
+              <h2 class="text-xl text-white mb-1">Data Management</h2>
+              <p class="text-sm text-[#B3B3B3]">Manage your account data</p>
+            </div>
+
+            <!-- Export Data -->
+            <button
+              (click)="handleExportData()"
+              class="w-full px-6 py-3 bg-[#2A2A2A] border border-[#3A3A3A] text-white rounded-lg hover:bg-[#353535] transition-all flex items-center justify-center gap-2"
+            >
+              <lucide-icon name="download" class="h-5 w-5"></lucide-icon>
+              Export My Data
+            </button>
+
+            <!-- Delete Account -->
+            <button
+              (click)="handleDeleteAccount()"
+              class="w-full px-6 py-3 bg-red-500/10 text-red-400 border border-red-500/20 rounded-lg hover:bg-red-500/20 hover:border-red-500/30 transition-all flex items-center justify-center gap-2"
+            >
+              <lucide-icon name="trash-2" class="h-5 w-5"></lucide-icon>
+              Delete Account
+            </button>
+          </div>
+        </div>
       </div>
+    </div>
   </div>
 </div>
-</section>
