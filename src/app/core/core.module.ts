@@ -1,11 +1,8 @@
 // core/core.module.ts
 
 import { NgModule } from '@angular/core';
-import { AuthGuard } from './auth.guard';
 
 @NgModule({
-  providers: [
-    AuthGuard,
-  ]
+  providers: []
 })
-export class CoreModule {}
+export class CoreModule { }
