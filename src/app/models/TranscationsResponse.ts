@@ -1,4 +1,5 @@
 export interface TransactionsResponse {
+  id: any;
   email: string;
   stockCode: string;
   stockName: string;

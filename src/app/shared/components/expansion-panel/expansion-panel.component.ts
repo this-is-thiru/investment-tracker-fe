@@ -4,7 +4,7 @@ import { LucideIconsModule } from '../../../core/icons/lucide-icons.module';
 @Component({
   selector: 'app-expansion-panel',
   standalone: true,
-  imports: [CommonModule, LucideIconsModule],
+  imports: [LucideIconsModule],
   templateUrl: './expansion-panel.component.html',
   styleUrls: ['./expansion-panel.component.scss'],
 })

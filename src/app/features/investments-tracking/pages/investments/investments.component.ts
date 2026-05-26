@@ -28,7 +28,7 @@ export class InvestmentsComponent {
   excelData: any[] = [];
   headers: string[] = [];
 
-  constructor(private http: HttpClient, private messageService: MessageService, private BASE_URL: BaseurlService) {}
+  constructor(private http: HttpClient, private messageService: MessageService, private BASE_URL: BaseurlService) { }
 
   // Handle Excel File Upload
   onFileChange(event: Event): void {

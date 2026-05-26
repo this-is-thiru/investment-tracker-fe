@@ -262,124 +262,133 @@
   </section>
 </app-expansion-panel> -->
 
-<app-expansion-panel
-  [title]="'Transactions'"
-  [subtitle]="'View temporary and current transactions'"
-  [titleIcon]="'Database'"
-  [iconBgClass]="'bg-gradient-to-br from-[#10A37F] to-[#0D8968] p-2 rounded-lg text-white'"
-  class="animate-fade-in-up stagger-2"
->
+<app-expansion-panel [title]="'Transactions'" [subtitle]="'View temporary and current transactions'"
+  [titleIcon]="'Database'" [iconBgClass]="'bg-gradient-to-br from-[#10A37F] to-[#0D8968] p-2 rounded-lg text-white'"
+  class="animate-fade-in-up stagger-2">
   <section class="border border-[#333] rounded-xl bg-[#191919] overflow-hidden animate-fade-in-up">
     <div class="overflow-hidden transition-all duration-500" [style.maxHeight]="isExpanded ? '3000px' : '0'">
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
-          <!-- ========================= -->
-          <!-- TEMPORARY TRANSACTIONS -->
-          <!-- ========================= -->
-          <div class="rounded-xl border border-[#3A3A3A] bg-gradient-to-b from-[#1f1f1f] to-[#171717] shadow-lg overflow-hidden">
-            <div class="flex items-center gap-3 p-5 border-b border-[#2a2a2a]">
-              <div class="bg-yellow-400 p-3 rounded-xl">
-                <lucide-icon name="database" class="w-6 h-6"></lucide-icon>
-              </div>
-
-              <div>
-                <h3 class="text-lg font-semibold text-white">Temporary Transactions</h3>
-                <p class="text-xs text-gray-400">
-                  {{ temporaryTransactions.length }} pending
-                </p>
-              </div>
+        <!-- ========================= -->
+        <!-- TEMPORARY TRANSACTIONS -->
+        <!-- ========================= -->
+        <div
+          class="rounded-xl border border-[#3A3A3A] bg-gradient-to-b from-[#1f1f1f] to-[#171717] shadow-lg overflow-hidden">
+          <div class="flex items-center gap-3 p-5 border-b border-[#2a2a2a]">
+            <div class="bg-yellow-400 p-3 rounded-xl">
+              <lucide-icon name="database" class="w-6 h-6"></lucide-icon>
             </div>
 
-            <div class="p-4">
-
-              <div *ngIf="loadingTemp" class="text-center py-6 text-gray-400">Loading...</div>
-
-              <div class="overflow-x-auto" *ngIf="!loadingTemp">
-                <table class="w-full text-sm">
-                  <thead>
-                    <tr class="text-gray-400 border-b border-[#2a2a2a]">
-                      <th class="p-2 text-left">Stock</th>
-                      <th class="p-2 text-left">Qty</th>
-                      <th class="p-2 text-left">Type</th>
-                      <th class="p-2 text-left">Price</th>
-                    </tr>
-                  </thead>
-
-                  <tbody>
-                    <tr *ngIf="temporaryTransactions.length === 0">
-                      <td colspan="4" class="py-6 text-center text-gray-600">
-                        No temporary transactions
-                      </td>
-                    </tr>
-
-                    <tr *ngFor="let t of temporaryTransactions" class="border-b border-[#2a2a2a] hover:bg-[#222]">
-                      <td class="p-2 text-white">{{ t.stockName }}</td>
-                      <td class="p-2">{{ t.quantity }}</td>
-                      <td class="p-2">{{ t.transactionType }}</td>
-                      <td class="p-2">₹{{ t.price | number: '1.2-2' }}</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-
+            <div>
+              <h3 class="text-lg font-semibold text-white">Temporary Transactions</h3>
+              <p class="text-xs text-gray-400">
+                {{ temporaryTransactions.length }} pending
+              </p>
             </div>
           </div>
 
-          <!-- ========================= -->
-          <!-- PORTFOLIO TRANSACTIONS -->
-          <!-- ========================= -->
-          <div class="rounded-xl border border-[#3A3A3A] bg-gradient-to-b from-[#1f1f1f] to-[#171717] shadow-lg overflow-hidden">
-            
-            <div class="flex items-center gap-3 p-5 border-b border-[#2a2a2a]">
-              <div class="bg-blue-400 p-3 rounded-xl">
-                <lucide-icon name="briefcase" class="w-6 h-6"></lucide-icon>
-              </div>
+          <div class="p-4">
 
-              <div>
-                <h3 class="text-lg font-semibold text-white">Current Transactions</h3>
-                <p class="text-xs text-gray-400">
-                  {{ portfolioTransactions.length }} records
-                </p>
-              </div>
+            @if (loadingTemp) {
+            <div class="text-center py-6 text-gray-400">Loading...</div>
+            } @else {
+            <div class="overflow-x-auto">
+              <table class="w-full text-sm">
+                <thead>
+                  <tr class="text-gray-400 border-b border-[#2a2a2a]">
+                    <th class="p-2 text-left">Stock</th>
+                    <th class="p-2 text-left">Qty</th>
+                    <th class="p-2 text-left">Type</th>
+                    <th class="p-2 text-left">Price</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  @if (temporaryTransactions.length === 0) {
+                  <tr>
+                    <td colspan="4" class="py-6 text-center text-gray-600">
+                      No temporary transactions
+                    </td>
+                  </tr>
+                  }
+
+                  @for (t of temporaryTransactions; track t.id || t.stockName) {
+                  <tr class="border-b border-[#2a2a2a] hover:bg-[#222]">
+                    <td class="p-2 text-white">{{ t.stockName }}</td>
+                    <td class="p-2">{{ t.quantity }}</td>
+                    <td class="p-2">{{ t.transactionType }}</td>
+                    <td class="p-2">₹{{ t.price | number: '1.2-2' }}</td>
+                  </tr>
+                  }
+                </tbody>
+              </table>
             </div>
+            }
 
-            <div class="p-4">
-
-              <div *ngIf="loadingPortfolio" class="text-center py-6 text-gray-400">Loading...</div>
-
-              <div class="overflow-x-auto" *ngIf="!loadingPortfolio">
-                <table class="w-full text-sm">
-                  <thead>
-                    <tr class="text-gray-400 border-b border-[#2a2a2a]">
-                      <th class="p-2 text-left">Stock</th>
-                      <th class="p-2 text-left">Qty</th>
-                      <th class="p-2 text-left">Type</th>
-                      <th class="p-2 text-left">Price</th>
-                    </tr>
-                  </thead>
-
-                  <tbody>
-                    <tr *ngIf="portfolioTransactions.length === 0">
-                      <td colspan="4" class="py-6 text-center text-gray-600">
-                        No current transactions
-                      </td>
-                    </tr>
-
-                    <tr *ngFor="let t of portfolioTransactions" class="border-b border-[#2a2a2a] hover:bg-[#222]">
-                      <td class="p-2 text-white">{{ t.stockName }}</td>
-                      <td class="p-2">{{ t.quantity }}</td>
-                      <td class="p-2">{{ t.transactionType }}</td>
-                      <td class="p-2">₹{{ t.price | number: '1.2-2' }}</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-
-            </div>
           </div>
-
         </div>
+
+        <!-- ========================= -->
+        <!-- PORTFOLIO TRANSACTIONS -->
+        <!-- ========================= -->
+        <div
+          class="rounded-xl border border-[#3A3A3A] bg-gradient-to-b from-[#1f1f1f] to-[#171717] shadow-lg overflow-hidden">
+
+          <div class="flex items-center gap-3 p-5 border-b border-[#2a2a2a]">
+            <div class="bg-blue-400 p-3 rounded-xl">
+              <lucide-icon name="briefcase" class="w-6 h-6"></lucide-icon>
+            </div>
+
+            <div>
+              <h3 class="text-lg font-semibold text-white">Current Transactions</h3>
+              <p class="text-xs text-gray-400">
+                {{ portfolioTransactions.length }} records
+              </p>
+            </div>
+          </div>
+
+          <div class="p-4">
+
+            @if (loadingPortfolio) {
+            <div class="text-center py-6 text-gray-400">Loading...</div>
+            } @else {
+            <div class="overflow-x-auto">
+              <table class="w-full text-sm">
+                <thead>
+                  <tr class="text-gray-400 border-b border-[#2a2a2a]">
+                    <th class="p-2 text-left">Stock</th>
+                    <th class="p-2 text-left">Qty</th>
+                    <th class="p-2 text-left">Type</th>
+                    <th class="p-2 text-left">Price</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  @if (portfolioTransactions.length === 0) {
+                  <tr>
+                    <td colspan="4" class="py-6 text-center text-gray-600">
+                      No current transactions
+                    </td>
+                  </tr>
+                  }
+
+                  @for (t of portfolioTransactions; track t.id || t.stockName) {
+                  <tr class="border-b border-[#2a2a2a] hover:bg-[#222]">
+                    <td class="p-2 text-white">{{ t.stockName }}</td>
+                    <td class="p-2">{{ t.quantity }}</td>
+                    <td class="p-2">{{ t.transactionType }}</td>
+                    <td class="p-2">₹{{ t.price | number: '1.2-2' }}</td>
+                  </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+            }
+
+          </div>
+        </div>
+
       </div>
+    </div>
   </section>
 </app-expansion-panel>
-

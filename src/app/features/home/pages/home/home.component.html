@@ -107,11 +107,12 @@
                 class="absolute bottom-1/4 right-1/4 w-32 h-0.5 bg-gradient-to-r from-transparent via-[#3B82F6]/40 to-transparent animate-pulse-opacity stagger-3"
               ></div>
 
-              <div
-                *ngFor="let i of [0, 1, 2, 3, 4, 5]"
-                class="absolute w-1 h-1 bg-[#10A37F] rounded-full animate-particle"
-                [ngStyle]="getParticleStyle(i)"
-              ></div>
+              @for (i of [0, 1, 2, 3, 4, 5]; track i) {
+                <div
+                  class="absolute w-1 h-1 bg-[#10A37F] rounded-full animate-particle"
+                  [ngStyle]="getParticleStyle(i)"
+                ></div>
+              }
             </div>
           </div>
         </div>
@@ -247,55 +248,60 @@
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-        <div
-          *ngFor="let benefit of benefits; let i = index"
-          (mouseenter)="hoveredBenefit = i"
-          (mouseleave)="hoveredBenefit = null"
-          class="text-center group scroll-reveal cursor-pointer transition-all duration-500 ease-out hover:-translate-y-3"
-          [style.transitionDelay]="i * 0.1 + 's'"
-        >
+        @for (benefit of benefits; track benefit.title; let i = $index) {
           <div
-            class="benefit-icon-container w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 backdrop-blur-sm group-hover:scale-110 transition-all duration-500 ease-out"
-            [ngStyle]="getBenefitStyle(benefit, i)"
+            (mouseenter)="hoveredBenefit = i"
+            (mouseleave)="hoveredBenefit = null"
+            class="text-center group scroll-reveal cursor-pointer transition-all duration-500 ease-out hover:-translate-y-3"
+            [style.transitionDelay]="i * 0.1 + 's'"
           >
-            <ng-container [ngSwitch]="benefit.title">
-              <lucide-icon
-                name="zap"
-                *ngSwitchCase="'Lightning Fast'"
-                class="h-8 w-8 group-hover:scale-110 group-hover:rotate-[360deg] transition-all duration-700 ease-out"
-                [style.color]="benefit.color"
-              ></lucide-icon>
-              <lucide-icon
-                name="bar-chart-3"
-                *ngSwitchCase="'Comprehensive Reports'"
-                class="h-8 w-8 group-hover:scale-110 group-hover:rotate-[360deg] transition-all duration-700 ease-out"
-                [style.color]="benefit.color"
-              ></lucide-icon>
-              <lucide-icon
-                name="clock"
-                *ngSwitchCase="'Save Time'"
-                class="h-8 w-8 group-hover:scale-110 group-hover:rotate-[360deg] transition-all duration-700 ease-out"
-                [style.color]="benefit.color"
-              ></lucide-icon>
-              <lucide-icon
-                name="check-circle-2"
-                *ngSwitchCase="'Accuracy Guaranteed'"
-                class="h-8 w-8 group-hover:scale-110 group-hover:rotate-[360deg] transition-all duration-700 ease-out"
-                [style.color]="benefit.color"
-              ></lucide-icon>
-            </ng-container>
+            <div
+              class="benefit-icon-container w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 backdrop-blur-sm group-hover:scale-110 transition-all duration-500 ease-out"
+              [ngStyle]="getBenefitStyle(benefit, i)"
+            >
+              @switch (benefit.title) {
+                @case ('Lightning Fast') {
+                  <lucide-icon
+                    name="zap"
+                    class="h-8 w-8 group-hover:scale-110 group-hover:rotate-[360deg] transition-all duration-700 ease-out"
+                    [style.color]="benefit.color"
+                  ></lucide-icon>
+                }
+                @case ('Comprehensive Reports') {
+                  <lucide-icon
+                    name="bar-chart-3"
+                    class="h-8 w-8 group-hover:scale-110 group-hover:rotate-[360deg] transition-all duration-700 ease-out"
+                    [style.color]="benefit.color"
+                  ></lucide-icon>
+                }
+                @case ('Save Time') {
+                  <lucide-icon
+                    name="clock"
+                    class="h-8 w-8 group-hover:scale-110 group-hover:rotate-[360deg] transition-all duration-700 ease-out"
+                    [style.color]="benefit.color"
+                  ></lucide-icon>
+                }
+                @case ('Accuracy Guaranteed') {
+                  <lucide-icon
+                    name="check-circle-2"
+                    class="h-8 w-8 group-hover:scale-110 group-hover:rotate-[360deg] transition-all duration-700 ease-out"
+                    [style.color]="benefit.color"
+                  ></lucide-icon>
+                }
+              }
+            </div>
+            <h3
+              class="text-lg font-semibold text-white mb-2 group-hover:text-[#10A37F] transition-colors duration-500 ease-out"
+            >
+              {{ benefit.title }}
+            </h3>
+            <p
+              class="text-[#B3B3B3] text-sm group-hover:text-[#D4D4D4] transition-colors duration-500 ease-out"
+            >
+              {{ benefit.desc }}
+            </p>
           </div>
-          <h3
-            class="text-lg font-semibold text-white mb-2 group-hover:text-[#10A37F] transition-colors duration-500 ease-out"
-          >
-            {{ benefit.title }}
-          </h3>
-          <p
-            class="text-[#B3B3B3] text-sm group-hover:text-[#D4D4D4] transition-colors duration-500 ease-out"
-          >
-            {{ benefit.desc }}
-          </p>
-        </div>
+        }
       </div>
     </div>
   </section>
