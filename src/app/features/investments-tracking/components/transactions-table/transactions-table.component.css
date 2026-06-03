@@ -98,3 +98,22 @@
   color: #ffffff !important;
 }
 
+/* ✅ Toggler button overrides */
+:host ::ng-deep .p-button.p-button-text {
+  color: #b3b3b3 !important;
+  background: transparent !important;
+  border: none !important;
+  width: 2rem !important;
+  height: 2rem !important;
+}
+
+:host ::ng-deep .p-button.p-button-text:hover {
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: #ffffff !important;
+}
+
+:host ::ng-deep .p-datatable-tbody > tr.p-datatable-row-expansion {
+  background-color: #171717 !important;
+}
+
+

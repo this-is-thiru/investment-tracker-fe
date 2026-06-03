@@ -99,7 +99,7 @@
 
 
 import { Component, OnInit, inject } from '@angular/core';
-import { DecimalPipe } from '@angular/common';
+import { CommonModule, DecimalPipe } from '@angular/common';
 import { MessageService } from 'primeng/api';
 import { TransactionService } from '../../../../services/transaction.service';
 import { TransactionsResponse } from '../../../../models/TranscationsResponse';
@@ -111,6 +111,7 @@ import { PrimeNgModule } from '../../../../core/prime-ng.module';
   selector: 'app-transactions-table',
   standalone: true,
   imports: [
+    CommonModule,
     LucideIconsModule,
     ExpansionPanelComponent,
     DecimalPipe,

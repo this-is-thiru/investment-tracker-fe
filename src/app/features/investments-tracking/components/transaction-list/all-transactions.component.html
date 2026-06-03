@@ -338,106 +338,98 @@
             <h2 class="text-xl text-white">
               Transaction Records
             </h2>
-            <div class="bg-[#191919] border border-[#3A3A3A] rounded-lg p-1 grid grid-cols-2 gap-1 max-w-sm">
-              <button (click)="activeTableTab = 'temporary'"
-                [ngClass]="activeTableTab === 'temporary' ? 'bg-[#3B82F6]/30 text-white font-medium' : 'text-[#B3B3B3] hover:bg-[#2E2E2E]'"
-                class="flex items-center justify-center gap-2 px-3 py-1.5 rounded-md text-sm transition-all">
-                Temporary ({{ temporaryTransactions.length }})
-              </button>
-              <button (click)="activeTableTab = 'portfolio'"
-                [ngClass]="activeTableTab === 'portfolio' ? 'bg-[#10A37F]/30 text-white font-medium' : 'text-[#B3B3B3] hover:bg-[#2E2E2E]'"
-                class="flex items-center justify-center gap-2 px-3 py-1.5 rounded-md text-sm transition-all">
-                Portfolio ({{ portfolioTransactions.length }})
-              </button>
+            
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div class="bg-[#191919] border border-[#3A3A3A] rounded-lg p-1 grid grid-cols-2 gap-1 max-w-sm w-full sm:w-auto">
+                <button (click)="activeTableTab = 'temporary'"
+                  [ngClass]="activeTableTab === 'temporary' ? 'bg-[#3B82F6]/30 text-white font-medium' : 'text-[#B3B3B3] hover:bg-[#2E2E2E]'"
+                  class="flex items-center justify-center gap-2 px-3 py-1.5 rounded-md text-sm transition-all">
+                  Temporary ({{ temporaryTransactions.length }})
+                </button>
+                <button (click)="activeTableTab = 'portfolio'"
+                  [ngClass]="activeTableTab === 'portfolio' ? 'bg-[#10A37F]/30 text-white font-medium' : 'text-[#B3B3B3] hover:bg-[#2E2E2E]'"
+                  class="flex items-center justify-center gap-2 px-3 py-1.5 rounded-md text-sm transition-all">
+                  Portfolio ({{ portfolioTransactions.length }})
+                </button>
+              </div>
+
+              <!-- Search Input -->
+              <div class="relative w-full sm:max-w-xs">
+                <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                  <i class="pi pi-search text-[#666666]"></i>
+                </span>
+                <input
+                  #gbRecords
+                  type="text"
+                  placeholder="Search records..."
+                  (input)="dtRecords.filterGlobal(gbRecords.value, 'contains')"
+                  class="w-full pl-9 pr-4 py-2 text-sm rounded-lg bg-[#2E2E2E] border border-[#3A3A3A] text-white placeholder-[#666666] focus:ring-1 focus:ring-[#10A37F] focus:outline-none"
+                />
+              </div>
             </div>
 
             <div class="overflow-x-auto rounded-lg border border-[#3A3A3A]">
-              <table class="min-w-full divide-y divide-[#2A2A2A]">
-                <thead class="bg-[#2E2E2E]">
+              <p-table
+                #dtRecords
+                [value]="activeTableTab === 'temporary' ? temporaryTransactions : portfolioTransactions"
+                [paginator]="true"
+                [rows]="5"
+                [rowsPerPageOptions]="[5, 10, 20]"
+                [globalFilterFields]="['id', 'stock', 'quantity', 'status', 'actionDate']"
+                responsiveLayout="scroll"
+                styleClass="p-datatable-sm w-full"
+              >
+                <ng-template pTemplate="header">
                   <tr>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-[#B3B3B3] uppercase tracking-wider">
-                      ID
+                    <th pSortableColumn="id" class="px-6 py-3 text-left text-xs font-medium text-[#B3B3B3] uppercase tracking-wider cursor-pointer hover:text-white transition-colors">
+                      ID <p-sortIcon field="id"></p-sortIcon>
                     </th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-[#B3B3B3] uppercase tracking-wider">
-                      Stock
+                    <th pSortableColumn="stock" class="px-6 py-3 text-left text-xs font-medium text-[#B3B3B3] uppercase tracking-wider cursor-pointer hover:text-white transition-colors">
+                      Stock <p-sortIcon field="stock"></p-sortIcon>
                     </th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-[#B3B3B3] uppercase tracking-wider">
-                      Quantity
+                    <th pSortableColumn="quantity" class="px-6 py-3 text-left text-xs font-medium text-[#B3B3B3] uppercase tracking-wider cursor-pointer hover:text-white transition-colors">
+                      Quantity <p-sortIcon field="quantity"></p-sortIcon>
                     </th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-[#B3B3B3] uppercase tracking-wider">
-                      Status
+                    <th pSortableColumn="status" class="px-6 py-3 text-left text-xs font-medium text-[#B3B3B3] uppercase tracking-wider cursor-pointer hover:text-white transition-colors">
+                      Status <p-sortIcon field="status"></p-sortIcon>
                     </th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-[#B3B3B3] uppercase tracking-wider">
-                      Date
+                    <th pSortableColumn="actionDate" class="px-6 py-3 text-left text-xs font-medium text-[#B3B3B3] uppercase tracking-wider cursor-pointer hover:text-white transition-colors">
+                      Date <p-sortIcon field="actionDate"></p-sortIcon>
                     </th>
                   </tr>
-                </thead>
-                <tbody class="divide-y divide-[#2A2A2A]">
-                  @if (activeTableTab === 'temporary') {
-                    @for (tx of temporaryTransactions; track tx.id) {
-                      <tr class="hover:bg-[#2E2E2E] transition-colors">
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
-                          {{ tx.id }}
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-[#B3B3B3]">
-                          {{ tx.stock }}
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-[#B3B3B3]">
-                          {{ tx.quantity }}
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm">
-                          <span
-                            class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-[#FACC15]/20 text-[#FACC15]">
-                            {{ tx.status }}
-                          </span>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-[#666666]">
-                          {{ tx.actionDate }}
-                        </td>
-                      </tr>
-                    }
-                    @if (temporaryTransactions.length === 0) {
-                      <tr>
-                        <td colSpan="5" class="px-6 py-12 text-center text-[#666666] text-lg">
-                          <lucide-icon name="alert-circle" class="h-6 w-6 inline-block mr-2" ></lucide-icon>
-                          No temporary transactions found.
-                        </td>
-                      </tr>
-                    }
-                  } @else {
-                    @for (tx of portfolioTransactions; track tx.id) {
-                      <tr class="hover:bg-[#2E2E2E] transition-colors">
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
-                          {{ tx.id }}
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-[#B3B3B3]">
-                          {{ tx.stock }}
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-[#B3B3B3]">
-                          {{ tx.quantity }}
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm">
-                          <span
-                            class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-[#22C55E]/20 text-[#22C55E]">
-                            {{ tx.status }}
-                          </span>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-[#666666]">
-                          {{ tx.actionDate }}
-                        </td>
-                      </tr>
-                    }
-                    @if (portfolioTransactions.length === 0) {
-                      <tr>
-                        <td colSpan="5" class="px-6 py-12 text-center text-[#666666] text-lg">
-                          <lucide-icon name="alert-circle" class="h-6 w-6 inline-block mr-2" ></lucide-icon>
-                          No completed portfolio transactions.
-                        </td>
-                      </tr>
-                    }
-                  }
-                </tbody>
-              </table>
+                </ng-template>
+                <ng-template pTemplate="body" let-tx>
+                  <tr class="hover:bg-[#2E2E2E] transition-colors duration-150 border-b border-[#2A2A2A]">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
+                      {{ tx.id }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-[#B3B3B3]">
+                      {{ tx.stock }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-[#B3B3B3]">
+                      {{ tx.quantity }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm">
+                      <span
+                        [ngClass]="activeTableTab === 'temporary' ? 'bg-[#FACC15]/20 text-[#FACC15]' : 'bg-[#22C55E]/20 text-[#22C55E]'"
+                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full">
+                        {{ tx.status }}
+                      </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-[#666666]">
+                      {{ tx.actionDate }}
+                    </td>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage">
+                  <tr>
+                    <td colspan="5" class="px-6 py-12 text-center text-[#666666] text-lg">
+                      <lucide-icon name="alert-circle" class="h-6 w-6 inline-block mr-2 align-middle"></lucide-icon>
+                      <span class="align-middle">No transactions found.</span>
+                    </td>
+                  </tr>
+                </ng-template>
+              </p-table>
             </div>
           </div>
         }
