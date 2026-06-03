@@ -54,6 +54,7 @@ export class ChangePasswordComponent implements OnInit {
   }
 
   onSubmit(): void {
+    if (this.isLoading) return;
     if (this.changePasswordForm.invalid || this.passwordMismatch) return;
 
     const { oldPassword, newPassword } = this.changePasswordForm.value;
@@ -79,7 +80,7 @@ export class ChangePasswordComponent implements OnInit {
       error: (err) => {
         this.isLoading = false;
         this.isError = true;
-        this.message = err?.error?.message || 'Failed to change password.';
+        this.message = err?.error?.message || (typeof err?.error === 'string' ? err.error : null) || 'Failed to change password.';
       },
     });
   }

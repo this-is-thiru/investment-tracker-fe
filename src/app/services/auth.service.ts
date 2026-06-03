@@ -119,8 +119,8 @@ export class AuthService {
   }
 
   changePassword(email: string, oldPassword: string, newPassword: string) {
-    return this.http.post(
-      `${this.BASE_URL.getBaseUrl()}/auth/user/${email}/change/password`,
+    return this.http.put(
+      `${this.BASE_URL.getBaseUrl()}/auth/user/${encodeURIComponent(email)}/change/password`,
       {
         email, // user's email
         password: oldPassword,

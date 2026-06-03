@@ -30,9 +30,10 @@ export class SettingsComponent {
   
   // Security state
   twoFactorEnabled: boolean = false;
+  changePasswordEmail: string = '';
   oldPassword: string = '';
   newPasswordValue: string = '';
-  confirmPasswordValue: string = '';
+  isLoadingPasswordChange: boolean = false;
   
   // Preferences state
   theme: string = 'dark';
@@ -55,6 +56,7 @@ export class SettingsComponent {
     const userEmail = this.authService.getUserEmail();
     if (userEmail) {
       this.email = userEmail;
+      this.changePasswordEmail = userEmail;
     }
   }
 
@@ -80,31 +82,25 @@ export class SettingsComponent {
   }
 
   handleChangePassword(): void {
-    if (!this.oldPassword || !this.newPasswordValue || !this.confirmPasswordValue) {
-      this.notificationService.addNotification('All password fields are required', '', 'error');
+    if (this.isLoadingPasswordChange) return;
+
+    if (!this.changePasswordEmail || !this.oldPassword || !this.newPasswordValue) {
+      this.notificationService.addNotification('All fields are required', '', 'error');
       return;
     }
 
-    if (this.newPasswordValue !== this.confirmPasswordValue) {
-      this.notificationService.addNotification('New passwords do not match', '', 'error');
-      return;
-    }
+    this.isLoadingPasswordChange = true;
 
-    const email = this.authService.getUserEmail();
-    if (!email) {
-      this.notificationService.addNotification('User email not found. Please log in again.', '', 'error');
-      return;
-    }
-
-    this.authService.changePassword(email, this.oldPassword, this.newPasswordValue).subscribe({
+    this.authService.changePassword(this.changePasswordEmail, this.oldPassword, this.newPasswordValue).subscribe({
       next: () => {
+        this.isLoadingPasswordChange = false;
         this.notificationService.addNotification('Password changed successfully', '', 'success');
         this.oldPassword = '';
         this.newPasswordValue = '';
-        this.confirmPasswordValue = '';
       },
       error: (err) => {
-        const errorMsg = err?.error?.message || 'Password change failed. Please check your current password.';
+        this.isLoadingPasswordChange = false;
+        const errorMsg = err?.error?.message || (typeof err?.error === 'string' ? err.error : null) || 'Password change failed. Please check your details.';
         this.notificationService.addNotification(errorMsg, '', 'error');
       }
     });
