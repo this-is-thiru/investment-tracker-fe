@@ -22,9 +22,11 @@
         <h3 class="text-lg font-semibold text-white leading-tight">
           {{ title }}
         </h3>
-        <p *ngIf="subtitle" class="text-sm text-[#AAAAAA] mt-0.5">
-          {{ subtitle }}
-        </p>
+        @if (subtitle) {
+          <p class="text-sm text-[#AAAAAA] mt-0.5">
+            {{ subtitle }}
+          </p>
+        }
       </div>
     </div>
 

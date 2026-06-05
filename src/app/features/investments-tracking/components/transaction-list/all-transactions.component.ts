@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { interval, Subject, takeUntil } from 'rxjs';
 import { LucideIconsModule } from '../../../../core/icons/lucide-icons.module';
+import { PrimeNgModule } from '../../../../core/prime-ng.module';
 
 // Interfaces
 export interface Transaction {
@@ -21,7 +22,7 @@ export interface Toast {
 @Component({
   selector: 'app-all-transactions',
   standalone: true,
-  imports: [CommonModule, FormsModule, LucideIconsModule],
+  imports: [CommonModule, FormsModule, LucideIconsModule, PrimeNgModule],
   templateUrl: './all-transactions.component.html',
   styleUrls: ['./all-transactions.component.css'],
 })

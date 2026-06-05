@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-// Interface for type safety (exported for use in components)
 export interface Notification {
   id: string;
   title: string;
@@ -16,20 +15,19 @@ export interface Notification {
   providedIn: 'root',
 })
 export class NotificationService {
-  // BehaviorSubject holds the current list of notifications (the 'state')
   private _notifications = new BehaviorSubject<Notification[]>([]);
-  
-  // Public observable for components to subscribe to
   public notifications$ = this._notifications.asObservable();
 
-  // Public observable for unread count (derived state)
+  // For visual toasts
+  private _toasts = new BehaviorSubject<Notification[]>([]);
+  public toasts$ = this._toasts.asObservable();
+
   public unreadCount$ = this.notifications$.pipe(
     map(notifications => notifications.filter(n => !n.read).length)
   );
 
   constructor() { }
 
-  /** Adds a new notification to the state. */
   addNotification(title: string, message: string, type: Notification['type']): void {
     const newNotification: Notification = {
       id: `notif-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`,
@@ -40,12 +38,20 @@ export class NotificationService {
       read: false,
     };
     
-    // Update the state immutably: new notification first
+    // Add to history
     const currentNotifications = this._notifications.getValue();
     this._notifications.next([newNotification, ...currentNotifications]);
+
+    // Add to active toasts
+    const currentToasts = this._toasts.getValue();
+    this._toasts.next([...currentToasts, newNotification]);
   }
 
-  /** Marks a specific notification as read. */
+  removeToast(id: string): void {
+    const updatedToasts = this._toasts.getValue().filter(t => t.id !== id);
+    this._toasts.next(updatedToasts);
+  }
+
   markAsRead(id: string): void {
     const updatedNotifications = this._notifications.getValue().map(notif =>
       notif.id === id ? { ...notif, read: true } : notif
@@ -53,20 +59,17 @@ export class NotificationService {
     this._notifications.next(updatedNotifications);
   }
 
-  /** Marks all notifications as read. */
   markAllAsRead(): void {
     const updatedNotifications = this._notifications.getValue().map(notif => ({ ...notif, read: true }));
     this._notifications.next(updatedNotifications);
   }
 
-  /** Clears a specific notification. */
   clearNotification(id: string): void {
     const updatedNotifications = this._notifications.getValue().filter(notif => notif.id !== id);
     this._notifications.next(updatedNotifications);
   }
 
-  /** Clears all notifications. */
   clearAllNotifications(): void {
     this._notifications.next([]);
   }
-}
+}

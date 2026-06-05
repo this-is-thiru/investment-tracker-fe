@@ -1,4 +1,5 @@
 import { bootstrapApplication } from '@angular/platform-browser';
+import { provideAnimations } from '@angular/platform-browser/animations';
 import {
   provideHttpClient,
   withInterceptors,
@@ -13,5 +14,6 @@ bootstrapApplication(AppComponent, {
   providers: [
     provideRouter(routes),
     provideHttpClient(withInterceptors([AuthInterceptor])), // ✅ Add this
+    provideAnimations(),
   ],
 }).catch((err) => console.error(err));

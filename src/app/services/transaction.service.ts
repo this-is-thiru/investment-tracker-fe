@@ -1,5 +1,4 @@
-// transaction.service.ts
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { HttpClient, HttpEvent, HttpEventType } from '@angular/common/http';
@@ -10,10 +9,8 @@ import { TransactionsResponse } from '../models/TranscationsResponse';
   providedIn: 'root',
 })
 export class TransactionService {
-  constructor(
-    private http: HttpClient,
-    private BASE_URL: BaseurlService,
-  ) {}
+  private http = inject(HttpClient);
+  private BASE_URL = inject(BaseurlService);
 
   // existing APIs left unchanged...
   getUserTransactions(email: string): Observable<any> {

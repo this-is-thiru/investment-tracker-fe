@@ -1,146 +1,1250 @@
-<section class="min-h-screen bg-[#191919] py-8">
-<div class="max-w-6xl mx-auto p-4 md:p-6 lg:p-8">
-  <div class="max-w-4xl mx-auto">
-    <h1 class="text-3xl font-bold text-white mb-6">User Settings</h1>
-
-    <div class="bg-[#1D1D1D] border border-[#3A3A3A] rounded-xl p-3 mb-8">
-      <nav class="flex space-x-2" role="tablist">
-        <button
-          (click)="setActiveTab('account')"
-          [ngClass]="{
-            'bg-[#2A2A2A] text-white': activeTab === 'account',
-            'text-[#B3B3B3] hover:text-white hover:bg-[#202020]': activeTab !== 'account'
-          }"
-          class="px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-          Account
-        </button>
-        <button
-          (click)="setActiveTab('notifications')"
-          [ngClass]="{
-            'bg-[#2A2A2A] text-white': activeTab === 'notifications',
-            'text-[#B3B3B3] hover:text-white hover:bg-[#202020]': activeTab !== 'notifications'
-          }"
-          class="px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg>
-          Notifications
-        </button>
-        </nav>
+<div class="min-h-screen bg-[#151515] py-8 px-4 sm:px-6 lg:px-8 font-sans">
+  <div class="max-w-7xl mx-auto">
+    <!-- Page Header -->
+    <div class="mb-8 animate-fade-in">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h1 class="text-3xl font-extrabold text-white tracking-tight flex items-center gap-3">
+            <lucide-icon name="settings" class="h-8 w-8 text-[#10A37F] animate-spin-slow"></lucide-icon>
+            System Settings
+          </h1>
+          <p class="text-[#A0A0A0] mt-1 text-sm md:text-base">
+            Configure your global investment tracking preferences, performance calculations, and security parameters.
+          </p>
+        </div>
+        <div class="flex items-center gap-2 bg-[#202020] border border-[#303030] rounded-xl px-4 py-2 self-start md:self-auto">
+          <div class="h-2 w-2 rounded-full bg-[#10A37F] animate-pulse"></div>
+          <span class="text-xs text-[#A0A0A0] font-mono uppercase tracking-wider">Sync Active</span>
+        </div>
+      </div>
     </div>
 
-    <div class="space-y-8">
-      <div *ngIf="activeTab === 'account'">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div class="bg-[#232323] border border-[#3A3A3A] rounded-xl p-6 space-y-4">
-            <div>
-              <h2 class="text-xl text-white mb-1">Personal Information</h2>
-              <p class="text-sm text-[#B3B3B3]">Update your name and contact details.</p>
-            </div>
-
-            <div>
-              <label for="fullName" class="text-sm font-medium text-white mb-2 block">Full Name</label>
-              <input
-                id="fullName"
-                type="text"
-                [(ngModel)]="fullName"
-                class="w-full px-4 py-3 bg-[#1D1D1D] text-white border border-[#3A3A3A] rounded-lg focus:border-[#10A37F] focus:ring-[#10A37F]/50 outline-none transition-colors"
-                placeholder="John Doe"
-              />
-            </div>
-
-            <div>
-              <label for="email" class="text-sm font-medium text-white mb-2 block">Email</label>
-              <input
-                id="email"
-                type="email"
-                [(ngModel)]="email"
-                class="w-full px-4 py-3 bg-[#1D1D1D] text-white border border-[#3A3A3A] rounded-lg focus:border-[#10A37F] focus:ring-[#10A37F]/50 outline-none transition-colors"
-                placeholder="john.doe@example.com"
-              />
-            </div>
-
-            <div>
-              <label for="phone" class="text-sm font-medium text-white mb-2 block">Phone</label>
-              <input
-                id="phone"
-                type="text"
-                [(ngModel)]="phone"
-                class="w-full px-4 py-3 bg-[#1D1D1D] text-white border border-[#3A3A3A] rounded-lg focus:border-[#10A37F] focus:ring-[#10A37F]/50 outline-none transition-colors"
-                placeholder="+1 (555) 123-4567"
-              />
-            </div>
-            
+    <!-- Main Workspace Layout -->
+    <div class="flex flex-col lg:flex-row gap-8">
+      
+      <!-- Navigation Sidebar -->
+      <div class="lg:w-72 shrink-0 animate-slide-right">
+        <!-- Mobile/Tablet Horizontal Tab Scroll -->
+        <div class="lg:hidden bg-[#1C1C1C] border border-[#2D2D2D] rounded-2xl p-3 overflow-x-auto scrollbar-hide flex gap-2 mb-6">
+          @for (tab of tabs; track tab.id) {
             <button
-              (click)="handleSaveAccount()"
-              class="w-full px-6 py-3 bg-[#10A37F] text-white rounded-lg hover:bg-[#0E8A6F] transition-all flex items-center justify-center gap-2 mt-6"
+              (click)="setActiveTab(tab.id)"
+              [ngClass]="{
+                'bg-gradient-to-r from-[#10A37F]/25 to-[#1AA97D]/10 text-white border-[#10A37F]/40': activeTab === tab.id,
+                'text-[#909090] border-transparent hover:text-white hover:bg-[#252525]': activeTab !== tab.id
+              }"
+              class="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 border whitespace-nowrap"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-              Save Account Details
+              <lucide-icon [name]="tab.icon" class="h-5 w-5"></lucide-icon>
+              <span>{{ tab.label }}</span>
             </button>
-          </div>
+          }
+        </div>
 
+        <!-- Desktop Vertical Sidebar -->
+        <div class="hidden lg:block bg-[#1C1C1C] border border-[#2D2D2D] rounded-2xl p-3 space-y-1.5 shadow-xl">
+          <div class="px-3 py-2 text-xs font-semibold text-[#606060] uppercase tracking-widest border-b border-[#2D2D2D] mb-3">
+            Settings Menu
+          </div>
+          @for (tab of tabs; track tab.id) {
+            <button
+              (click)="setActiveTab(tab.id)"
+              [ngClass]="{
+                'bg-gradient-to-r from-[#10A37F]/20 to-[#10A37F]/5 text-white border-l-4 border-l-[#10A37F] border-[#2D2D2D] pl-3': activeTab === tab.id,
+                'text-[#A0A0A0] hover:text-white hover:bg-[#252525] border-transparent border-l-4 border-l-transparent pl-3': activeTab !== tab.id
+              }"
+              class="w-full flex items-center gap-3.5 py-3.5 pr-4 rounded-xl transition-all duration-200 text-left border font-medium text-sm"
+            >
+              <lucide-icon [name]="tab.icon" class="h-5 w-5" [ngClass]="activeTab === tab.id ? 'text-[#10A37F]' : 'text-[#707070]'"></lucide-icon>
+              <span>{{ tab.label }}</span>
+            </button>
+          }
+        </div>
+      </div>
+
+      <!-- Active Settings Panel Content -->
+      <div class="flex-1 min-w-0 animate-slide-left">
+        
+        <!-- ================= PROFILE & REGIONAL TAB ================= -->
+        @if (activeTab === 'profile') {
           <div class="space-y-6">
-             <div class="bg-[#232323] border border-[#3A3A3A] rounded-xl p-6 space-y-4">
+            <!-- Account Details Card -->
+            <div class="bg-[#1C1C1C] border border-[#2D2D2D] rounded-2xl p-6 md:p-8 shadow-xl relative overflow-hidden">
+              <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#10A37F] to-[#1AA97D]"></div>
+              
+              <div class="flex items-start gap-4 mb-6">
+                <div class="p-3 bg-[#10A37F]/10 rounded-xl">
+                  <lucide-icon name="user" class="h-6 w-6 text-[#10A37F]"></lucide-icon>
+                </div>
+                <div>
+                  <h2 class="text-xl font-bold text-white">Account Details</h2>
+                  <p class="text-xs text-[#909090] mt-0.5">Manage your personal identification details and contacts</p>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Full Name -->
+                <div class="space-y-2">
+                  <label class="block text-sm font-semibold text-[#A0A0A0]">Full Name</label>
+                  <div class="relative">
+                    <lucide-icon name="user" class="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-[#606060]"></lucide-icon>
+                    <input
+                      type="text"
+                      [(ngModel)]="fullName"
+                      class="w-full pl-12 pr-4 py-3 bg-[#232323] border border-[#303030] rounded-xl text-white placeholder-[#505050] focus:outline-none focus:border-[#10A37F] focus:ring-1 focus:ring-[#10A37F] transition-all duration-200 text-sm font-medium"
+                      placeholder="e.g. John Doe"
+                    />
+                  </div>
+                </div>
+
+                <!-- Phone -->
+                <div class="space-y-2">
+                  <label class="block text-sm font-semibold text-[#A0A0A0]">Phone Number</label>
+                  <div class="relative">
+                    <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-[#606060] font-mono">📱</span>
+                    <input
+                      type="tel"
+                      [(ngModel)]="phone"
+                      class="w-full pl-12 pr-4 py-3 bg-[#232323] border border-[#303030] rounded-xl text-white placeholder-[#505050] focus:outline-none focus:border-[#10A37F] focus:ring-1 focus:ring-[#10A37F] transition-all duration-200 text-sm font-medium"
+                      placeholder="e.g. +1 (555) 000-0000"
+                    />
+                  </div>
+                </div>
+
+                <!-- Email Address (read-only synced via Auth) -->
+                <div class="md:col-span-2 space-y-2">
+                  <label class="block text-sm font-semibold text-[#A0A0A0]">Email Address</label>
+                  <div class="relative">
+                    <lucide-icon name="mail" class="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-[#505050]"></lucide-icon>
+                    <input
+                      type="email"
+                      [(ngModel)]="email"
+                      disabled
+                      class="w-full pl-12 pr-4 py-3 bg-[#1C1C1C] border border-[#2D2D2D] rounded-xl text-[#707070] cursor-not-allowed text-sm font-medium"
+                    />
+                  </div>
+                  <p class="text-xs text-[#606060]">Your email address is connected to your primary account authentication profile.</p>
+                </div>
+              </div>
+
+              <div class="mt-6 flex justify-end">
+                <button
+                  (click)="handleSaveProfile()"
+                  class="px-6 py-3 bg-gradient-to-r from-[#10A37F] to-[#0D8968] text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-[#10A37F]/20 transition-all duration-200 flex items-center gap-2 text-sm"
+                >
+                  <lucide-icon name="check-circle-2" class="h-4 w-4"></lucide-icon>
+                  Save Account Changes
+                </button>
+              </div>
+            </div>
+
+            <!-- Regional Preferences Card -->
+            <div class="bg-[#1C1C1C] border border-[#2D2D2D] rounded-2xl p-6 md:p-8 shadow-xl relative overflow-hidden">
+              <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#3b82f6] to-[#10A37F]"></div>
+              
+              <div class="flex items-start gap-4 mb-6">
+                <div class="p-3 bg-blue-500/10 rounded-xl">
+                  <lucide-icon name="globe" class="h-6 w-6 text-blue-400"></lucide-icon>
+                </div>
+                <div>
+                  <h2 class="text-xl font-bold text-white">Regional Settings</h2>
+                  <p class="text-xs text-[#909090] mt-0.5">Customize localization, base currency, and calendar formatting</p>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Base Currency -->
+                <div class="space-y-2">
+                  <label class="block text-sm font-semibold text-[#A0A0A0]">Base Currency</label>
+                  <select
+                    [(ngModel)]="currency"
+                    class="w-full px-4 py-3 bg-[#232323] border border-[#303030] rounded-xl text-white focus:outline-none focus:border-[#10A37F] transition-all duration-200 text-sm font-medium appearance-none cursor-pointer"
+                  >
+                    <option value="USD">USD ($) - US Dollar</option>
+                    <option value="EUR">EUR (€) - Euro</option>
+                    <option value="GBP">GBP (£) - British Pound</option>
+                    <option value="INR">INR (₹) - Indian Rupee</option>
+                    <option value="JPY">JPY (¥) - Japanese Yen</option>
+                    <option value="CAD">CAD ($) - Canadian Dollar</option>
+                    <option value="AUD">AUD ($) - Australian Dollar</option>
+                  </select>
+                </div>
+
+                <!-- Language -->
+                <div class="space-y-2">
+                  <label class="block text-sm font-semibold text-[#A0A0A0]">System Language</label>
+                  <select
+                    [(ngModel)]="language"
+                    class="w-full px-4 py-3 bg-[#232323] border border-[#303030] rounded-xl text-white focus:outline-none focus:border-[#10A37F] transition-all duration-200 text-sm font-medium appearance-none cursor-pointer"
+                  >
+                    <option value="en">English (US)</option>
+                    <option value="es">Español (ES)</option>
+                    <option value="fr">Français (FR)</option>
+                    <option value="de">Deutsch (DE)</option>
+                  </select>
+                </div>
+
+                <!-- Date Format -->
+                <div class="space-y-2">
+                  <label class="block text-sm font-semibold text-[#A0A0A0]">Date Display Format</label>
+                  <select
+                    [(ngModel)]="dateFormat"
+                    class="w-full px-4 py-3 bg-[#232323] border border-[#303030] rounded-xl text-white focus:outline-none focus:border-[#10A37F] transition-all duration-200 text-sm font-medium appearance-none cursor-pointer"
+                  >
+                    <option value="MM/DD/YYYY">MM/DD/YYYY</option>
+                    <option value="DD/MM/YYYY">DD/MM/YYYY</option>
+                    <option value="YYYY-MM-DD">YYYY-MM-DD</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="mt-6 flex justify-end">
+                <button
+                  (click)="handleSaveProfile()"
+                  class="px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-blue-500/20 transition-all duration-200 flex items-center gap-2 text-sm"
+                >
+                  <lucide-icon name="check-circle-2" class="h-4 w-4"></lucide-icon>
+                  Save Regional Preferences
+                </button>
+              </div>
+            </div>
+          </div>
+        }
+
+        <!-- ================= PORTFOLIO & PREFERENCES TAB ================= -->
+        @if (activeTab === 'portfolio') {
+          <div class="space-y-6">
+            <!-- Return Calculations Methodology Card -->
+            <div class="bg-[#1C1C1C] border border-[#2D2D2D] rounded-2xl p-6 md:p-8 shadow-xl relative overflow-hidden">
+              <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#10A37F] to-[#3b82f6]"></div>
+              
+              <div class="flex items-start gap-4 mb-6">
+                <div class="p-3 bg-[#10A37F]/10 rounded-xl">
+                  <lucide-icon name="trending-up" class="h-6 w-6 text-[#10A37F]"></lucide-icon>
+                </div>
+                <div>
+                  <h2 class="text-xl font-bold text-white">Performance Calculations</h2>
+                  <p class="text-xs text-[#909090] mt-0.5">Determine how system return rates and growth percentages are calculated</p>
+                </div>
+              </div>
+
+              <div class="space-y-4">
+                <label class="block text-sm font-semibold text-[#A0A0A0]">Calculation Methodology</label>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <!-- TWR Card -->
+                  <div
+                    (click)="returnCalculation = 'TWR'"
+                    [ngClass]="{
+                      'border-[#10A37F] bg-[#10A37F]/5 ring-1 ring-[#10A37F]': returnCalculation === 'TWR',
+                      'border-[#303030] bg-[#222] hover:border-[#404040]': returnCalculation !== 'TWR'
+                    }"
+                    class="border-2 rounded-xl p-5 cursor-pointer transition-all duration-200 flex flex-col justify-between"
+                  >
+                    <div>
+                      <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm font-bold text-white">TWR (Time-Weighted)</span>
+                        <div class="h-4 w-4 rounded-full border border-gray-500 flex items-center justify-center">
+                          <div *ngIf="returnCalculation === 'TWR'" class="h-2 w-2 rounded-full bg-[#10A37F]"></div>
+                        </div>
+                      </div>
+                      <p class="text-xs text-[#909090] leading-relaxed">
+                        Measures the compound growth rate of the portfolio. Recommended for tracking portfolio manager performance because it eliminates cash inflow/outflow distortions.
+                      </p>
+                    </div>
+                    <span class="text-[10px] uppercase font-mono font-bold text-[#10A37F] mt-4 self-start bg-[#10A37F]/10 px-2 py-0.5 rounded">Recommended</span>
+                  </div>
+
+                  <!-- IRR/MWR Card -->
+                  <div
+                    (click)="returnCalculation = 'IRR'"
+                    [ngClass]="{
+                      'border-[#10A37F] bg-[#10A37F]/5 ring-1 ring-[#10A37F]': returnCalculation === 'IRR',
+                      'border-[#303030] bg-[#222] hover:border-[#404040]': returnCalculation !== 'IRR'
+                    }"
+                    class="border-2 rounded-xl p-5 cursor-pointer transition-all duration-200 flex flex-col justify-between"
+                  >
+                    <div>
+                      <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm font-bold text-white">IRR (Money-Weighted)</span>
+                        <div class="h-4 w-4 rounded-full border border-gray-500 flex items-center justify-center">
+                          <div *ngIf="returnCalculation === 'IRR'" class="h-2 w-2 rounded-full bg-[#10A37F]"></div>
+                        </div>
+                      </div>
+                      <p class="text-xs text-[#909090] leading-relaxed">
+                        Computes the internal rate of return. Accounts for the timing and size of cash transactions. Best for reflecting your personal dollar-earned returns.
+                      </p>
+                    </div>
+                  </div>
+
+                  <!-- Simple Return Card -->
+                  <div
+                    (click)="returnCalculation = 'SIMPLE'"
+                    [ngClass]="{
+                      'border-[#10A37F] bg-[#10A37F]/5 ring-1 ring-[#10A37F]': returnCalculation === 'SIMPLE',
+                      'border-[#303030] bg-[#222] hover:border-[#404040]': returnCalculation !== 'SIMPLE'
+                    }"
+                    class="border-2 rounded-xl p-5 cursor-pointer transition-all duration-200 flex flex-col justify-between"
+                  >
+                    <div>
+                      <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm font-bold text-white">Simple Return</span>
+                        <div class="h-4 w-4 rounded-full border border-gray-500 flex items-center justify-center">
+                          <div *ngIf="returnCalculation === 'SIMPLE'" class="h-2 w-2 rounded-full bg-[#10A37F]"></div>
+                        </div>
+                      </div>
+                      <p class="text-xs text-[#909090] leading-relaxed">
+                        Basic gain percentage calculation: (Current Value - Total Invested) / Total Invested. Simple to understand, but does not account for holding duration.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Benchmarking and Fiscal Settings -->
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8 pt-6 border-t border-[#2D2D2D]">
+                <div class="space-y-2">
+                  <label class="block text-sm font-semibold text-[#A0A0A0]">Primary Performance Benchmark</label>
+                  <select
+                    [(ngModel)]="defaultBenchmark"
+                    class="w-full px-4 py-3 bg-[#232323] border border-[#303030] rounded-xl text-white focus:outline-none focus:border-[#10A37F] transition-all duration-200 text-sm font-medium appearance-none cursor-pointer"
+                  >
+                    <option value="SP500">S&P 500 ETF (US Stock Market Index)</option>
+                    <option value="NIFTY50">Nifty 50 Index (Indian Stock Market Index)</option>
+                    <option value="NASDAQ">Nasdaq 100 Index (Tech Stock Index)</option>
+                    <option value="BTC">Bitcoin (BTC / USD Spot)</option>
+                    <option value="NONE">No Comparison Benchmark</option>
+                  </select>
+                  <p class="text-xs text-[#606060]">This asset will serve as the baseline comparator in portfolio performance charts.</p>
+                </div>
+
+                <div class="space-y-2">
+                  <label class="block text-sm font-semibold text-[#A0A0A0]">Fiscal / Tax Year Calendar</label>
+                  <select
+                    [(ngModel)]="fiscalYearStart"
+                    class="w-full px-4 py-3 bg-[#232323] border border-[#303030] rounded-xl text-white focus:outline-none focus:border-[#10A37F] transition-all duration-200 text-sm font-medium appearance-none cursor-pointer"
+                  >
+                    <option value="jan">January 1st (Standard Calendar Year)</option>
+                    <option value="apr">April 1st (Indian / UK Tax Calendar)</option>
+                    <option value="jul">July 1st (Australian Tax Calendar)</option>
+                  </select>
+                  <p class="text-xs text-[#606060]">Calculations like year-to-date (YTD) returns and tax reporting will align to this date.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Asset Class Customization Card -->
+            <div class="bg-[#1C1C1C] border border-[#2D2D2D] rounded-2xl p-6 md:p-8 shadow-xl relative overflow-hidden">
+              <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#10A37F] to-[#1AA97D]"></div>
+              
+              <div class="flex items-start gap-4 mb-6">
+                <div class="p-3 bg-[#10A37F]/10 rounded-xl">
+                  <lucide-icon name="palette" class="h-6 w-6 text-[#10A37F]"></lucide-icon>
+                </div>
+                <div>
+                  <h2 class="text-xl font-bold text-white">Preferred Asset Classes</h2>
+                  <p class="text-xs text-[#909090] mt-0.5">Toggle display visibility and dashboards for specific investment sectors</p>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                <!-- Stocks & ETFs -->
+                <div class="flex items-center justify-between p-4 bg-[#232323] border border-[#303030] rounded-xl">
                   <div>
-                    <h2 class="text-xl text-white mb-1">Data Management</h2>
-                    <p class="text-sm text-[#B3B3B3]">Manage your account data</p>
+                    <h4 class="text-sm font-bold text-white">Stocks & ETFs</h4>
+                    <p class="text-[11px] text-[#707070]">Equity trading</p>
+                  </div>
+                  <button
+                    (click)="activeAssetClasses.stocks = !activeAssetClasses.stocks"
+                    [ngClass]="activeAssetClasses.stocks ? 'bg-[#10A37F]' : 'bg-[#404040]'"
+                    class="relative w-11 h-6 rounded-full transition-colors duration-200"
+                  >
+                    <div
+                      [ngClass]="activeAssetClasses.stocks ? 'translate-x-6' : 'translate-x-1'"
+                      class="absolute top-1 left-0.5 w-4 h-4 bg-white rounded-full transition-transform duration-200"
+                    ></div>
+                  </button>
+                </div>
+
+                <!-- Crypto -->
+                <div class="flex items-center justify-between p-4 bg-[#232323] border border-[#303030] rounded-xl">
+                  <div>
+                    <h4 class="text-sm font-bold text-white">Cryptocurrency</h4>
+                    <p class="text-[11px] text-[#707070]">Bitcoin & Altcoins</p>
+                  </div>
+                  <button
+                    (click)="activeAssetClasses.crypto = !activeAssetClasses.crypto"
+                    [ngClass]="activeAssetClasses.crypto ? 'bg-[#10A37F]' : 'bg-[#404040]'"
+                    class="relative w-11 h-6 rounded-full transition-colors duration-200"
+                  >
+                    <div
+                      [ngClass]="activeAssetClasses.crypto ? 'translate-x-6' : 'translate-x-1'"
+                      class="absolute top-1 left-0.5 w-4 h-4 bg-white rounded-full transition-transform duration-200"
+                    ></div>
+                  </button>
+                </div>
+
+                <!-- Mutual Funds -->
+                <div class="flex items-center justify-between p-4 bg-[#232323] border border-[#303030] rounded-xl">
+                  <div>
+                    <h4 class="text-sm font-bold text-white">Mutual Funds</h4>
+                    <p class="text-[11px] text-[#707070]">Index & actively managed</p>
+                  </div>
+                  <button
+                    (click)="activeAssetClasses.mutualFunds = !activeAssetClasses.mutualFunds"
+                    [ngClass]="activeAssetClasses.mutualFunds ? 'bg-[#10A37F]' : 'bg-[#404040]'"
+                    class="relative w-11 h-6 rounded-full transition-colors duration-200"
+                  >
+                    <div
+                      [ngClass]="activeAssetClasses.mutualFunds ? 'translate-x-6' : 'translate-x-1'"
+                      class="absolute top-1 left-0.5 w-4 h-4 bg-white rounded-full transition-transform duration-200"
+                    ></div>
+                  </button>
+                </div>
+
+                <!-- ETFs -->
+                <div class="flex items-center justify-between p-4 bg-[#232323] border border-[#303030] rounded-xl">
+                  <div>
+                    <h4 class="text-sm font-bold text-white">ETFs</h4>
+                    <p class="text-[11px] text-[#707070]">Exchange Traded Funds</p>
+                  </div>
+                  <button
+                    (click)="activeAssetClasses.etfs = !activeAssetClasses.etfs"
+                    [ngClass]="activeAssetClasses.etfs ? 'bg-[#10A37F]' : 'bg-[#404040]'"
+                    class="relative w-11 h-6 rounded-full transition-colors duration-200"
+                  >
+                    <div
+                      [ngClass]="activeAssetClasses.etfs ? 'translate-x-6' : 'translate-x-1'"
+                      class="absolute top-1 left-0.5 w-4 h-4 bg-white rounded-full transition-transform duration-200"
+                    ></div>
+                  </button>
+                </div>
+
+                <!-- Cash & Cash Equivalents -->
+                <div class="flex items-center justify-between p-4 bg-[#232323] border border-[#303030] rounded-xl">
+                  <div>
+                    <h4 class="text-sm font-bold text-white">Cash & Deposits</h4>
+                    <p class="text-[11px] text-[#707070]">Cash, Bank CDs, FDs</p>
+                  </div>
+                  <button
+                    (click)="activeAssetClasses.cash = !activeAssetClasses.cash"
+                    [ngClass]="activeAssetClasses.cash ? 'bg-[#10A37F]' : 'bg-[#404040]'"
+                    class="relative w-11 h-6 rounded-full transition-colors duration-200"
+                  >
+                    <div
+                      [ngClass]="activeAssetClasses.cash ? 'translate-x-6' : 'translate-x-1'"
+                      class="absolute top-1 left-0.5 w-4 h-4 bg-white rounded-full transition-transform duration-200"
+                    ></div>
+                  </button>
+                </div>
+
+                <!-- Gold & Precious Metals -->
+                <div class="flex items-center justify-between p-4 bg-[#232323] border border-[#303030] rounded-xl">
+                  <div>
+                    <h4 class="text-sm font-bold text-white">Gold & Bullion</h4>
+                    <p class="text-[11px] text-[#707070]">Precious metals tracking</p>
+                  </div>
+                  <button
+                    (click)="activeAssetClasses.gold = !activeAssetClasses.gold"
+                    [ngClass]="activeAssetClasses.gold ? 'bg-[#10A37F]' : 'bg-[#404040]'"
+                    class="relative w-11 h-6 rounded-full transition-colors duration-200"
+                  >
+                    <div
+                      [ngClass]="activeAssetClasses.gold ? 'translate-x-6' : 'translate-x-1'"
+                      class="absolute top-1 left-0.5 w-4 h-4 bg-white rounded-full transition-transform duration-200"
+                    ></div>
+                  </button>
+                </div>
+
+                <!-- Real Estate -->
+                <div class="flex items-center justify-between p-4 bg-[#232323] border border-[#303030] rounded-xl">
+                  <div>
+                    <h4 class="text-sm font-bold text-white">Real Estate</h4>
+                    <p class="text-[11px] text-[#707070]">Properties & Land</p>
+                  </div>
+                  <button
+                    (click)="activeAssetClasses.realEstate = !activeAssetClasses.realEstate"
+                    [ngClass]="activeAssetClasses.realEstate ? 'bg-[#10A37F]' : 'bg-[#404040]'"
+                    class="relative w-11 h-6 rounded-full transition-colors duration-200"
+                  >
+                    <div
+                      [ngClass]="activeAssetClasses.realEstate ? 'translate-x-6' : 'translate-x-1'"
+                      class="absolute top-1 left-0.5 w-4 h-4 bg-white rounded-full transition-transform duration-200"
+                    ></div>
+                  </button>
+                </div>
+              </div>
+
+              <div class="mt-6 flex justify-end">
+                <button
+                  (click)="handleSavePortfolio()"
+                  class="px-6 py-3 bg-gradient-to-r from-[#10A37F] to-[#0D8968] text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-[#10A37F]/20 transition-all duration-200 flex items-center gap-2 text-sm"
+                >
+                  <lucide-icon name="check-circle-2" class="h-4 w-4"></lucide-icon>
+                  Save Portfolio Preferences
+                </button>
+              </div>
+            </div>
+          </div>
+        }
+
+        <!-- ================= ALERTS & NOTIFICATIONS TAB ================= -->
+        @if (activeTab === 'alerts') {
+          <div class="space-y-6 animate-fade-in">
+            <div class="bg-[#1C1C1C] border border-[#2D2D2D] rounded-2xl p-6 md:p-8 shadow-xl relative overflow-hidden">
+              <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-teal-500 to-[#10A37F]"></div>
+              
+              <div class="flex items-start gap-4 mb-6">
+                <div class="p-3 bg-[#10A37F]/10 rounded-xl">
+                  <lucide-icon name="bell" class="h-6 w-6 text-[#10A37F]"></lucide-icon>
+                </div>
+                <div>
+                  <h2 class="text-xl font-bold text-white">Smart Alerts & Digests</h2>
+                  <p class="text-xs text-[#909090] mt-0.5">Control how and when you are notified of changes in portfolio valuation</p>
+                </div>
+              </div>
+
+              <div class="space-y-6">
+                <!-- Notifications delivery channels -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <!-- Email channels -->
+                  <div class="flex items-center justify-between p-4 bg-[#232323] border border-[#303030] rounded-xl">
+                    <div class="flex items-center gap-3">
+                      <span class="text-xl">📧</span>
+                      <div>
+                        <h4 class="text-sm font-bold text-white">Email Digest</h4>
+                        <p class="text-[11px] text-[#808080]">Market notifications via Email</p>
+                      </div>
+                    </div>
+                    <button
+                      (click)="emailNotifications = !emailNotifications"
+                      [ngClass]="emailNotifications ? 'bg-[#10A37F]' : 'bg-[#404040]'"
+                      class="relative w-11 h-6 rounded-full transition-colors duration-200"
+                    >
+                      <div
+                        [ngClass]="emailNotifications ? 'translate-x-6' : 'translate-x-1'"
+                        class="absolute top-1 left-0.5 w-4 h-4 bg-white rounded-full transition-transform duration-200"
+                      ></div>
+                    </button>
+                  </div>
+
+                  <!-- In-App channels -->
+                  <div class="flex items-center justify-between p-4 bg-[#232323] border border-[#303030] rounded-xl">
+                    <div class="flex items-center gap-3">
+                      <span class="text-xl">🔔</span>
+                      <div>
+                        <h4 class="text-sm font-bold text-white">In-App Push Alerts</h4>
+                        <p class="text-[11px] text-[#808080]">Realtime browser push notifications</p>
+                      </div>
+                    </div>
+                    <button
+                      (click)="pushNotifications = !pushNotifications"
+                      [ngClass]="pushNotifications ? 'bg-[#10A37F]' : 'bg-[#404040]'"
+                      class="relative w-11 h-6 rounded-full transition-colors duration-200"
+                    >
+                      <div
+                        [ngClass]="pushNotifications ? 'translate-x-6' : 'translate-x-1'"
+                        class="absolute top-1 left-0.5 w-4 h-4 bg-white rounded-full transition-transform duration-200"
+                      ></div>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Custom triggers section -->
+                <div class="border-t border-[#2D2D2D] pt-6 space-y-4">
+                  <h3 class="text-sm font-bold text-white tracking-wide uppercase text-[#A0A0A0]">Subscription Alerts</h3>
+                  
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Weekly Report -->
+                    <div class="flex items-center justify-between p-4 bg-[#232323] border border-[#303030] rounded-xl">
+                      <div>
+                        <h4 class="text-sm font-semibold text-white">Weekly Performance Digest</h4>
+                        <p class="text-[11px] text-[#808080]">Comprehensive weekend performance reports</p>
+                      </div>
+                      <button
+                        (click)="weeklyReports = !weeklyReports"
+                        [ngClass]="weeklyReports ? 'bg-[#10A37F]' : 'bg-[#404040]'"
+                        class="relative w-11 h-6 rounded-full transition-colors duration-200"
+                      >
+                        <div
+                          [ngClass]="weeklyReports ? 'translate-x-6' : 'translate-x-1'"
+                          class="absolute top-1 left-0.5 w-4 h-4 bg-white rounded-full transition-transform duration-200"
+                        ></div>
+                      </button>
+                    </div>
+
+                    <!-- Dividend Alert -->
+                    <div class="flex items-center justify-between p-4 bg-[#232323] border border-[#303030] rounded-xl">
+                      <div>
+                        <h4 class="text-sm font-semibold text-white">Dividend payouts & Yield</h4>
+                        <p class="text-[11px] text-[#808080]">Alert when stock pays dividends</p>
+                      </div>
+                      <button
+                        (click)="dividendAlerts = !dividendAlerts"
+                        [ngClass]="dividendAlerts ? 'bg-[#10A37F]' : 'bg-[#404040]'"
+                        class="relative w-11 h-6 rounded-full transition-colors duration-200"
+                      >
+                        <div
+                          [ngClass]="dividendAlerts ? 'translate-x-6' : 'translate-x-1'"
+                          class="absolute top-1 left-0.5 w-4 h-4 bg-white rounded-full transition-transform duration-200"
+                        ></div>
+                      </button>
+                    </div>
+
+                    <!-- Price Movement Toggles -->
+                    <div class="flex items-center justify-between p-4 bg-[#232323] border border-[#303030] rounded-xl">
+                      <div>
+                        <h4 class="text-sm font-semibold text-white">Daily Price Volatility Warning</h4>
+                        <p class="text-[11px] text-[#808080]">Significant asset price swing detection</p>
+                      </div>
+                      <button
+                        (click)="portfolioAlerts = !portfolioAlerts"
+                        [ngClass]="portfolioAlerts ? 'bg-[#10A37F]' : 'bg-[#404040]'"
+                        class="relative w-11 h-6 rounded-full transition-colors duration-200"
+                      >
+                        <div
+                          [ngClass]="portfolioAlerts ? 'translate-x-6' : 'translate-x-1'"
+                          class="absolute top-1 left-0.5 w-4 h-4 bg-white rounded-full transition-transform duration-200"
+                        ></div>
+                      </button>
+                    </div>
+
+                    <!-- Rebalance Toggles -->
+                    <div class="flex items-center justify-between p-4 bg-[#232323] border border-[#303030] rounded-xl">
+                      <div>
+                        <h4 class="text-sm font-semibold text-white">Target Allocation Rebalancing</h4>
+                        <p class="text-[11px] text-[#808080]">Alert when asset classes drift out of bounds</p>
+                      </div>
+                      <button
+                        (click)="rebalanceAlerts = !rebalanceAlerts"
+                        [ngClass]="rebalanceAlerts ? 'bg-[#10A37F]' : 'bg-[#404040]'"
+                        class="relative w-11 h-6 rounded-full transition-colors duration-200"
+                      >
+                        <div
+                          [ngClass]="rebalanceAlerts ? 'translate-x-6' : 'translate-x-1'"
+                          class="absolute top-1 left-0.5 w-4 h-4 bg-white rounded-full transition-transform duration-200"
+                        ></div>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Custom Threshold Selectors -->
+                <div class="border-t border-[#2D2D2D] pt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div class="space-y-2">
+                    <label class="block text-xs font-bold text-[#A0A0A0] uppercase tracking-wide">Volatility Alert Sensitivity</label>
+                    <div class="relative">
+                      <select
+                        [(ngModel)]="priceAlertThreshold"
+                        [disabled]="!portfolioAlerts"
+                        class="w-full px-4 py-3 bg-[#232323] border border-[#303030] rounded-xl text-white focus:outline-none focus:border-[#10A37F] transition-all duration-200 text-sm font-semibold cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                      >
+                        <option [value]="1">± 1% Daily Portfolio Swing</option>
+                        <option [value]="2">± 2% Daily Portfolio Swing</option>
+                        <option [value]="5">± 5% Daily Portfolio Swing</option>
+                        <option [value]="10">± 10% Daily Portfolio Swing</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="space-y-2">
+                    <label class="block text-xs font-bold text-[#A0A0A0] uppercase tracking-wide">Rebalance Drift Sensitivity</label>
+                    <div class="relative">
+                      <select
+                        [(ngModel)]="rebalanceThreshold"
+                        [disabled]="!rebalanceAlerts"
+                        class="w-full px-4 py-3 bg-[#232323] border border-[#303030] rounded-xl text-white focus:outline-none focus:border-[#10A37F] transition-all duration-200 text-sm font-semibold cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                      >
+                        <option [value]="2">± 2% Allocation Deviation</option>
+                        <option [value]="5">± 5% Allocation Deviation (Standard)</option>
+                        <option [value]="10">± 10% Allocation Deviation</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mt-8 flex justify-end">
+                <button
+                  (click)="handleSaveAlerts()"
+                  class="px-6 py-3 bg-gradient-to-r from-[#10A37F] to-[#0D8968] text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-[#10A37F]/20 transition-all duration-200 flex items-center gap-2 text-sm"
+                >
+                  <lucide-icon name="check-circle-2" class="h-4 w-4"></lucide-icon>
+                  Save Alert Settings
+                </button>
+              </div>
+            </div>
+          </div>
+        }
+
+        <!-- ================= SECURITY & ACCESS TAB ================= -->
+        @if (activeTab === 'security') {
+          <div class="space-y-6">
+            <!-- 2FA Verification Card -->
+            <div class="bg-[#1C1C1C] border border-[#2D2D2D] rounded-2xl p-6 md:p-8 shadow-xl relative overflow-hidden">
+              <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 to-[#10A37F]"></div>
+              
+              <div class="flex items-start justify-between gap-4">
+                <div class="flex gap-4">
+                  <div class="p-3 bg-[#10A37F]/10 rounded-xl self-start">
+                    <lucide-icon name="shield" class="h-6 w-6 text-[#10A37F]"></lucide-icon>
+                  </div>
+                  <div>
+                    <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                      Two-Factor Authentication (2FA)
+                      <span
+                        [ngClass]="twoFactorEnabled ? 'bg-[#10A37F]/10 text-[#10A37F] border-[#10A37F]/30' : 'bg-white/5 text-[#808080] border-transparent'"
+                        class="text-xs px-3 py-0.5 rounded-full border font-bold"
+                      >
+                        {{ twoFactorEnabled ? 'Active' : 'Inactive' }}
+                      </span>
+                    </h2>
+                    <p class="text-xs text-[#909090] mt-1 max-w-xl">
+                      Add a secondary layer of credential checks to your account. When enabled, signing in requires your standard password and an Authenticator code.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mt-6 flex justify-start">
+                <button
+                  (click)="handleToggle2FA()"
+                  [ngClass]="twoFactorEnabled 
+                    ? 'bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20' 
+                    : 'bg-[#10A37F] text-white hover:bg-[#0D8968]'"
+                  class="px-5 py-3 rounded-xl font-bold transition-all duration-200 text-sm flex items-center gap-2"
+                >
+                  <lucide-icon [name]="twoFactorEnabled ? 'x-circle' : 'shield'" class="h-5 w-5"></lucide-icon>
+                  {{ twoFactorEnabled ? 'Disable 2-Factor Authentication' : 'Activate 2-Factor Authentication' }}
+                </button>
+              </div>
+            </div>
+
+            <!-- Password Form Card -->
+            <div class="bg-[#1C1C1C] border border-[#2D2D2D] rounded-2xl p-6 md:p-8 shadow-xl relative overflow-hidden">
+              <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-red-500 to-[#10A37F]"></div>
+              
+              <div class="flex items-start gap-4 mb-6">
+                <div class="p-3 bg-[#10A37F]/10 rounded-xl">
+                  <lucide-icon name="lock" class="h-6 w-6 text-[#10A37F]"></lucide-icon>
+                </div>
+                <div>
+                  <h2 class="text-xl font-bold text-white">Update Password</h2>
+                  <p class="text-xs text-[#909090] mt-0.5">Change your profile access passcode credentials</p>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 gap-5 max-w-2xl">
+                <!-- Current password -->
+                <div class="space-y-2">
+                  <label class="block text-sm font-semibold text-[#A0A0A0]">Current Password</label>
+                  <div class="relative">
+                    <lucide-icon name="lock" class="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-[#606060]"></lucide-icon>
+                    <input
+                      type="password"
+                      [(ngModel)]="oldPassword"
+                      class="w-full pl-12 pr-4 py-3 bg-[#232323] border border-[#303030] rounded-xl text-white placeholder-[#505050] focus:outline-none focus:border-[#10A37F] transition-all duration-200 text-sm font-medium"
+                      placeholder="••••••••••••"
+                    />
+                  </div>
+                </div>
+
+                <!-- New password -->
+                <div class="space-y-2">
+                  <label class="block text-sm font-semibold text-[#A0A0A0]">New Password</label>
+                  <div class="relative">
+                    <lucide-icon name="shield" class="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-[#606060]"></lucide-icon>
+                    <input
+                      type="password"
+                      [(ngModel)]="newPasswordValue"
+                      class="w-full pl-12 pr-4 py-3 bg-[#232323] border border-[#303030] rounded-xl text-white placeholder-[#505050] focus:outline-none focus:border-[#10A37F] transition-all duration-200 text-sm font-medium"
+                      placeholder="Must be at least 8 characters"
+                    />
+                  </div>
+                </div>
+
+                <!-- Confirm update -->
+                <div class="pt-3">
+                  <button
+                    (click)="handleChangePassword()"
+                    [disabled]="isLoadingPasswordChange || !oldPassword || !newPasswordValue"
+                    class="px-6 py-3 bg-gradient-to-r from-[#10A37F] to-[#0D8968] text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-[#10A37F]/20 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center gap-2 text-sm"
+                  >
+                    <lucide-icon name="lock" class="h-5 w-5"></lucide-icon>
+                    {{ isLoadingPasswordChange ? 'Processing credentials...' : 'Save New Password' }}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Active Sessions Card -->
+            <div class="bg-[#1C1C1C] border border-[#2D2D2D] rounded-2xl p-6 md:p-8 shadow-xl relative overflow-hidden">
+              <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-orange-400 to-[#10A37F]"></div>
+              
+              <div class="flex items-start gap-4 mb-6">
+                <div class="p-3 bg-orange-400/10 rounded-xl">
+                  <lucide-icon name="database" class="h-6 w-6 text-orange-400"></lucide-icon>
+                </div>
+                <div>
+                  <h2 class="text-xl font-bold text-white">Active Account Sessions</h2>
+                  <p class="text-xs text-[#909090] mt-0.5">Manage and revoke active login tokens on browser environments</p>
+                </div>
+              </div>
+
+              <div class="space-y-3">
+                @for (session of activeSessions; track session.id) {
+                  <div class="flex items-center justify-between p-4 bg-[#232323] border border-[#303030] rounded-xl hover:border-[#404040] transition-colors duration-200">
+                    <div class="flex items-center gap-3.5">
+                      <span class="text-2xl">{{ session.device.includes('iPhone') ? '📱' : '💻' }}</span>
+                      <div>
+                        <div class="flex items-center gap-2">
+                          <p class="text-sm font-bold text-white">{{ session.device }}</p>
+                          <span *ngIf="session.isCurrent" class="text-[9px] font-mono px-2 py-0.5 bg-[#10A37F]/15 text-[#10A37F] border border-[#10A37F]/30 rounded-md uppercase font-semibold">Current Session</span>
+                        </div>
+                        <p class="text-[11px] text-[#808080] mt-0.5">{{ session.location }} • {{ session.date }}</p>
+                      </div>
+                    </div>
+                    
+                    <button
+                      *ngIf="!session.isCurrent"
+                      (click)="handleRevokeSession(session.id)"
+                      class="px-3 py-1.5 border border-red-500/30 hover:border-red-500 text-red-400 hover:bg-red-500/10 rounded-lg text-xs font-bold transition-all duration-200"
+                    >
+                      Revoke Key
+                    </button>
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+        }
+
+        <!-- ================= PLANS & BILLING TAB ================= -->
+        @if (activeTab === 'billing') {
+          <div class="space-y-6">
+            <!-- Premium Plan Grid -->
+            <div class="bg-[#1C1C1C] border border-[#2D2D2D] rounded-2xl p-6 md:p-8 shadow-xl relative overflow-hidden">
+              <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-yellow-500 to-[#10A37F]"></div>
+              
+              <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+                <div class="flex items-start gap-4">
+                  <div class="p-3 bg-[#10A37F]/10 rounded-xl">
+                    <lucide-icon name="crown" class="h-6 w-6 text-[#10A37F]"></lucide-icon>
+                  </div>
+                  <div>
+                    <h2 class="text-xl font-bold text-white">Subscription & Licensing</h2>
+                    <p class="text-xs text-[#909090] mt-0.5">Upgrade or adjust your system capabilities and analytical tools</p>
+                  </div>
+                </div>
+                
+                <div class="px-4 py-2 bg-[#232323] border border-[#303030] rounded-xl self-start md:self-auto flex items-center gap-2">
+                  <span class="text-xs text-[#909090] font-medium">Current Status:</span>
+                  <span class="text-xs text-[#10A37F] font-bold uppercase tracking-wider bg-[#10A37F]/10 px-2 py-0.5 rounded">Free Plan</span>
+                </div>
+              </div>
+
+              <!-- Interactive Plans Cards -->
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Free Plan -->
+                <div class="bg-[#232323] border border-[#303030] rounded-2xl p-6 flex flex-col justify-between relative shadow-lg">
+                  <div class="space-y-4">
+                    <div class="flex items-center justify-between border-b border-[#303030] pb-4">
+                      <div>
+                        <h3 class="text-base font-bold text-white">Free Basic</h3>
+                        <p class="text-xs text-[#808080]">Essential tracker metrics</p>
+                      </div>
+                      <span class="text-xl">🌱</span>
+                    </div>
+                    
+                    <div class="py-2">
+                      <span class="text-3xl font-extrabold text-white">₹0</span>
+                      <span class="text-xs text-[#808080] ml-1">/ month</span>
+                    </div>
+
+                    <div class="space-y-2 pt-2">
+                      <div class="flex items-center gap-2 text-xs text-[#A0A0A0]">
+                        <lucide-icon name="check-check" class="h-4 w-4 text-[#10A37F]"></lucide-icon>
+                        <span>Up to 50 transactions</span>
+                      </div>
+                      <div class="flex items-center gap-2 text-xs text-[#A0A0A0]">
+                        <lucide-icon name="check-check" class="h-4 w-4 text-[#10A37F]"></lucide-icon>
+                        <span>TWR performance metric</span>
+                      </div>
+                      <div class="flex items-center gap-2 text-xs text-[#A0A0A0]">
+                        <lucide-icon name="check-check" class="h-4 w-4 text-[#10A37F]"></lucide-icon>
+                        <span>Standard CSV import tool</span>
+                      </div>
+                    </div>
                   </div>
 
                   <button
-                    (click)="handleExportData()"
-                    class="w-full px-6 py-3 bg-[#2A2A2A] border border-[#3A3A3A] text-white rounded-lg hover:bg-[#353535] transition-all flex items-center justify-center gap-2"
+                    disabled
+                    class="w-full mt-8 py-3 bg-[#1C1C1C] border border-[#2D2D2D] text-[#707070] rounded-xl text-xs font-bold uppercase tracking-wider cursor-not-allowed"
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                    Export My Data
-                  </button>
-
-                  <button
-                    (click)="handleDeleteAccount()"
-                    class="w-full px-6 py-3 bg-red-500/10 text-red-400 border border-red-500/20 rounded-lg hover:bg-red-500/20 hover:border-red-500/30 transition-all flex items-center justify-center gap-2"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg>
-                    Delete Account
+                    Active Plan
                   </button>
                 </div>
+
+                <!-- Pro Plan -->
+                <div class="bg-[#232323] border border-[#10A37F]/50 rounded-2xl p-6 flex flex-col justify-between relative shadow-lg ring-1 ring-[#10A37F]/30">
+                  <div class="absolute top-0 right-6 -translate-y-1/2 bg-[#10A37F] text-white text-[9px] font-bold uppercase tracking-widest px-3 py-1 rounded-full">Popular</div>
+                  
+                  <div class="space-y-4">
+                    <div class="flex items-center justify-between border-b border-[#303030] pb-4">
+                      <div>
+                        <h3 class="text-base font-bold text-white">Pro Trader</h3>
+                        <p class="text-xs text-[#808080]">Advanced analytics & tracking</p>
+                      </div>
+                      <span class="text-xl text-[#10A37F]">🚀</span>
+                    </div>
+                    
+                    <div class="py-2">
+                      <span class="text-3xl font-extrabold text-white">₹499</span>
+                      <span class="text-xs text-[#808080] ml-1">/ month</span>
+                    </div>
+
+                    <div class="space-y-2 pt-2">
+                      <div class="flex items-center gap-2 text-xs text-[#A0A0A0]">
+                        <lucide-icon name="check-check" class="h-4 w-4 text-[#10A37F]"></lucide-icon>
+                        <span>Unlimited transactions</span>
+                      </div>
+                      <div class="flex items-center gap-2 text-xs text-[#A0A0A0]">
+                        <lucide-icon name="check-check" class="h-4 w-4 text-[#10A37F]"></lucide-icon>
+                        <span>TWR + IRR calculation choice</span>
+                      </div>
+                      <div class="flex items-center gap-2 text-xs text-[#A0A0A0]">
+                        <lucide-icon name="check-check" class="h-4 w-4 text-[#10A37F]"></lucide-icon>
+                        <span>Custom threshold alerts</span>
+                      </div>
+                      <div class="flex items-center gap-2 text-xs text-[#A0A0A0]">
+                        <lucide-icon name="check-check" class="h-4 w-4 text-[#10A37F]"></lucide-icon>
+                        <span>Daily & weekly PDF updates</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <button
+                    (click)="onNavigate('subscription')"
+                    class="w-full mt-8 py-3 bg-[#10A37F] text-white hover:bg-[#0D8968] rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-200 shadow-md hover:shadow-lg hover:shadow-[#10A37F]/20"
+                  >
+                    Upgrade to Pro
+                  </button>
+                </div>
+
+                <!-- Premium Plan -->
+                <div class="bg-[#232323] border border-[#303030] rounded-2xl p-6 flex flex-col justify-between relative shadow-lg">
+                  <div class="space-y-4">
+                    <div class="flex items-center justify-between border-b border-[#303030] pb-4">
+                      <div>
+                        <h3 class="text-base font-bold text-white">Elite Capital</h3>
+                        <p class="text-xs text-[#808080]">Realtime syncs & advice</p>
+                      </div>
+                      <span class="text-xl">🏆</span>
+                    </div>
+                    
+                    <div class="py-2">
+                      <span class="text-3xl font-extrabold text-white">₹999</span>
+                      <span class="text-xs text-[#808080] ml-1">/ month</span>
+                    </div>
+
+                    <div class="space-y-2 pt-2">
+                      <div class="flex items-center gap-2 text-xs text-[#A0A0A0]">
+                        <lucide-icon name="check-check" class="h-4 w-4 text-[#10A37F]"></lucide-icon>
+                        <span>Everything in Pro Plan</span>
+                      </div>
+                      <div class="flex items-center gap-2 text-xs text-[#A0A0A0]">
+                        <lucide-icon name="check-check" class="h-4 w-4 text-[#10A37F]"></lucide-icon>
+                        <span>API broker wallet integration</span>
+                      </div>
+                      <div class="flex items-center gap-2 text-xs text-[#A0A0A0]">
+                        <lucide-icon name="check-check" class="h-4 w-4 text-[#10A37F]"></lucide-icon>
+                        <span>Rebalancing advisory reports</span>
+                      </div>
+                      <div class="flex items-center gap-2 text-xs text-[#A0A0A0]">
+                        <lucide-icon name="check-check" class="h-4 w-4 text-[#10A37F]"></lucide-icon>
+                        <span>Priority 24/7 account support</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <button
+                    (click)="onNavigate('subscription')"
+                    class="w-full mt-8 py-3 bg-[#2D2D2D] hover:bg-[#383838] text-white border border-[#404040] rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-200"
+                  >
+                    Go Premium
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
+        }
+
+        <!-- ================= DATA & DANGER ZONE TAB ================= -->
+        @if (activeTab === 'data') {
+          <div class="space-y-6">
+            <!-- Data management -->
+            <div class="bg-[#1C1C1C] border border-[#2D2D2D] rounded-2xl p-6 md:p-8 shadow-xl relative overflow-hidden">
+              <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-[#10A37F]"></div>
+              
+              <div class="flex items-start gap-4 mb-6">
+                <div class="p-3 bg-blue-500/10 rounded-xl">
+                  <lucide-icon name="database" class="h-6 w-6 text-blue-400"></lucide-icon>
+                </div>
+                <div>
+                  <h2 class="text-xl font-bold text-white">Data Management</h2>
+                  <p class="text-xs text-[#909090] mt-0.5">Export or backing up your transaction history files</p>
+                </div>
+              </div>
+
+              <div class="p-6 bg-[#232323] border border-[#303030] rounded-xl space-y-4 max-w-3xl">
+                <h3 class="text-sm font-bold text-white">Backup Portfolios</h3>
+                <p class="text-xs text-[#808080] leading-relaxed">
+                  Generate and download your complete system transaction profile, asset configurations, buy/sell values, and settings. Recommended before performing mass edits or imports.
+                </p>
+                
+                <div class="flex flex-wrap gap-4 pt-2">
+                  <button
+                    (click)="handleExportData('csv')"
+                    class="px-5 py-3 bg-[#2D2D2D] hover:bg-[#353535] border border-[#404040] text-white rounded-xl text-xs font-semibold flex items-center gap-2 transition-colors duration-200"
+                  >
+                    <lucide-icon name="download" class="h-4 w-4 text-[#808080]"></lucide-icon>
+                    Export as CSV Document (.csv)
+                  </button>
+                  <button
+                    (click)="handleExportData('json')"
+                    class="px-5 py-3 bg-[#2D2D2D] hover:bg-[#353535] border border-[#404040] text-white rounded-xl text-xs font-semibold flex items-center gap-2 transition-colors duration-200"
+                  >
+                    <lucide-icon name="download" class="h-4 w-4 text-[#808080]"></lucide-icon>
+                    Export as JSON Database (.json)
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Danger Zone -->
+            <div class="bg-[#1C1C1C] border border-[#EF4444]/45 rounded-2xl p-6 md:p-8 shadow-xl relative overflow-hidden ring-1 ring-red-500/10">
+              <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-red-600 to-[#EF4444]"></div>
+              
+              <div class="flex items-start gap-4 mb-6">
+                <div class="p-3 bg-red-500/10 rounded-xl">
+                  <lucide-icon name="trash-2" class="h-6 w-6 text-red-500"></lucide-icon>
+                </div>
+                <div>
+                  <h2 class="text-xl font-bold text-red-500">Danger Zone</h2>
+                  <p class="text-xs text-[#909090] mt-0.5">Destructive actions which cannot be reversed</p>
+                </div>
+              </div>
+
+              <div class="space-y-4">
+                <!-- Reset portfolio -->
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between p-5 bg-red-500/5 border border-red-500/15 rounded-xl gap-4">
+                  <div class="space-y-0.5">
+                    <h4 class="text-sm font-bold text-white">Reset Portfolio Transactions</h4>
+                    <p class="text-xs text-[#808080] max-w-xl">Delete all stock, crypto, ETF buy/sell transactions and clear tracking calculations. Keep account configuration details intact.</p>
+                  </div>
+                  <button
+                    (click)="showResetModal = true"
+                    class="px-5 py-3 bg-red-600/10 hover:bg-red-600/20 text-red-400 border border-red-500/25 hover:border-red-500 rounded-xl text-xs font-bold transition-all duration-200 uppercase whitespace-nowrap"
+                  >
+                    Reset All Data
+                  </button>
+                </div>
+
+                <!-- Delete account -->
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between p-5 bg-red-500/5 border border-red-500/15 rounded-xl gap-4">
+                  <div class="space-y-0.5">
+                    <h4 class="text-sm font-bold text-white">Permanently Delete Account</h4>
+                    <p class="text-xs text-[#808080] max-w-xl">Remove user profile, authentication credentials, and database portfolio metrics. This action is final.</p>
+                  </div>
+                  <button
+                    (click)="showDeleteModal = true"
+                    class="px-5 py-3 bg-red-600 text-white hover:bg-red-500 rounded-xl text-xs font-bold transition-all duration-200 uppercase whitespace-nowrap"
+                  >
+                    Delete My Account
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        }
       </div>
-
-      <div *ngIf="activeTab === 'notifications'">
-        <div class="bg-[#232323] border border-[#3A3A3A] rounded-xl p-6 space-y-4">
-          <div>
-            <h2 class="text-xl text-white mb-1">Notification Preferences</h2>
-            <p class="text-sm text-[#B3B3B3]">Choose how you want to be notified.</p>
-          </div>
-          
-          <div class="flex justify-between items-center py-2 border-b border-[#2A2A2A]">
-            <label class="text-white">Email Notifications</label>
-            <input type="checkbox" [(ngModel)]="emailNotifications" class="h-5 w-5 rounded text-[#10A37F] focus:ring-[#10A37F]">
-          </div>
-
-          <div class="flex justify-between items-center py-2 border-b border-[#2A2A2A]">
-            <label class="text-white">Push Notifications</label>
-            <input type="checkbox" [(ngModel)]="pushNotifications" class="h-5 w-5 rounded text-[#10A37F] focus:ring-[#10A37F]">
-          </div>
-
-          <div class="flex justify-between items-center py-2">
-            <label class="text-white">Portfolio Alerts (e.g., major price changes)</label>
-            <input type="checkbox" [(ngModel)]="portfolioAlerts" class="h-5 w-5 rounded text-[#10A37F] focus:ring-[#10A37F]">
-          </div>
-
-          <button
-              (click)="handleSaveNotifications()"
-              class="px-6 py-3 bg-[#10A37F] text-white rounded-lg hover:bg-[#0E8A6F] transition-all flex items-center justify-center gap-2 mt-6"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-              Save Preferences
-          </button>
-        </div>
-      </div>
-      
-      </div>
+    </div>
   </div>
 </div>
-</section>
+
+<!-- ================= MODALS OVERLAYS ================= -->
+
+<!-- 1. 2FA QR SETUP MODAL -->
+<div
+  *ngIf="show2FAModal"
+  class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-fade-in"
+>
+  <div class="bg-[#1C1C1C] border border-[#303030] rounded-2xl w-full max-w-md overflow-hidden relative shadow-2xl animate-scale-up">
+    <!-- Close icon -->
+    <button
+      (click)="show2FAModal = false"
+      class="absolute top-4 right-4 text-[#707070] hover:text-white transition-colors"
+    >
+      <lucide-icon name="x" class="h-5 w-5"></lucide-icon>
+    </button>
+
+    <div class="p-6 md:p-8 space-y-6">
+      <div class="text-center space-y-1.5">
+        <h3 class="text-lg font-bold text-white flex items-center justify-center gap-2">
+          <lucide-icon name="shield" class="h-5 w-5 text-[#10A37F]"></lucide-icon>
+          Setup Authenticator 2FA
+        </h3>
+        <p class="text-xs text-[#909090]">Activate code verification checks on your account</p>
+      </div>
+
+      <!-- QR Area -->
+      <div class="bg-white p-4 rounded-2xl mx-auto w-44 h-44 flex items-center justify-center relative shadow-inner">
+        <!-- SVG simulated QR code -->
+        <svg class="w-full h-full text-black" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <rect x="1" y="1" width="6" height="6" />
+          <rect x="1" y="17" width="6" height="6" />
+          <rect x="17" y="1" width="6" height="6" />
+          <rect x="3" y="3" width="2" height="2" fill="currentColor" />
+          <rect x="3" y="19" width="2" height="2" fill="currentColor" />
+          <rect x="19" y="3" width="2" height="2" fill="currentColor" />
+          <path d="M10 2h4M10 5h2M2 10h4M12 10h2M17 10h4M2 14h2M10 14h2M19 14h3M5 12h2M14 12h3M12 17v4M17 17h2M17 21h4" stroke-dasharray="1 1.5"/>
+        </svg>
+      </div>
+
+      <!-- Setup Code details -->
+      <div class="space-y-4">
+        <div class="p-3 bg-[#232323] border border-[#303030] rounded-xl text-center">
+          <p class="text-[10px] text-[#707070] uppercase font-bold tracking-wider">MFA Secret Key</p>
+          <p class="text-sm font-mono font-bold text-white tracking-widest mt-1 select-all">{{ twoFactorSecret }}</p>
+        </div>
+
+        <div class="space-y-2">
+          <label class="block text-xs font-bold text-[#A0A0A0] uppercase tracking-wide text-center">Verification Code</label>
+          <input
+            type="text"
+            maxLength="6"
+            [(ngModel)]="twoFactorCode"
+            placeholder="000 000"
+            class="w-full tracking-[0.4em] font-mono text-lg font-bold py-3 text-center bg-[#232323] border border-[#303030] rounded-xl text-white focus:outline-none focus:border-[#10A37F] focus:ring-1 focus:ring-[#10A37F]"
+          />
+        </div>
+      </div>
+
+      <!-- Controls -->
+      <div class="flex gap-3">
+        <button
+          (click)="show2FAModal = false"
+          class="flex-1 py-3 bg-[#2D2D2D] hover:bg-[#353535] text-white border border-[#404040] rounded-xl text-xs font-semibold transition-colors duration-200"
+        >
+          Cancel
+        </button>
+        <button
+          (click)="handleVerify2FA()"
+          class="flex-1 py-3 bg-[#10A37F] hover:bg-[#0D8968] text-white rounded-xl text-xs font-semibold transition-colors duration-200"
+        >
+          Verify & Enable
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 2. RESET PORTFOLIO DATA MODAL -->
+<div
+  *ngIf="showResetModal"
+  class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-fade-in"
+>
+  <div class="bg-[#1C1C1C] border border-[#EF4444]/30 rounded-2xl w-full max-w-md overflow-hidden relative shadow-2xl animate-scale-up">
+    <!-- Close icon -->
+    <button
+      (click)="showResetModal = false"
+      [disabled]="isResetting"
+      class="absolute top-4 right-4 text-[#707070] hover:text-white transition-colors"
+    >
+      <lucide-icon name="x" class="h-5 w-5"></lucide-icon>
+    </button>
+
+    <div class="p-6 md:p-8 space-y-6">
+      <div class="text-center space-y-2">
+        <div class="w-12 h-12 rounded-full bg-red-500/10 flex items-center justify-center mx-auto">
+          <lucide-icon name="alert-triangle" class="h-6 w-6 text-red-500"></lucide-icon>
+        </div>
+        <h3 class="text-lg font-bold text-white">Reset Portfolio Transactions</h3>
+        <p class="text-xs text-[#909090]">Are you absolutely sure you want to clear your data?</p>
+      </div>
+
+      <div class="p-4 bg-red-500/5 border border-red-500/15 rounded-xl text-center text-xs text-[#C0C0C0] leading-relaxed">
+        This action will permanently delete all stocks, mutual funds, crypto purchases, and records from your dashboard. <strong class="text-red-400">This action cannot be undone.</strong>
+      </div>
+
+      <!-- Controls -->
+      <div class="flex gap-3">
+        <button
+          (click)="showResetModal = false"
+          [disabled]="isResetting"
+          class="flex-1 py-3 bg-[#2D2D2D] hover:bg-[#353535] text-white border border-[#404040] rounded-xl text-xs font-semibold transition-colors duration-200 disabled:opacity-40"
+        >
+          Cancel
+        </button>
+        <button
+          (click)="handleResetPortfolio()"
+          [disabled]="isResetting"
+          class="flex-1 py-3 bg-red-600 hover:bg-red-500 text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition-colors duration-200 disabled:opacity-40"
+        >
+          <span *ngIf="isResetting" class="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+          {{ isResetting ? 'Resetting...' : 'Reset Data' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 3. DELETE ACCOUNT MODAL -->
+<div
+  *ngIf="showDeleteModal"
+  class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-fade-in"
+>
+  <div class="bg-[#1C1C1C] border border-[#EF4444]/30 rounded-2xl w-full max-w-md overflow-hidden relative shadow-2xl animate-scale-up">
+    <!-- Close icon -->
+    <button
+      (click)="showDeleteModal = false"
+      [disabled]="isDeleting"
+      class="absolute top-4 right-4 text-[#707070] hover:text-white transition-colors"
+    >
+      <lucide-icon name="x" class="h-5 w-5"></lucide-icon>
+    </button>
+
+    <div class="p-6 md:p-8 space-y-6">
+      <div class="text-center space-y-2">
+        <div class="w-12 h-12 rounded-full bg-red-500/10 flex items-center justify-center mx-auto">
+          <lucide-icon name="trash-2" class="h-6 w-6 text-red-500"></lucide-icon>
+        </div>
+        <h3 class="text-lg font-bold text-white">Permanently Delete Account</h3>
+        <p class="text-xs text-[#909090]">Are you sure you want to end your subscription?</p>
+      </div>
+
+      <div class="p-4 bg-red-500/5 border border-red-500/15 rounded-xl text-center text-xs text-[#C0C0C0] leading-relaxed">
+        You are deleting your profile. This will erase all login credentials, custom portfolios, asset history, and preferences. <strong class="text-red-400">All data will be lost forever.</strong>
+      </div>
+
+      <!-- Controls -->
+      <div class="flex gap-3">
+        <button
+          (click)="showDeleteModal = false"
+          [disabled]="isDeleting"
+          class="flex-1 py-3 bg-[#2D2D2D] hover:bg-[#353535] text-white border border-[#404040] rounded-xl text-xs font-semibold transition-colors duration-200 disabled:opacity-40"
+        >
+          Cancel
+        </button>
+        <button
+          (click)="handleDeleteAccountConfirm()"
+          [disabled]="isDeleting"
+          class="flex-1 py-3 bg-red-600 hover:bg-red-500 text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition-colors duration-200 disabled:opacity-40"
+        >
+          <span *ngIf="isDeleting" class="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+          {{ isDeleting ? 'Deleting...' : 'Delete My Account' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

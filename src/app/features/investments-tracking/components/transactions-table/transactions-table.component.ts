@@ -98,8 +98,8 @@
 // }
 
 
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, inject } from '@angular/core';
+import { CommonModule, DecimalPipe } from '@angular/common';
 import { MessageService } from 'primeng/api';
 import { TransactionService } from '../../../../services/transaction.service';
 import { TransactionsResponse } from '../../../../models/TranscationsResponse';
@@ -111,9 +111,10 @@ import { PrimeNgModule } from '../../../../core/prime-ng.module';
   selector: 'app-transactions-table',
   standalone: true,
   imports: [
+    CommonModule,
     LucideIconsModule,
     ExpansionPanelComponent,
-    CommonModule,
+    DecimalPipe,
     PrimeNgModule,
   ],
   templateUrl: './transactions-table.component.html',
@@ -121,6 +122,9 @@ import { PrimeNgModule } from '../../../../core/prime-ng.module';
   providers: [MessageService],
 })
 export class TransactionsTableComponent implements OnInit {
+  private transactionService = inject(TransactionService);
+  private messageService = inject(MessageService);
+
   isExpanded: boolean = true;
 
   temporaryTransactions: TransactionsResponse[] = [];
@@ -130,10 +134,7 @@ export class TransactionsTableComponent implements OnInit {
   loadingPortfolio = false;
   userEmail = '';
 
-  constructor(
-    private transactionService: TransactionService,
-    private messageService: MessageService
-  ) {}
+  constructor() { }
 
   ngOnInit(): void {
     this.userEmail = localStorage.getItem('userEmail') || '';

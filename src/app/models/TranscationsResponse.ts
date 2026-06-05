@@ -1,4 +1,12 @@
+export interface AuditMetadata {
+  createdAt: string;
+  createdBy: string;
+  updatedAt: string;
+  updatedBy: string;
+}
+
 export interface TransactionsResponse {
+  id: any;
   email: string;
   stockCode: string;
   stockName: string;
@@ -13,4 +21,5 @@ export interface TransactionsResponse {
   brokerCharges?: number;
   miscCharges?: number;
   transactionDate: string;
+  auditMetadata?: AuditMetadata;
 }

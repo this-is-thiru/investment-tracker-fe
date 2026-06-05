@@ -1,17 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import * as XLSX from 'xlsx';
 import { HttpClient } from '@angular/common/http';
 import { MessageService } from 'primeng/api';
 import { Observable } from 'rxjs';
 import { UploadTransactionsComponent } from '../../components/upload-transactions/upload-transactions.component';
 import { FooterComponent } from '../../../../shared/components/footer/footer.component';
-//Prime ng
-import { TableModule } from 'primeng/table';
-import { ButtonModule } from 'primeng/button';
-import { InputTextModule } from 'primeng/inputtext';
-import { DropdownModule } from 'primeng/dropdown';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { BaseurlService } from '../../../../services/baseurl.service';
 import { TransactionsTableComponent } from "../../components/transactions-table/transactions-table.component";
 import { AllTransactionsComponent } from '../../components/transaction-list/all-transactions.component';
@@ -19,16 +12,20 @@ import { AllTransactionsComponent } from '../../components/transaction-list/all-
 @Component({
   selector: 'app-investments',
   standalone: true,
-  imports: [TableModule, ButtonModule, InputTextModule, DropdownModule, CommonModule, FormsModule, UploadTransactionsComponent, FooterComponent, TransactionsTableComponent, AllTransactionsComponent],
+  imports: [UploadTransactionsComponent, FooterComponent, TransactionsTableComponent, AllTransactionsComponent],
   templateUrl: './investments.component.html',
   styleUrls: ['./investments.component.css'],
   providers: [MessageService]
 })
 export class InvestmentsComponent {
+  private http = inject(HttpClient);
+  private messageService = inject(MessageService);
+  private BASE_URL = inject(BaseurlService);
+
   excelData: any[] = [];
   headers: string[] = [];
 
-  constructor(private http: HttpClient, private messageService: MessageService, private BASE_URL: BaseurlService) {}
+  constructor() { }
 
   // Handle Excel File Upload
   onFileChange(event: Event): void {
