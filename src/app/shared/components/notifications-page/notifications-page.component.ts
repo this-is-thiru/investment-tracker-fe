@@ -9,11 +9,11 @@ import { CommonModule } from '@angular/common';
 // assuming you use an Angular icon library or custom components.
 
 @Component({
-  selector: 'app-notifications-page',
-  standalone: true,
-  imports: [CommonModule],
-  templateUrl: './notifications-page.component.html',
-  styleUrl: './notifications-page.component.css',
+    selector: 'app-notifications-page',
+    standalone: true,
+    imports: [CommonModule],
+    templateUrl: './notifications-page.component.html',
+    styleUrl: './notifications-page.component.css'
 })
 export class NotificationsPageComponent {
   // Use the async pipe in the template to subscribe to notifications$

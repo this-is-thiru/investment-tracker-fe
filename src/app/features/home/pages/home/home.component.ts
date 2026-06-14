@@ -7,15 +7,15 @@ import { Benefit } from '../../../../models/Benefit';
 import { LucideIconsModule } from '../../../../core/icons/lucide-icons.module';
 
 @Component({
-  selector: 'app-home',
-  standalone: true,
-  imports: [
-    CommonModule,
-    FooterComponent,
-    LucideIconsModule,
-  ],
-  templateUrl: './home.component.html',
-  styleUrls: ['./home.component.css'],
+    selector: 'app-home',
+    standalone: true,
+    imports: [
+        CommonModule,
+        FooterComponent,
+        LucideIconsModule,
+    ],
+    templateUrl: './home.component.html',
+    styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit, AfterViewInit {
   private auth = inject(AuthService);

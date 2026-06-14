@@ -8,11 +8,11 @@ import { NavItem } from '../../../models/Navitem';
 
 
 @Component({
-  selector: 'app-header',
-  standalone: true,
-  imports: [CommonModule, LucideIconsModule, RouterModule],
-  templateUrl: './header.component.html',
-  styleUrls: ['./header.component.css'],
+    selector: 'app-header',
+    standalone: true,
+    imports: [CommonModule, LucideIconsModule, RouterModule],
+    templateUrl: './header.component.html',
+    styleUrls: ['./header.component.css']
 })
 export class HeaderComponent {
   private router = inject(Router);

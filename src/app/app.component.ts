@@ -9,7 +9,7 @@ import { ToastContainerComponent } from './shared/components/notification-toast/
     <router-outlet></router-outlet>
     <app-toast-container></app-toast-container>
   `,
-  styleUrl: './app.component.css',
+  styleUrl: './app.component.css'
 })
 export class AppComponent {
 }

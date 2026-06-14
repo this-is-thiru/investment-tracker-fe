@@ -18,11 +18,11 @@ import { TransactionService } from '../../../../services/transaction.service';
 import { AuthService } from '../../../../services/auth.service';
 
 @Component({
-  selector: 'app-upload-transactions',
-  standalone: true,
-  imports: [CommonModule, LucideIconsModule, ExpansionPanelComponent],
-  providers: [MessageService],
-  templateUrl: './upload-transactions.component.html',
+    selector: 'app-upload-transactions',
+    standalone: true,
+    imports: [CommonModule, LucideIconsModule, ExpansionPanelComponent],
+    providers: [MessageService],
+    templateUrl: './upload-transactions.component.html'
 })
 export class UploadTransactionsComponent implements OnDestroy {
   @Output() onUploadComplete = new EventEmitter<string>();

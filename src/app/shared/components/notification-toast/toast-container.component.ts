@@ -5,10 +5,10 @@ import { NotificationToastComponent } from './notification-toast.component';
 import { Observable } from 'rxjs';
 
 @Component({
-  selector: 'app-toast-container',
-  standalone: true,
-  imports: [CommonModule, NotificationToastComponent],
-  template: `
+    selector: 'app-toast-container',
+    standalone: true,
+    imports: [CommonModule, NotificationToastComponent],
+    template: `
     <div class="fixed right-4 z-[100] flex flex-col gap-3 top-20 pointer-events-none">
       <app-notification-toast
         *ngFor="let toast of toasts$ | async; let i = index; trackBy: trackByById"
@@ -20,7 +20,7 @@ import { Observable } from 'rxjs';
       </app-notification-toast>
     </div>
   `,
-  styles: [`
+    styles: [`
     :host {
       display: contents;
     }

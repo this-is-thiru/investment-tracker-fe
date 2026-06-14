@@ -15,12 +15,12 @@ import { finalize } from 'rxjs/operators'; // added
 import { LucideIconsModule } from '../../../../core/icons/lucide-icons.module';
 
 @Component({
-  selector: 'app-sign-in',
-  standalone: true,
-  imports: [ReactiveFormsModule, FormsModule, CommonModule, RouterModule, LucideIconsModule],
-  templateUrl: './sign-in.component.html',
-  styleUrls: ['./sign-in.component.css'], // fixed property name
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-sign-in',
+    standalone: true,
+    imports: [ReactiveFormsModule, FormsModule, CommonModule, RouterModule, LucideIconsModule],
+    templateUrl: './sign-in.component.html',
+    styleUrls: ['./sign-in.component.css'], // fixed property name
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SignInComponent implements OnInit {
   loginForm: FormGroup;

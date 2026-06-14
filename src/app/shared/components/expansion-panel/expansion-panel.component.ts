@@ -2,11 +2,11 @@ import { Component, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LucideIconsModule } from '../../../core/icons/lucide-icons.module';
 @Component({
-  selector: 'app-expansion-panel',
-  standalone: true,
-  imports: [LucideIconsModule],
-  templateUrl: './expansion-panel.component.html',
-  styleUrls: ['./expansion-panel.component.scss'],
+    selector: 'app-expansion-panel',
+    standalone: true,
+    imports: [LucideIconsModule],
+    templateUrl: './expansion-panel.component.html',
+    styleUrls: ['./expansion-panel.component.scss']
 })
 export class ExpansionPanelComponent implements OnInit {
 
