@@ -7,6 +7,7 @@ export interface AuditMetadata {
 
 export interface TransactionsResponse {
   id: any;
+  rowId?: string;
   email: string;
   stockCode: string;
   stockName: string;

@@ -374,7 +374,7 @@
                 #dtRecords
                 [value]="activeTableTab === 'temporary' ? temporaryTransactions : portfolioTransactions"
                 [paginator]="true"
-                [rows]="5"
+                [(rows)]="rowsPerPage"
                 [rowsPerPageOptions]="[5, 10, 20]"
                 [globalFilterFields]="['id', 'stock', 'quantity', 'status', 'actionDate']"
                 responsiveLayout="scroll"

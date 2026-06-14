@@ -267,12 +267,45 @@
   class="animate-fade-in-up stagger-2">
   <section class="border border-[#333] rounded-xl bg-[#191919] overflow-hidden animate-fade-in-up">
     <div class="overflow-hidden transition-all duration-500" [style.maxHeight]="isExpanded ? '3000px' : '0'">
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 p-6">
+      <!-- View Toggle Control Bar -->
+      <div class="flex justify-end px-6 pt-4 pb-2 border-b border-[#2A2A2A]">
+        <div class="flex items-center gap-1 bg-[#232323] p-1 rounded-xl border border-[#3A3A3A] shadow-inner">
+          <button
+            (click)="viewMode = 'split'"
+            [ngClass]="viewMode === 'split' ? 'bg-[#10A37F] text-white shadow-md' : 'text-[#B3B3B3] hover:text-white hover:bg-white/5'"
+            class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 flex items-center gap-1.5 focus:outline-none"
+          >
+            <i class="pi pi-columns text-xs"></i>
+            <span>Side-by-Side</span>
+          </button>
+          <button
+            (click)="viewMode = 'temp'"
+            [ngClass]="viewMode === 'temp' ? 'bg-yellow-400 text-black shadow-md font-bold' : 'text-[#B3B3B3] hover:text-white hover:bg-white/5'"
+            class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 flex items-center gap-1.5 focus:outline-none"
+          >
+            <i class="pi pi-database text-xs"></i>
+            <span>Temporary Only</span>
+          </button>
+          <button
+            (click)="viewMode = 'port'"
+            [ngClass]="viewMode === 'port' ? 'bg-blue-400 text-white shadow-md font-bold' : 'text-[#B3B3B3] hover:text-white hover:bg-white/5'"
+            class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 flex items-center gap-1.5 focus:outline-none"
+          >
+            <i class="pi pi-briefcase text-xs"></i>
+            <span>Current Only</span>
+          </button>
+        </div>
+      </div>
+
+      <div [ngClass]="{
+        'grid grid-cols-1 lg:grid-cols-2 gap-6 p-6': viewMode === 'split',
+        'flex flex-col gap-6 p-6': viewMode !== 'split'
+      }">
 
         <!-- ========================= -->
         <!-- TEMPORARY TRANSACTIONS -->
         <!-- ========================= -->
-        <div
+        <div *ngIf="viewMode === 'split' || viewMode === 'temp'"
           class="rounded-xl border border-[#3A3A3A] bg-[#1f1f1f] shadow-lg overflow-hidden flex flex-col">
           <div class="flex items-center gap-3 p-5 border-b border-[#2a2a2a]">
             <div class="bg-yellow-400 p-3 rounded-xl">
@@ -311,13 +344,15 @@
               <p-table
                 #dtTemp
                 [value]="temporaryTransactions"
-                dataKey="id"
+                dataKey="rowId"
+                [expandedRowKeys]="expandedTempRows"
                 [paginator]="true"
-                [rows]="5"
+                [(rows)]="rowsTemp"
                 [rowsPerPageOptions]="[5, 10, 20]"
                 [globalFilterFields]="['stockName', 'stockCode', 'exchangeName', 'brokerName', 'assetType', 'transactionType']"
                 responsiveLayout="scroll"
                 styleClass="p-datatable-sm w-full"
+                [rowHover]="true"
               >
                 <ng-template pTemplate="header">
                   <tr>
@@ -353,9 +388,11 @@
                 <ng-template pTemplate="body" let-t let-expanded="expanded">
                   <tr class="border-b border-[#2a2a2a] hover:bg-[#222] transition-colors duration-150">
                     <td class="p-2 text-center">
-                      <button type="button" pButton pRipple [pRowToggler]="t" 
-                        class="p-button-text p-button-rounded p-button-plain p-0 w-8 h-8 flex items-center justify-center text-[#b3b3b3] hover:text-white hover:bg-white/10 transition-colors"
-                        [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'">
+                      <button type="button" [pRowToggler]="t" 
+                        class="p-0 w-8 h-8 flex items-center justify-center text-[#b3b3b3] hover:text-white hover:bg-white/10 rounded-full transition-colors duration-150 focus:outline-none"
+                        aria-label="Toggle Row">
+                        <i class="pi text-xs transition-transform duration-200"
+                           [ngClass]="expanded ? 'pi-chevron-down' : 'pi-chevron-right'"></i>
                       </button>
                     </td>
                     <td class="p-2">
@@ -363,57 +400,118 @@
                       <div class="text-xs text-gray-500 font-mono">{{ t.stockCode }}</div>
                     </td>
                     <td class="p-2 text-gray-300">{{ t.quantity }}</td>
-                    <td class="p-2 font-medium" [ngClass]="t.transactionType === 'BUY' ? 'buy-cell' : 'sell-cell'">
-                      {{ t.transactionType }}
+                    <td class="p-2">
+                      <span [ngClass]="t.transactionType === 'BUY' ? 'bg-[#22C55E]/10 text-[#22C55E] border-[#22C55E]/20' : 'bg-[#EF4444]/10 text-[#EF4444] border-[#EF4444]/20'"
+                            class="px-2.5 py-0.5 rounded-full text-[10px] font-bold border uppercase tracking-wider">
+                        {{ t.transactionType }}
+                      </span>
                     </td>
                     <td class="p-2 text-gray-300">₹{{ t.totalValue | number: '1.2-2' }}</td>
                     <td class="p-2 text-gray-400 text-xs">{{ t.transactionDate }}</td>
                   </tr>
                 </ng-template>
 
-                <ng-template #expandedrow let-t>
+                <ng-template pTemplate="expandedrow" let-t>
                   <tr>
-                    <td colspan="6" class="p-3 bg-[#171717]">
-                      <div class="p-4 bg-[#232323] border border-[#3A3A3A] rounded-xl text-sm space-y-4 shadow-inner">
-                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                          <div>
-                            <span class="text-gray-400 block text-xs mb-0.5">Asset Type</span>
-                            <span class="text-white font-medium text-xs sm:text-sm">{{ t.assetType }}</span>
+                    <td colspan="6" class="p-4 bg-[#141414]">
+                      <div class="p-6 bg-[#202020] border border-[#2D2D2D] rounded-2xl text-sm shadow-2xl relative overflow-hidden animate-fade-in">
+                        <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-yellow-400 to-amber-500"></div>
+                        
+                        <div class="flex items-center justify-between mb-6 border-b border-[#2D2D2D] pb-4">
+                          <div class="flex items-center gap-3">
+                            <div class="bg-yellow-400/10 p-2 rounded-lg border border-yellow-400/20">
+                              <lucide-icon name="file-text" class="h-5 w-5 text-yellow-400"></lucide-icon>
+                            </div>
+                            <div>
+                              <h4 class="text-white font-bold text-base">Detailed Transaction Information</h4>
+                              <p class="text-xs text-[#909090] mt-0.5">Transaction ID: {{ t.id || 'Pending / Temporary' }}</p>
+                            </div>
                           </div>
-                          <div>
-                            <span class="text-gray-400 block text-xs mb-0.5">Exchange</span>
-                            <span class="text-white font-medium text-xs sm:text-sm">{{ t.exchangeName }}</span>
+                          <span [ngClass]="t.transactionType === 'BUY' ? 'bg-[#22C55E]/10 text-[#22C55E] border-[#22C55E]/20' : 'bg-[#EF4444]/10 text-[#EF4444] border-[#EF4444]/20'" class="px-3 py-1 rounded-full text-xs font-bold border uppercase tracking-wider">
+                            {{ t.transactionType }} Action
+                          </span>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                          <!-- Column 1: Core Trade Info -->
+                          <div class="space-y-4">
+                            <h5 class="text-xs font-bold uppercase tracking-wider text-[#A0A0A0] border-b border-[#2D2D2D]/50 pb-1.5 flex items-center gap-2">
+                              <i class="pi pi-info-circle text-[#10A37F]"></i> Trade Summary
+                            </h5>
+                            <div class="grid grid-cols-2 gap-y-3 gap-x-2">
+                              <div>
+                                <span class="text-[#707070] text-xs block">Asset Type</span>
+                                <span class="text-white font-medium text-sm">{{ t.assetType }}</span>
+                              </div>
+                              <div>
+                                <span class="text-[#707070] text-xs block">Exchange</span>
+                                <span class="text-white font-medium text-sm">{{ t.exchangeName }}</span>
+                              </div>
+                              <div>
+                                <span class="text-[#707070] text-xs block">Account Type</span>
+                                <span class="text-white font-medium text-sm">{{ t.accountType || 'N/A' }}</span>
+                              </div>
+                              <div>
+                                <span class="text-[#707070] text-xs block">Date</span>
+                                <span class="text-white font-medium text-sm">{{ t.transactionDate }}</span>
+                              </div>
+                            </div>
                           </div>
-                          <div>
-                            <span class="text-gray-400 block text-xs mb-0.5">Broker</span>
-                            <span class="text-white font-medium text-xs sm:text-sm">{{ t.brokerName }}</span>
+
+                          <!-- Column 2: Financial Numbers -->
+                          <div class="space-y-4">
+                            <h5 class="text-xs font-bold uppercase tracking-wider text-[#A0A0A0] border-b border-[#2D2D2D]/50 pb-1.5 flex items-center gap-2">
+                              <i class="pi pi-dollar text-[#10A37F]"></i> Valuation Breakdown
+                            </h5>
+                            <div class="grid grid-cols-2 gap-y-3 gap-x-2">
+                              <div>
+                                <span class="text-[#707070] text-xs block">Unit Price</span>
+                                <span class="text-white font-semibold text-sm">₹{{ t.price | number: '1.2-2' }}</span>
+                              </div>
+                              <div>
+                                <span class="text-[#707070] text-xs block">Quantity</span>
+                                <span class="text-white font-semibold text-sm">{{ t.quantity | number }}</span>
+                              </div>
+                              <div class="col-span-2">
+                                <span class="text-[#707070] text-xs block">Total Base Value</span>
+                                <span class="text-[#10A37F] font-bold text-base">₹{{ t.totalValue | number: '1.2-2' }}</span>
+                              </div>
+                            </div>
                           </div>
-                          <div>
-                            <span class="text-gray-400 block text-xs mb-0.5">Price</span>
-                            <span class="text-white font-medium text-xs sm:text-sm">₹{{ t.price | number: '1.2-2' }}</span>
-                          </div>
-                          <div>
-                            <span class="text-gray-400 block text-xs mb-0.5">Broker Charges</span>
-                            <span class="text-white font-medium text-xs sm:text-sm">₹{{ t.brokerCharges || 0 | number: '1.2-2' }}</span>
-                          </div>
-                          <div>
-                            <span class="text-gray-400 block text-xs mb-0.5">Misc Charges</span>
-                            <span class="text-white font-medium text-xs sm:text-sm">₹{{ t.miscCharges || 0 | number: '1.2-2' }}</span>
-                          </div>
-                          <div>
-                            <span class="text-gray-400 block text-xs mb-0.5">Account Type</span>
-                            <span class="text-white font-medium text-xs sm:text-sm">{{ t.accountType || 'N/A' }}</span>
-                          </div>
-                          <div>
-                            <span class="text-gray-400 block text-xs mb-0.5">Timezone</span>
-                            <span class="text-white font-medium text-xs sm:text-sm">{{ t.timezoneId || 'N/A' }}</span>
+
+                          <!-- Column 3: Intermediary Details & Fees -->
+                          <div class="space-y-4">
+                            <h5 class="text-xs font-bold uppercase tracking-wider text-[#A0A0A0] border-b border-[#2D2D2D]/50 pb-1.5 flex items-center gap-2">
+                              <i class="pi pi-percentage text-[#10A37F]"></i> Brokerage & Charges
+                            </h5>
+                            <div class="grid grid-cols-2 gap-y-3 gap-x-2">
+                              <div class="col-span-2">
+                                <span class="text-[#707070] text-xs block">Broker Service</span>
+                                <span class="text-white font-medium text-sm">{{ t.brokerName }}</span>
+                              </div>
+                              <div>
+                                <span class="text-[#707070] text-xs block">Brokerage Fee</span>
+                                <span class="text-white font-medium text-sm">₹{{ t.brokerCharges || 0 | number: '1.2-2' }}</span>
+                              </div>
+                              <div>
+                                <span class="text-[#707070] text-xs block">Misc Charges</span>
+                                <span class="text-white font-medium text-sm">₹{{ t.miscCharges || 0 | number: '1.2-2' }}</span>
+                              </div>
+                            </div>
                           </div>
                         </div>
 
+                        <!-- Audit Metadata section -->
                         @if (t.auditMetadata) {
-                          <div class="pt-3 border-t border-[#3A3A3A] text-xs text-gray-500 flex flex-wrap gap-x-6 gap-y-1">
-                            <span>Created: {{ t.auditMetadata.createdAt | date:'yyyy-MM-dd HH:mm:ss' }} (by {{ t.auditMetadata.createdBy }})</span>
-                            <span>Updated: {{ t.auditMetadata.updatedAt | date:'yyyy-MM-dd HH:mm:ss' }} (by {{ t.auditMetadata.updatedBy }})</span>
+                          <div class="mt-6 pt-4 border-t border-[#2D2D2D] flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-[#707070]">
+                            <span class="flex items-center gap-1.5">
+                              <lucide-icon name="plus" class="h-3.5 w-3.5"></lucide-icon>
+                              Created by <strong class="text-gray-400">{{ t.auditMetadata.createdBy }}</strong> on {{ t.auditMetadata.createdAt | date:'medium' }}
+                            </span>
+                            <span class="flex items-center gap-1.5">
+                              <lucide-icon name="edit" class="h-3.5 w-3.5"></lucide-icon>
+                              Last modified by <strong class="text-gray-400">{{ t.auditMetadata.updatedBy }}</strong> on {{ t.auditMetadata.updatedAt | date:'medium' }}
+                            </span>
                           </div>
                         }
                       </div>
@@ -423,8 +521,17 @@
 
                 <ng-template pTemplate="emptymessage">
                   <tr>
-                    <td colspan="6" class="py-6 text-center text-gray-500">
-                      No temporary transactions found
+                    <td colspan="6" class="py-12 px-4 text-center">
+                      <div class="flex flex-col items-center justify-center space-y-3 animate-fade-in py-6">
+                        <div class="relative flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-[#2E2E2E] to-[#1F1F1F] border border-[#3A3A3A] shadow-inner mb-2 group">
+                          <div class="absolute inset-0 rounded-2xl bg-yellow-400/5 blur-md group-hover:bg-yellow-400/10 transition-all duration-300"></div>
+                          <lucide-icon name="alert-circle" class="w-8 h-8 text-yellow-400 animate-pulse-opacity"></lucide-icon>
+                        </div>
+                        <h4 class="text-sm font-semibold text-white tracking-wide">No Temporary Transactions</h4>
+                        <p class="text-xs text-[#B3B3B3] max-w-xs mx-auto">
+                          There are currently no pending temporary transactions found.
+                        </p>
+                      </div>
                     </td>
                   </tr>
                 </ng-template>
@@ -437,7 +544,7 @@
         <!-- ========================= -->
         <!-- PORTFOLIO TRANSACTIONS -->
         <!-- ========================= -->
-        <div
+        <div *ngIf="viewMode === 'split' || viewMode === 'port'"
           class="rounded-xl border border-[#3A3A3A] bg-[#1f1f1f] shadow-lg overflow-hidden flex flex-col">
           <div class="flex items-center gap-3 p-5 border-b border-[#2a2a2a]">
             <div class="bg-blue-400 p-3 rounded-xl">
@@ -476,13 +583,15 @@
               <p-table
                 #dtPort
                 [value]="portfolioTransactions"
-                dataKey="id"
+                dataKey="rowId"
+                [expandedRowKeys]="expandedPortfolioRows"
                 [paginator]="true"
-                [rows]="5"
+                [(rows)]="rowsPortfolio"
                 [rowsPerPageOptions]="[5, 10, 20]"
                 [globalFilterFields]="['stockName', 'stockCode', 'exchangeName', 'brokerName', 'assetType', 'transactionType']"
                 responsiveLayout="scroll"
                 styleClass="p-datatable-sm w-full"
+                [rowHover]="true"
               >
                 <ng-template pTemplate="header">
                   <tr>
@@ -518,9 +627,11 @@
                 <ng-template pTemplate="body" let-t let-expanded="expanded">
                   <tr class="border-b border-[#2a2a2a] hover:bg-[#222] transition-colors duration-150">
                     <td class="p-2 text-center">
-                      <button type="button" pButton pRipple [pRowToggler]="t" 
-                        class="p-button-text p-button-rounded p-button-plain p-0 w-8 h-8 flex items-center justify-center text-[#b3b3b3] hover:text-white hover:bg-white/10 transition-colors"
-                        [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'">
+                      <button type="button" [pRowToggler]="t" 
+                        class="p-0 w-8 h-8 flex items-center justify-center text-[#b3b3b3] hover:text-white hover:bg-white/10 rounded-full transition-colors duration-150 focus:outline-none"
+                        aria-label="Toggle Row">
+                        <i class="pi text-xs transition-transform duration-200"
+                           [ngClass]="expanded ? 'pi-chevron-down' : 'pi-chevron-right'"></i>
                       </button>
                     </td>
                     <td class="p-2">
@@ -528,57 +639,118 @@
                       <div class="text-xs text-gray-500 font-mono">{{ t.stockCode }}</div>
                     </td>
                     <td class="p-2 text-gray-300">{{ t.quantity }}</td>
-                    <td class="p-2 font-medium" [ngClass]="t.transactionType === 'BUY' ? 'buy-cell' : 'sell-cell'">
-                      {{ t.transactionType }}
+                    <td class="p-2">
+                      <span [ngClass]="t.transactionType === 'BUY' ? 'bg-[#22C55E]/10 text-[#22C55E] border-[#22C55E]/20' : 'bg-[#EF4444]/10 text-[#EF4444] border-[#EF4444]/20'"
+                            class="px-2.5 py-0.5 rounded-full text-[10px] font-bold border uppercase tracking-wider">
+                        {{ t.transactionType }}
+                      </span>
                     </td>
                     <td class="p-2 text-gray-300">₹{{ t.totalValue | number: '1.2-2' }}</td>
                     <td class="p-2 text-gray-400 text-xs">{{ t.transactionDate }}</td>
                   </tr>
                 </ng-template>
 
-                <ng-template #expandedrow let-t>
+                <ng-template pTemplate="expandedrow" let-t>
                   <tr>
-                    <td colspan="6" class="p-3 bg-[#171717]">
-                      <div class="p-4 bg-[#232323] border border-[#3A3A3A] rounded-xl text-sm space-y-4 shadow-inner">
-                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                          <div>
-                            <span class="text-gray-400 block text-xs mb-0.5">Asset Type</span>
-                            <span class="text-white font-medium text-xs sm:text-sm">{{ t.assetType }}</span>
+                    <td colspan="6" class="p-4 bg-[#141414]">
+                      <div class="p-6 bg-[#202020] border border-[#2D2D2D] rounded-2xl text-sm shadow-2xl relative overflow-hidden animate-fade-in">
+                        <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#10A37F] to-[#1AA97D]"></div>
+                        
+                        <div class="flex items-center justify-between mb-6 border-b border-[#2D2D2D] pb-4">
+                          <div class="flex items-center gap-3">
+                            <div class="bg-[#10A37F]/10 p-2 rounded-lg border border-[#10A37F]/20">
+                              <lucide-icon name="file-text" class="h-5 w-5 text-[#10A37F]"></lucide-icon>
+                            </div>
+                            <div>
+                              <h4 class="text-white font-bold text-base">Detailed Transaction Information</h4>
+                              <p class="text-xs text-[#909090] mt-0.5">Transaction ID: {{ t.id || 'N/A' }}</p>
+                            </div>
                           </div>
-                          <div>
-                            <span class="text-gray-400 block text-xs mb-0.5">Exchange</span>
-                            <span class="text-white font-medium text-xs sm:text-sm">{{ t.exchangeName }}</span>
+                          <span [ngClass]="t.transactionType === 'BUY' ? 'bg-[#22C55E]/10 text-[#22C55E] border-[#22C55E]/20' : 'bg-[#EF4444]/10 text-[#EF4444] border-[#EF4444]/20'" class="px-3 py-1 rounded-full text-xs font-bold border uppercase tracking-wider">
+                            {{ t.transactionType }} Action
+                          </span>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                          <!-- Column 1: Core Trade Info -->
+                          <div class="space-y-4">
+                            <h5 class="text-xs font-bold uppercase tracking-wider text-[#A0A0A0] border-b border-[#2D2D2D]/50 pb-1.5 flex items-center gap-2">
+                              <i class="pi pi-info-circle text-[#10A37F]"></i> Trade Summary
+                            </h5>
+                            <div class="grid grid-cols-2 gap-y-3 gap-x-2">
+                              <div>
+                                <span class="text-[#707070] text-xs block">Asset Type</span>
+                                <span class="text-white font-medium text-sm">{{ t.assetType }}</span>
+                              </div>
+                              <div>
+                                <span class="text-[#707070] text-xs block">Exchange</span>
+                                <span class="text-white font-medium text-sm">{{ t.exchangeName }}</span>
+                              </div>
+                              <div>
+                                <span class="text-[#707070] text-xs block">Account Type</span>
+                                <span class="text-white font-medium text-sm">{{ t.accountType || 'N/A' }}</span>
+                              </div>
+                              <div>
+                                <span class="text-[#707070] text-xs block">Date</span>
+                                <span class="text-white font-medium text-sm">{{ t.transactionDate }}</span>
+                              </div>
+                            </div>
                           </div>
-                          <div>
-                            <span class="text-gray-400 block text-xs mb-0.5">Broker</span>
-                            <span class="text-white font-medium text-xs sm:text-sm">{{ t.brokerName }}</span>
+
+                          <!-- Column 2: Financial Numbers -->
+                          <div class="space-y-4">
+                            <h5 class="text-xs font-bold uppercase tracking-wider text-[#A0A0A0] border-b border-[#2D2D2D]/50 pb-1.5 flex items-center gap-2">
+                              <i class="pi pi-dollar text-[#10A37F]"></i> Valuation Breakdown
+                            </h5>
+                            <div class="grid grid-cols-2 gap-y-3 gap-x-2">
+                              <div>
+                                <span class="text-[#707070] text-xs block">Unit Price</span>
+                                <span class="text-white font-semibold text-sm">₹{{ t.price | number: '1.2-2' }}</span>
+                              </div>
+                              <div>
+                                <span class="text-[#707070] text-xs block">Quantity</span>
+                                <span class="text-white font-semibold text-sm">{{ t.quantity | number }}</span>
+                              </div>
+                              <div class="col-span-2">
+                                <span class="text-[#707070] text-xs block">Total Base Value</span>
+                                <span class="text-[#10A37F] font-bold text-base">₹{{ t.totalValue | number: '1.2-2' }}</span>
+                              </div>
+                            </div>
                           </div>
-                          <div>
-                            <span class="text-gray-400 block text-xs mb-0.5">Price</span>
-                            <span class="text-white font-medium text-xs sm:text-sm">₹{{ t.price | number: '1.2-2' }}</span>
-                          </div>
-                          <div>
-                            <span class="text-gray-400 block text-xs mb-0.5">Broker Charges</span>
-                            <span class="text-white font-medium text-xs sm:text-sm">₹{{ t.brokerCharges || 0 | number: '1.2-2' }}</span>
-                          </div>
-                          <div>
-                            <span class="text-gray-400 block text-xs mb-0.5">Misc Charges</span>
-                            <span class="text-white font-medium text-xs sm:text-sm">₹{{ t.miscCharges || 0 | number: '1.2-2' }}</span>
-                          </div>
-                          <div>
-                            <span class="text-gray-400 block text-xs mb-0.5">Account Type</span>
-                            <span class="text-white font-medium text-xs sm:text-sm">{{ t.accountType || 'N/A' }}</span>
-                          </div>
-                          <div>
-                            <span class="text-gray-400 block text-xs mb-0.5">Timezone</span>
-                            <span class="text-white font-medium text-xs sm:text-sm">{{ t.timezoneId || 'N/A' }}</span>
+
+                          <!-- Column 3: Intermediary Details & Fees -->
+                          <div class="space-y-4">
+                            <h5 class="text-xs font-bold uppercase tracking-wider text-[#A0A0A0] border-b border-[#2D2D2D]/50 pb-1.5 flex items-center gap-2">
+                              <i class="pi pi-percentage text-[#10A37F]"></i> Brokerage & Charges
+                            </h5>
+                            <div class="grid grid-cols-2 gap-y-3 gap-x-2">
+                              <div class="col-span-2">
+                                <span class="text-[#707070] text-xs block">Broker Service</span>
+                                <span class="text-white font-medium text-sm">{{ t.brokerName }}</span>
+                              </div>
+                              <div>
+                                <span class="text-[#707070] text-xs block">Brokerage Fee</span>
+                                <span class="text-white font-medium text-sm">₹{{ t.brokerCharges || 0 | number: '1.2-2' }}</span>
+                              </div>
+                              <div>
+                                <span class="text-[#707070] text-xs block">Misc Charges</span>
+                                <span class="text-white font-medium text-sm">₹{{ t.miscCharges || 0 | number: '1.2-2' }}</span>
+                              </div>
+                            </div>
                           </div>
                         </div>
 
+                        <!-- Audit Metadata section -->
                         @if (t.auditMetadata) {
-                          <div class="pt-3 border-t border-[#3A3A3A] text-xs text-gray-500 flex flex-wrap gap-x-6 gap-y-1">
-                            <span>Created: {{ t.auditMetadata.createdAt | date:'yyyy-MM-dd HH:mm:ss' }} (by {{ t.auditMetadata.createdBy }})</span>
-                            <span>Updated: {{ t.auditMetadata.updatedAt | date:'yyyy-MM-dd HH:mm:ss' }} (by {{ t.auditMetadata.updatedBy }})</span>
+                          <div class="mt-6 pt-4 border-t border-[#2D2D2D] flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-[#707070]">
+                            <span class="flex items-center gap-1.5">
+                              <lucide-icon name="plus" class="h-3.5 w-3.5"></lucide-icon>
+                              Created by <strong class="text-gray-400">{{ t.auditMetadata.createdBy }}</strong> on {{ t.auditMetadata.createdAt | date:'medium' }}
+                            </span>
+                            <span class="flex items-center gap-1.5">
+                              <lucide-icon name="edit" class="h-3.5 w-3.5"></lucide-icon>
+                              Last modified by <strong class="text-gray-400">{{ t.auditMetadata.updatedBy }}</strong> on {{ t.auditMetadata.updatedAt | date:'medium' }}
+                            </span>
                           </div>
                         }
                       </div>
@@ -588,8 +760,17 @@
 
                 <ng-template pTemplate="emptymessage">
                   <tr>
-                    <td colspan="6" class="py-6 text-center text-gray-500">
-                      No current transactions found
+                    <td colspan="6" class="py-12 px-4 text-center">
+                      <div class="flex flex-col items-center justify-center space-y-3 animate-fade-in py-6">
+                        <div class="relative flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-[#2E2E2E] to-[#1F1F1F] border border-[#3A3A3A] shadow-inner mb-2 group">
+                          <div class="absolute inset-0 rounded-2xl bg-blue-400/5 blur-md group-hover:bg-blue-400/10 transition-all duration-300"></div>
+                          <lucide-icon name="briefcase" class="w-8 h-8 text-blue-400 animate-pulse-opacity"></lucide-icon>
+                        </div>
+                        <h4 class="text-sm font-semibold text-white tracking-wide">No Current Transactions</h4>
+                        <p class="text-xs text-[#B3B3B3] max-w-xs mx-auto">
+                          There are currently no records found in your transaction history.
+                        </p>
+                      </div>
                     </td>
                   </tr>
                 </ng-template>

@@ -47,6 +47,7 @@ export class AllTransactionsComponent implements OnInit, OnDestroy {
   isUploading: boolean = false;
   activeTableTab: 'temporary' | 'portfolio' = 'temporary';
   toast: Toast | null = null;
+  rowsPerPage: number = 5;
 
   private destroy$ = new Subject<void>();
 
