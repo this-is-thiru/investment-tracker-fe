@@ -156,45 +156,46 @@
                 <!-- Base Currency -->
                 <div class="space-y-2">
                   <label class="block text-sm font-semibold text-[#A0A0A0]">Base Currency</label>
-                  <select
+                  <p-select
                     [(ngModel)]="currency"
-                    class="w-full px-4 py-3 bg-[#232323] border border-[#303030] rounded-xl text-white focus:outline-none focus:border-[#10A37F] transition-all duration-200 text-sm font-medium appearance-none cursor-pointer"
+                    [options]="currencyOptions"
+                    optionLabel="label"
+                    optionValue="value"
+                    placeholder="Select Currency"
+                    styleClass="w-full bg-[#232323] border border-[#303030] rounded-xl text-white text-sm"
+                    appendTo="body"
                   >
-                    <option value="USD">USD ($) - US Dollar</option>
-                    <option value="EUR">EUR (€) - Euro</option>
-                    <option value="GBP">GBP (£) - British Pound</option>
-                    <option value="INR">INR (₹) - Indian Rupee</option>
-                    <option value="JPY">JPY (¥) - Japanese Yen</option>
-                    <option value="CAD">CAD ($) - Canadian Dollar</option>
-                    <option value="AUD">AUD ($) - Australian Dollar</option>
-                  </select>
+                  </p-select>
                 </div>
 
                 <!-- Language -->
                 <div class="space-y-2">
                   <label class="block text-sm font-semibold text-[#A0A0A0]">System Language</label>
-                  <select
+                  <p-select
                     [(ngModel)]="language"
-                    class="w-full px-4 py-3 bg-[#232323] border border-[#303030] rounded-xl text-white focus:outline-none focus:border-[#10A37F] transition-all duration-200 text-sm font-medium appearance-none cursor-pointer"
+                    [options]="languageOptions"
+                    optionLabel="label"
+                    optionValue="value"
+                    placeholder="Select Language"
+                    styleClass="w-full bg-[#232323] border border-[#303030] rounded-xl text-white text-sm"
+                    appendTo="body"
                   >
-                    <option value="en">English (US)</option>
-                    <option value="es">Español (ES)</option>
-                    <option value="fr">Français (FR)</option>
-                    <option value="de">Deutsch (DE)</option>
-                  </select>
+                  </p-select>
                 </div>
 
                 <!-- Date Format -->
                 <div class="space-y-2">
                   <label class="block text-sm font-semibold text-[#A0A0A0]">Date Display Format</label>
-                  <select
+                  <p-select
                     [(ngModel)]="dateFormat"
-                    class="w-full px-4 py-3 bg-[#232323] border border-[#303030] rounded-xl text-white focus:outline-none focus:border-[#10A37F] transition-all duration-200 text-sm font-medium appearance-none cursor-pointer"
+                    [options]="dateFormatOptions"
+                    optionLabel="label"
+                    optionValue="value"
+                    placeholder="Select Date Format"
+                    styleClass="w-full bg-[#232323] border border-[#303030] rounded-xl text-white text-sm"
+                    appendTo="body"
                   >
-                    <option value="MM/DD/YYYY">MM/DD/YYYY</option>
-                    <option value="DD/MM/YYYY">DD/MM/YYYY</option>
-                    <option value="YYYY-MM-DD">YYYY-MM-DD</option>
-                  </select>
+                  </p-select>
                 </div>
               </div>
 
@@ -305,29 +306,31 @@
               <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8 pt-6 border-t border-[#2D2D2D]">
                 <div class="space-y-2">
                   <label class="block text-sm font-semibold text-[#A0A0A0]">Primary Performance Benchmark</label>
-                  <select
+                  <p-select
                     [(ngModel)]="defaultBenchmark"
-                    class="w-full px-4 py-3 bg-[#232323] border border-[#303030] rounded-xl text-white focus:outline-none focus:border-[#10A37F] transition-all duration-200 text-sm font-medium appearance-none cursor-pointer"
+                    [options]="benchmarkOptions"
+                    optionLabel="label"
+                    optionValue="value"
+                    placeholder="Select Benchmark"
+                    styleClass="w-full bg-[#232323] border border-[#303030] rounded-xl text-white text-sm"
+                    appendTo="body"
                   >
-                    <option value="SP500">S&P 500 ETF (US Stock Market Index)</option>
-                    <option value="NIFTY50">Nifty 50 Index (Indian Stock Market Index)</option>
-                    <option value="NASDAQ">Nasdaq 100 Index (Tech Stock Index)</option>
-                    <option value="BTC">Bitcoin (BTC / USD Spot)</option>
-                    <option value="NONE">No Comparison Benchmark</option>
-                  </select>
+                  </p-select>
                   <p class="text-xs text-[#606060]">This asset will serve as the baseline comparator in portfolio performance charts.</p>
                 </div>
 
                 <div class="space-y-2">
                   <label class="block text-sm font-semibold text-[#A0A0A0]">Fiscal / Tax Year Calendar</label>
-                  <select
+                  <p-select
                     [(ngModel)]="fiscalYearStart"
-                    class="w-full px-4 py-3 bg-[#232323] border border-[#303030] rounded-xl text-white focus:outline-none focus:border-[#10A37F] transition-all duration-200 text-sm font-medium appearance-none cursor-pointer"
+                    [options]="fiscalYearStartOptions"
+                    optionLabel="label"
+                    optionValue="value"
+                    placeholder="Select Calendar"
+                    styleClass="w-full bg-[#232323] border border-[#303030] rounded-xl text-white text-sm"
+                    appendTo="body"
                   >
-                    <option value="jan">January 1st (Standard Calendar Year)</option>
-                    <option value="apr">April 1st (Indian / UK Tax Calendar)</option>
-                    <option value="jul">July 1st (Australian Tax Calendar)</option>
-                  </select>
+                  </p-select>
                   <p class="text-xs text-[#606060]">Calculations like year-to-date (YTD) returns and tax reporting will align to this date.</p>
                 </div>
               </div>
@@ -633,33 +636,32 @@
                 <div class="border-t border-[#2D2D2D] pt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div class="space-y-2">
                     <label class="block text-xs font-bold text-[#A0A0A0] uppercase tracking-wide">Volatility Alert Sensitivity</label>
-                    <div class="relative">
-                      <select
-                        [(ngModel)]="priceAlertThreshold"
-                        [disabled]="!portfolioAlerts"
-                        class="w-full px-4 py-3 bg-[#232323] border border-[#303030] rounded-xl text-white focus:outline-none focus:border-[#10A37F] transition-all duration-200 text-sm font-semibold cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
-                      >
-                        <option [value]="1">± 1% Daily Portfolio Swing</option>
-                        <option [value]="2">± 2% Daily Portfolio Swing</option>
-                        <option [value]="5">± 5% Daily Portfolio Swing</option>
-                        <option [value]="10">± 10% Daily Portfolio Swing</option>
-                      </select>
-                    </div>
+                    <p-select
+                      [(ngModel)]="priceAlertThreshold"
+                      [options]="priceAlertThresholdOptions"
+                      optionLabel="label"
+                      optionValue="value"
+                      [disabled]="!portfolioAlerts"
+                      placeholder="Select Volatility"
+                      styleClass="w-full bg-[#232323] border border-[#303030] rounded-xl text-white text-sm"
+                      appendTo="body"
+                    >
+                    </p-select>
                   </div>
 
                   <div class="space-y-2">
                     <label class="block text-xs font-bold text-[#A0A0A0] uppercase tracking-wide">Rebalance Drift Sensitivity</label>
-                    <div class="relative">
-                      <select
-                        [(ngModel)]="rebalanceThreshold"
-                        [disabled]="!rebalanceAlerts"
-                        class="w-full px-4 py-3 bg-[#232323] border border-[#303030] rounded-xl text-white focus:outline-none focus:border-[#10A37F] transition-all duration-200 text-sm font-semibold cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
-                      >
-                        <option [value]="2">± 2% Allocation Deviation</option>
-                        <option [value]="5">± 5% Allocation Deviation (Standard)</option>
-                        <option [value]="10">± 10% Allocation Deviation</option>
-                      </select>
-                    </div>
+                    <p-select
+                      [(ngModel)]="rebalanceThreshold"
+                      [options]="rebalanceThresholdOptions"
+                      optionLabel="label"
+                      optionValue="value"
+                      [disabled]="!rebalanceAlerts"
+                      placeholder="Select Rebalance"
+                      styleClass="w-full bg-[#232323] border border-[#303030] rounded-xl text-white text-sm"
+                      appendTo="body"
+                    >
+                    </p-select>
                   </div>
                 </div>
               </div>

@@ -71,6 +71,26 @@
           <lucide-icon name="x" class="h-5 w-5"></lucide-icon>
         </button>
       </div>
+
+      <!-- Quarter Selection -->
+      <div class="mb-4">
+        <label for="quarterSelect" class="block text-xs font-bold text-[#A0A0A0] uppercase tracking-wide mb-2 flex items-center gap-2">
+          <lucide-icon name="calendar" class="h-4 w-4 text-[#10A37F]"></lucide-icon>
+          Select Quarter
+        </label>
+        <p-select
+          id="quarterSelect"
+          [options]="quarters"
+          [(ngModel)]="selectedQuarter"
+          optionLabel="label"
+          optionValue="value"
+          placeholder="Select Quarter"
+          styleClass="w-full bg-[#232323] border border-[#303030] rounded-xl text-white text-sm"
+          appendTo="body"
+        >
+        </p-select>
+      </div>
+
       <div class="flex gap-3">
         <button
           (click)="handleSendFile()"

@@ -159,13 +159,14 @@
                 Choose the type of corporate action to process
               </p>
             </div>
-            <select [(ngModel)]="selectedAction"
-              class="w-full md:w-[200px] h-9 px-3 py-2 bg-[#2E2E2E] border border-[#3A3A3A] text-white rounded-md focus:outline-none focus:ring-2 focus:ring-[#10A37F]/50">
-              <option value="bonus">Bonus Issue</option>
-              <option value="dividend">Dividend Payment</option>
-              <option value="split">Stock Split</option>
-              <option value="merger">Merger/Acquisition</option>
-            </select>
+            <p-select [(ngModel)]="selectedAction"
+              [options]="actionOptions"
+              optionLabel="label"
+              optionValue="value"
+              placeholder="Select Action"
+              styleClass="w-full md:w-[200px] bg-[#2E2E2E] border border-[#3A3A3A] text-white rounded-md"
+              appendTo="body">
+            </p-select>
           </div>
         </div>
 

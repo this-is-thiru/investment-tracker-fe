@@ -13,6 +13,9 @@ import { finalize } from 'rxjs/operators';
 import { HttpEvent, HttpEventType } from '@angular/common/http';
 import { LucideIconsModule } from '../../../../core/icons/lucide-icons.module';
 
+import { FormsModule } from '@angular/forms';
+import { PrimeNgModule } from '../../../../core/prime-ng.module';
+
 import { ToastType } from '../../../../models/transaction';
 import { TransactionService } from '../../../../services/transaction.service';
 import { AuthService } from '../../../../services/auth.service';
@@ -20,7 +23,7 @@ import { AuthService } from '../../../../services/auth.service';
 @Component({
     selector: 'app-upload-transactions',
     standalone: true,
-    imports: [CommonModule, LucideIconsModule, ExpansionPanelComponent],
+    imports: [CommonModule, LucideIconsModule, ExpansionPanelComponent, FormsModule, PrimeNgModule],
     providers: [MessageService],
     templateUrl: './upload-transactions.component.html'
 })
@@ -32,6 +35,13 @@ export class UploadTransactionsComponent implements OnDestroy {
 
   selectedFile: File | null = null;
   uploadedFileName: string = '';
+  selectedQuarter: string = 'Q1';
+  quarters = [
+    { label: 'Q1 (Jan - Mar)', value: 'Q1' },
+    { label: 'Q2 (Apr - Jun)', value: 'Q2' },
+    { label: 'Q3 (Jul - Sep)', value: 'Q3' },
+    { label: 'Q4 (Oct - Dec)', value: 'Q4' }
+  ];
   uploadProgress: number = 0;
   isUploading = false;
   hasUploadedFile = false;
@@ -85,7 +95,7 @@ export class UploadTransactionsComponent implements OnDestroy {
     this.uploadProgress = 0;
 
     this.uploadSub = this.transactionService
-      .uploadTransactions(email, this.selectedFile)
+      .uploadTransactions(email, this.selectedFile, this.selectedQuarter)
       .pipe(
         finalize(() => {
           this.isUploading = false;

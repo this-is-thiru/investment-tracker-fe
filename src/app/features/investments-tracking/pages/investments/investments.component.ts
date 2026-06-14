@@ -84,12 +84,13 @@ export class InvestmentsComponent {
   }
 
   // Optional: Upload Excel to backend
-  uploadExcelFile(file: File, email: string): Observable<any> {
+  uploadExcelFile(file: File, email: string, quarter?: string): Observable<any> {
     const formData = new FormData();
     formData.append('file', file);
-    return this.http.post(
-      `${this.BASE_URL.getBaseUrl()}/portfolio/user/${email}/upload-transactions`,
-      formData
-    );
+    let url = `${this.BASE_URL.getBaseUrl()}/portfolio/user/${email}/upload-transactions`;
+    if (quarter) {
+      url += `?quarter=${quarter}`;
+    }
+    return this.http.post(url, formData);
   }
 }

@@ -30,6 +30,12 @@ export class AllTransactionsComponent implements OnInit, OnDestroy {
   // --- State Variables ---
   activeTab: 'upload' | 'process' = 'upload';
   selectedAction: string = 'bonus';
+  actionOptions = [
+    { label: 'Bonus Issue', value: 'bonus' },
+    { label: 'Dividend Payment', value: 'dividend' },
+    { label: 'Stock Split', value: 'split' },
+    { label: 'Merger/Acquisition', value: 'merger' }
+  ];
   portfolioTransactions: Transaction[] = [];
   temporaryTransactions: Transaction[] = [];
   isLoading: boolean = false;

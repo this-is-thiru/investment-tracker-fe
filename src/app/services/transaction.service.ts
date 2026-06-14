@@ -62,12 +62,14 @@ export class TransactionService {
   //   );
   // }
 
-  // Download Excel template
-  uploadTransactions(email: string, file: File): Observable<HttpEvent<any>> {
+  uploadTransactions(email: string, file: File, quarter?: string): Observable<HttpEvent<any>> {
     const formData = new FormData();
     formData.append('file', file);
 
-    const url = `${this.BASE_URL.getBaseUrl()}/portfolio/user/${email}/upload-transactions`;
+    let url = `${this.BASE_URL.getBaseUrl()}/portfolio/user/${email}/upload-transactions`;
+    if (quarter) {
+      url += `?quarter=${quarter}`;
+    }
 
     return this.http.post(url, formData, {
       responseType: 'text', // ALWAYS return plain text

@@ -5,11 +5,12 @@ import { FormsModule } from '@angular/forms';
 import { LucideIconsModule } from '../../../core/icons/lucide-icons.module';
 import { AuthService } from '../../../services/auth.service';
 import { StorageService } from '../../../services/storage.service';
+import { PrimeNgModule } from '../../../core/prime-ng.module';
 
 @Component({
     selector: 'app-settings',
     standalone: true,
-    imports: [CommonModule, FormsModule, LucideIconsModule],
+    imports: [CommonModule, FormsModule, LucideIconsModule, PrimeNgModule],
     templateUrl: './settings.component.html',
     styleUrl: './settings.component.css'
 })
@@ -34,13 +35,62 @@ export class SettingsComponent {
 
   // Regional Preferences
   currency: string = 'USD';
+  currencyOptions = [
+    { label: 'USD ($) - US Dollar', value: 'USD' },
+    { label: 'EUR (€) - Euro', value: 'EUR' },
+    { label: 'GBP (£) - British Pound', value: 'GBP' },
+    { label: 'INR (₹) - Indian Rupee', value: 'INR' },
+    { label: 'JPY (¥) - Japanese Yen', value: 'JPY' },
+    { label: 'CAD ($) - Canadian Dollar', value: 'CAD' },
+    { label: 'AUD ($) - Australian Dollar', value: 'AUD' }
+  ];
+
   language: string = 'en';
+  languageOptions = [
+    { label: 'English (US)', value: 'en' },
+    { label: 'Español (ES)', value: 'es' },
+    { label: 'Français (FR)', value: 'fr' },
+    { label: 'Deutsch (DE)', value: 'de' }
+  ];
+
   dateFormat: string = 'MM/DD/YYYY';
+  dateFormatOptions = [
+    { label: 'MM/DD/YYYY', value: 'MM/DD/YYYY' },
+    { label: 'DD/MM/YYYY', value: 'DD/MM/YYYY' },
+    { label: 'YYYY-MM-DD', value: 'YYYY-MM-DD' }
+  ];
 
   // 2. Portfolio Preferences State
   returnCalculation: 'TWR' | 'IRR' | 'SIMPLE' = 'TWR';
+
   defaultBenchmark: 'SP500' | 'NIFTY50' | 'NASDAQ' | 'BTC' | 'NONE' = 'SP500';
+  benchmarkOptions = [
+    { label: 'S&P 500 ETF (US Stock Market Index)', value: 'SP500' },
+    { label: 'Nifty 50 Index (Indian Stock Market Index)', value: 'NIFTY50' },
+    { label: 'Nasdaq 100 Index (Tech Stock Index)', value: 'NASDAQ' },
+    { label: 'Bitcoin (BTC / USD Spot)', value: 'BTC' },
+    { label: 'No Comparison Benchmark', value: 'NONE' }
+  ];
+
   fiscalYearStart: 'jan' | 'apr' | 'jul' = 'jan';
+  fiscalYearStartOptions = [
+    { label: 'January 1st (Standard Calendar Year)', value: 'jan' },
+    { label: 'April 1st (Indian / UK Tax Calendar)', value: 'apr' },
+    { label: 'July 1st (Australian Tax Calendar)', value: 'jul' }
+  ];
+
+  priceAlertThresholdOptions = [
+    { label: '± 1% Daily Portfolio Swing', value: 1 },
+    { label: '± 2% Daily Portfolio Swing', value: 2 },
+    { label: '± 5% Daily Portfolio Swing', value: 5 },
+    { label: '± 10% Daily Portfolio Swing', value: 10 }
+  ];
+
+  rebalanceThresholdOptions = [
+    { label: '± 2% Allocation Deviation', value: 2 },
+    { label: '± 5% Allocation Deviation (Standard)', value: 5 },
+    { label: '± 10% Allocation Deviation', value: 10 }
+  ];
 
   activeAssetClasses = {
     stocks: true,
