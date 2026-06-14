@@ -10,12 +10,12 @@ import { TransactionsTableComponent } from "../../components/transactions-table/
 import { AllTransactionsComponent } from '../../components/transaction-list/all-transactions.component';
 
 @Component({
-  selector: 'app-investments',
-  standalone: true,
-  imports: [UploadTransactionsComponent, FooterComponent, TransactionsTableComponent, AllTransactionsComponent],
-  templateUrl: './investments.component.html',
-  styleUrls: ['./investments.component.css'],
-  providers: [MessageService]
+    selector: 'app-investments',
+    standalone: true,
+    imports: [UploadTransactionsComponent, FooterComponent, TransactionsTableComponent, AllTransactionsComponent],
+    templateUrl: './investments.component.html',
+    styleUrls: ['./investments.component.css'],
+    providers: [MessageService]
 })
 export class InvestmentsComponent {
   private http = inject(HttpClient);

@@ -1,5 +1,6 @@
-import { HttpInterceptorFn } from '@angular/common/http';
+import { HttpInterceptorFn, HttpResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
+import { map } from 'rxjs/operators';
 import { StorageService } from '../services/storage.service';
 
 export const AuthInterceptor: HttpInterceptorFn = (req, next) => {
@@ -14,5 +15,15 @@ export const AuthInterceptor: HttpInterceptorFn = (req, next) => {
     })
     : req;
 
-  return next(cloned);
+  return next(cloned).pipe(
+    map((event) => {
+      if (event instanceof HttpResponse) {
+        if (event.body && typeof event.body === 'object' && 'data' in event.body) {
+          return event.clone({ body: (event.body as any).data });
+        }
+      }
+      return event;
+    })
+  );
 };
+

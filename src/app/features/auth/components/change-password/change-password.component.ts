@@ -12,11 +12,11 @@ import { CommonModule } from '@angular/common';
 import { LucideIconsModule } from '../../../../core/icons/lucide-icons.module';
 
 @Component({
-  standalone: true,
-  selector: 'app-change-password',
-  imports: [CommonModule, FormsModule, LucideIconsModule, ReactiveFormsModule],
-  templateUrl: './change-password.component.html',
-  styleUrls: ['./change-password.component.css'],
+    selector: 'app-change-password',
+    standalone: true,
+    imports: [CommonModule, FormsModule, LucideIconsModule, ReactiveFormsModule],
+    templateUrl: './change-password.component.html',
+    styleUrls: ['./change-password.component.css']
 })
 export class ChangePasswordComponent implements OnInit {
   @Output() close = new EventEmitter<void>();

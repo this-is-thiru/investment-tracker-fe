@@ -4,10 +4,10 @@ import { LucideIconsModule } from '../../../core/icons/lucide-icons.module';
 import { Notification } from '../../../services/notification.service';
 
 @Component({
-  selector: 'app-notification-toast',
-  standalone: true,
-  imports: [CommonModule, LucideIconsModule],
-  template: `
+    selector: 'app-notification-toast',
+    standalone: true,
+    imports: [CommonModule, LucideIconsModule],
+    template: `
     <div
       class="w-80 backdrop-blur-md border rounded-xl shadow-2xl transition-all duration-300 relative overflow-hidden"
       [ngClass]="[styles.bg, styles.border, isExiting ? 'opacity-0 translate-x-full' : 'opacity-100 translate-x-0']"
@@ -43,7 +43,7 @@ import { Notification } from '../../../services/notification.service';
       }
     </style>
   `,
-  styles: [`
+    styles: [`
     :host {
       display: block;
     }

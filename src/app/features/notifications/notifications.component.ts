@@ -5,10 +5,10 @@ import { LucideIconsModule } from '../../core/icons/lucide-icons.module';
 import { Observable, map } from 'rxjs';
 
 @Component({
-  selector: 'app-notifications-page',
-  standalone: true,
-  imports: [CommonModule, LucideIconsModule],
-  template: `
+    selector: 'app-notifications-page',
+    standalone: true,
+    imports: [CommonModule, LucideIconsModule],
+    template: `
     <div class="min-h-screen bg-[#191919] py-8">
       <div class="max-w-4xl mx-auto px-4 md:px-6 lg:px-8">
         <!-- Header -->
@@ -106,7 +106,7 @@ import { Observable, map } from 'rxjs';
       </div>
     </div>
   `,
-  styles: [`
+    styles: [`
     :host {
       display: block;
     }

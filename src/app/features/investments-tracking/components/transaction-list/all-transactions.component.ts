@@ -20,11 +20,11 @@ export interface Toast {
 }
 
 @Component({
-  selector: 'app-all-transactions',
-  standalone: true,
-  imports: [CommonModule, FormsModule, LucideIconsModule, PrimeNgModule],
-  templateUrl: './all-transactions.component.html',
-  styleUrls: ['./all-transactions.component.css'],
+    selector: 'app-all-transactions',
+    standalone: true,
+    imports: [CommonModule, FormsModule, LucideIconsModule, PrimeNgModule],
+    templateUrl: './all-transactions.component.html',
+    styleUrls: ['./all-transactions.component.css']
 })
 export class AllTransactionsComponent implements OnInit, OnDestroy {
   // --- State Variables ---

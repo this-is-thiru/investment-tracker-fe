@@ -108,18 +108,18 @@ import { LucideIconsModule } from '../../../../core/icons/lucide-icons.module';
 import { PrimeNgModule } from '../../../../core/prime-ng.module';
 
 @Component({
-  selector: 'app-transactions-table',
-  standalone: true,
-  imports: [
-    CommonModule,
-    LucideIconsModule,
-    ExpansionPanelComponent,
-    DecimalPipe,
-    PrimeNgModule,
-  ],
-  templateUrl: './transactions-table.component.html',
-  styleUrls: ['./transactions-table.component.css'],
-  providers: [MessageService],
+    selector: 'app-transactions-table',
+    standalone: true,
+    imports: [
+        CommonModule,
+        LucideIconsModule,
+        ExpansionPanelComponent,
+        DecimalPipe,
+        PrimeNgModule,
+    ],
+    templateUrl: './transactions-table.component.html',
+    styleUrls: ['./transactions-table.component.css'],
+    providers: [MessageService]
 })
 export class TransactionsTableComponent implements OnInit {
   private transactionService = inject(TransactionService);

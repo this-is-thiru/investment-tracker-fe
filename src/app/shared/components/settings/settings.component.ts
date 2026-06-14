@@ -7,11 +7,11 @@ import { AuthService } from '../../../services/auth.service';
 import { StorageService } from '../../../services/storage.service';
 
 @Component({
-  selector: 'app-settings',
-  standalone: true,
-  imports: [CommonModule, FormsModule, LucideIconsModule],
-  templateUrl: './settings.component.html',
-  styleUrl: './settings.component.css'
+    selector: 'app-settings',
+    standalone: true,
+    imports: [CommonModule, FormsModule, LucideIconsModule],
+    templateUrl: './settings.component.html',
+    styleUrl: './settings.component.css'
 })
 export class SettingsComponent {
   @Output() navigate = new EventEmitter<string>();

@@ -14,12 +14,12 @@ import { RegisterRequest } from '../../../../models/RegisterRequest';
 import { LucideIconsModule } from '../../../../core/icons/lucide-icons.module';
 
 @Component({
-  selector: 'app-sign-up',
-  templateUrl: './sign-up.component.html',
-  styleUrls: ['./sign-up.component.css'],
-  standalone: true,
-  imports: [ReactiveFormsModule, CommonModule, RouterModule, LucideIconsModule],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-sign-up',
+    standalone: true,
+    templateUrl: './sign-up.component.html',
+    styleUrls: ['./sign-up.component.css'],
+    imports: [ReactiveFormsModule, CommonModule, RouterModule, LucideIconsModule],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SignUpComponent {
   registrationForm: FormGroup;
