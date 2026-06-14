@@ -4,6 +4,8 @@ import {
   Output,
   EventEmitter,
   OnDestroy,
+  AfterContentChecked,
+  ChangeDetectorRef
 } from '@angular/core';
 import { ExpansionPanelComponent } from '../../../../shared/components/expansion-panel/expansion-panel.component';
 import { CommonModule } from '@angular/common';
@@ -19,6 +21,7 @@ import { PrimeNgModule } from '../../../../core/prime-ng.module';
 import { ToastType } from '../../../../models/transaction';
 import { TransactionService } from '../../../../services/transaction.service';
 import { AuthService } from '../../../../services/auth.service';
+import { NotificationService } from '../../../../services/notification.service';
 
 @Component({
     selector: 'app-upload-transactions',
@@ -27,9 +30,19 @@ import { AuthService } from '../../../../services/auth.service';
     providers: [MessageService],
     templateUrl: './upload-transactions.component.html'
 })
-export class UploadTransactionsComponent implements OnDestroy {
+export class UploadTransactionsComponent implements OnDestroy, AfterContentChecked {
   @Output() onUploadComplete = new EventEmitter<string>();
-  @Input() showToast!: (message: string, type: ToastType) => void;
+  @Input('showToast') showToastInput?: (message: string, type: ToastType) => void;
+
+  showToast(message: string, type: ToastType): void {
+    if (this.showToastInput) {
+      this.showToastInput(message, type);
+    } else {
+      const title = type === 'error' ? 'Error' : type === 'success' ? 'Success' : type === 'warn' ? 'Warning' : 'Info';
+      const notificationType = type === 'warn' ? 'warning' : type;
+      this.notificationService.addNotification(title, message, notificationType);
+    }
+  }
 
   uploadStatus: 'success' | 'filtered' | 'uploading' | null = null;
 
@@ -52,7 +65,13 @@ export class UploadTransactionsComponent implements OnDestroy {
   constructor(
     private transactionService: TransactionService,
     private authService: AuthService,
+    private notificationService: NotificationService,
+    private cdr: ChangeDetectorRef
   ) {}
+
+  ngAfterContentChecked(): void {
+    this.cdr.detectChanges();
+  }
 
   // ========== File Selection ==========
   handleFileSelect(event: Event | File): void {

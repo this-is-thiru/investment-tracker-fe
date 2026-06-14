@@ -350,6 +350,12 @@ html {
   padding: 0.625rem 1rem !important;
 }
 
+.p-select-dropdown {
+  color: #B3B3B3 !important;
+  padding-right: 1rem !important;
+  padding-left: 0.5rem !important;
+}
+
 .p-select-overlay {
   background-color: #232323 !important;
   border: 1px solid #3A3A3A !important;
@@ -397,12 +403,17 @@ html {
   background-color: #1AA97D !important;
 }
 
-/* Also support legacy p-dropdown class overrides for compatibility */
 .p-dropdown {
   background-color: #232323 !important;
   border: 1px solid #3A3A3A !important;
   border-radius: 0.75rem !important;
   color: #FFFFFF !important;
+}
+
+.p-dropdown-trigger {
+  color: #B3B3B3 !important;
+  padding-right: 1rem !important;
+  padding-left: 0.5rem !important;
 }
 
 .p-dropdown-panel {
