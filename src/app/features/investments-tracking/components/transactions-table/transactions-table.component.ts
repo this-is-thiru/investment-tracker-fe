@@ -8,46 +8,17 @@ import { TransactionsResponse } from '../../../../models/TranscationsResponse';
 import { ExpansionPanelComponent } from '../../../../shared/components/expansion-panel/expansion-panel.component';
 import { LucideIconsModule } from '../../../../core/icons/lucide-icons.module';
 import { PrimeNgModule } from '../../../../core/prime-ng.module';
+import {
+  PortfolioAnalyticsService,
+  SummaryStats,
+  HoldingRow,
+  InsightItem,
+} from '../../../../core/services/portfolio-analytics.service';
 
 type ViewMode = 'split' | 'temp' | 'port';
 type ActiveTab = 'transactions' | 'holdings' | 'insights';
 type TypeFilter = 'ALL' | 'BUY' | 'SELL';
 type DatePreset = 'all' | '7d' | '30d' | '90d' | 'ytd' | 'custom';
-type Tone = 'green' | 'red' | 'blue' | 'yellow' | 'purple';
-
-interface SummaryStats {
-  count: number;
-  totalInvested: number;
-  totalSold: number;
-  netInvested: number;
-  totalCharges: number;
-  topStock: { name: string; code: string; count: number; totalValue: number } | null;
-}
-
-interface HoldingRow {
-  stockCode: string;
-  stockName: string;
-  assetType: string;
-  totalBought: number;
-  totalSold: number;
-  netHeld: number;
-  totalInvested: number;
-  totalSoldValue: number;
-  netInvested: number;
-  txnCount: number;
-  firstDate: string;
-  lastDate: string;
-  avgPrice: number;
-  totalCharges: number;
-  sharePercent: number;
-}
-
-interface InsightItem {
-  icon: string;
-  title: string;
-  detail: string;
-  tone: Tone;
-}
 
 interface FilterChip {
   kind: 'search' | 'type' | 'asset' | 'broker' | 'date';
@@ -78,6 +49,7 @@ interface ColumnDef {
 export class TransactionsTableComponent implements OnInit {
   private transactionService = inject(TransactionService);
   private messageService = inject(MessageService);
+  private analytics = inject(PortfolioAnalyticsService);
 
   // ----- view / tab state -----
   viewMode: ViewMode = 'split';
@@ -486,212 +458,15 @@ export class TransactionsTableComponent implements OnInit {
   }
 
   computeStats(rows: TransactionsResponse[]): SummaryStats {
-    const count = rows.length;
-    let totalInvested = 0;
-    let totalSold = 0;
-    let totalCharges = 0;
-    const stockCounts = new Map<string, { name: string; code: string; count: number; totalValue: number }>();
-    for (const r of rows) {
-      totalCharges += (r.brokerCharges || 0) + (r.miscCharges || 0);
-      if (r.transactionType === 'BUY') totalInvested += r.totalValue || 0;
-      else if (r.transactionType === 'SELL') totalSold += r.totalValue || 0;
-      const key = r.stockCode || r.stockName || 'unknown';
-      const existing = stockCounts.get(key);
-      if (existing) {
-        existing.count += 1;
-        existing.totalValue += r.totalValue || 0;
-      } else {
-        stockCounts.set(key, { name: r.stockName, code: r.stockCode, count: 1, totalValue: r.totalValue || 0 });
-      }
-    }
-    let topStock: SummaryStats['topStock'] = null;
-    for (const v of stockCounts.values()) {
-      if (!topStock || v.count > topStock.count) topStock = v;
-    }
-    return {
-      count,
-      totalInvested,
-      totalSold,
-      netInvested: totalInvested - totalSold,
-      totalCharges,
-      topStock,
-    };
+    return this.analytics.computeStats(rows);
   }
 
   computeHoldings(rows: TransactionsResponse[]): HoldingRow[] {
-    const map = new Map<string, HoldingRow>();
-    let totalAllInvested = 0;
-    for (const r of rows) {
-      const key = r.stockCode || r.stockName || 'unknown';
-      let h = map.get(key);
-      if (!h) {
-        h = {
-          stockCode: r.stockCode,
-          stockName: r.stockName,
-          assetType: r.assetType,
-          totalBought: 0,
-          totalSold: 0,
-          netHeld: 0,
-          totalInvested: 0,
-          totalSoldValue: 0,
-          netInvested: 0,
-          txnCount: 0,
-          firstDate: r.transactionDate,
-          lastDate: r.transactionDate,
-          avgPrice: 0,
-          totalCharges: 0,
-          sharePercent: 0,
-        };
-        map.set(key, h);
-      }
-      h.txnCount += 1;
-      const qty = r.quantity || 0;
-      const value = r.totalValue || 0;
-      if (r.transactionType === 'BUY') {
-        h.totalBought += qty;
-        h.totalInvested += value;
-      } else if (r.transactionType === 'SELL') {
-        h.totalSold += qty;
-        h.totalSoldValue += value;
-      }
-      h.netHeld = h.totalBought - h.totalSold;
-      h.netInvested = h.totalInvested - h.totalSoldValue;
-      h.totalCharges += (r.brokerCharges || 0) + (r.miscCharges || 0);
-      if (r.transactionDate) {
-        if (!h.firstDate || r.transactionDate < h.firstDate) h.firstDate = r.transactionDate;
-        if (!h.lastDate || r.transactionDate > h.lastDate) h.lastDate = r.transactionDate;
-      }
-      totalAllInvested += value;
-    }
-    for (const h of map.values()) {
-      h.avgPrice = h.totalBought > 0 ? h.totalInvested / h.totalBought : 0;
-      h.sharePercent = totalAllInvested > 0 ? (h.totalInvested / totalAllInvested) * 100 : 0;
-    }
-    return Array.from(map.values()).sort((a, b) => b.totalInvested - a.totalInvested);
+    return this.analytics.computeHoldings(rows);
   }
 
   computeInsights(rows: TransactionsResponse[], stats: SummaryStats): InsightItem[] {
-    const out: InsightItem[] = [];
-    if (rows.length === 0) return out;
-
-    // Biggest broker by transaction count
-    const brokerCounts = new Map<string, { count: number; totalValue: number }>();
-    for (const r of rows) {
-      const key = r.brokerName || 'Unknown';
-      const existing = brokerCounts.get(key);
-      if (existing) { existing.count += 1; existing.totalValue += r.totalValue || 0; }
-      else brokerCounts.set(key, { count: 1, totalValue: r.totalValue || 0 });
-    }
-    let biggestBroker: { name: string; count: number; totalValue: number } | null = null;
-    for (const [name, v] of brokerCounts.entries()) {
-      if (!biggestBroker || v.count > biggestBroker.count) biggestBroker = { name, ...v };
-    }
-    if (biggestBroker) {
-      out.push({
-        icon: 'Briefcase',
-        title: 'Biggest broker',
-        detail: `Your biggest broker is ${biggestBroker.name} with ${biggestBroker.count} transactions worth ₹${biggestBroker.totalValue.toFixed(2)}.`,
-        tone: 'blue',
-      });
-    }
-
-    // This month vs last month
-    const now = new Date();
-    const thisMonth = now.getMonth();
-    const thisYear = now.getFullYear();
-    const lastMonth = thisMonth === 0 ? 11 : thisMonth - 1;
-    const lastMonthYear = thisMonth === 0 ? thisYear - 1 : thisYear;
-    let thisCount = 0;
-    let lastCount = 0;
-    for (const r of rows) {
-      if (!r.transactionDate) continue;
-      const d = new Date(r.transactionDate);
-      if (d.getMonth() === thisMonth && d.getFullYear() === thisYear) thisCount++;
-      else if (d.getMonth() === lastMonth && d.getFullYear() === lastMonthYear) lastCount++;
-    }
-    if (thisCount > 0 || lastCount > 0) {
-      const diff = lastCount === 0 ? 100 : Math.round(((thisCount - lastCount) / lastCount) * 100);
-      const arrow = thisCount >= lastCount ? '▲' : '▼';
-      const sign = diff >= 0 ? '+' : '';
-      out.push({
-        icon: 'Calendar',
-        title: 'Monthly activity',
-        detail: `You've made ${thisCount} transactions this month vs ${lastCount} last month (${arrow} ${sign}${diff}%).`,
-        tone: thisCount >= lastCount ? 'green' : 'red',
-      });
-    }
-
-    // Buy vs Sell mix
-    const buyCount = rows.filter((r) => r.transactionType === 'BUY').length;
-    const sellCount = rows.filter((r) => r.transactionType === 'SELL').length;
-    const total = rows.length;
-    if (buyCount > 0 || sellCount > 0) {
-      const buyPct = total > 0 ? Math.round((buyCount / total) * 100) : 0;
-      const sellPct = total > 0 ? 100 - buyPct : 0;
-      out.push({
-        icon: 'TrendingUp',
-        title: 'Buy / Sell mix',
-        detail: `${buyPct}% of your transactions are BUYs, ${sellPct}% are SELLs.`,
-        tone: 'purple',
-      });
-    }
-
-    // Top asset type by total value
-    const assetCounts = new Map<string, { count: number; totalValue: number }>();
-    for (const r of rows) {
-      const key = r.assetType || 'Unknown';
-      const existing = assetCounts.get(key);
-      if (existing) { existing.count += 1; existing.totalValue += r.totalValue || 0; }
-      else assetCounts.set(key, { count: 1, totalValue: r.totalValue || 0 });
-    }
-    const totalValue = rows.reduce((s, r) => s + (r.totalValue || 0), 0);
-    let topAsset: { name: string; count: number; totalValue: number; pct: number } | null = null;
-    for (const [name, v] of assetCounts.entries()) {
-      const pct = totalValue > 0 ? (v.totalValue / totalValue) * 100 : 0;
-      if (!topAsset || v.totalValue > topAsset.totalValue) topAsset = { name, ...v, pct };
-    }
-    if (topAsset) {
-      out.push({
-        icon: 'Database',
-        title: 'Top asset type',
-        detail: `Top asset type: ${topAsset.name} (${topAsset.pct.toFixed(1)}% of total value).`,
-        tone: 'yellow',
-      });
-    }
-
-    // Average transaction size
-    if (total > 0) {
-      const avg = totalValue / total;
-      out.push({
-        icon: 'BarChart3',
-        title: 'Average size',
-        detail: `Avg. transaction size: ₹${avg.toFixed(2)}.`,
-        tone: 'blue',
-      });
-    }
-
-    // Charges as % of volume
-    if (totalValue > 0 && stats.totalCharges > 0) {
-      const pct = (stats.totalCharges / totalValue) * 100;
-      out.push({
-        icon: 'CreditCard',
-        title: 'Charges impact',
-        detail: `You paid ₹${stats.totalCharges.toFixed(2)} in total charges — that's ${pct.toFixed(2)}% of total volume.`,
-        tone: 'yellow',
-      });
-    }
-
-    // Top stock (bonus)
-    if (stats.topStock) {
-      out.push({
-        icon: 'Crown',
-        title: 'Most traded stock',
-        detail: `${stats.topStock.name} (${stats.topStock.code}) — ${stats.topStock.count} transactions worth ₹${stats.topStock.totalValue.toFixed(2)}.`,
-        tone: 'purple',
-      });
-    }
-
-    return out;
+    return this.analytics.computeInsights(rows, stats);
   }
 
   inDateRange(date: string, from: Date | null, to: Date | null): boolean {

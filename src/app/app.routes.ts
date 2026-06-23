@@ -17,6 +17,16 @@ export const routes: Routes = [
         loadComponent: () => import('./features/investments-tracking/pages/investments/investments.component').then(m => m.InvestmentsComponent),
         canActivate: [authGuard]
       },
+      {
+        path: 'tax-filing',
+        loadChildren: () => import('./features/tax-filing/tax-filing.routes').then(m => m.TAX_FILING_ROUTES),
+        canActivate: [authGuard]
+      },
+      {
+        path: 'portfolio-analytics',
+        loadChildren: () => import('./features/portfolio-analytics/portfolio-analytics.routes').then(m => m.PORTFOLIO_ANALYTICS_ROUTES),
+        canActivate: [authGuard]
+      },
       // 👇 Secondary outlet for modals
       {
         path: 'sign-in',

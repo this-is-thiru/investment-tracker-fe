@@ -1,0 +1,109 @@
+/* Table dark overrides — mirror transactions-table.component.css */
+:host ::ng-deep .p-datatable,
+:host ::ng-deep .p-datatable table {
+  background-color: #232323;
+  color: #ffffff;
+  border-color: #3a3a3a;
+}
+
+:host ::ng-deep .p-datatable thead th {
+  background-color: #232323;
+  color: #b3b3b3;
+  border-bottom: 1px solid #2a2a2a;
+}
+
+:host ::ng-deep .p-datatable tbody tr {
+  background-color: #232323;
+  color: #ffffff;
+  border-bottom: 1px solid #2a2a2a;
+}
+
+:host ::ng-deep .p-datatable tbody tr:hover {
+  background-color: #2e2e2e;
+}
+
+:host {
+  font-family: 'Inter', 'Manrope', system-ui, sans-serif !important;
+  font-size: 14px !important;
+}
+
+:host ::ng-deep .p-datatable,
+:host ::ng-deep .p-datatable td,
+:host ::ng-deep .p-datatable th {
+  font-family: 'Inter', 'Manrope', system-ui, sans-serif !important;
+  font-size: 14px !important;
+}
+
+:host ::ng-deep .p-paginator {
+  background-color: #232323;
+  color: #ffffff;
+  justify-content: center;
+  padding: 0.5rem 0;
+}
+
+:host ::ng-deep .p-paginator .p-paginator-page {
+  background-color: #2e2e2e;
+  color: #ffffff;
+  margin: 0 0.125rem;
+  min-width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+:host ::ng-deep .p-paginator .p-paginator-page:hover {
+  background-color: #10a37f;
+  color: #ffffff;
+}
+
+:host ::ng-deep .p-paginator .p-paginator-page.p-highlight {
+  background-color: #10a37f;
+  color: #ffffff;
+}
+
+:host ::ng-deep .p-paginator .p-paginator-rpp-options,
+:host ::ng-deep .p-dropdown,
+:host ::ng-deep .p-dropdown-panel,
+:host ::ng-deep .p-select-overlay,
+:host ::ng-deep .p-select {
+  background-color: #2e2e2e !important;
+  color: #ffffff !important;
+  border-radius: 0.5rem;
+}
+
+:host ::ng-deep .p-select .p-select-label {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.8125rem;
+  color: #ffffff;
+}
+
+:host ::ng-deep .p-select-overlay .p-select-option {
+  color: #ffffff;
+  background-color: #2e2e2e;
+}
+
+:host ::ng-deep .p-select-overlay .p-select-option:hover {
+  background-color: #10a37f !important;
+  color: #ffffff !important;
+}
+
+:host ::ng-deep .p-select-overlay .p-select-option.p-select-option-selected {
+  background-color: #10a37f !important;
+  color: #ffffff !important;
+}
+
+:host ::ng-deep .table-scroll-container {
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: #3A3A3A #191919;
+}
+:host ::ng-deep .table-scroll-container::-webkit-scrollbar { height: 8px; }
+:host ::ng-deep .table-scroll-container::-webkit-scrollbar-track { background: #191919; border-radius: 4px; }
+:host ::ng-deep .table-scroll-container::-webkit-scrollbar-thumb { background: #3A3A3A; border-radius: 4px; }
+:host ::ng-deep .table-scroll-container::-webkit-scrollbar-thumb:hover { background: #4A4A4A; }

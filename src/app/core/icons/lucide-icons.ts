@@ -41,7 +41,8 @@ import {
   AlertTriangle,
   Info,
   CheckCheck,
-  Calendar
+  Calendar,
+  FileSpreadsheet
 } from 'lucide-angular';
 
 export const LUCIDE_ICONS = {
@@ -87,5 +88,6 @@ export const LUCIDE_ICONS = {
   AlertTriangle,
   Info,
   CheckCheck,
-  Calendar
+  Calendar,
+  FileSpreadsheet
 };
