@@ -116,4 +116,26 @@
   background-color: #171717 !important;
 }
 
+/* PrimeNG select inside filter bar — match dark input height */
+:host ::ng-deep .p-select {
+  min-height: 2.25rem;
+  border-radius: 0.5rem;
+}
 
+:host ::ng-deep .p-select .p-select-label {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.8125rem;
+}
+
+/* Custom horizontal scrollbar for table containers */
+:host ::ng-deep .table-scroll-container {
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: #3A3A3A #191919;
+}
+:host ::ng-deep .table-scroll-container::-webkit-scrollbar { height: 8px; }
+:host ::ng-deep .table-scroll-container::-webkit-scrollbar-track { background: #191919; border-radius: 4px; }
+:host ::ng-deep .table-scroll-container::-webkit-scrollbar-thumb { background: #3A3A3A; border-radius: 4px; }
+:host ::ng-deep .table-scroll-container::-webkit-scrollbar-thumb:hover { background: #4A4A4A; }

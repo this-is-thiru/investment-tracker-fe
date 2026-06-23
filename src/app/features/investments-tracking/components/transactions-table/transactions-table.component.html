@@ -1,786 +1,938 @@
-<!-- <app-expansion-panel
+<app-expansion-panel
   [title]="'Transactions'"
-  [subtitle]="'View temporary and portfolio transaction tables'"
+  [subtitle]="'View temporary and current transactions'"
   [titleIcon]="'Database'"
-  [iconBgClass]="
-    'bg-gradient-to-br from-[#10A37F] to-[#0D8968] p-2 rounded-lg text-white'
-  "
-  class="animate-fade-in-up stagger-2"
->
-  <section
-    class="w-full bg-background rounded-xl shadow-card"
-  >
-    <div
-      class="flex flex-col md:flex-row items-start md:items-center justify-between mb-4 gap-4"
-    >
-      <h2 class="text-xl font-semibold">Transactions</h2>
-
-      <div class="flex items-center gap-2">
-        <button
-          (click)="setTab('current')"
-          [ngClass]="
-            activeTab === 'current'
-              ? 'bg-accent text-white'
-              : 'bg-surfaceHover text-textSecondary hover:bg-surface'
-          "
-          class="px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-150"
-        >
-          Current
-        </button>
-        <button
-          (click)="setTab('temporary')"
-          [ngClass]="
-            activeTab === 'temporary'
-              ? 'bg-accent text-white'
-              : 'bg-surfaceHover text-textSecondary hover:bg-surface'
-          "
-          class="px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-150"
-        >
-          Temporary
-        </button>
-      </div>
-    </div>
-
-    <div class="w-full mb-4">
-      <input
-        type="text"
-        placeholder="Search transactions..."
-        (input)="onSearch($event)"
-        class="w-full rounded-lg bg-surface border border-border text-textPrimary placeholder-textSecondary px-4 py-2.5 focus:ring-2 focus:ring-accent focus:outline-none"
-      />
-    </div>
-
-    <div *ngIf="loading" class="text-center text-textSecondary py-6">
-      Loading transactions...
-    </div>
-
-    <p-table
-      *ngIf="!loading"
-      [value]="filteredTransactions"
-      [paginator]="true"
-      [rows]="rowsPerPage"
-      [first]="first"
-      (onPage)="onPageChange($event)"
-      [rowsPerPageOptions]="[5, 10, 20]"
-      [responsiveLayout]="'scroll'"
-      [styleClass]="
-        'w-full rounded-lg overflow-hidden shadow-card border border-border text-textPrimary'
-      "
-    >
-      <ng-template pTemplate="header">
-        <tr
-          class="bg-surface text-textSecondary text-sm border-b border-divider"
-        >
-          <th class="px-2 py-1">STOCK NAME</th>
-          <th class="px-2 py-1">ASSET TYPE</th>
-          <th class="px-2 py-1">EXCHANGE</th>
-          <th class="px-2 py-1">BROKER</th>
-          <th class="px-2 py-1">TYPE</th>
-          <th class="px-2 py-1">QTY</th>
-          <th class="px-2 py-1">PRICE</th>
-          <th class="px-2 py-1">TOTAL</th>
-          <th class="px-2 py-1">BROKER CHARGES</th>
-          <th class="px-2 py-1">MISC CHARGES</th>
-          <th class="px-2 py-1">DATE</th>
-        </tr>
-      </ng-template>
-
-      <ng-template pTemplate="body" let-t>
-        <tr
-          class="border-b border-divider hover:bg-surfaceHover transition-colors duration-150"
-        >
-          <td class="px-2 py-1">{{ t.stockName }}</td>
-          <td class="px-2 py-1">{{ t.assetType }}</td>
-          <td class="px-2 py-1">{{ t.exchangeName }}</td>
-          <td class="px-2 py-1">{{ t.brokerName }}</td>
-          <td
-            class="px-2 py-1"
-            [ngClass]="{
-              'buy-cell': t.transactionType === 'BUY',
-              'sell-cell': t.transactionType === 'SELL',
-            }"
-          >
-            {{ t.transactionType }}
-          </td>
-          <td class="px-2 py-1">{{ t.quantity }}</td>
-          <td class="px-2 py-1">₹{{ t.price | number: '1.2-2' }}</td>
-          <td class="px-2 py-1">₹{{ t.totalValue | number: '1.2-2' }}</td>
-          <td class="px-2 py-1">₹{{ t.brokerCharges || 0 }}</td>
-          <td class="px-2 py-1">₹{{ t.miscCharges || 0 }}</td>
-          <td class="px-2 py-1">{{ t.transactionDate }}</td>
-        </tr>
-      </ng-template>
-    </p-table>
-  </section>
-
-  <section
-    class="border border-[#333333] rounded-xl bg-[#191919] overflow-hidden animate-fade-in-up stagger-4"
-  >
-    <div
-      class="overflow-hidden transition-all duration-500 ease-in-out"
-      [style.maxHeight]="isExpanded ? '3000px' : '0'"
-      [style.opacity]="isExpanded ? 1 : 0"
-    >
-      <div class="p-6">
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-  
-          <div
-            class="rounded-xl border border-[#3A3A3A] bg-gradient-to-b from-[#1f1f1f] to-[#171717] shadow-lg overflow-hidden"
-          >
-            <div class="flex items-center gap-3 p-5 border-b border-[#2a2a2a]">
-              <div class="bg-yellow-400 p-3 rounded-xl">
-                <lucide-icon
-                  name="database"
-                  class="w-6 h-6"
-                ></lucide-icon>
-              </div>
-              <div>
-                <h3 class="text-lg font-semibold text-white">
-                  Temporary Transactions
-                </h3>
-                <p class="text-xs text-gray-400">
-                  {{ temporaryTransactions.length }} pending
-                </p>
-              </div>
-            </div>
-
-            <div class="p-4">
-              <div class="overflow-x-auto">
-                <table class="w-full text-sm">
-                  <thead>
-                    <tr class="text-gray-400 border-b border-[#2a2a2a]">
-                      <th class="p-2 text-left">ID</th>
-                      <th class="p-2 text-left">Stock</th>
-                      <th class="p-2 text-left">Qty</th>
-                      <th class="p-2 text-left">Status</th>
-                    </tr>
-                  </thead>
-
-                  <tbody>
-                    <tr *ngIf="temporaryTransactions.length === 0">
-                      <td colspan="4" class="text-center py-8 text-gray-500">
-                        <lucide-icon
-                          name="alert-circle"
-                          class="w-8 h-8 mx-auto mb-2 opacity-50"
-                        ></lucide-icon>
-                        <p>No temporary transactions</p>
-                      </td>
-                    </tr>
-
-                    <tr
-                      *ngFor="let t of temporaryTransactions"
-                      class="border-b border-[#2a2a2a] hover:bg-[#222222] transition-colors"
-                    >
-                      <td class="p-2 text-gray-300">{{ t.id }}</td>
-                      <td class="p-2 text-white font-semibold">
-                        {{ t.stock }}
-                      </td>
-                      <td class="p-2 text-white">{{ t.quantity }}</td>
-                      <td class="p-2">
-                        <span
-                          class="inline-flex items-center px-2 py-1 rounded-md text-xs border border-yellow-400/40 bg-yellow-400/10 text-yellow-400"
-                        >
-                          {{ t.status }}
-                        </span>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-
-
-          <div
-            class="rounded-xl border border-[#3A3A3A] bg-gradient-to-b from-[#1f1f1f] to-[#171717] shadow-lg overflow-hidden"
-          >
-            <div class="flex items-center gap-3 p-5 border-b border-[#2a2a2a]">
-              <div class="bg-blue-400 p-3 rounded-xl">
-                <lucide-icon
-                  name="briefcase"
-                  class="w-6 h-6"
-                ></lucide-icon>
-              </div>
-              <div>
-                <h3 class="text-lg font-semibold text-white">
-                  Portfolio Transactions
-                </h3>
-                <p class="text-xs text-gray-400">
-                  {{ portfolioTransactions.length }} completed
-                </p>
-              </div>
-            </div>
-
-            <div class="p-4">
-              <div class="overflow-x-auto">
-                <table class="w-full text-sm">
-                  <thead>
-                    <tr class="text-gray-400 border-b border-[#2a2a2a]">
-                      <th class="p-2 text-left">ID</th>
-                      <th class="p-2 text-left">Stock</th>
-                      <th class="p-2 text-left">Qty</th>
-                      <th class="p-2 text-left">Status</th>
-                    </tr>
-                  </thead>
-
-                  <tbody>
-                    <tr *ngIf="portfolioTransactions.length === 0">
-                      <td colspan="4" class="text-center py-8 text-gray-500">
-                        <lucide-icon
-                          name="alert-circle"
-                          class="w-8 h-8 mx-auto mb-2 opacity-50"
-                        ></lucide-icon>
-                        <p>No portfolio transactions</p>
-                      </td>
-                    </tr>
-
-                    <tr
-                      *ngFor="let t of portfolioTransactions"
-                      class="border-b border-[#2a2a2a] hover:bg-[#222222] transition-colors"
-                    >
-                      <td class="p-2 text-gray-300">{{ t.id }}</td>
-                      <td class="p-2 text-white font-semibold">
-                        {{ t.stock }}
-                      </td>
-                      <td class="p-2 text-white">{{ t.quantity }}</td>
-                      <td class="p-2">
-                        <span
-                          class="inline-flex items-center px-2 py-1 rounded-md text-xs border border-blue-400/40 bg-blue-400/10 text-blue-400"
-                        >
-                          {{ t.status }}
-                        </span>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-</app-expansion-panel> -->
-
-<app-expansion-panel [title]="'Transactions'" [subtitle]="'View temporary and current transactions'"
-  [titleIcon]="'Database'" [iconBgClass]="'bg-gradient-to-br from-[#10A37F] to-[#0D8968] p-2 rounded-lg text-white'"
+  [iconBgClass]="'bg-gradient-to-br from-[#10A37F] to-[#0D8968] p-2 rounded-lg text-white'"
   class="animate-fade-in-up stagger-2">
+
   <section class="border border-[#333] rounded-xl bg-[#191919] overflow-hidden animate-fade-in-up">
-    <div class="overflow-hidden transition-all duration-500" [style.maxHeight]="isExpanded ? '3000px' : '0'">
-      <!-- View Toggle Control Bar -->
-      <div class="flex justify-end px-6 pt-4 pb-2 border-b border-[#2A2A2A]">
-        <div class="flex items-center gap-1 bg-[#232323] p-1 rounded-xl border border-[#3A3A3A] shadow-inner">
-          <button
-            (click)="viewMode = 'split'"
-            [ngClass]="viewMode === 'split' ? 'bg-[#10A37F] text-white shadow-md' : 'text-[#B3B3B3] hover:text-white hover:bg-white/5'"
-            class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 flex items-center gap-1.5 focus:outline-none"
-          >
-            <i class="pi pi-columns text-xs"></i>
-            <span>Side-by-Side</span>
-          </button>
-          <button
-            (click)="viewMode = 'temp'"
-            [ngClass]="viewMode === 'temp' ? 'bg-yellow-400 text-black shadow-md font-bold' : 'text-[#B3B3B3] hover:text-white hover:bg-white/5'"
-            class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 flex items-center gap-1.5 focus:outline-none"
-          >
-            <i class="pi pi-database text-xs"></i>
-            <span>Temporary Only</span>
-          </button>
-          <button
-            (click)="viewMode = 'port'"
-            [ngClass]="viewMode === 'port' ? 'bg-blue-400 text-white shadow-md font-bold' : 'text-[#B3B3B3] hover:text-white hover:bg-white/5'"
-            class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 flex items-center gap-1.5 focus:outline-none"
-          >
-            <i class="pi pi-briefcase text-xs"></i>
-            <span>Current Only</span>
-          </button>
+
+    <!-- Mock-data banner -->
+    @if (usingMockTemp || usingMockPort) {
+      <div class="flex items-center justify-between gap-3 px-4 py-2 bg-[#FACC15]/10 border-b border-[#FACC15]/30 text-xs text-[#FACC15]">
+        <span class="flex items-center gap-2">
+          <lucide-icon name="AlertTriangle" class="w-4 h-4"></lucide-icon>
+          Using sample data — API request failed.
+        </span>
+        <button (click)="refresh()" class="flex items-center gap-1 text-[#FACC15] hover:underline">
+          <lucide-icon name="RotateCw" class="w-3 h-3"></lucide-icon> Retry
+        </button>
+      </div>
+    }
+
+    <!-- ====================================================== -->
+    <!-- F1 — STATS DASHBOARD                                   -->
+    <!-- ====================================================== -->
+    <div class="px-4 pt-4 pb-3 border-b border-[#2A2A2A]">
+      <div class="flex items-center justify-between mb-3">
+        <div class="flex items-center gap-2">
+          <lucide-icon name="BarChart3" class="w-4 h-4 text-[#10A37F]"></lucide-icon>
+          <h3 class="text-sm font-bold text-white uppercase tracking-wider">Summary</h3>
+          <span class="text-[10px] text-[#707070]">(currently visible rows)</span>
         </div>
       </div>
 
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+        <!-- Total Transactions -->
+        <div class="bg-[#1F1F1F] border border-[#3A3A3A] border-l-4 border-l-[#3B82F6] rounded-lg p-3 flex flex-col gap-1 hover:border-[#525252] transition-colors">
+          <div class="flex items-center justify-between">
+            <span class="text-[10px] text-[#B3B3B3] font-semibold uppercase tracking-wider">Transactions</span>
+            <lucide-icon name="Sparkles" class="w-3.5 h-3.5 text-[#3B82F6]"></lucide-icon>
+          </div>
+          <div class="text-2xl font-bold text-white">{{ stats.count }}</div>
+          <div class="text-[10px] text-[#707070]">total visible</div>
+        </div>
+
+        <!-- Total Invested -->
+        <div class="bg-[#1F1F1F] border border-[#3A3A3A] border-l-4 border-l-[#22C55E] rounded-lg p-3 flex flex-col gap-1 hover:border-[#525252] transition-colors">
+          <div class="flex items-center justify-between">
+            <span class="text-[10px] text-[#B3B3B3] font-semibold uppercase tracking-wider">Invested</span>
+            <lucide-icon name="TrendingUp" class="w-3.5 h-3.5 text-[#22C55E]"></lucide-icon>
+          </div>
+          <div class="text-xl font-bold text-[#22C55E]">₹{{ stats.totalInvested | number:'1.2-2' }}</div>
+          <div class="text-[10px] text-[#707070]">sum of BUYs</div>
+        </div>
+
+        <!-- Total Sold -->
+        <div class="bg-[#1F1F1F] border border-[#3A3A3A] border-l-4 border-l-[#EF4444] rounded-lg p-3 flex flex-col gap-1 hover:border-[#525252] transition-colors">
+          <div class="flex items-center justify-between">
+            <span class="text-[10px] text-[#B3B3B3] font-semibold uppercase tracking-wider">Sold</span>
+            <lucide-icon name="TrendingUp" class="w-3.5 h-3.5 text-[#EF4444]"></lucide-icon>
+          </div>
+          <div class="text-xl font-bold text-[#EF4444]">₹{{ stats.totalSold | number:'1.2-2' }}</div>
+          <div class="text-[10px] text-[#707070]">sum of SELLs</div>
+        </div>
+
+        <!-- Net Invested -->
+        <div class="bg-[#1F1F1F] border border-[#3A3A3A] rounded-lg p-3 flex flex-col gap-1 hover:border-[#525252] transition-colors"
+          [ngClass]="stats.netInvested >= 0 ? 'border-l-4 border-l-[#10A37F]' : 'border-l-4 border-l-[#FACC15]'">
+          <div class="flex items-center justify-between">
+            <span class="text-[10px] text-[#B3B3B3] font-semibold uppercase tracking-wider">Net</span>
+            <lucide-icon name="BarChart3" class="w-3.5 h-3.5"
+              [ngClass]="stats.netInvested >= 0 ? 'text-[#10A37F]' : 'text-[#FACC15]'"></lucide-icon>
+          </div>
+          <div class="text-xl font-bold"
+            [ngClass]="stats.netInvested >= 0 ? 'text-[#10A37F]' : 'text-[#FACC15]'">
+            ₹{{ stats.netInvested | number:'1.2-2' }}
+          </div>
+          <div class="text-[10px] text-[#707070]">invested − sold</div>
+        </div>
+
+        <!-- Total Charges -->
+        <div class="bg-[#1F1F1F] border border-[#3A3A3A] border-l-4 border-l-[#FACC15] rounded-lg p-3 flex flex-col gap-1 hover:border-[#525252] transition-colors">
+          <div class="flex items-center justify-between">
+            <span class="text-[10px] text-[#B3B3B3] font-semibold uppercase tracking-wider">Charges</span>
+            <lucide-icon name="CreditCard" class="w-3.5 h-3.5 text-[#FACC15]"></lucide-icon>
+          </div>
+          <div class="text-xl font-bold text-[#FACC15]">₹{{ stats.totalCharges | number:'1.2-2' }}</div>
+          <div class="text-[10px] text-[#707070]">broker + misc</div>
+        </div>
+
+        <!-- Top Stock -->
+        <div class="bg-[#1F1F1F] border border-[#3A3A3A] border-l-4 border-l-[#8B5CF6] rounded-lg p-3 flex flex-col gap-1 hover:border-[#525252] transition-colors">
+          <div class="flex items-center justify-between">
+            <span class="text-[10px] text-[#B3B3B3] font-semibold uppercase tracking-wider">Top stock</span>
+            <lucide-icon name="Crown" class="w-3.5 h-3.5 text-[#8B5CF6]"></lucide-icon>
+          </div>
+          @if (stats.topStock) {
+            <div class="text-sm font-bold text-white truncate" [title]="stats.topStock.name">{{ stats.topStock.name }}</div>
+            <div class="text-[10px] text-[#A0A0A0]">{{ stats.topStock.count }} txns · ₹{{ stats.topStock.totalValue | number:'1.0-0' }}</div>
+          } @else {
+            <div class="text-sm font-bold text-[#707070]">—</div>
+            <div class="text-[10px] text-[#707070]">no trades yet</div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- ====================================================== -->
+    <!-- F2 — FILTER BAR                                        -->
+    <!-- ====================================================== -->
+    <div class="px-4 py-3 border-b border-[#2A2A2A] space-y-2">
+      <div class="flex flex-wrap gap-2 items-center">
+        <!-- Search -->
+        <div class="relative flex-1 min-w-[200px]">
+          <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+            <lucide-icon name="Search" class="w-4 h-4 text-[#666]"></lucide-icon>
+          </span>
+          <input type="text"
+            [ngModel]="searchQuery"
+            (ngModelChange)="searchQuery = $event; onSearchChange()"
+            placeholder="Search stock, code, broker, exchange..."
+            class="w-full pl-9 pr-3 py-2 text-sm rounded-lg bg-[#2E2E2E] border border-[#3A3A3A] text-white placeholder-[#666] focus:ring-1 focus:ring-[#10A37F] focus:outline-none" />
+        </div>
+
+        <!-- Type (segmented control) -->
+        <div class="inline-flex items-center bg-[#232323] p-1 rounded-lg border border-[#3A3A3A] shadow-inner">
+          <button type="button" (click)="setTypeFilter('ALL')"
+            [ngClass]="filterType === 'ALL' ? 'bg-[#10A37F] text-white shadow-md' : 'text-[#B3B3B3] hover:text-white hover:bg-white/5'"
+            class="px-3 py-1.5 rounded-md text-xs font-semibold transition-all duration-200 focus:outline-none">
+            All
+          </button>
+          <button type="button" (click)="setTypeFilter('BUY')"
+            [ngClass]="filterType === 'BUY' ? 'bg-[#22C55E] text-black shadow-md' : 'text-[#B3B3B3] hover:text-white hover:bg-white/5'"
+            class="px-3 py-1.5 rounded-md text-xs font-semibold transition-all duration-200 focus:outline-none">
+            BUY
+          </button>
+          <button type="button" (click)="setTypeFilter('SELL')"
+            [ngClass]="filterType === 'SELL' ? 'bg-[#EF4444] text-white shadow-md' : 'text-[#B3B3B3] hover:text-white hover:bg-white/5'"
+            class="px-3 py-1.5 rounded-md text-xs font-semibold transition-all duration-200 focus:outline-none">
+            SELL
+          </button>
+        </div>
+
+        <!-- Asset -->
+        <p-select [options]="availableAssetTypes"
+          [ngModel]="filterAssetType"
+          (ngModelChange)="setAssetType($event)"
+          placeholder="Asset type"
+          styleClass="text-sm"
+          appendTo="body"></p-select>
+
+        <!-- Broker -->
+        <p-select [options]="availableBrokers"
+          [ngModel]="filterBroker"
+          (ngModelChange)="setBroker($event)"
+          placeholder="Broker"
+          styleClass="text-sm"
+          appendTo="body"></p-select>
+
+        <!-- Date preset -->
+        <p-select [options]="datePresetOptions"
+          [ngModel]="filterDatePreset"
+          (ngModelChange)="setDatePreset($event)"
+          optionLabel="label" optionValue="value"
+          placeholder="Date range"
+          styleClass="text-sm"
+          appendTo="body"></p-select>
+
+        <!-- Reset -->
+        <button (click)="resetFilters()"
+          [disabled]="!hasActiveFilters()"
+          class="px-3 py-2 rounded-lg bg-[#2E2E2E] text-xs font-semibold text-[#B3B3B3] border border-[#3A3A3A] hover:text-white hover:border-[#10A37F] disabled:opacity-40 disabled:cursor-not-allowed transition-colors flex items-center gap-1.5 focus:outline-none">
+          <lucide-icon name="X" class="w-3.5 h-3.5"></lucide-icon>
+          Reset
+        </button>
+      </div>
+
+      <!-- Custom date range -->
+      @if (filterDatePreset === 'custom') {
+        <div class="flex flex-wrap items-center gap-2 pl-1">
+          <span class="text-[10px] text-[#A0A0A0] uppercase tracking-wider">Custom range:</span>
+          <input type="date"
+            [ngModel]="filterDateFrom"
+            (ngModelChange)="filterDateFrom = $event; onDateFromChange()"
+            class="px-2 py-1 text-xs rounded-md bg-[#2E2E2E] border border-[#3A3A3A] text-white focus:ring-1 focus:ring-[#10A37F] focus:outline-none" />
+          <span class="text-[#707070] text-xs">→</span>
+          <input type="date"
+            [ngModel]="filterDateTo"
+            (ngModelChange)="filterDateTo = $event; onDateToChange()"
+            class="px-2 py-1 text-xs rounded-md bg-[#2E2E2E] border border-[#3A3A3A] text-white focus:ring-1 focus:ring-[#10A37F] focus:outline-none" />
+        </div>
+      }
+
+      <!-- Active chips -->
+      @if (activeFilterChips.length > 0) {
+        <div class="flex flex-wrap gap-1.5">
+          @for (chip of activeFilterChips; track chip.label) {
+            <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-[#10A37F]/10 text-[#10A37F] border border-[#10A37F]/30 text-xs">
+              {{ chip.label }}
+              <button (click)="removeFilterChip(chip)" class="hover:text-white focus:outline-none" aria-label="Remove filter">
+                <lucide-icon name="X" class="w-3 h-3"></lucide-icon>
+              </button>
+            </span>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- ====================================================== -->
+    <!-- F3 — TAB STRIP + TOOLBAR                               -->
+    <!-- ====================================================== -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between px-4 py-3 border-b border-[#2A2A2A] gap-3">
+      <div class="flex items-center bg-[#232323] p-1 rounded-xl border border-[#3A3A3A] self-start">
+        <button (click)="activeTab = 'transactions'"
+          [ngClass]="activeTab === 'transactions' ? 'bg-[#10A37F] text-white shadow-md' : 'text-[#B3B3B3] hover:text-white hover:bg-white/5'"
+          class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 flex items-center gap-1.5 focus:outline-none">
+          <lucide-icon name="BarChart3" class="w-3.5 h-3.5"></lucide-icon>
+          All Transactions
+        </button>
+        <button (click)="activeTab = 'holdings'"
+          [ngClass]="activeTab === 'holdings' ? 'bg-[#10A37F] text-white shadow-md' : 'text-[#B3B3B3] hover:text-white hover:bg-white/5'"
+          class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 flex items-center gap-1.5 focus:outline-none">
+          <lucide-icon name="Briefcase" class="w-3.5 h-3.5"></lucide-icon>
+          Holdings
+        </button>
+        <button (click)="activeTab = 'insights'"
+          [ngClass]="activeTab === 'insights' ? 'bg-[#10A37F] text-white shadow-md' : 'text-[#B3B3B3] hover:text-white hover:bg-white/5'"
+          class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 flex items-center gap-1.5 focus:outline-none">
+          <lucide-icon name="Sparkles" class="w-3.5 h-3.5"></lucide-icon>
+          Insights
+        </button>
+      </div>
+
+      <div class="flex items-center gap-2 flex-wrap">
+        <!-- Export CSV -->
+        <button (click)="exportCsv()"
+          class="px-3 py-1.5 rounded-lg bg-[#232323] text-xs font-semibold text-[#B3B3B3] border border-[#3A3A3A] hover:text-white hover:border-[#10A37F] transition-colors flex items-center gap-1.5 focus:outline-none">
+          <lucide-icon name="Download" class="w-3.5 h-3.5"></lucide-icon>
+          CSV
+        </button>
+        <!-- Export Excel -->
+        <button (click)="exportExcel()"
+          class="px-3 py-1.5 rounded-lg bg-[#232323] text-xs font-semibold text-[#B3B3B3] border border-[#3A3A3A] hover:text-white hover:border-[#10A37F] transition-colors flex items-center gap-1.5 focus:outline-none">
+          <lucide-icon name="Upload" class="w-3.5 h-3.5"></lucide-icon>
+          Excel
+        </button>
+
+        <!-- Columns dropdown -->
+        <div class="relative">
+          <button (click)="showColumnMenu = !showColumnMenu"
+            class="px-3 py-1.5 rounded-lg bg-[#232323] text-xs font-semibold text-[#B3B3B3] border border-[#3A3A3A] hover:text-white hover:border-[#10A37F] transition-colors flex items-center gap-1.5 focus:outline-none">
+            <lucide-icon name="Eye" class="w-3.5 h-3.5"></lucide-icon>
+            Columns
+            <lucide-icon name="ChevronDown" class="w-3 h-3"></lucide-icon>
+          </button>
+          @if (showColumnMenu) {
+            <div class="absolute right-0 mt-1 w-48 bg-[#232323] border border-[#3A3A3A] rounded-lg shadow-2xl z-30 p-1.5">
+              @for (col of columnDefs; track col.key) {
+                <label class="flex items-center gap-2 px-2 py-1.5 hover:bg-[#2A2A2A] rounded cursor-pointer text-xs text-[#B3B3B3]">
+                  <input type="checkbox"
+                    [checked]="visibleColumns[col.key]"
+                    (change)="toggleColumn(col.key)"
+                    class="accent-[#10A37F]" />
+                  {{ col.label }}
+                </label>
+              }
+            </div>
+          }
+        </div>
+
+        <!-- View-mode toggle (transactions tab only) -->
+        @if (activeTab === 'transactions') {
+          <div class="flex items-center bg-[#232323] p-1 rounded-xl border border-[#3A3A3A]">
+            <button (click)="viewMode = 'split'"
+              [ngClass]="viewMode === 'split' ? 'bg-[#10A37F] text-white shadow-md' : 'text-[#B3B3B3] hover:text-white hover:bg-white/5'"
+              class="px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 flex items-center gap-1 focus:outline-none">
+              <i class="pi pi-columns text-xs"></i>
+            </button>
+            <button (click)="viewMode = 'temp'"
+              [ngClass]="viewMode === 'temp' ? 'bg-yellow-400 text-black shadow-md' : 'text-[#B3B3B3] hover:text-white hover:bg-white/5'"
+              class="px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 flex items-center gap-1 focus:outline-none">
+              <i class="pi pi-database text-xs"></i>
+            </button>
+            <button (click)="viewMode = 'port'"
+              [ngClass]="viewMode === 'port' ? 'bg-blue-400 text-white shadow-md' : 'text-[#B3B3B3] hover:text-white hover:bg-white/5'"
+              class="px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 flex items-center gap-1 focus:outline-none">
+              <i class="pi pi-briefcase text-xs"></i>
+            </button>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- ====================================================== -->
+    <!-- TAB CONTENT                                             -->
+    <!-- ====================================================== -->
+
+    <!-- TRANSACTIONS TAB -->
+    @if (activeTab === 'transactions') {
       <div [ngClass]="{
-        'grid grid-cols-1 lg:grid-cols-2 gap-6 p-6': viewMode === 'split',
-        'flex flex-col gap-6 p-6': viewMode !== 'split'
+        'grid grid-cols-1 lg:grid-cols-2 gap-6 p-4': viewMode === 'split',
+        'flex flex-col gap-6 p-4': viewMode !== 'split'
       }">
 
-        <!-- ========================= -->
-        <!-- TEMPORARY TRANSACTIONS -->
-        <!-- ========================= -->
-        <div *ngIf="viewMode === 'split' || viewMode === 'temp'"
-          class="rounded-xl border border-[#3A3A3A] bg-[#1f1f1f] shadow-lg overflow-hidden flex flex-col">
-          <div class="flex items-center gap-3 p-5 border-b border-[#2a2a2a]">
-            <div class="bg-yellow-400 p-3 rounded-xl">
-              <lucide-icon name="database" class="w-6 h-6 text-black"></lucide-icon>
-            </div>
-
-            <div>
-              <h3 class="text-lg font-semibold text-white">Temporary Transactions</h3>
-              <p class="text-xs text-gray-400">
-                {{ temporaryTransactions.length }} pending
-              </p>
-            </div>
-          </div>
-
-          <div class="p-4 flex-1">
-            @if (loadingTemp) {
-            <div class="text-center py-6 text-gray-400">Loading...</div>
-            } @else {
-            <!-- Search Input -->
-            <div class="mb-4">
-              <div class="relative w-full">
-                <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                  <i class="pi pi-search text-[#666666]"></i>
-                </span>
-                <input
-                  #gbTemp
-                  type="text"
-                  placeholder="Search temporary..."
-                  (input)="dtTemp.filterGlobal(gbTemp.value, 'contains')"
-                  class="w-full pl-9 pr-4 py-2 text-sm rounded-lg bg-[#2E2E2E] border border-[#3A3A3A] text-white placeholder-[#666666] focus:ring-1 focus:ring-[#10A37F] focus:outline-none"
-                />
+        <!-- TEMP TABLE -->
+        @if (viewMode === 'split' || viewMode === 'temp') {
+          <div class="rounded-xl border border-[#3A3A3A] bg-[#1f1f1f] shadow-lg overflow-hidden flex flex-col">
+            <div class="flex items-center gap-3 p-5 border-b border-[#2a2a2a]">
+              <div class="bg-yellow-400 p-3 rounded-xl">
+                <lucide-icon name="database" class="w-6 h-6 text-black"></lucide-icon>
+              </div>
+              <div>
+                <h3 class="text-lg font-semibold text-white">Temporary Transactions</h3>
+                <p class="text-xs text-gray-400">
+                  @if (filteredTemporary.length === 0) {
+                    Showing 0 of 0
+                  } @else {
+                    Showing {{ firstTemp + 1 }}–{{ lastTemp }} of {{ filteredTemporary.length }}
+                  }
+                </p>
               </div>
             </div>
 
-            <div class="overflow-x-auto">
-              <p-table
-                #dtTemp
-                [value]="temporaryTransactions"
-                dataKey="rowId"
-                [expandedRowKeys]="expandedTempRows"
-                [paginator]="true"
-                [(rows)]="rowsTemp"
-                [rowsPerPageOptions]="[5, 10, 20]"
-                [globalFilterFields]="['stockName', 'stockCode', 'exchangeName', 'brokerName', 'assetType', 'transactionType']"
-                responsiveLayout="scroll"
-                styleClass="p-datatable-sm w-full"
-                [rowHover]="true"
-              >
-                <ng-template pTemplate="header">
-                  <tr>
-                    <th style="width: 3.5rem"></th>
-                    <th pSortableColumn="stockName" class="p-2 text-left cursor-pointer hover:text-white transition-colors">
-                      <div class="flex items-center gap-1 whitespace-nowrap">
-                        Stock <p-sortIcon field="stockName"></p-sortIcon>
-                      </div>
-                    </th>
-                    <th pSortableColumn="quantity" class="p-2 text-left cursor-pointer hover:text-white transition-colors">
-                      <div class="flex items-center gap-1 whitespace-nowrap">
-                        Qty <p-sortIcon field="quantity"></p-sortIcon>
-                      </div>
-                    </th>
-                    <th pSortableColumn="transactionType" class="p-2 text-left cursor-pointer hover:text-white transition-colors">
-                      <div class="flex items-center gap-1 whitespace-nowrap">
-                        Type <p-sortIcon field="transactionType"></p-sortIcon>
-                      </div>
-                    </th>
-                    <th pSortableColumn="totalValue" class="p-2 text-left cursor-pointer hover:text-white transition-colors">
-                      <div class="flex items-center gap-1 whitespace-nowrap">
-                        Total <p-sortIcon field="totalValue"></p-sortIcon>
-                      </div>
-                    </th>
-                    <th pSortableColumn="transactionDate" class="p-2 text-left cursor-pointer hover:text-white transition-colors">
-                      <div class="flex items-center gap-1 whitespace-nowrap">
-                        Date <p-sortIcon field="transactionDate"></p-sortIcon>
-                      </div>
-                    </th>
-                  </tr>
-                </ng-template>
-
-                <ng-template pTemplate="body" let-t let-expanded="expanded">
-                  <tr class="border-b border-[#2a2a2a] hover:bg-[#222] transition-colors duration-150">
-                    <td class="p-2 text-center">
-                      <button type="button" [pRowToggler]="t" 
-                        class="p-0 w-8 h-8 flex items-center justify-center text-[#b3b3b3] hover:text-white hover:bg-white/10 rounded-full transition-colors duration-150 focus:outline-none"
-                        aria-label="Toggle Row">
-                        <i class="pi text-xs transition-transform duration-200"
-                           [ngClass]="expanded ? 'pi-chevron-down' : 'pi-chevron-right'"></i>
-                      </button>
-                    </td>
-                    <td class="p-2">
-                      <div class="font-medium text-white">{{ t.stockName }}</div>
-                      <div class="text-xs text-gray-500 font-mono">{{ t.stockCode }}</div>
-                    </td>
-                    <td class="p-2 text-gray-300">{{ t.quantity }}</td>
-                    <td class="p-2">
-                      <span [ngClass]="t.transactionType === 'BUY' ? 'bg-[#22C55E]/10 text-[#22C55E] border-[#22C55E]/20' : 'bg-[#EF4444]/10 text-[#EF4444] border-[#EF4444]/20'"
-                            class="px-2.5 py-0.5 rounded-full text-[10px] font-bold border uppercase tracking-wider">
-                        {{ t.transactionType }}
-                      </span>
-                    </td>
-                    <td class="p-2 text-gray-300">₹{{ t.totalValue | number: '1.2-2' }}</td>
-                    <td class="p-2 text-gray-400 text-xs">{{ t.transactionDate }}</td>
-                  </tr>
-                </ng-template>
-
-                <ng-template pTemplate="expandedrow" let-t>
-                  <tr>
-                    <td colspan="6" class="p-4 bg-[#141414]">
-                      <div class="p-6 bg-[#202020] border border-[#2D2D2D] rounded-2xl text-sm shadow-2xl relative overflow-hidden animate-fade-in">
-                        <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-yellow-400 to-amber-500"></div>
-                        
-                        <div class="flex items-center justify-between mb-6 border-b border-[#2D2D2D] pb-4">
-                          <div class="flex items-center gap-3">
-                            <div class="bg-yellow-400/10 p-2 rounded-lg border border-yellow-400/20">
-                              <lucide-icon name="file-text" class="h-5 w-5 text-yellow-400"></lucide-icon>
-                            </div>
-                            <div>
-                              <h4 class="text-white font-bold text-base">Detailed Transaction Information</h4>
-                              <p class="text-xs text-[#909090] mt-0.5">Transaction ID: {{ t.id || 'Pending / Temporary' }}</p>
-                            </div>
-                          </div>
-                          <span [ngClass]="t.transactionType === 'BUY' ? 'bg-[#22C55E]/10 text-[#22C55E] border-[#22C55E]/20' : 'bg-[#EF4444]/10 text-[#EF4444] border-[#EF4444]/20'" class="px-3 py-1 rounded-full text-xs font-bold border uppercase tracking-wider">
-                            {{ t.transactionType }} Action
-                          </span>
-                        </div>
-
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                          <!-- Column 1: Core Trade Info -->
-                          <div class="space-y-4">
-                            <h5 class="text-xs font-bold uppercase tracking-wider text-[#A0A0A0] border-b border-[#2D2D2D]/50 pb-1.5 flex items-center gap-2">
-                              <i class="pi pi-info-circle text-[#10A37F]"></i> Trade Summary
-                            </h5>
-                            <div class="grid grid-cols-2 gap-y-3 gap-x-2">
-                              <div>
-                                <span class="text-[#707070] text-xs block">Asset Type</span>
-                                <span class="text-white font-medium text-sm">{{ t.assetType }}</span>
-                              </div>
-                              <div>
-                                <span class="text-[#707070] text-xs block">Exchange</span>
-                                <span class="text-white font-medium text-sm">{{ t.exchangeName }}</span>
-                              </div>
-                              <div>
-                                <span class="text-[#707070] text-xs block">Account Type</span>
-                                <span class="text-white font-medium text-sm">{{ t.accountType || 'N/A' }}</span>
-                              </div>
-                              <div>
-                                <span class="text-[#707070] text-xs block">Date</span>
-                                <span class="text-white font-medium text-sm">{{ t.transactionDate }}</span>
-                              </div>
-                            </div>
-                          </div>
-
-                          <!-- Column 2: Financial Numbers -->
-                          <div class="space-y-4">
-                            <h5 class="text-xs font-bold uppercase tracking-wider text-[#A0A0A0] border-b border-[#2D2D2D]/50 pb-1.5 flex items-center gap-2">
-                              <i class="pi pi-dollar text-[#10A37F]"></i> Valuation Breakdown
-                            </h5>
-                            <div class="grid grid-cols-2 gap-y-3 gap-x-2">
-                              <div>
-                                <span class="text-[#707070] text-xs block">Unit Price</span>
-                                <span class="text-white font-semibold text-sm">₹{{ t.price | number: '1.2-2' }}</span>
-                              </div>
-                              <div>
-                                <span class="text-[#707070] text-xs block">Quantity</span>
-                                <span class="text-white font-semibold text-sm">{{ t.quantity | number }}</span>
-                              </div>
-                              <div class="col-span-2">
-                                <span class="text-[#707070] text-xs block">Total Base Value</span>
-                                <span class="text-[#10A37F] font-bold text-base">₹{{ t.totalValue | number: '1.2-2' }}</span>
-                              </div>
-                            </div>
-                          </div>
-
-                          <!-- Column 3: Intermediary Details & Fees -->
-                          <div class="space-y-4">
-                            <h5 class="text-xs font-bold uppercase tracking-wider text-[#A0A0A0] border-b border-[#2D2D2D]/50 pb-1.5 flex items-center gap-2">
-                              <i class="pi pi-percentage text-[#10A37F]"></i> Brokerage & Charges
-                            </h5>
-                            <div class="grid grid-cols-2 gap-y-3 gap-x-2">
-                              <div class="col-span-2">
-                                <span class="text-[#707070] text-xs block">Broker Service</span>
-                                <span class="text-white font-medium text-sm">{{ t.brokerName }}</span>
-                              </div>
-                              <div>
-                                <span class="text-[#707070] text-xs block">Brokerage Fee</span>
-                                <span class="text-white font-medium text-sm">₹{{ t.brokerCharges || 0 | number: '1.2-2' }}</span>
-                              </div>
-                              <div>
-                                <span class="text-[#707070] text-xs block">Misc Charges</span>
-                                <span class="text-white font-medium text-sm">₹{{ t.miscCharges || 0 | number: '1.2-2' }}</span>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-
-                        <!-- Audit Metadata section -->
-                        @if (t.auditMetadata) {
-                          <div class="mt-6 pt-4 border-t border-[#2D2D2D] flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-[#707070]">
-                            <span class="flex items-center gap-1.5">
-                              <lucide-icon name="plus" class="h-3.5 w-3.5"></lucide-icon>
-                              Created by <strong class="text-gray-400">{{ t.auditMetadata.createdBy }}</strong> on {{ t.auditMetadata.createdAt | date:'medium' }}
-                            </span>
-                            <span class="flex items-center gap-1.5">
-                              <lucide-icon name="edit" class="h-3.5 w-3.5"></lucide-icon>
-                              Last modified by <strong class="text-gray-400">{{ t.auditMetadata.updatedBy }}</strong> on {{ t.auditMetadata.updatedAt | date:'medium' }}
-                            </span>
-                          </div>
+            <div class="p-4 flex-1">
+              @if (loadingTemp) {
+                <div class="text-center py-6 text-gray-400">Loading...</div>
+              } @else {
+                <div class="table-scroll-container">
+                  <p-table #dtTemp [value]="filteredTemporary" dataKey="rowId" [expandedRowKeys]="expandedTempRows"
+                    [paginator]="true" [(rows)]="rowsTemp" [rowsPerPageOptions]="[5, 10, 20]"
+                    paginatorDropdownAppendTo="body"
+                    (onPage)="onTempPage($event)"
+                    [tableStyle]="{ 'min-width': '72rem' }"
+                    responsiveLayout="scroll" styleClass="p-datatable-sm w-full" [rowHover]="true">
+                    <ng-template pTemplate="header">
+                      <tr>
+                        <th style="width: 3.5rem"></th>
+                        @if (visibleColumns.stock) {
+                          <th pSortableColumn="stockName" class="px-4 py-3 text-left cursor-pointer hover:text-white transition-colors whitespace-nowrap">
+                            <div class="flex items-center gap-1 whitespace-nowrap">Stock <p-sortIcon field="stockName"></p-sortIcon></div>
+                          </th>
                         }
-                      </div>
-                    </td>
-                  </tr>
-                </ng-template>
+                        @if (visibleColumns.type) {
+                          <th pSortableColumn="transactionType" class="px-4 py-3 text-left cursor-pointer hover:text-white transition-colors whitespace-nowrap">
+                            <div class="flex items-center gap-1 whitespace-nowrap">Type <p-sortIcon field="transactionType"></p-sortIcon></div>
+                          </th>
+                        }
+                        @if (visibleColumns.qty) {
+                          <th pSortableColumn="quantity" class="px-4 py-3 text-left cursor-pointer hover:text-white transition-colors whitespace-nowrap">
+                            <div class="flex items-center gap-1 whitespace-nowrap">Qty <p-sortIcon field="quantity"></p-sortIcon></div>
+                          </th>
+                        }
+                        @if (visibleColumns.price) {
+                          <th pSortableColumn="price" class="px-4 py-3 text-left cursor-pointer hover:text-white transition-colors whitespace-nowrap">
+                            <div class="flex items-center gap-1 whitespace-nowrap">Price <p-sortIcon field="price"></p-sortIcon></div>
+                          </th>
+                        }
+                        @if (visibleColumns.total) {
+                          <th pSortableColumn="totalValue" class="px-4 py-3 text-left cursor-pointer hover:text-white transition-colors whitespace-nowrap">
+                            <div class="flex items-center gap-1 whitespace-nowrap">Total <p-sortIcon field="totalValue"></p-sortIcon></div>
+                          </th>
+                        }
+                        @if (visibleColumns.date) {
+                          <th pSortableColumn="transactionDate" class="px-4 py-3 text-left cursor-pointer hover:text-white transition-colors whitespace-nowrap">
+                            <div class="flex items-center gap-1 whitespace-nowrap">Date <p-sortIcon field="transactionDate"></p-sortIcon></div>
+                          </th>
+                        }
+                        @if (visibleColumns.broker) {
+                          <th pSortableColumn="brokerName" class="px-4 py-3 text-left cursor-pointer hover:text-white transition-colors whitespace-nowrap">
+                            <div class="flex items-center gap-1 whitespace-nowrap">Broker <p-sortIcon field="brokerName"></p-sortIcon></div>
+                          </th>
+                        }
+                        @if (visibleColumns.exchange) {
+                          <th pSortableColumn="exchangeName" class="px-4 py-3 text-left cursor-pointer hover:text-white transition-colors whitespace-nowrap">
+                            <div class="flex items-center gap-1 whitespace-nowrap">Exchange <p-sortIcon field="exchangeName"></p-sortIcon></div>
+                          </th>
+                        }
+                        @if (visibleColumns.asset) {
+                          <th pSortableColumn="assetType" class="px-4 py-3 text-left cursor-pointer hover:text-white transition-colors whitespace-nowrap">
+                            <div class="flex items-center gap-1 whitespace-nowrap">Asset <p-sortIcon field="assetType"></p-sortIcon></div>
+                          </th>
+                        }
+                        @if (visibleColumns.charges) {
+                          <th class="px-4 py-3 text-left whitespace-nowrap">Charges</th>
+                        }
+                      </tr>
+                    </ng-template>
 
-                <ng-template pTemplate="emptymessage">
-                  <tr>
-                    <td colspan="6" class="py-12 px-4 text-center">
-                      <div class="flex flex-col items-center justify-center space-y-3 animate-fade-in py-6">
-                        <div class="relative flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-[#2E2E2E] to-[#1F1F1F] border border-[#3A3A3A] shadow-inner mb-2 group">
-                          <div class="absolute inset-0 rounded-2xl bg-yellow-400/5 blur-md group-hover:bg-yellow-400/10 transition-all duration-300"></div>
-                          <lucide-icon name="alert-circle" class="w-8 h-8 text-yellow-400 animate-pulse-opacity"></lucide-icon>
-                        </div>
-                        <h4 class="text-sm font-semibold text-white tracking-wide">No Temporary Transactions</h4>
-                        <p class="text-xs text-[#B3B3B3] max-w-xs mx-auto">
-                          There are currently no pending temporary transactions found.
-                        </p>
-                      </div>
-                    </td>
-                  </tr>
-                </ng-template>
-              </p-table>
+                    <ng-template pTemplate="body" let-t let-expanded="expanded">
+                      <tr class="border-b border-[#2a2a2a] hover:bg-[#222] transition-colors duration-150">
+                        <td class="px-2 py-3 text-center">
+                          <button type="button" [pRowToggler]="t"
+                            class="p-0 w-8 h-8 flex items-center justify-center text-[#b3b3b3] hover:text-white hover:bg-white/10 rounded-full transition-colors duration-150 focus:outline-none"
+                            aria-label="Toggle Row">
+                            <i class="pi text-xs transition-transform duration-200"
+                              [ngClass]="expanded ? 'pi-chevron-down' : 'pi-chevron-right'"></i>
+                          </button>
+                        </td>
+                        @if (visibleColumns.stock) {
+                          <td class="px-4 py-3">
+                            <div class="font-medium text-white truncate max-w-[220px]" [title]="t.stockName">{{ t.stockName }}</div>
+                          </td>
+                        }
+                        @if (visibleColumns.type) {
+                          <td class="px-4 py-3">
+                            <span
+                              [ngClass]="t.transactionType === 'BUY' ? 'bg-[#22C55E]/10 text-[#22C55E] border-[#22C55E]/20' : 'bg-[#EF4444]/10 text-[#EF4444] border-[#EF4444]/20'"
+                              class="px-2.5 py-0.5 rounded-full text-[10px] font-bold border uppercase tracking-wider">
+                              {{ t.transactionType }}
+                            </span>
+                          </td>
+                        }
+                        @if (visibleColumns.qty) {
+                          <td class="px-4 py-3 text-gray-300 text-right tabular-nums whitespace-nowrap">{{ t.quantity | number:'1.0-4' }}</td>
+                        }
+                        @if (visibleColumns.price) {
+                          <td class="px-4 py-3 text-gray-300 text-right tabular-nums whitespace-nowrap">₹{{ t.price | number:'1.2-2' }}</td>
+                        }
+                        @if (visibleColumns.total) {
+                          <td class="px-4 py-3 text-gray-300 text-right tabular-nums whitespace-nowrap">₹{{ t.totalValue | number:'1.2-2' }}</td>
+                        }
+                        @if (visibleColumns.date) {
+                          <td class="px-4 py-3 text-gray-400 text-xs whitespace-nowrap">{{ t.transactionDate }}</td>
+                        }
+                        @if (visibleColumns.broker) {
+                          <td class="px-4 py-3 text-gray-300 truncate max-w-[140px]" [title]="t.brokerName">{{ t.brokerName }}</td>
+                        }
+                        @if (visibleColumns.exchange) {
+                          <td class="px-4 py-3 text-gray-300 whitespace-nowrap">{{ t.exchangeName }}</td>
+                        }
+                        @if (visibleColumns.asset) {
+                          <td class="px-4 py-3 text-gray-300 whitespace-nowrap">{{ t.assetType }}</td>
+                        }
+                        @if (visibleColumns.charges) {
+                          <td class="px-4 py-3 text-gray-300 text-xs text-right tabular-nums whitespace-nowrap">
+                            ₹{{ ((t.brokerCharges || 0) + (t.miscCharges || 0)) | number:'1.2-2' }}
+                          </td>
+                        }
+                      </tr>
+                    </ng-template>
+
+                    <ng-template pTemplate="expandedrow" let-t>
+                      <ng-container *ngTemplateOutlet="expandedDetail; context: { $implicit: t, accentFrom: '#FACC15', accentTo: '#F59E0B' }"></ng-container>
+                    </ng-template>
+
+                    <ng-template pTemplate="emptymessage">
+                      @if (temporaryTransactions.length === 0) {
+                        <tr>
+                          <td colspan="11" class="py-12 px-4 text-center">
+                            <div class="flex flex-col items-center justify-center space-y-3 animate-fade-in py-6">
+                              <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#2E2E2E] to-[#1F1F1F] border border-[#3A3A3A] flex items-center justify-center mb-2">
+                                <lucide-icon name="alert-circle" class="w-8 h-8 text-yellow-400"></lucide-icon>
+                              </div>
+                              <h4 class="text-sm font-semibold text-white">No Temporary Transactions</h4>
+                              <p class="text-xs text-[#B3B3B3] max-w-xs">There are currently no pending temporary transactions.</p>
+                            </div>
+                          </td>
+                        </tr>
+                      } @else {
+                        <tr>
+                          <td colspan="11" class="py-12 px-4 text-center">
+                            <div class="flex flex-col items-center justify-center space-y-3 animate-fade-in py-6">
+                              <lucide-icon name="Search" class="w-10 h-10 text-[#707070]"></lucide-icon>
+                              <h4 class="text-sm font-semibold text-white">No transactions match your filters</h4>
+                              <p class="text-xs text-[#B3B3B3]">Try adjusting filters or resetting them.</p>
+                              <p class="text-xs text-[#909090]">
+                                Filtered out: {{ filteredOutTemp }} of {{ temporaryTransactions.length }} transactions.
+                              </p>
+                              <button (click)="resetFilters()"
+                                class="px-3 py-1.5 rounded-lg bg-[#10A37F] text-white text-xs font-semibold hover:bg-[#0D8968] transition-colors flex items-center gap-1.5 focus:outline-none">
+                                <lucide-icon name="X" class="w-3.5 h-3.5"></lucide-icon>
+                                Reset filters
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      }
+                    </ng-template>
+                  </p-table>
+                </div>
+              }
             </div>
-            }
           </div>
-        </div>
+        }
 
-        <!-- ========================= -->
-        <!-- PORTFOLIO TRANSACTIONS -->
-        <!-- ========================= -->
-        <div *ngIf="viewMode === 'split' || viewMode === 'port'"
-          class="rounded-xl border border-[#3A3A3A] bg-[#1f1f1f] shadow-lg overflow-hidden flex flex-col">
-          <div class="flex items-center gap-3 p-5 border-b border-[#2a2a2a]">
-            <div class="bg-blue-400 p-3 rounded-xl">
-              <lucide-icon name="briefcase" class="w-6 h-6 text-black"></lucide-icon>
-            </div>
-
-            <div>
-              <h3 class="text-lg font-semibold text-white">Current Transactions</h3>
-              <p class="text-xs text-gray-400">
-                {{ portfolioTransactions.length }} records
-              </p>
-            </div>
-          </div>
-
-          <div class="p-4 flex-1">
-            @if (loadingPortfolio) {
-            <div class="text-center py-6 text-gray-400">Loading...</div>
-            } @else {
-            <!-- Search Input -->
-            <div class="mb-4">
-              <div class="relative w-full">
-                <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                  <i class="pi pi-search text-[#666666]"></i>
-                </span>
-                <input
-                  #gbPort
-                  type="text"
-                  placeholder="Search current..."
-                  (input)="dtPort.filterGlobal(gbPort.value, 'contains')"
-                  class="w-full pl-9 pr-4 py-2 text-sm rounded-lg bg-[#2E2E2E] border border-[#3A3A3A] text-white placeholder-[#666666] focus:ring-1 focus:ring-[#10A37F] focus:outline-none"
-                />
+        <!-- PORTFOLIO TABLE -->
+        @if (viewMode === 'split' || viewMode === 'port') {
+          <div class="rounded-xl border border-[#3A3A3A] bg-[#1f1f1f] shadow-lg overflow-hidden flex flex-col">
+            <div class="flex items-center gap-3 p-5 border-b border-[#2a2a2a]">
+              <div class="bg-blue-400 p-3 rounded-xl">
+                <lucide-icon name="briefcase" class="w-6 h-6 text-black"></lucide-icon>
+              </div>
+              <div>
+                <h3 class="text-lg font-semibold text-white">Current Transactions</h3>
+                <p class="text-xs text-gray-400">
+                  @if (filteredPortfolio.length === 0) {
+                    Showing 0 of 0
+                  } @else {
+                    Showing {{ firstPort + 1 }}–{{ lastPort }} of {{ filteredPortfolio.length }}
+                  }
+                </p>
               </div>
             </div>
 
-            <div class="overflow-x-auto">
-              <p-table
-                #dtPort
-                [value]="portfolioTransactions"
-                dataKey="rowId"
-                [expandedRowKeys]="expandedPortfolioRows"
-                [paginator]="true"
-                [(rows)]="rowsPortfolio"
-                [rowsPerPageOptions]="[5, 10, 20]"
-                [globalFilterFields]="['stockName', 'stockCode', 'exchangeName', 'brokerName', 'assetType', 'transactionType']"
-                responsiveLayout="scroll"
-                styleClass="p-datatable-sm w-full"
-                [rowHover]="true"
-              >
-                <ng-template pTemplate="header">
-                  <tr>
-                    <th style="width: 3.5rem"></th>
-                    <th pSortableColumn="stockName" class="p-2 text-left cursor-pointer hover:text-white transition-colors">
-                      <div class="flex items-center gap-1 whitespace-nowrap">
-                        Stock <p-sortIcon field="stockName"></p-sortIcon>
-                      </div>
-                    </th>
-                    <th pSortableColumn="quantity" class="p-2 text-left cursor-pointer hover:text-white transition-colors">
-                      <div class="flex items-center gap-1 whitespace-nowrap">
-                        Qty <p-sortIcon field="quantity"></p-sortIcon>
-                      </div>
-                    </th>
-                    <th pSortableColumn="transactionType" class="p-2 text-left cursor-pointer hover:text-white transition-colors">
-                      <div class="flex items-center gap-1 whitespace-nowrap">
-                        Type <p-sortIcon field="transactionType"></p-sortIcon>
-                      </div>
-                    </th>
-                    <th pSortableColumn="totalValue" class="p-2 text-left cursor-pointer hover:text-white transition-colors">
-                      <div class="flex items-center gap-1 whitespace-nowrap">
-                        Total <p-sortIcon field="totalValue"></p-sortIcon>
-                      </div>
-                    </th>
-                    <th pSortableColumn="transactionDate" class="p-2 text-left cursor-pointer hover:text-white transition-colors">
-                      <div class="flex items-center gap-1 whitespace-nowrap">
-                        Date <p-sortIcon field="transactionDate"></p-sortIcon>
-                      </div>
-                    </th>
-                  </tr>
-                </ng-template>
-
-                <ng-template pTemplate="body" let-t let-expanded="expanded">
-                  <tr class="border-b border-[#2a2a2a] hover:bg-[#222] transition-colors duration-150">
-                    <td class="p-2 text-center">
-                      <button type="button" [pRowToggler]="t" 
-                        class="p-0 w-8 h-8 flex items-center justify-center text-[#b3b3b3] hover:text-white hover:bg-white/10 rounded-full transition-colors duration-150 focus:outline-none"
-                        aria-label="Toggle Row">
-                        <i class="pi text-xs transition-transform duration-200"
-                           [ngClass]="expanded ? 'pi-chevron-down' : 'pi-chevron-right'"></i>
-                      </button>
-                    </td>
-                    <td class="p-2">
-                      <div class="font-medium text-white">{{ t.stockName }}</div>
-                      <div class="text-xs text-gray-500 font-mono">{{ t.stockCode }}</div>
-                    </td>
-                    <td class="p-2 text-gray-300">{{ t.quantity }}</td>
-                    <td class="p-2">
-                      <span [ngClass]="t.transactionType === 'BUY' ? 'bg-[#22C55E]/10 text-[#22C55E] border-[#22C55E]/20' : 'bg-[#EF4444]/10 text-[#EF4444] border-[#EF4444]/20'"
-                            class="px-2.5 py-0.5 rounded-full text-[10px] font-bold border uppercase tracking-wider">
-                        {{ t.transactionType }}
-                      </span>
-                    </td>
-                    <td class="p-2 text-gray-300">₹{{ t.totalValue | number: '1.2-2' }}</td>
-                    <td class="p-2 text-gray-400 text-xs">{{ t.transactionDate }}</td>
-                  </tr>
-                </ng-template>
-
-                <ng-template pTemplate="expandedrow" let-t>
-                  <tr>
-                    <td colspan="6" class="p-4 bg-[#141414]">
-                      <div class="p-6 bg-[#202020] border border-[#2D2D2D] rounded-2xl text-sm shadow-2xl relative overflow-hidden animate-fade-in">
-                        <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#10A37F] to-[#1AA97D]"></div>
-                        
-                        <div class="flex items-center justify-between mb-6 border-b border-[#2D2D2D] pb-4">
-                          <div class="flex items-center gap-3">
-                            <div class="bg-[#10A37F]/10 p-2 rounded-lg border border-[#10A37F]/20">
-                              <lucide-icon name="file-text" class="h-5 w-5 text-[#10A37F]"></lucide-icon>
-                            </div>
-                            <div>
-                              <h4 class="text-white font-bold text-base">Detailed Transaction Information</h4>
-                              <p class="text-xs text-[#909090] mt-0.5">Transaction ID: {{ t.id || 'N/A' }}</p>
-                            </div>
-                          </div>
-                          <span [ngClass]="t.transactionType === 'BUY' ? 'bg-[#22C55E]/10 text-[#22C55E] border-[#22C55E]/20' : 'bg-[#EF4444]/10 text-[#EF4444] border-[#EF4444]/20'" class="px-3 py-1 rounded-full text-xs font-bold border uppercase tracking-wider">
-                            {{ t.transactionType }} Action
-                          </span>
-                        </div>
-
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                          <!-- Column 1: Core Trade Info -->
-                          <div class="space-y-4">
-                            <h5 class="text-xs font-bold uppercase tracking-wider text-[#A0A0A0] border-b border-[#2D2D2D]/50 pb-1.5 flex items-center gap-2">
-                              <i class="pi pi-info-circle text-[#10A37F]"></i> Trade Summary
-                            </h5>
-                            <div class="grid grid-cols-2 gap-y-3 gap-x-2">
-                              <div>
-                                <span class="text-[#707070] text-xs block">Asset Type</span>
-                                <span class="text-white font-medium text-sm">{{ t.assetType }}</span>
-                              </div>
-                              <div>
-                                <span class="text-[#707070] text-xs block">Exchange</span>
-                                <span class="text-white font-medium text-sm">{{ t.exchangeName }}</span>
-                              </div>
-                              <div>
-                                <span class="text-[#707070] text-xs block">Account Type</span>
-                                <span class="text-white font-medium text-sm">{{ t.accountType || 'N/A' }}</span>
-                              </div>
-                              <div>
-                                <span class="text-[#707070] text-xs block">Date</span>
-                                <span class="text-white font-medium text-sm">{{ t.transactionDate }}</span>
-                              </div>
-                            </div>
-                          </div>
-
-                          <!-- Column 2: Financial Numbers -->
-                          <div class="space-y-4">
-                            <h5 class="text-xs font-bold uppercase tracking-wider text-[#A0A0A0] border-b border-[#2D2D2D]/50 pb-1.5 flex items-center gap-2">
-                              <i class="pi pi-dollar text-[#10A37F]"></i> Valuation Breakdown
-                            </h5>
-                            <div class="grid grid-cols-2 gap-y-3 gap-x-2">
-                              <div>
-                                <span class="text-[#707070] text-xs block">Unit Price</span>
-                                <span class="text-white font-semibold text-sm">₹{{ t.price | number: '1.2-2' }}</span>
-                              </div>
-                              <div>
-                                <span class="text-[#707070] text-xs block">Quantity</span>
-                                <span class="text-white font-semibold text-sm">{{ t.quantity | number }}</span>
-                              </div>
-                              <div class="col-span-2">
-                                <span class="text-[#707070] text-xs block">Total Base Value</span>
-                                <span class="text-[#10A37F] font-bold text-base">₹{{ t.totalValue | number: '1.2-2' }}</span>
-                              </div>
-                            </div>
-                          </div>
-
-                          <!-- Column 3: Intermediary Details & Fees -->
-                          <div class="space-y-4">
-                            <h5 class="text-xs font-bold uppercase tracking-wider text-[#A0A0A0] border-b border-[#2D2D2D]/50 pb-1.5 flex items-center gap-2">
-                              <i class="pi pi-percentage text-[#10A37F]"></i> Brokerage & Charges
-                            </h5>
-                            <div class="grid grid-cols-2 gap-y-3 gap-x-2">
-                              <div class="col-span-2">
-                                <span class="text-[#707070] text-xs block">Broker Service</span>
-                                <span class="text-white font-medium text-sm">{{ t.brokerName }}</span>
-                              </div>
-                              <div>
-                                <span class="text-[#707070] text-xs block">Brokerage Fee</span>
-                                <span class="text-white font-medium text-sm">₹{{ t.brokerCharges || 0 | number: '1.2-2' }}</span>
-                              </div>
-                              <div>
-                                <span class="text-[#707070] text-xs block">Misc Charges</span>
-                                <span class="text-white font-medium text-sm">₹{{ t.miscCharges || 0 | number: '1.2-2' }}</span>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-
-                        <!-- Audit Metadata section -->
-                        @if (t.auditMetadata) {
-                          <div class="mt-6 pt-4 border-t border-[#2D2D2D] flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-[#707070]">
-                            <span class="flex items-center gap-1.5">
-                              <lucide-icon name="plus" class="h-3.5 w-3.5"></lucide-icon>
-                              Created by <strong class="text-gray-400">{{ t.auditMetadata.createdBy }}</strong> on {{ t.auditMetadata.createdAt | date:'medium' }}
-                            </span>
-                            <span class="flex items-center gap-1.5">
-                              <lucide-icon name="edit" class="h-3.5 w-3.5"></lucide-icon>
-                              Last modified by <strong class="text-gray-400">{{ t.auditMetadata.updatedBy }}</strong> on {{ t.auditMetadata.updatedAt | date:'medium' }}
-                            </span>
-                          </div>
+            <div class="p-4 flex-1">
+              @if (loadingPortfolio) {
+                <div class="text-center py-6 text-gray-400">Loading...</div>
+              } @else {
+                <div class="table-scroll-container">
+                  <p-table #dtPort [value]="filteredPortfolio" dataKey="rowId" [expandedRowKeys]="expandedPortfolioRows"
+                    [paginator]="true" [(rows)]="rowsPortfolio" [rowsPerPageOptions]="[5, 10, 20]"
+                    paginatorDropdownAppendTo="body"
+                    (onPage)="onPortPage($event)"
+                    [tableStyle]="{ 'min-width': '72rem' }"
+                    responsiveLayout="scroll" styleClass="p-datatable-sm w-full" [rowHover]="true">
+                    <ng-template pTemplate="header">
+                      <tr>
+                        <th style="width: 3.5rem"></th>
+                        @if (visibleColumns.stock) {
+                          <th pSortableColumn="stockName" class="px-4 py-3 text-left cursor-pointer hover:text-white transition-colors whitespace-nowrap">
+                            <div class="flex items-center gap-1 whitespace-nowrap">Stock <p-sortIcon field="stockName"></p-sortIcon></div>
+                          </th>
                         }
-                      </div>
-                    </td>
-                  </tr>
-                </ng-template>
+                        @if (visibleColumns.type) {
+                          <th pSortableColumn="transactionType" class="px-4 py-3 text-left cursor-pointer hover:text-white transition-colors whitespace-nowrap">
+                            <div class="flex items-center gap-1 whitespace-nowrap">Type <p-sortIcon field="transactionType"></p-sortIcon></div>
+                          </th>
+                        }
+                        @if (visibleColumns.qty) {
+                          <th pSortableColumn="quantity" class="px-4 py-3 text-left cursor-pointer hover:text-white transition-colors whitespace-nowrap">
+                            <div class="flex items-center gap-1 whitespace-nowrap">Qty <p-sortIcon field="quantity"></p-sortIcon></div>
+                          </th>
+                        }
+                        @if (visibleColumns.price) {
+                          <th pSortableColumn="price" class="px-4 py-3 text-left cursor-pointer hover:text-white transition-colors whitespace-nowrap">
+                            <div class="flex items-center gap-1 whitespace-nowrap">Price <p-sortIcon field="price"></p-sortIcon></div>
+                          </th>
+                        }
+                        @if (visibleColumns.total) {
+                          <th pSortableColumn="totalValue" class="px-4 py-3 text-left cursor-pointer hover:text-white transition-colors whitespace-nowrap">
+                            <div class="flex items-center gap-1 whitespace-nowrap">Total <p-sortIcon field="totalValue"></p-sortIcon></div>
+                          </th>
+                        }
+                        @if (visibleColumns.date) {
+                          <th pSortableColumn="transactionDate" class="px-4 py-3 text-left cursor-pointer hover:text-white transition-colors whitespace-nowrap">
+                            <div class="flex items-center gap-1 whitespace-nowrap">Date <p-sortIcon field="transactionDate"></p-sortIcon></div>
+                          </th>
+                        }
+                        @if (visibleColumns.broker) {
+                          <th pSortableColumn="brokerName" class="px-4 py-3 text-left cursor-pointer hover:text-white transition-colors whitespace-nowrap">
+                            <div class="flex items-center gap-1 whitespace-nowrap">Broker <p-sortIcon field="brokerName"></p-sortIcon></div>
+                          </th>
+                        }
+                        @if (visibleColumns.exchange) {
+                          <th pSortableColumn="exchangeName" class="px-4 py-3 text-left cursor-pointer hover:text-white transition-colors whitespace-nowrap">
+                            <div class="flex items-center gap-1 whitespace-nowrap">Exchange <p-sortIcon field="exchangeName"></p-sortIcon></div>
+                          </th>
+                        }
+                        @if (visibleColumns.asset) {
+                          <th pSortableColumn="assetType" class="px-4 py-3 text-left cursor-pointer hover:text-white transition-colors whitespace-nowrap">
+                            <div class="flex items-center gap-1 whitespace-nowrap">Asset <p-sortIcon field="assetType"></p-sortIcon></div>
+                          </th>
+                        }
+                        @if (visibleColumns.charges) {
+                          <th class="px-4 py-3 text-left whitespace-nowrap">Charges</th>
+                        }
+                      </tr>
+                    </ng-template>
 
-                <ng-template pTemplate="emptymessage">
-                  <tr>
-                    <td colspan="6" class="py-12 px-4 text-center">
-                      <div class="flex flex-col items-center justify-center space-y-3 animate-fade-in py-6">
-                        <div class="relative flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-[#2E2E2E] to-[#1F1F1F] border border-[#3A3A3A] shadow-inner mb-2 group">
-                          <div class="absolute inset-0 rounded-2xl bg-blue-400/5 blur-md group-hover:bg-blue-400/10 transition-all duration-300"></div>
-                          <lucide-icon name="briefcase" class="w-8 h-8 text-blue-400 animate-pulse-opacity"></lucide-icon>
-                        </div>
-                        <h4 class="text-sm font-semibold text-white tracking-wide">No Current Transactions</h4>
-                        <p class="text-xs text-[#B3B3B3] max-w-xs mx-auto">
-                          There are currently no records found in your transaction history.
-                        </p>
-                      </div>
-                    </td>
-                  </tr>
-                </ng-template>
-              </p-table>
+                    <ng-template pTemplate="body" let-t let-expanded="expanded">
+                      <tr class="border-b border-[#2a2a2a] hover:bg-[#222] transition-colors duration-150">
+                        <td class="px-2 py-3 text-center">
+                          <button type="button" [pRowToggler]="t"
+                            class="p-0 w-8 h-8 flex items-center justify-center text-[#b3b3b3] hover:text-white hover:bg-white/10 rounded-full transition-colors duration-150 focus:outline-none"
+                            aria-label="Toggle Row">
+                            <i class="pi text-xs transition-transform duration-200"
+                              [ngClass]="expanded ? 'pi-chevron-down' : 'pi-chevron-right'"></i>
+                          </button>
+                        </td>
+                        @if (visibleColumns.stock) {
+                          <td class="px-4 py-3">
+                            <div class="font-medium text-white truncate max-w-[220px]" [title]="t.stockName">{{ t.stockName }}</div>
+                            <div class="text-xs text-gray-500 font-mono">{{ t.stockCode }}</div>
+                          </td>
+                        }
+                        @if (visibleColumns.type) {
+                          <td class="px-4 py-3">
+                            <span
+                              [ngClass]="t.transactionType === 'BUY' ? 'bg-[#22C55E]/10 text-[#22C55E] border-[#22C55E]/20' : 'bg-[#EF4444]/10 text-[#EF4444] border-[#EF4444]/20'"
+                              class="px-2.5 py-0.5 rounded-full text-[10px] font-bold border uppercase tracking-wider">
+                              {{ t.transactionType }}
+                            </span>
+                          </td>
+                        }
+                        @if (visibleColumns.qty) {
+                          <td class="px-4 py-3 text-gray-300 text-right tabular-nums whitespace-nowrap">{{ t.quantity | number:'1.0-4' }}</td>
+                        }
+                        @if (visibleColumns.price) {
+                          <td class="px-4 py-3 text-gray-300 text-right tabular-nums whitespace-nowrap">₹{{ t.price | number:'1.2-2' }}</td>
+                        }
+                        @if (visibleColumns.total) {
+                          <td class="px-4 py-3 text-gray-300 text-right tabular-nums whitespace-nowrap">₹{{ t.totalValue | number:'1.2-2' }}</td>
+                        }
+                        @if (visibleColumns.date) {
+                          <td class="px-4 py-3 text-gray-400 text-xs whitespace-nowrap">{{ t.transactionDate }}</td>
+                        }
+                        @if (visibleColumns.broker) {
+                          <td class="px-4 py-3 text-gray-300 truncate max-w-[140px]" [title]="t.brokerName">{{ t.brokerName }}</td>
+                        }
+                        @if (visibleColumns.exchange) {
+                          <td class="px-4 py-3 text-gray-300 whitespace-nowrap">{{ t.exchangeName }}</td>
+                        }
+                        @if (visibleColumns.asset) {
+                          <td class="px-4 py-3 text-gray-300 whitespace-nowrap">{{ t.assetType }}</td>
+                        }
+                        @if (visibleColumns.charges) {
+                          <td class="px-4 py-3 text-gray-300 text-xs text-right tabular-nums whitespace-nowrap">
+                            ₹{{ ((t.brokerCharges || 0) + (t.miscCharges || 0)) | number:'1.2-2' }}
+                          </td>
+                        }
+                      </tr>
+                    </ng-template>
+
+                    <ng-template pTemplate="expandedrow" let-t>
+                      <ng-container *ngTemplateOutlet="expandedDetail; context: { $implicit: t, accentFrom: '#10A37F', accentTo: '#1AA97D' }"></ng-container>
+                    </ng-template>
+
+                    <ng-template pTemplate="emptymessage">
+                      @if (portfolioTransactions.length === 0) {
+                        <tr>
+                          <td colspan="11" class="py-12 px-4 text-center">
+                            <div class="flex flex-col items-center justify-center space-y-3 animate-fade-in py-6">
+                              <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#2E2E2E] to-[#1F1F1F] border border-[#3A3A3A] flex items-center justify-center mb-2">
+                                <lucide-icon name="briefcase" class="w-8 h-8 text-blue-400"></lucide-icon>
+                              </div>
+                              <h4 class="text-sm font-semibold text-white">No Current Transactions</h4>
+                              <p class="text-xs text-[#B3B3B3] max-w-xs">There are currently no records found in your transaction history.</p>
+                            </div>
+                          </td>
+                        </tr>
+                      } @else {
+                        <tr>
+                          <td colspan="11" class="py-12 px-4 text-center">
+                            <div class="flex flex-col items-center justify-center space-y-3 animate-fade-in py-6">
+                              <lucide-icon name="Search" class="w-10 h-10 text-[#707070]"></lucide-icon>
+                              <h4 class="text-sm font-semibold text-white">No transactions match your filters</h4>
+                              <p class="text-xs text-[#B3B3B3]">Try adjusting filters or resetting them.</p>
+                              <p class="text-xs text-[#909090]">
+                                Filtered out: {{ filteredOutPort }} of {{ portfolioTransactions.length }} transactions.
+                              </p>
+                              <button (click)="resetFilters()"
+                                class="px-3 py-1.5 rounded-lg bg-[#10A37F] text-white text-xs font-semibold hover:bg-[#0D8968] transition-colors flex items-center gap-1.5 focus:outline-none">
+                                <lucide-icon name="X" class="w-3.5 h-3.5"></lucide-icon>
+                                Reset filters
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      }
+                    </ng-template>
+                  </p-table>
+                </div>
+              }
             </div>
-            }
           </div>
-        </div>
-
+        }
       </div>
-    </div>
+    }
+
+    <!-- HOLDINGS TAB -->
+    @if (activeTab === 'holdings') {
+      <div class="p-4">
+        <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center gap-2">
+            <lucide-icon name="Briefcase" class="w-4 h-4 text-[#10A37F]"></lucide-icon>
+            <h3 class="text-sm font-bold text-white uppercase tracking-wider">Holdings</h3>
+            <span class="text-[10px] text-[#707070]">aggregated by stockCode</span>
+          </div>
+        </div>
+
+        <div class="table-scroll-container">
+        <p-table [value]="holdings" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[5, 10, 20]"
+          paginatorDropdownAppendTo="body"
+          [tableStyle]="{ 'min-width': '64rem' }"
+          responsiveLayout="scroll" styleClass="p-datatable-sm w-full" [rowHover]="true">
+          <ng-template pTemplate="header">
+            <tr>
+              <th pSortableColumn="stockName" class="px-4 py-3 text-left cursor-pointer hover:text-white transition-colors whitespace-nowrap">
+                <div class="flex items-center gap-1 whitespace-nowrap">Stock <p-sortIcon field="stockName"></p-sortIcon></div>
+              </th>
+              <th pSortableColumn="assetType" class="px-4 py-3 text-left cursor-pointer hover:text-white transition-colors whitespace-nowrap">
+                <div class="flex items-center gap-1 whitespace-nowrap">Asset <p-sortIcon field="assetType"></p-sortIcon></div>
+              </th>
+              <th pSortableColumn="totalBought" class="px-4 py-3 text-right cursor-pointer hover:text-white transition-colors whitespace-nowrap">
+                <div class="flex items-center justify-end gap-1 whitespace-nowrap">Bought <p-sortIcon field="totalBought"></p-sortIcon></div>
+              </th>
+              <th pSortableColumn="totalSold" class="px-4 py-3 text-right cursor-pointer hover:text-white transition-colors whitespace-nowrap">
+                <div class="flex items-center justify-end gap-1 whitespace-nowrap">Sold <p-sortIcon field="totalSold"></p-sortIcon></div>
+              </th>
+              <th pSortableColumn="netHeld" class="px-4 py-3 text-right cursor-pointer hover:text-white transition-colors whitespace-nowrap">
+                <div class="flex items-center justify-end gap-1 whitespace-nowrap">Net Held <p-sortIcon field="netHeld"></p-sortIcon></div>
+              </th>
+              <th pSortableColumn="totalInvested" class="px-4 py-3 text-right cursor-pointer hover:text-white transition-colors whitespace-nowrap">
+                <div class="flex items-center justify-end gap-1 whitespace-nowrap">Invested <p-sortIcon field="totalInvested"></p-sortIcon></div>
+              </th>
+              <th pSortableColumn="netInvested" class="px-4 py-3 text-right cursor-pointer hover:text-white transition-colors whitespace-nowrap">
+                <div class="flex items-center justify-end gap-1 whitespace-nowrap">Net ₹ <p-sortIcon field="netInvested"></p-sortIcon></div>
+              </th>
+              <th pSortableColumn="txnCount" class="px-4 py-3 text-right cursor-pointer hover:text-white transition-colors whitespace-nowrap">
+                <div class="flex items-center justify-end gap-1 whitespace-nowrap">Txns <p-sortIcon field="txnCount"></p-sortIcon></div>
+              </th>
+              <th pSortableColumn="avgPrice" class="px-4 py-3 text-right cursor-pointer hover:text-white transition-colors whitespace-nowrap">
+                <div class="flex items-center justify-end gap-1 whitespace-nowrap">Avg ₹ <p-sortIcon field="avgPrice"></p-sortIcon></div>
+              </th>
+              <th pSortableColumn="totalCharges" class="px-4 py-3 text-right cursor-pointer hover:text-white transition-colors whitespace-nowrap">
+                <div class="flex items-center justify-end gap-1 whitespace-nowrap">Charges <p-sortIcon field="totalCharges"></p-sortIcon></div>
+              </th>
+              <th class="px-4 py-3 text-left whitespace-nowrap">% Share</th>
+            </tr>
+          </ng-template>
+
+          <ng-template pTemplate="body" let-h>
+            <tr class="border-b border-[#2a2a2a] hover:bg-[#222] transition-colors duration-150">
+              <td class="px-4 py-3">
+                <div class="font-medium text-white truncate max-w-[220px]" [title]="h.stockName">{{ h.stockName }}</div>
+                <div class="text-xs text-gray-500 font-mono">{{ h.stockCode }}</div>
+              </td>
+              <td class="px-4 py-3 text-gray-300 whitespace-nowrap">{{ h.assetType }}</td>
+              <td class="px-4 py-3 text-right text-gray-300 tabular-nums whitespace-nowrap">{{ h.totalBought | number:'1.0-4' }}</td>
+              <td class="px-4 py-3 text-right text-gray-300 tabular-nums whitespace-nowrap">{{ h.totalSold | number:'1.0-4' }}</td>
+              <td class="px-4 py-3 text-right font-semibold tabular-nums whitespace-nowrap"
+                [ngClass]="h.netHeld >= 0 ? 'text-[#22C55E]' : 'text-[#EF4444]'">
+                {{ h.netHeld | number:'1.0-4' }}
+              </td>
+              <td class="px-4 py-3 text-right text-gray-300 tabular-nums whitespace-nowrap">₹{{ h.totalInvested | number:'1.2-2' }}</td>
+              <td class="px-4 py-3 text-right font-semibold tabular-nums whitespace-nowrap"
+                [ngClass]="h.netInvested >= 0 ? 'text-[#22C55E]' : 'text-[#EF4444]'">
+                ₹{{ h.netInvested | number:'1.2-2' }}
+              </td>
+              <td class="px-4 py-3 text-right text-gray-300 tabular-nums whitespace-nowrap">{{ h.txnCount }}</td>
+              <td class="px-4 py-3 text-right text-gray-300 tabular-nums whitespace-nowrap">₹{{ h.avgPrice | number:'1.2-2' }}</td>
+              <td class="px-4 py-3 text-right text-gray-300 tabular-nums whitespace-nowrap">₹{{ h.totalCharges | number:'1.2-2' }}</td>
+              <td class="px-4 py-3" style="min-width: 160px;">
+                <div class="flex items-center gap-2">
+                  <div class="flex-1 h-2 bg-[#2A2A2A] rounded overflow-hidden min-w-[60px]">
+                    <div class="h-full bg-gradient-to-r from-[#10A37F] to-[#22C55E] rounded"
+                      [style.width.%]="h.sharePercent"></div>
+                  </div>
+                  <span class="text-[10px] text-[#B3B3B3] w-10 text-right">{{ h.sharePercent | number:'1.0-1' }}%</span>
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="11" class="py-12 px-4 text-center">
+                <div class="flex flex-col items-center justify-center space-y-3 py-6">
+                  <lucide-icon name="Briefcase" class="w-10 h-10 text-[#707070]"></lucide-icon>
+                  <h4 class="text-sm font-semibold text-white">No holdings yet</h4>
+                  <p class="text-xs text-[#B3B3B3]">Upload transactions to see aggregated holdings by stock.</p>
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+        </div>
+      </div>
+    }
+
+    <!-- INSIGHTS TAB -->
+    @if (activeTab === 'insights') {
+      <div class="p-4">
+        <div class="flex items-center gap-2 mb-3">
+          <lucide-icon name="Sparkles" class="w-4 h-4 text-[#10A37F]"></lucide-icon>
+          <h3 class="text-sm font-bold text-white uppercase tracking-wider">Insights</h3>
+          <span class="text-[10px] text-[#707070]">derived from current filters</span>
+        </div>
+
+        @if (insights.length === 0) {
+          <div class="flex flex-col items-center justify-center py-12 text-[#B3B3B3]">
+            <lucide-icon name="Info" class="w-10 h-10 mx-auto mb-2 opacity-50"></lucide-icon>
+            <p class="text-sm">Upload transactions to see insights.</p>
+          </div>
+        } @else {
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            @for (insight of insights; track insight.title) {
+              <div class="bg-[#1F1F1F] border border-[#3A3A3A] rounded-lg p-4 hover:border-[#525252] transition-colors"
+                [ngClass]="{
+                  'border-l-4 border-l-[#22C55E]': insight.tone === 'green',
+                  'border-l-4 border-l-[#EF4444]': insight.tone === 'red',
+                  'border-l-4 border-l-[#3B82F6]': insight.tone === 'blue',
+                  'border-l-4 border-l-[#FACC15]': insight.tone === 'yellow',
+                  'border-l-4 border-l-[#8B5CF6]': insight.tone === 'purple'
+                }">
+                <div class="flex items-start gap-3">
+                  <div class="p-2 rounded-lg border"
+                    [ngClass]="{
+                      'bg-[#22C55E]/10 border-[#22C55E]/30': insight.tone === 'green',
+                      'bg-[#EF4444]/10 border-[#EF4444]/30': insight.tone === 'red',
+                      'bg-[#3B82F6]/10 border-[#3B82F6]/30': insight.tone === 'blue',
+                      'bg-[#FACC15]/10 border-[#FACC15]/30': insight.tone === 'yellow',
+                      'bg-[#8B5CF6]/10 border-[#8B5CF6]/30': insight.tone === 'purple'
+                    }">
+                    <lucide-icon [name]="insight.icon" class="w-5 h-5"
+                      [ngClass]="{
+                        'text-[#22C55E]': insight.tone === 'green',
+                        'text-[#EF4444]': insight.tone === 'red',
+                        'text-[#3B82F6]': insight.tone === 'blue',
+                        'text-[#FACC15]': insight.tone === 'yellow',
+                        'text-[#8B5CF6]': insight.tone === 'purple'
+                      }"></lucide-icon>
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <div class="text-[10px] font-bold uppercase tracking-wider text-[#A0A0A0]">{{ insight.title }}</div>
+                    <p class="text-sm text-white mt-1 leading-relaxed">{{ insight.detail }}</p>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    }
+
   </section>
 </app-expansion-panel>
+
+<!-- =========================================================== -->
+<!-- Shared expanded-row template                                -->
+<!-- =========================================================== -->
+<ng-template #expandedDetail let-t let-accentFrom="accentFrom" let-accentTo="accentTo">
+  <tr>
+    <td colspan="11" class="p-4 bg-[#141414]">
+      <div class="p-6 bg-[#202020] border border-[#2D2D2D] rounded-2xl text-sm shadow-2xl relative overflow-hidden animate-fade-in">
+        <div class="absolute top-0 left-0 right-0 h-1"
+          [style.background]="'linear-gradient(to right, ' + accentFrom + ', ' + accentTo + ')'"></div>
+
+        <div class="flex items-center justify-between mb-6 border-b border-[#2D2D2D] pb-4">
+          <div class="flex items-center gap-3">
+            <div class="p-2 rounded-lg border"
+              [style.background-color]="accentFrom + '1A'"
+              [style.border-color]="accentFrom + '33'">
+              <lucide-icon name="file-text" class="h-5 w-5" [style.color]="accentFrom"></lucide-icon>
+            </div>
+            <div>
+              <h4 class="text-white font-bold text-base">Detailed Transaction Information</h4>
+              <p class="text-xs text-[#909090] mt-0.5">Transaction ID: {{ t.id || 'N/A' }}</p>
+            </div>
+          </div>
+          <span
+            [ngClass]="t.transactionType === 'BUY' ? 'bg-[#22C55E]/10 text-[#22C55E] border-[#22C55E]/20' : 'bg-[#EF4444]/10 text-[#EF4444] border-[#EF4444]/20'"
+            class="px-3 py-1 rounded-full text-xs font-bold border uppercase tracking-wider">
+            {{ t.transactionType }} Action
+          </span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <!-- Trade Summary -->
+          <div class="space-y-4">
+            <h5 class="text-xs font-bold uppercase tracking-wider text-[#A0A0A0] border-b border-[#2D2D2D]/50 pb-1.5 flex items-center gap-2">
+              <i class="pi pi-info-circle text-[#10A37F]"></i> Trade Summary
+            </h5>
+            <div class="grid grid-cols-2 gap-y-3 gap-x-2">
+              <div><span class="text-[#707070] text-xs block">Asset Type</span><span class="text-white font-medium text-sm">{{ t.assetType }}</span></div>
+              <div><span class="text-[#707070] text-xs block">Exchange</span><span class="text-white font-medium text-sm">{{ t.exchangeName }}</span></div>
+              <div><span class="text-[#707070] text-xs block">Code</span><span class="text-white font-medium text-sm font-mono">{{ t.stockCode }}</span></div>
+              <div><span class="text-[#707070] text-xs block">Date</span><span class="text-white font-medium text-sm">{{ t.transactionDate }}</span></div>
+            </div>
+          </div>
+
+          <!-- Valuation Breakdown -->
+          <div class="space-y-4">
+            <h5 class="text-xs font-bold uppercase tracking-wider text-[#A0A0A0] border-b border-[#2D2D2D]/50 pb-1.5 flex items-center gap-2">
+              <i class="pi pi-dollar text-[#10A37F]"></i> Valuation Breakdown
+            </h5>
+            <div class="grid grid-cols-2 gap-y-3 gap-x-2">
+              <div><span class="text-[#707070] text-xs block">Unit Price</span><span class="text-white font-semibold text-sm">₹{{ t.price | number:'1.2-2' }}</span></div>
+              <div><span class="text-[#707070] text-xs block">Quantity</span><span class="text-white font-semibold text-sm">{{ t.quantity | number:'1.0-4' }}</span></div>
+              <div class="col-span-2"><span class="text-[#707070] text-xs block">Total Base Value</span><span class="text-[#10A37F] font-bold text-base">₹{{ t.totalValue | number:'1.2-2' }}</span></div>
+            </div>
+          </div>
+
+          <!-- Brokerage & Charges -->
+          <div class="space-y-4">
+            <h5 class="text-xs font-bold uppercase tracking-wider text-[#A0A0A0] border-b border-[#2D2D2D]/50 pb-1.5 flex items-center gap-2">
+              <i class="pi pi-percentage text-[#10A37F]"></i> Brokerage & Charges
+            </h5>
+            <div class="grid grid-cols-2 gap-y-3 gap-x-2">
+              <div class="col-span-2"><span class="text-[#707070] text-xs block">Broker Service</span><span class="text-white font-medium text-sm truncate block" [title]="t.brokerName">{{ t.brokerName }}</span></div>
+              <div><span class="text-[#707070] text-xs block">Brokerage Fee</span><span class="text-white font-medium text-sm">₹{{ (t.brokerCharges || 0) | number:'1.2-2' }}</span></div>
+              <div><span class="text-[#707070] text-xs block">Misc Charges</span><span class="text-white font-medium text-sm">₹{{ (t.miscCharges || 0) | number:'1.2-2' }}</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Audit Metadata -->
+        @if (t.auditMetadata) {
+          <div class="mt-6 pt-4 border-t border-[#2D2D2D] flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-[#707070]">
+            <span class="flex items-center gap-1.5">
+              <lucide-icon name="plus" class="h-3.5 w-3.5"></lucide-icon>
+              Created by <strong class="text-gray-400">{{ t.auditMetadata.createdBy }}</strong> on {{ t.auditMetadata.createdAt | date:'medium' }}
+            </span>
+            <span class="flex items-center gap-1.5">
+              <lucide-icon name="edit" class="h-3.5 w-3.5"></lucide-icon>
+              Last modified by <strong class="text-gray-400">{{ t.auditMetadata.updatedBy }}</strong> on {{ t.auditMetadata.updatedAt | date:'medium' }}
+            </span>
+          </div>
+        }
+
+        <!-- Per-row quick actions -->
+        <div class="mt-4 pt-4 border-t border-[#2D2D2D] flex flex-wrap items-center gap-2">
+          <span class="text-[10px] text-[#707070] uppercase tracking-wider mr-1">Quick actions:</span>
+          <button (click)="copyTransaction(t)"
+            class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#2E2E2E] border border-[#3A3A3A] hover:border-[#10A37F] hover:text-[#10A37F] text-[10px] font-semibold text-[#B3B3B3] transition-colors focus:outline-none">
+            <lucide-icon name="file-text" class="w-3 h-3"></lucide-icon>
+            Copy details
+          </button>
+          <button (click)="filterByStock(t.stockCode)"
+            class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#2E2E2E] border border-[#3A3A3A] hover:border-[#10A37F] hover:text-[#10A37F] text-[10px] font-semibold text-[#B3B3B3] transition-colors focus:outline-none">
+            <lucide-icon name="search" class="w-3 h-3"></lucide-icon>
+            Filter by stock
+          </button>
+          <button (click)="filterByBroker(t.brokerName)"
+            class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#2E2E2E] border border-[#3A3A3A] hover:border-[#10A37F] hover:text-[#10A37F] text-[10px] font-semibold text-[#B3B3B3] transition-colors focus:outline-none">
+            <lucide-icon name="Briefcase" class="w-3 h-3"></lucide-icon>
+            Filter by broker
+          </button>
+          <button (click)="filterByDate(t.transactionDate)"
+            class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#2E2E2E] border border-[#3A3A3A] hover:border-[#10A37F] hover:text-[#10A37F] text-[10px] font-semibold text-[#B3B3B3] transition-colors focus:outline-none">
+            <lucide-icon name="calendar" class="w-3 h-3"></lucide-icon>
+            Show only this date
+          </button>
+        </div>
+      </div>
+    </td>
+  </tr>
+</ng-template>
