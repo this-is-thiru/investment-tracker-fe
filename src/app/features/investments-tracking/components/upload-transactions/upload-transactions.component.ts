@@ -4,8 +4,6 @@ import {
   Output,
   EventEmitter,
   OnDestroy,
-  AfterContentChecked,
-  ChangeDetectorRef
 } from '@angular/core';
 import { ExpansionPanelComponent } from '../../../../shared/components/expansion-panel/expansion-panel.component';
 import { CommonModule } from '@angular/common';
@@ -23,14 +21,33 @@ import { TransactionService } from '../../../../services/transaction.service';
 import { AuthService } from '../../../../services/auth.service';
 import { NotificationService } from '../../../../services/notification.service';
 
+type Step = 'pick-file' | 'review' | 'uploading' | 'result';
+type ResultKind = 'success' | 'error';
+
+interface UploadResult {
+  kind: ResultKind;
+  title: string;
+  message: string;
+  category?: string;
+  fileName?: string;
+  quarter?: string;
+  rawServerMessage?: string;
+}
+
 @Component({
-    selector: 'app-upload-transactions',
-    standalone: true,
-    imports: [CommonModule, LucideIconsModule, ExpansionPanelComponent, FormsModule, PrimeNgModule],
-    providers: [MessageService],
-    templateUrl: './upload-transactions.component.html'
+  selector: 'app-upload-transactions',
+  standalone: true,
+  imports: [
+    CommonModule,
+    LucideIconsModule,
+    ExpansionPanelComponent,
+    FormsModule,
+    PrimeNgModule,
+  ],
+  providers: [MessageService],
+  templateUrl: './upload-transactions.component.html',
 })
-export class UploadTransactionsComponent implements OnDestroy, AfterContentChecked {
+export class UploadTransactionsComponent implements OnDestroy {
   @Output() onUploadComplete = new EventEmitter<string>();
   @Input('showToast') showToastInput?: (message: string, type: ToastType) => void;
 
@@ -38,83 +55,117 @@ export class UploadTransactionsComponent implements OnDestroy, AfterContentCheck
     if (this.showToastInput) {
       this.showToastInput(message, type);
     } else {
-      const title = type === 'error' ? 'Error' : type === 'success' ? 'Success' : type === 'warn' ? 'Warning' : 'Info';
+      const title =
+        type === 'error'
+          ? 'Error'
+          : type === 'success'
+            ? 'Success'
+            : type === 'warn'
+              ? 'Warning'
+              : 'Info';
       const notificationType = type === 'warn' ? 'warning' : type;
       this.notificationService.addNotification(title, message, notificationType);
     }
   }
 
-  uploadStatus: 'success' | 'filtered' | 'uploading' | null = null;
+  // ===== State machine =====
+  step: Step = 'pick-file';
+  quarter: string = 'Q1';
+  file: File | null = null;
+  progress: number = 0;
+  result: UploadResult | null = null;
+  isUploading = false;
+  fileError: string | null = null;
 
-  selectedFile: File | null = null;
-  uploadedFileName: string = '';
-  selectedQuarter: string = 'Q1';
   quarters = [
     { label: 'Q1 (Jan - Mar)', value: 'Q1' },
     { label: 'Q2 (Apr - Jun)', value: 'Q2' },
     { label: 'Q3 (Jul - Sep)', value: 'Q3' },
-    { label: 'Q4 (Oct - Dec)', value: 'Q4' }
+    { label: 'Q4 (Oct - Dec)', value: 'Q4' },
   ];
-  uploadProgress: number = 0;
-  isUploading = false;
-  hasUploadedFile = false;
-  private uploadSub?: Subscription;
 
-  private readonly MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024; // 10MB
+  private uploadSub?: Subscription;
+  private readonly MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024; // 10 MB
 
   constructor(
     private transactionService: TransactionService,
     private authService: AuthService,
     private notificationService: NotificationService,
-    private cdr: ChangeDetectorRef
   ) {}
 
-  ngAfterContentChecked(): void {
-    this.cdr.detectChanges();
+  // ========== Quarter ==========
+  onQuarterChange(value: string): void {
+    this.quarter = value;
   }
 
   // ========== File Selection ==========
-  handleFileSelect(event: Event | File): void {
+  onFilePicked(fileInput: File | Event): void {
     const file =
-      event instanceof File
-        ? event
-        : (event.target as HTMLInputElement).files?.[0];
+      fileInput instanceof File
+        ? fileInput
+        : (fileInput.target as HTMLInputElement).files?.[0];
 
     if (!file) return;
 
-    const allowedExtensions = ['.xlsx', '.xls'];
-    const ext = file.name.slice(file.name.lastIndexOf('.')).toLowerCase();
-
-    if (!allowedExtensions.includes(ext)) {
-      this.showToast('Invalid file type. Please upload .xlsx or .xls', 'error');
+    const dotIndex = file.name.lastIndexOf('.');
+    const ext = dotIndex >= 0 ? file.name.slice(dotIndex).toLowerCase() : '';
+    if (ext !== '.xlsx' && ext !== '.xls') {
+      const errorMessage = `We accept .xlsx and .xls files. Your file is ${ext || 'unknown type'}.`;
+      this.fileError = errorMessage;
+      this.showToast(errorMessage, 'error');
       return;
     }
 
     if (file.size > this.MAX_FILE_SIZE_BYTES) {
-      this.showToast('File size exceeds 10MB limit', 'error');
+      const errorMessage = `Maximum size is 10 MB. Yours is ${this.formatFileSize(file.size)}. Try splitting the file by quarter.`;
+      this.fileError = errorMessage;
+      this.showToast(errorMessage, 'error');
       return;
     }
 
-    this.selectedFile = file;
-    this.uploadedFileName = file.name;
+    this.fileError = null;
+    this.file = file;
+    this.step = 'review';
   }
 
-  // ========== Upload Handler ==========
-  handleSendFile(): void {
-    if (!this.selectedFile) return;
+  dismissFileError(): void {
+    this.fileError = null;
+  }
+
+  removeFile(): void {
+    this.file = null;
+    this.fileError = null;
+    this.progress = 0;
+    this.step = 'pick-file';
+  }
+
+  // ========== Upload ==========
+  startUpload(): void {
+    if (!this.file || this.isUploading) return;
 
     const email = this.authService.getUserEmail();
     if (!email) {
-      this.showToast('Please log in before uploading', 'warn');
+      const classified = this.transactionService.classifyUploadError({
+        category: 'no-email',
+      });
+      this.result = {
+        kind: 'error',
+        title: classified.title,
+        message: classified.message,
+        category: classified.category,
+        fileName: this.file.name,
+        quarter: this.quarter,
+      };
+      this.step = 'result';
       return;
     }
 
-    this.cancelUploadIfAny();
+    this.progress = 0;
     this.isUploading = true;
-    this.uploadProgress = 0;
+    this.step = 'uploading';
 
     this.uploadSub = this.transactionService
-      .uploadTransactions(email, this.selectedFile, this.selectedQuarter)
+      .uploadTransactions(email, this.file, this.quarter)
       .pipe(
         finalize(() => {
           this.isUploading = false;
@@ -126,104 +177,113 @@ export class UploadTransactionsComponent implements OnDestroy, AfterContentCheck
           switch (event.type) {
             case HttpEventType.UploadProgress:
               if (event.total) {
-                this.uploadProgress = Math.round(
+                this.progress = Math.round(
                   (100 * event.loaded) / event.total,
                 );
               }
               break;
-
-            // case HttpEventType.Response:
-            //   this.uploadProgress = 100;
-            //   this.hasUploadedFile = true;
-            //   this.selectedFile = null;
-
-            //   let responseBody: any;
-            //   try {
-            //     // Try parsing as JSON
-            //     responseBody = JSON.parse(event.body);
-            //   } catch {
-            //     // If plain text, assign directly
-            //     responseBody = event.body;
-            //   }
-
-            //   // ✅ Case 1: JSON (normal success)
-            //   if (typeof responseBody === 'object' && responseBody !== null) {
-            //     this.showToast(
-            //       `${this.uploadedFileName} uploaded successfully!`,
-            //       'success',
-            //     );
-            //     this.uploadStatus = 'success';
-            //     this.onUploadComplete.emit(this.uploadedFileName);
-            //   }
-            //   // ⚠️ Case 2: Plain text (filtered transactions)
-            //   else if (typeof responseBody === 'string') {
-            //     if (responseBody.toLowerCase().includes('filtered')) {
-            //       this.showToast(
-            //         'Some transactions were filtered out. Please review them.',
-            //         'warn',
-            //       );
-            //       this.uploadStatus = 'filtered';
-            //       this.onUploadComplete.emit('filtered');
-            //     } else {
-            //       // fallback if plain text but not filtered info
-            //       this.showToast(
-            //         `${this.uploadedFileName} uploaded successfully!`,
-            //         'success',
-            //       );
-            //       this.uploadStatus = 'success';
-            //       this.onUploadComplete.emit(this.uploadedFileName);
-            //     }
-            //   }
-            //   break;
-
             case HttpEventType.Response:
-              this.uploadProgress = 100;
-              this.hasUploadedFile = true;
+              this.progress = 100;
+              const body = event.body;
+              let resultMessage: string;
+              let kind: ResultKind = 'success';
+              let category: string | undefined;
+              let rawServerMessage: string | undefined;
 
-              const message = event.body; // ALWAYS text from backend
+              if (typeof body === 'string') {
+                resultMessage = body;
+              } else if (body && typeof body === 'object') {
+                resultMessage =
+                  (body as any).message ||
+                  (body as any).data ||
+                  'Upload completed.';
+                if ((body as any).status || (body as any).error) {
+                  kind = 'error';
+                  category = 'bad-request';
+                  rawServerMessage = resultMessage;
+                }
+              } else {
+                resultMessage = 'Upload completed.';
+              }
 
-              this.showToast(message, 'info'); // show it directly
-
-              this.onUploadComplete.emit(message);
-              this.selectedFile = null;
+              this.result = {
+                kind,
+                title:
+                  kind === 'success'
+                    ? 'Upload Successful'
+                    : "Couldn't process file",
+                message: resultMessage,
+                fileName: this.file?.name,
+                quarter: this.quarter,
+                category,
+                rawServerMessage,
+              };
+              this.onUploadComplete.emit(resultMessage);
+              this.step = 'result';
               break;
           }
         },
         error: (err) => {
-          console.error('❌ Upload error:', err);
-          this.showToast(
-            err?.error?.message || 'Upload failed. Please try again.',
-            'error',
-          );
-          this.isUploading = false;
-          this.uploadStatus = null;
+          console.error('Upload error:', err);
+          const classified = this.transactionService.classifyUploadError(err);
+          const rawServerMessage =
+            (typeof err?.error === 'string' ? err.error : undefined) ||
+            err?.error?.message ||
+            err?.error?.data ||
+            (typeof err?.message === 'string' &&
+            !err.message.startsWith('Http failure')
+              ? err.message
+              : undefined);
+          this.result = {
+            kind: 'error',
+            title: classified.title,
+            message: classified.message,
+            category: classified.category,
+            fileName: this.file?.name,
+            quarter: this.quarter,
+            rawServerMessage,
+          };
+          this.step = 'result';
+          this.onUploadComplete.emit(this.result.message);
         },
       });
   }
 
-  // ========== Cancel Upload ==========
-  private cancelUploadIfAny() {
+  cancelUpload(): void {
     if (this.uploadSub) {
       this.uploadSub.unsubscribe();
       this.uploadSub = undefined;
-      console.debug('🛑 Upload cancelled');
+    }
+    this.isUploading = false;
+    this.progress = 0;
+    this.step = 'review';
+  }
+
+  retry(): void {
+    if (this.result?.kind === 'error' && this.file) {
+      this.result = null;
+      this.progress = 0;
+      this.step = 'review';
+    } else {
+      this.reset();
     }
   }
 
-  handleCancelFile(): void {
-    this.cancelUploadIfAny();
-    this.selectedFile = null;
-    this.uploadedFileName = '';
-    this.uploadProgress = 0;
-    this.showToast('File selection cancelled', 'info');
+  backToFilePick(): void {
+    this.file = null;
+    this.fileError = null;
+    this.result = null;
+    this.progress = 0;
+    this.step = 'pick-file';
   }
 
-  removeFile(): void {
-    this.cancelUploadIfAny();
-    this.hasUploadedFile = false;
-    this.uploadedFileName = '';
-    this.uploadProgress = 0;
-    this.showToast('File removed', 'info');
+  reset(): void {
+    this.file = null;
+    this.fileError = null;
+    this.result = null;
+    this.progress = 0;
+    this.isUploading = false;
+    this.step = 'pick-file';
   }
 
   // ========== Drag & Drop ==========
@@ -234,7 +294,7 @@ export class UploadTransactionsComponent implements OnDestroy, AfterContentCheck
   handleDrop(e: DragEvent): void {
     e.preventDefault();
     if (e.dataTransfer?.files.length) {
-      this.handleFileSelect(e.dataTransfer.files[0]);
+      this.onFilePicked(e.dataTransfer.files[0]);
     }
   }
 
@@ -265,6 +325,8 @@ export class UploadTransactionsComponent implements OnDestroy, AfterContentCheck
   }
 
   ngOnDestroy(): void {
-    this.cancelUploadIfAny();
+    if (this.uploadSub) {
+      this.uploadSub.unsubscribe();
+    }
   }
 }
