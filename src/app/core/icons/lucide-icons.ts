@@ -42,7 +42,8 @@ import {
   Info,
   CheckCheck,
   Calendar,
-  FileSpreadsheet
+  FileSpreadsheet,
+  Filter
 } from 'lucide-angular';
 
 export const LUCIDE_ICONS = {
@@ -89,5 +90,6 @@ export const LUCIDE_ICONS = {
   Info,
   CheckCheck,
   Calendar,
-  FileSpreadsheet
+  FileSpreadsheet,
+  Filter
 };

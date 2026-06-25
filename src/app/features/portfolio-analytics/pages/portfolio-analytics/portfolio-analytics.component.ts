@@ -12,6 +12,7 @@ import {
   HoldingRow,
   PerStockPnl,
 } from '../../../../core/services/portfolio-analytics.service';
+import { ExpansionPanelComponent } from '../../../../shared/components/expansion-panel/expansion-panel.component';
 
 type DatePreset = 'all' | '7d' | '30d' | '90d' | 'ytd' | 'custom';
 
@@ -47,7 +48,6 @@ const SCALES_AXIS_STYLE = {
 
 @Component({
   selector: 'app-portfolio-analytics',
-  standalone: true,
   imports: [
     CommonModule,
     FormsModule,
@@ -55,6 +55,7 @@ const SCALES_AXIS_STYLE = {
     LucideIconsModule,
     PrimeNgModule,
     FooterComponent,
+    ExpansionPanelComponent,
   ],
   templateUrl: './portfolio-analytics.component.html',
   styleUrls: ['./portfolio-analytics.component.css'],
@@ -123,6 +124,11 @@ export class PortfolioAnalyticsComponent implements OnInit {
   // ----- loading / error -----
   loading = true;
   usingMock = false;
+  // BUG FIX NOTE: unlike the previous tax-filing version (which checked
+  // `=== null` against `[]` arrays), this component already uses
+  // `tempLoaded`/`portLoaded` flags. We only need to make sure `recompute()`
+  // runs BEFORE `loading = false`, so chart data is populated by the time
+  // `<p-chart>` mounts.
   private tempLoaded = false;
   private portLoaded = false;
   userEmail = '';
@@ -149,6 +155,9 @@ export class PortfolioAnalyticsComponent implements OnInit {
   ];
 
   ngOnInit(): void {
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' as ScrollBehavior });
+    }
     this.userEmail = localStorage.getItem('userEmail') || '';
     this.loadTemporaryTransactions();
     this.loadPortfolioTransactions();
@@ -205,6 +214,9 @@ export class PortfolioAnalyticsComponent implements OnInit {
       this.temporaryTransactions,
       this.portfolioTransactions
     );
+    // applyFilters() → recompute() populates chart datasets BEFORE `loading`
+    // is cleared. This ensures <p-chart> mounts with complete data and does
+    // not require the user to click again to refresh the visualization.
     this.applyFilters();
     this.loading = false;
   }

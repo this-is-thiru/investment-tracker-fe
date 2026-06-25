@@ -14,6 +14,7 @@ import {
 import { LucideIconsModule } from '../../../../core/icons/lucide-icons.module';
 import { PrimeNgModule } from '../../../../core/prime-ng.module';
 import { FooterComponent } from '../../../../shared/components/footer/footer.component';
+import { ExpansionPanelComponent } from '../../../../shared/components/expansion-panel/expansion-panel.component';
 
 interface FilterChip {
   kind: 'fy' | 'asset';
@@ -69,6 +70,7 @@ const LTCG_EQUITY_EXEMPTION = 100000;
     LucideIconsModule,
     PrimeNgModule,
     FooterComponent,
+    ExpansionPanelComponent,
   ],
   templateUrl: './tax-filing.component.html',
   styleUrls: ['./tax-filing.component.css'],
@@ -91,6 +93,13 @@ export class TaxFilingComponent implements OnInit {
   usingMockTemp = false;
   usingMockPort = false;
   userEmail = '';
+  // BUG FIX: was previously checked as `=== null` against array fields, which
+  // never matched — onDataReady() ran on the FIRST subscription's resolution
+  // and rendered with one source still empty, then again with full data. This
+  // caused `<p-chart>` to mount with half-baked data and required the user to
+  // click a filter for the charts to refresh. Now we wait for BOTH to settle.
+  private tempLoaded = false;
+  private portLoaded = false;
 
   // ----- filter state -----
   selectedFy: string = ALL_OPTION;
@@ -130,6 +139,9 @@ export class TaxFilingComponent implements OnInit {
     'Estimate — actual tax depends on your slab, set-off rules, and indexation. Not financial advice.';
 
   ngOnInit(): void {
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' as ScrollBehavior });
+    }
     this.userEmail = localStorage.getItem('userEmail') || '';
     this.loadTemporary();
     this.loadPortfolio();
@@ -138,6 +150,9 @@ export class TaxFilingComponent implements OnInit {
   refresh(): void {
     this.usingMockTemp = false;
     this.usingMockPort = false;
+    this.tempLoaded = false;
+    this.portLoaded = false;
+    this.loading = true;
     this.loadTemporary();
     this.loadPortfolio();
   }
@@ -151,6 +166,7 @@ export class TaxFilingComponent implements OnInit {
       next: (data) => {
         this.temporaryTransactions = data;
         this.usingMockTemp = false;
+        this.tempLoaded = true;
         this.onDataReady();
       },
       error: () => {
@@ -175,6 +191,7 @@ export class TaxFilingComponent implements OnInit {
           summary: 'Error',
           detail: 'Failed to load temporary transactions',
         });
+        this.tempLoaded = true;
         this.onDataReady();
       },
     });
@@ -185,6 +202,7 @@ export class TaxFilingComponent implements OnInit {
       next: (data) => {
         this.portfolioTransactions = data;
         this.usingMockPort = false;
+        this.portLoaded = true;
         this.onDataReady();
       },
       error: () => {
@@ -209,6 +227,7 @@ export class TaxFilingComponent implements OnInit {
           summary: 'Error',
           detail: 'Failed to load current transactions',
         });
+        this.portLoaded = true;
         this.onDataReady();
       },
     });
@@ -216,8 +235,12 @@ export class TaxFilingComponent implements OnInit {
 
   /** Recompute everything derived from `rows` once BOTH endpoints have settled. */
   private onDataReady(): void {
-    // Wait until both calls have resolved (success or fallback) before merging.
-    if (this.temporaryTransactions === null || this.portfolioTransactions === null) return;
+    // BUG FIX: previously guarded with `=== null` against array fields that are
+    // initialized to `[]`, so the guard never matched and we rendered with
+    // half-loaded data. Now we wait for BOTH subscriptions to settle (success
+    // OR mock fallback) before merging, so `<p-chart>` and tables mount with
+    // complete data and don't require the user to click again.
+    if (!this.tempLoaded || !this.portLoaded) return;
 
     this.rows = this.analytics.mergeTransactions(
       this.temporaryTransactions,
@@ -231,8 +254,10 @@ export class TaxFilingComponent implements OnInit {
       ...fys.map((fy) => ({ label: fy, value: fy })),
     ];
 
-    this.loading = false;
+    // Compute derived data BEFORE clearing `loading` so charts mount with
+    // complete data instead of an empty initial snapshot.
     this.recompute();
+    this.loading = false;
   }
 
   // ============================================================

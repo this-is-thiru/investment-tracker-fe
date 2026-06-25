@@ -107,3 +107,12 @@
 :host ::ng-deep .table-scroll-container::-webkit-scrollbar-track { background: #191919; border-radius: 4px; }
 :host ::ng-deep .table-scroll-container::-webkit-scrollbar-thumb { background: #3A3A3A; border-radius: 4px; }
 :host ::ng-deep .table-scroll-container::-webkit-scrollbar-thumb:hover { background: #4A4A4A; }
+
+/* Tighten table cell padding to match investment-tracking reference */
+:host ::ng-deep .p-datatable .p-datatable-thead > tr > th,
+:host ::ng-deep .p-datatable .p-datatable-tbody > tr > td {
+  padding: 0.75rem 1rem !important; /* py-3 px-4 */
+}
+
+/* Section stack utility */
+:host ::ng-deep .section-stack { display:flex; flex-direction:column; gap:1.5rem; }

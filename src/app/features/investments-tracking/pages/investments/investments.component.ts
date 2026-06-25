@@ -8,11 +8,12 @@ import { FooterComponent } from '../../../../shared/components/footer/footer.com
 import { BaseurlService } from '../../../../services/baseurl.service';
 import { TransactionsTableComponent } from "../../components/transactions-table/transactions-table.component";
 import { AllTransactionsComponent } from '../../components/transaction-list/all-transactions.component';
+import { LucideIconsModule } from '../../../../core/icons/lucide-icons.module';
 
 @Component({
     selector: 'app-investments',
     standalone: true,
-    imports: [UploadTransactionsComponent, FooterComponent, TransactionsTableComponent, AllTransactionsComponent],
+    imports: [UploadTransactionsComponent, FooterComponent, TransactionsTableComponent, AllTransactionsComponent, LucideIconsModule],
     templateUrl: './investments.component.html',
     styleUrls: ['./investments.component.css'],
     providers: [MessageService]

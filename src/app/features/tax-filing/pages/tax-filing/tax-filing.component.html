@@ -1,7 +1,6 @@
 <p-toast position="top-right"></p-toast>
 
-<div [ngClass]="{ 'flow-page-enter': !loading, 'opacity-0': loading }"
-  class="w-full min-h-screen flex flex-col bg-[#191919]">
+<div class="w-full min-h-screen flex flex-col bg-[#191919]">
 
   <!-- ============================================================== -->
   <!-- HEADER STRIP                                                     -->
@@ -12,14 +11,15 @@
     </div>
 
     <div class="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-10 md:py-14 relative z-10">
-      <div class="inline-flex items-center gap-2 bg-[#3B82F6]/10 border border-[#3B82F6]/20 rounded-full px-3 py-1.5 mb-4">
-        <lucide-icon name="file-text" class="w-4 h-4 text-[#3B82F6]"></lucide-icon>
-        <span class="text-xs text-[#3B82F6] font-semibold uppercase tracking-wider">Tax Filing</span>
+      <div
+        class="inline-flex items-center gap-2 bg-[#10A37F]/10 border border-[#10A37F]/20 rounded-full px-3 py-1.5 mb-4">
+        <lucide-icon name="FileText" class="w-4 h-4 text-[#10A37F]"></lucide-icon>
+        <span class="text-xs text-[#10A37F] font-semibold uppercase tracking-wider">Tax Filing</span>
       </div>
 
       <h1 class="text-3xl md:text-4xl text-white mb-2 font-semibold">
         Capital gains &amp; tax
-        <span class="text-transparent bg-clip-text bg-gradient-to-r from-[#3B82F6] to-[#2563EB]">summary</span>
+        <span class="text-transparent bg-clip-text bg-gradient-to-r from-[#10A37F] to-[#0D8968]">summary</span>
       </h1>
       <p class="text-sm text-[#B3B3B3] max-w-2xl">
         FIFO-based realized gains across all your BUY/SELL transactions, grouped by financial year and asset type.
@@ -34,19 +34,20 @@
 
     <!-- MOCK-DATA BANNER -->
     @if (usingMockTemp || usingMockPort) {
-      <div class="flex items-center justify-between gap-3 px-4 py-2 bg-[#FACC15]/10 border border-[#FACC15]/30 rounded-lg text-xs text-[#FACC15]">
-        <span class="flex items-center gap-2">
-          <lucide-icon name="AlertTriangle" class="w-4 h-4"></lucide-icon>
-          Using sample data — API request failed.
-        </span>
-        <button (click)="refresh()" class="flex items-center gap-1 text-[#FACC15] hover:underline">
-          <lucide-icon name="RotateCw" class="w-3 h-3"></lucide-icon> Retry
-        </button>
-      </div>
+    <div
+      class="flex items-center justify-between gap-3 px-4 py-2 bg-[#FACC15]/10 border border-[#FACC15]/30 rounded-lg text-xs text-[#FACC15]">
+      <span class="flex items-center gap-2">
+        <lucide-icon name="AlertTriangle" class="w-4 h-4"></lucide-icon>
+        Using sample data — API request failed.
+      </span>
+      <button (click)="refresh()" class="flex items-center gap-1 text-[#FACC15] hover:underline">
+        <lucide-icon name="RotateCw" class="w-3 h-3"></lucide-icon> Retry
+      </button>
+    </div>
     }
 
     <!-- ============================================================== -->
-    <!-- SUMMARY CARDS                                                   -->
+    <!-- PANEL A — TAX SUMMARY                                            -->
     <!-- ============================================================== -->
     <section class="border border-[#3A3A3A] rounded-xl bg-[#191919] overflow-hidden">
       <div class="px-4 pt-4 pb-3 border-b border-[#2A2A2A]">
@@ -57,25 +58,28 @@
         </div>
       </div>
 
+      @if (!loading) {
       <div class="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
 
         <!-- Total Realized P&L -->
-        <div class="bg-[#1F1F1F] border border-[#3A3A3A] rounded-lg p-3 flex flex-col gap-1 hover:border-[#525252] transition-colors"
+        <div
+          class="bg-[#1F1F1F] border border-[#3A3A3A] rounded-lg p-3 flex flex-col gap-1 hover:border-[#525252] transition-colors"
           [ngClass]="capitalGains.totalGain >= 0 ? 'border-l-4 border-l-[#22C55E]' : 'border-l-4 border-l-[#EF4444]'">
           <div class="flex items-center justify-between">
-            <span class="text-[10px] text-[#B3B3B3] font-semibold uppercase tracking-wider">Total Realized P&amp;L</span>
+            <span class="text-[10px] text-[#B3B3B3] font-semibold uppercase tracking-wider">Total Realized
+              P&amp;L</span>
             <lucide-icon name="TrendingUp" class="w-3.5 h-3.5"
               [ngClass]="capitalGains.totalGain >= 0 ? 'text-[#22C55E]' : 'text-[#EF4444]'"></lucide-icon>
           </div>
-          <div class="text-xl font-bold"
-            [ngClass]="capitalGains.totalGain >= 0 ? 'text-[#22C55E]' : 'text-[#EF4444]'">
+          <div class="text-xl font-bold" [ngClass]="capitalGains.totalGain >= 0 ? 'text-[#22C55E]' : 'text-[#EF4444]'">
             ₹{{ capitalGains.totalGain | number:'1.2-2' }}
           </div>
           <div class="text-[10px] text-[#707070]">across {{ capitalGains.byFy.length }} FY(s)</div>
         </div>
 
         <!-- STCG -->
-        <div class="bg-[#1F1F1F] border border-[#3A3A3A] rounded-lg p-3 flex flex-col gap-1 hover:border-[#525252] transition-colors"
+        <div
+          class="bg-[#1F1F1F] border border-[#3A3A3A] rounded-lg p-3 flex flex-col gap-1 hover:border-[#525252] transition-colors"
           [ngClass]="capitalGains.stcg >= 0 ? 'border-l-4 border-l-[#FACC15]' : 'border-l-4 border-l-[#EF4444]'">
           <div class="flex items-center justify-between">
             <span class="text-[10px] text-[#B3B3B3] font-semibold uppercase tracking-wider">STCG</span>
@@ -88,7 +92,8 @@
         </div>
 
         <!-- LTCG -->
-        <div class="bg-[#1F1F1F] border border-[#3A3A3A] rounded-lg p-3 flex flex-col gap-1 hover:border-[#525252] transition-colors"
+        <div
+          class="bg-[#1F1F1F] border border-[#3A3A3A] rounded-lg p-3 flex flex-col gap-1 hover:border-[#525252] transition-colors"
           [ngClass]="capitalGains.ltcg >= 0 ? 'border-l-4 border-l-[#10A37F]' : 'border-l-4 border-l-[#EF4444]'">
           <div class="flex items-center justify-between">
             <span class="text-[10px] text-[#B3B3B3] font-semibold uppercase tracking-wider">LTCG</span>
@@ -101,51 +106,55 @@
         </div>
 
         <!-- Estimated Tax -->
-        <div class="bg-[#1F1F1F] border border-[#3A3A3A] border-l-4 border-l-[#3B82F6] rounded-lg p-3 flex flex-col gap-1 hover:border-[#525252] transition-colors"
+        <div
+          class="bg-[#1F1F1F] border border-[#3A3A3A] border-l-4 border-l-[#10A37F] rounded-lg p-3 flex flex-col gap-1 hover:border-[#525252] transition-colors"
           [title]="taxTooltip">
           <div class="flex items-center justify-between">
             <span class="text-[10px] text-[#B3B3B3] font-semibold uppercase tracking-wider">Estimated Tax</span>
-            <lucide-icon name="Info" class="w-3.5 h-3.5 text-[#3B82F6]"></lucide-icon>
+            <lucide-icon name="Info" class="w-3.5 h-3.5 text-[#10A37F]"></lucide-icon>
           </div>
-          <div class="text-xl font-bold text-[#3B82F6]">
+          <div class="text-xl font-bold text-[#10A37F]">
             ₹{{ estimatedTax | number:'1.2-2' }}
           </div>
           <div class="text-[10px] text-[#707070]">rough estimate — see tooltip</div>
         </div>
       </div>
+      } @else {
+      <p class="text-sm text-[#B3B3B3] px-1">Loading summary…</p>
+      }
     </section>
 
     <!-- ============================================================== -->
-    <!-- FILTER STRIP                                                     -->
+    <!-- PANEL B — FILTERS                                                -->
     <!-- ============================================================== -->
     <section class="border border-[#3A3A3A] rounded-xl bg-[#191919] overflow-hidden">
+      <div class="px-4 pt-4 pb-3 border-b border-[#2A2A2A]">
+        <div class="flex items-center gap-2">
+          <lucide-icon name="Filter" class="w-4 h-4 text-[#10A37F]"></lucide-icon>
+          <h3 class="text-sm font-bold text-white uppercase tracking-wider">Filters</h3>
+          <span class="text-[10px] text-[#707070]">(by financial year and asset type)</span>
+        </div>
+      </div>
       <div class="px-4 py-3 border-b border-[#2A2A2A] space-y-3">
         <div class="flex flex-wrap items-center gap-3">
 
           <!-- FY Select -->
           <div class="flex items-center gap-2">
             <span class="text-[10px] text-[#A0A0A0] uppercase tracking-wider font-semibold">Financial Year</span>
-            <p-select [options]="availableFys"
-              [ngModel]="selectedFy"
-              (ngModelChange)="setFy($event)"
-              optionLabel="label" optionValue="value"
-              appendTo="body"
-              styleClass="text-sm"></p-select>
+            <p-select [options]="availableFys" [ngModel]="selectedFy" (ngModelChange)="setFy($event)"
+              optionLabel="label" optionValue="value" appendTo="body" styleClass="text-sm"></p-select>
           </div>
 
           <!-- Asset Type SelectButton -->
           <div class="flex items-center gap-2">
             <span class="text-[10px] text-[#A0A0A0] uppercase tracking-wider font-semibold">Asset Type</span>
-            <p-selectButton [options]="assetTypeOptions"
-              [ngModel]="selectedAssetType"
-              (ngModelChange)="setAssetType($event)"
-              optionLabel="label" optionValue="value"
+            <p-selectButton [options]="assetTypeOptions" [ngModel]="selectedAssetType"
+              (ngModelChange)="setAssetType($event)" optionLabel="label" optionValue="value"
               styleClass="text-sm"></p-selectButton>
           </div>
 
           <!-- Reset -->
-          <button (click)="resetFilters()"
-            [disabled]="!hasActiveFilters()"
+          <button (click)="resetFilters()" [disabled]="!hasActiveFilters()"
             class="ml-auto px-3 py-2 rounded-lg bg-[#2E2E2E] text-xs font-semibold text-[#B3B3B3] border border-[#3A3A3A] hover:text-white hover:border-[#10A37F] disabled:opacity-40 disabled:cursor-not-allowed transition-colors flex items-center gap-1.5 focus:outline-none">
             <lucide-icon name="X" class="w-3.5 h-3.5"></lucide-icon>
             Reset
@@ -154,41 +163,52 @@
 
         <!-- Active filter chips -->
         @if (activeFilterChips.length > 0) {
-          <div class="flex flex-wrap gap-1.5">
-            @for (chip of activeFilterChips; track chip.label) {
-              <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-[#3B82F6]/10 text-[#3B82F6] border border-[#3B82F6]/30 text-xs">
-                {{ chip.label }}
-                <button (click)="removeFilterChip(chip)" class="hover:text-white focus:outline-none" aria-label="Remove filter">
-                  <lucide-icon name="X" class="w-3 h-3"></lucide-icon>
-                </button>
-              </span>
-            }
-          </div>
+        <div class="flex flex-wrap gap-1.5">
+          @for (chip of activeFilterChips; track chip.label) {
+          <span
+            class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-[#10A37F]/10 text-[#10A37F] border border-[#10A37F]/30 text-xs">
+            {{ chip.label }}
+            <button (click)="removeFilterChip(chip)" class="hover:text-white focus:outline-none"
+              aria-label="Remove filter">
+              <lucide-icon name="X" class="w-3 h-3"></lucide-icon>
+            </button>
+          </span>
+          }
+        </div>
         }
       </div>
     </section>
 
     <!-- ============================================================== -->
-    <!-- EMPTY STATE                                                      -->
+    <!-- EMPTY STATE (outside Panel C, before it)                         -->
     <!-- ============================================================== -->
     @if (!loading && !hasRows) {
-      <section class="border border-[#3A3A3A] rounded-xl bg-[#191919] p-12">
-        <div class="flex flex-col items-center justify-center text-center space-y-4 max-w-md mx-auto">
-          <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#2E2E2E] to-[#1F1F1F] border border-[#3A3A3A] flex items-center justify-center">
-            <lucide-icon name="FileSpreadsheet" class="w-8 h-8 text-[#3B82F6]"></lucide-icon>
-          </div>
-          <h3 class="text-base font-semibold text-white">No transactions found</h3>
-          <p class="text-sm text-[#B3B3B3]">
-            Upload transactions on the Investment Tracking page to see your tax summary.
-          </p>
+    <section class="border border-[#3A3A3A] rounded-xl bg-[#191919] p-12">
+      <div class="flex flex-col items-center justify-center text-center space-y-4 max-w-md mx-auto">
+        <div
+          class="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#2E2E2E] to-[#1F1F1F] border border-[#3A3A3A] flex items-center justify-center">
+          <lucide-icon name="FileSpreadsheet" class="w-8 h-8 text-[#10A37F]"></lucide-icon>
         </div>
-      </section>
+        <h3 class="text-base font-semibold text-white">No transactions found</h3>
+        <p class="text-sm text-[#B3B3B3]">
+          Upload transactions on the Investment Tracking page to see your tax summary.
+        </p>
+      </div>
+    </section>
     }
 
     <!-- ============================================================== -->
-    <!-- FY-WISE CAPITAL GAINS TABLE                                      -->
+    <!-- PANEL C — CAPITAL GAINS REPORTS                                  -->
     <!-- ============================================================== -->
-    @if (!loading && hasRows) {
+    <app-expansion-panel [title]="'Capital Gains Reports'" [subtitle]="'FY-wise totals and per-stock realized P&L'"
+      [titleIcon]="'FileSpreadsheet'"
+      [iconBgClass]="'bg-gradient-to-br from-[#10A37F] to-[#0D8968] p-2 rounded-lg text-white'" [isExpanded]="true">
+
+      @if (loading) {
+      <p class="text-sm text-[#B3B3B3] px-1">Loading reports…</p>
+      } @else if (hasRows) {
+
+      <!-- FY-WISE CAPITAL GAINS TABLE -->
       <section class="border border-[#3A3A3A] rounded-xl bg-[#191919] overflow-hidden">
         <div class="px-4 py-3 border-b border-[#2A2A2A] flex items-center justify-between gap-3">
           <div class="flex items-center gap-2">
@@ -201,29 +221,40 @@
         <div class="p-4">
           <div class="table-scroll-container">
             <p-table [value]="fyRows" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[5, 10, 20]"
-              paginatorDropdownAppendTo="body"
-              [tableStyle]="{ 'min-width': '64rem' }"
-              responsiveLayout="scroll" styleClass="p-datatable-sm w-full" [rowHover]="true">
+              paginatorDropdownAppendTo="body" [tableStyle]="{ 'min-width': '64rem' }" responsiveLayout="scroll"
+              styleClass="p-datatable-sm w-full" [rowHover]="true">
               <ng-template pTemplate="header">
                 <tr>
-                  <th pSortableColumn="financialYear" class="px-4 py-3 text-left cursor-pointer hover:text-white transition-colors whitespace-nowrap">
-                    <div class="flex items-center gap-1 whitespace-nowrap">FY <p-sortIcon field="financialYear"></p-sortIcon></div>
+                  <th pSortableColumn="financialYear"
+                    class="px-4 py-3 text-left cursor-pointer hover:text-white transition-colors whitespace-nowrap">
+                    <div class="flex items-center gap-1 whitespace-nowrap">FY <p-sortIcon
+                        field="financialYear"></p-sortIcon></div>
                   </th>
                   <th class="px-4 py-3 text-left whitespace-nowrap">Asset Type</th>
-                  <th pSortableColumn="sellValue" class="px-4 py-3 text-right cursor-pointer hover:text-white transition-colors whitespace-nowrap">
-                    <div class="flex items-center justify-end gap-1 whitespace-nowrap">Sell Value <p-sortIcon field="sellValue"></p-sortIcon></div>
+                  <th pSortableColumn="sellValue"
+                    class="px-4 py-3 text-right cursor-pointer hover:text-white transition-colors whitespace-nowrap">
+                    <div class="flex items-center justify-end gap-1 whitespace-nowrap">Sell Value <p-sortIcon
+                        field="sellValue"></p-sortIcon></div>
                   </th>
-                  <th pSortableColumn="gain" class="px-4 py-3 text-right cursor-pointer hover:text-white transition-colors whitespace-nowrap">
-                    <div class="flex items-center justify-end gap-1 whitespace-nowrap">Realized Gain <p-sortIcon field="gain"></p-sortIcon></div>
+                  <th pSortableColumn="gain"
+                    class="px-4 py-3 text-right cursor-pointer hover:text-white transition-colors whitespace-nowrap">
+                    <div class="flex items-center justify-end gap-1 whitespace-nowrap">Realized Gain <p-sortIcon
+                        field="gain"></p-sortIcon></div>
                   </th>
-                  <th pSortableColumn="stcg" class="px-4 py-3 text-right cursor-pointer hover:text-white transition-colors whitespace-nowrap">
-                    <div class="flex items-center justify-end gap-1 whitespace-nowrap">STCG <p-sortIcon field="stcg"></p-sortIcon></div>
+                  <th pSortableColumn="stcg"
+                    class="px-4 py-3 text-right cursor-pointer hover:text-white transition-colors whitespace-nowrap">
+                    <div class="flex items-center justify-end gap-1 whitespace-nowrap">STCG <p-sortIcon
+                        field="stcg"></p-sortIcon></div>
                   </th>
-                  <th pSortableColumn="ltcg" class="px-4 py-3 text-right cursor-pointer hover:text-white transition-colors whitespace-nowrap">
-                    <div class="flex items-center justify-end gap-1 whitespace-nowrap">LTCG <p-sortIcon field="ltcg"></p-sortIcon></div>
+                  <th pSortableColumn="ltcg"
+                    class="px-4 py-3 text-right cursor-pointer hover:text-white transition-colors whitespace-nowrap">
+                    <div class="flex items-center justify-end gap-1 whitespace-nowrap">LTCG <p-sortIcon
+                        field="ltcg"></p-sortIcon></div>
                   </th>
-                  <th pSortableColumn="count" class="px-4 py-3 text-right cursor-pointer hover:text-white transition-colors whitespace-nowrap">
-                    <div class="flex items-center justify-end gap-1 whitespace-nowrap"># Sells <p-sortIcon field="count"></p-sortIcon></div>
+                  <th pSortableColumn="count"
+                    class="px-4 py-3 text-right cursor-pointer hover:text-white transition-colors whitespace-nowrap">
+                    <div class="flex items-center justify-end gap-1 whitespace-nowrap"># Sells <p-sortIcon
+                        field="count"></p-sortIcon></div>
                   </th>
                 </tr>
               </ng-template>
@@ -232,13 +263,16 @@
                 <tr class="border-b border-[#2a2a2a] hover:bg-[#222] transition-colors duration-150">
                   <td class="px-4 py-3 font-mono text-white whitespace-nowrap">{{ r.financialYear }}</td>
                   <td class="px-4 py-3 text-[#B3B3B3] whitespace-nowrap">All</td>
-                  <td class="px-4 py-3 text-right text-[#B3B3B3] tabular-nums whitespace-nowrap">₹{{ r.sellValue | number:'1.2-2' }}</td>
+                  <td class="px-4 py-3 text-right text-[#B3B3B3] tabular-nums whitespace-nowrap">₹{{ r.sellValue |
+                    number:'1.2-2' }}</td>
                   <td class="px-4 py-3 text-right font-semibold tabular-nums whitespace-nowrap"
                     [ngClass]="r.gain >= 0 ? 'text-[#22C55E]' : 'text-[#EF4444]'">
                     ₹{{ r.gain | number:'1.2-2' }}
                   </td>
-                  <td class="px-4 py-3 text-right text-[#FACC15] tabular-nums whitespace-nowrap">₹{{ r.stcg | number:'1.2-2' }}</td>
-                  <td class="px-4 py-3 text-right text-[#10A37F] tabular-nums whitespace-nowrap">₹{{ r.ltcg | number:'1.2-2' }}</td>
+                  <td class="px-4 py-3 text-right text-[#FACC15] tabular-nums whitespace-nowrap">₹{{ r.stcg |
+                    number:'1.2-2' }}</td>
+                  <td class="px-4 py-3 text-right text-[#10A37F] tabular-nums whitespace-nowrap">₹{{ r.ltcg |
+                    number:'1.2-2' }}</td>
                   <td class="px-4 py-3 text-right text-[#B3B3B3] tabular-nums whitespace-nowrap">{{ r.count }}</td>
                 </tr>
               </ng-template>
@@ -247,14 +281,18 @@
                 <tr class="border-t border-[#3A3A3A] bg-[#1A1A1A]">
                   <td class="px-4 py-3 font-bold text-white uppercase text-[10px] tracking-wider">Total</td>
                   <td class="px-4 py-3"></td>
-                  <td class="px-4 py-3 text-right font-semibold text-[#B3B3B3] tabular-nums whitespace-nowrap">₹{{ fyRowTotals.sellValue | number:'1.2-2' }}</td>
+                  <td class="px-4 py-3 text-right font-semibold text-[#B3B3B3] tabular-nums whitespace-nowrap">₹{{
+                    fyRowTotals.sellValue | number:'1.2-2' }}</td>
                   <td class="px-4 py-3 text-right font-bold tabular-nums whitespace-nowrap"
                     [ngClass]="fyRowTotals.gain >= 0 ? 'text-[#22C55E]' : 'text-[#EF4444]'">
                     ₹{{ fyRowTotals.gain | number:'1.2-2' }}
                   </td>
-                  <td class="px-4 py-3 text-right font-semibold text-[#FACC15] tabular-nums whitespace-nowrap">₹{{ fyRowTotals.stcg | number:'1.2-2' }}</td>
-                  <td class="px-4 py-3 text-right font-semibold text-[#10A37F] tabular-nums whitespace-nowrap">₹{{ fyRowTotals.ltcg | number:'1.2-2' }}</td>
-                  <td class="px-4 py-3 text-right font-semibold text-[#B3B3B3] tabular-nums whitespace-nowrap">{{ fyRowTotals.count }}</td>
+                  <td class="px-4 py-3 text-right font-semibold text-[#FACC15] tabular-nums whitespace-nowrap">₹{{
+                    fyRowTotals.stcg | number:'1.2-2' }}</td>
+                  <td class="px-4 py-3 text-right font-semibold text-[#10A37F] tabular-nums whitespace-nowrap">₹{{
+                    fyRowTotals.ltcg | number:'1.2-2' }}</td>
+                  <td class="px-4 py-3 text-right font-semibold text-[#B3B3B3] tabular-nums whitespace-nowrap">{{
+                    fyRowTotals.count }}</td>
                 </tr>
               </ng-template>
 
@@ -274,13 +312,12 @@
         </div>
       </section>
 
-      <!-- ============================================================== -->
-      <!-- PER-STOCK TAX REPORT TABLE                                       -->
-      <!-- ============================================================== -->
-      <section class="border border-[#3A3A3A] rounded-xl bg-[#191919] overflow-hidden">
-        <div class="px-4 py-3 border-b border-[#2A2A2A] flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+      <!-- PER-STOCK TAX REPORT TABLE -->
+      <section class="border border-[#3A3A3A] rounded-xl bg-[#191919] overflow-hidden mt-6">
+        <div
+          class="px-4 py-3 border-b border-[#2A2A2A] flex flex-col md:flex-row md:items-center md:justify-between gap-3">
           <div class="flex items-center gap-2">
-            <lucide-icon name="FileSpreadsheet" class="w-4 h-4 text-[#3B82F6]"></lucide-icon>
+            <lucide-icon name="FileSpreadsheet" class="w-4 h-4 text-[#10A37F]"></lucide-icon>
             <h3 class="text-sm font-bold text-white uppercase tracking-wider">Per-stock Tax Report</h3>
             <span class="text-[10px] text-[#707070]">{{ perStockRows.length }} stocks</span>
           </div>
@@ -294,18 +331,19 @@
               <lucide-icon name="ChevronDown" class="w-3 h-3"></lucide-icon>
             </button>
             @if (exportMenuOpen) {
-              <div class="absolute right-0 mt-1 w-44 bg-[#232323] border border-[#3A3A3A] rounded-lg shadow-2xl z-30 p-1.5">
-                <button (click)="exportCsv()"
-                  class="w-full flex items-center gap-2 px-2 py-1.5 hover:bg-[#2A2A2A] rounded text-xs text-[#B3B3B3] hover:text-white focus:outline-none text-left">
-                  <lucide-icon name="FileText" class="w-3.5 h-3.5"></lucide-icon>
-                  Export CSV
-                </button>
-                <button (click)="exportExcel()"
-                  class="w-full flex items-center gap-2 px-2 py-1.5 hover:bg-[#2A2A2A] rounded text-xs text-[#B3B3B3] hover:text-white focus:outline-none text-left">
-                  <lucide-icon name="Upload" class="w-3.5 h-3.5"></lucide-icon>
-                  Export Excel
-                </button>
-              </div>
+            <div
+              class="absolute right-0 mt-1 w-44 bg-[#232323] border border-[#3A3A3A] rounded-lg shadow-2xl z-30 p-1.5">
+              <button (click)="exportCsv()"
+                class="w-full flex items-center gap-2 px-2 py-1.5 hover:bg-[#2A2A2A] rounded text-xs text-[#B3B3B3] hover:text-white focus:outline-none text-left">
+                <lucide-icon name="FileText" class="w-3.5 h-3.5"></lucide-icon>
+                Export CSV
+              </button>
+              <button (click)="exportExcel()"
+                class="w-full flex items-center gap-2 px-2 py-1.5 hover:bg-[#2A2A2A] rounded text-xs text-[#B3B3B3] hover:text-white focus:outline-none text-left">
+                <lucide-icon name="Upload" class="w-3.5 h-3.5"></lucide-icon>
+                Export Excel
+              </button>
+            </div>
             }
           </div>
         </div>
@@ -313,43 +351,64 @@
         <div class="p-4">
           <div class="table-scroll-container">
             <p-table [value]="perStockRows" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[5, 10, 20, 50]"
-              paginatorDropdownAppendTo="body"
-              [tableStyle]="{ 'min-width': '80rem' }"
-              responsiveLayout="scroll" styleClass="p-datatable-sm w-full" [rowHover]="true">
+              paginatorDropdownAppendTo="body" [tableStyle]="{ 'min-width': '80rem' }" responsiveLayout="scroll"
+              styleClass="p-datatable-sm w-full" [rowHover]="true">
               <ng-template pTemplate="header">
                 <tr>
-                  <th pSortableColumn="stockName" class="px-4 py-3 text-left cursor-pointer hover:text-white transition-colors whitespace-nowrap">
-                    <div class="flex items-center gap-1 whitespace-nowrap">Stock <p-sortIcon field="stockName"></p-sortIcon></div>
+                  <th pSortableColumn="stockName"
+                    class="px-4 py-3 text-left cursor-pointer hover:text-white transition-colors whitespace-nowrap">
+                    <div class="flex items-center gap-1 whitespace-nowrap">Stock <p-sortIcon
+                        field="stockName"></p-sortIcon></div>
                   </th>
-                  <th pSortableColumn="stockCode" class="px-4 py-3 text-left cursor-pointer hover:text-white transition-colors whitespace-nowrap">
-                    <div class="flex items-center gap-1 whitespace-nowrap">Code <p-sortIcon field="stockCode"></p-sortIcon></div>
+                  <th pSortableColumn="stockCode"
+                    class="px-4 py-3 text-left cursor-pointer hover:text-white transition-colors whitespace-nowrap">
+                    <div class="flex items-center gap-1 whitespace-nowrap">Code <p-sortIcon
+                        field="stockCode"></p-sortIcon></div>
                   </th>
-                  <th pSortableColumn="assetType" class="px-4 py-3 text-left cursor-pointer hover:text-white transition-colors whitespace-nowrap">
-                    <div class="flex items-center gap-1 whitespace-nowrap">Asset <p-sortIcon field="assetType"></p-sortIcon></div>
+                  <th pSortableColumn="assetType"
+                    class="px-4 py-3 text-left cursor-pointer hover:text-white transition-colors whitespace-nowrap">
+                    <div class="flex items-center gap-1 whitespace-nowrap">Asset <p-sortIcon
+                        field="assetType"></p-sortIcon></div>
                   </th>
-                  <th pSortableColumn="buyQty" class="px-4 py-3 text-right cursor-pointer hover:text-white transition-colors whitespace-nowrap">
-                    <div class="flex items-center justify-end gap-1 whitespace-nowrap">Buy Qty <p-sortIcon field="buyQty"></p-sortIcon></div>
+                  <th pSortableColumn="buyQty"
+                    class="px-4 py-3 text-right cursor-pointer hover:text-white transition-colors whitespace-nowrap">
+                    <div class="flex items-center justify-end gap-1 whitespace-nowrap">Buy Qty <p-sortIcon
+                        field="buyQty"></p-sortIcon></div>
                   </th>
-                  <th pSortableColumn="buyValue" class="px-4 py-3 text-right cursor-pointer hover:text-white transition-colors whitespace-nowrap">
-                    <div class="flex items-center justify-end gap-1 whitespace-nowrap">Buy Value <p-sortIcon field="buyValue"></p-sortIcon></div>
+                  <th pSortableColumn="buyValue"
+                    class="px-4 py-3 text-right cursor-pointer hover:text-white transition-colors whitespace-nowrap">
+                    <div class="flex items-center justify-end gap-1 whitespace-nowrap">Buy Value <p-sortIcon
+                        field="buyValue"></p-sortIcon></div>
                   </th>
-                  <th pSortableColumn="sellQty" class="px-4 py-3 text-right cursor-pointer hover:text-white transition-colors whitespace-nowrap">
-                    <div class="flex items-center justify-end gap-1 whitespace-nowrap">Sell Qty <p-sortIcon field="sellQty"></p-sortIcon></div>
+                  <th pSortableColumn="sellQty"
+                    class="px-4 py-3 text-right cursor-pointer hover:text-white transition-colors whitespace-nowrap">
+                    <div class="flex items-center justify-end gap-1 whitespace-nowrap">Sell Qty <p-sortIcon
+                        field="sellQty"></p-sortIcon></div>
                   </th>
-                  <th pSortableColumn="sellValue" class="px-4 py-3 text-right cursor-pointer hover:text-white transition-colors whitespace-nowrap">
-                    <div class="flex items-center justify-end gap-1 whitespace-nowrap">Sell Value <p-sortIcon field="sellValue"></p-sortIcon></div>
+                  <th pSortableColumn="sellValue"
+                    class="px-4 py-3 text-right cursor-pointer hover:text-white transition-colors whitespace-nowrap">
+                    <div class="flex items-center justify-end gap-1 whitespace-nowrap">Sell Value <p-sortIcon
+                        field="sellValue"></p-sortIcon></div>
                   </th>
-                  <th pSortableColumn="netQty" class="px-4 py-3 text-right cursor-pointer hover:text-white transition-colors whitespace-nowrap">
-                    <div class="flex items-center justify-end gap-1 whitespace-nowrap">Net Qty <p-sortIcon field="netQty"></p-sortIcon></div>
+                  <th pSortableColumn="netQty"
+                    class="px-4 py-3 text-right cursor-pointer hover:text-white transition-colors whitespace-nowrap">
+                    <div class="flex items-center justify-end gap-1 whitespace-nowrap">Net Qty <p-sortIcon
+                        field="netQty"></p-sortIcon></div>
                   </th>
-                  <th pSortableColumn="gain" class="px-4 py-3 text-right cursor-pointer hover:text-white transition-colors whitespace-nowrap">
-                    <div class="flex items-center justify-end gap-1 whitespace-nowrap">Realized P&amp;L <p-sortIcon field="gain"></p-sortIcon></div>
+                  <th pSortableColumn="gain"
+                    class="px-4 py-3 text-right cursor-pointer hover:text-white transition-colors whitespace-nowrap">
+                    <div class="flex items-center justify-end gap-1 whitespace-nowrap">Realized P&amp;L <p-sortIcon
+                        field="gain"></p-sortIcon></div>
                   </th>
-                  <th pSortableColumn="period" class="px-4 py-3 text-left cursor-pointer hover:text-white transition-colors whitespace-nowrap">
-                    <div class="flex items-center gap-1 whitespace-nowrap">Period <p-sortIcon field="period"></p-sortIcon></div>
+                  <th pSortableColumn="period"
+                    class="px-4 py-3 text-left cursor-pointer hover:text-white transition-colors whitespace-nowrap">
+                    <div class="flex items-center gap-1 whitespace-nowrap">Period <p-sortIcon
+                        field="period"></p-sortIcon></div>
                   </th>
-                  <th pSortableColumn="percentOfTotalGain" class="px-4 py-3 text-right cursor-pointer hover:text-white transition-colors whitespace-nowrap">
-                    <div class="flex items-center justify-end gap-1 whitespace-nowrap">% Total <p-sortIcon field="percentOfTotalGain"></p-sortIcon></div>
+                  <th pSortableColumn="percentOfTotalGain"
+                    class="px-4 py-3 text-right cursor-pointer hover:text-white transition-colors whitespace-nowrap">
+                    <div class="flex items-center justify-end gap-1 whitespace-nowrap">% Total <p-sortIcon
+                        field="percentOfTotalGain"></p-sortIcon></div>
                   </th>
                 </tr>
               </ng-template>
@@ -357,14 +416,19 @@
               <ng-template pTemplate="body" let-r>
                 <tr class="border-b border-[#2a2a2a] hover:bg-[#222] transition-colors duration-150">
                   <td class="px-4 py-3">
-                    <div class="font-medium text-white truncate max-w-[220px]" [title]="r.stockName">{{ r.stockName }}</div>
+                    <div class="font-medium text-white truncate max-w-[220px]" [title]="r.stockName">{{ r.stockName }}
+                    </div>
                   </td>
                   <td class="px-4 py-3 text-[#A0A0A0] font-mono text-xs whitespace-nowrap">{{ r.stockCode }}</td>
                   <td class="px-4 py-3 text-[#B3B3B3] whitespace-nowrap">{{ r.assetType }}</td>
-                  <td class="px-4 py-3 text-right text-[#B3B3B3] tabular-nums whitespace-nowrap">{{ r.buyQty | number:'1.0-4' }}</td>
-                  <td class="px-4 py-3 text-right text-[#B3B3B3] tabular-nums whitespace-nowrap">₹{{ r.buyValue | number:'1.2-2' }}</td>
-                  <td class="px-4 py-3 text-right text-[#B3B3B3] tabular-nums whitespace-nowrap">{{ r.sellQty | number:'1.0-4' }}</td>
-                  <td class="px-4 py-3 text-right text-[#B3B3B3] tabular-nums whitespace-nowrap">₹{{ r.sellValue | number:'1.2-2' }}</td>
+                  <td class="px-4 py-3 text-right text-[#B3B3B3] tabular-nums whitespace-nowrap">{{ r.buyQty |
+                    number:'1.0-4' }}</td>
+                  <td class="px-4 py-3 text-right text-[#B3B3B3] tabular-nums whitespace-nowrap">₹{{ r.buyValue |
+                    number:'1.2-2' }}</td>
+                  <td class="px-4 py-3 text-right text-[#B3B3B3] tabular-nums whitespace-nowrap">{{ r.sellQty |
+                    number:'1.0-4' }}</td>
+                  <td class="px-4 py-3 text-right text-[#B3B3B3] tabular-nums whitespace-nowrap">₹{{ r.sellValue |
+                    number:'1.2-2' }}</td>
                   <td class="px-4 py-3 text-right font-semibold tabular-nums whitespace-nowrap"
                     [ngClass]="r.netQty >= 0 ? 'text-[#22C55E]' : 'text-[#EF4444]'">
                     {{ r.netQty | number:'1.0-4' }}
@@ -375,24 +439,32 @@
                   </td>
                   <td class="px-4 py-3 whitespace-nowrap">
                     @if (r.period === 'ST') {
-                      <span class="px-2 py-0.5 rounded-full text-[10px] font-bold border bg-[#FACC15]/10 text-[#FACC15] border-[#FACC15]/20">ST</span>
+                    <span
+                      class="px-2 py-0.5 rounded-full text-[10px] font-bold border bg-[#FACC15]/10 text-[#FACC15] border-[#FACC15]/20">ST</span>
                     } @else if (r.period === 'LT') {
-                      <span class="px-2 py-0.5 rounded-full text-[10px] font-bold border bg-[#10A37F]/10 text-[#10A37F] border-[#10A37F]/20">LT</span>
+                    <span
+                      class="px-2 py-0.5 rounded-full text-[10px] font-bold border bg-[#10A37F]/10 text-[#10A37F] border-[#10A37F]/20">LT</span>
                     } @else {
-                      <span class="px-2 py-0.5 rounded-full text-[10px] font-bold border bg-[#3B82F6]/10 text-[#3B82F6] border-[#3B82F6]/20">Mixed</span>
+                    <span
+                      class="px-2 py-0.5 rounded-full text-[10px] font-bold border bg-[#10A37F]/10 text-[#10A37F] border-[#10A37F]/20">Mixed</span>
                     }
                   </td>
-                  <td class="px-4 py-3 text-right text-[#B3B3B3] tabular-nums whitespace-nowrap">{{ r.percentOfTotalGain | number:'1.2-2' }}%</td>
+                  <td class="px-4 py-3 text-right text-[#B3B3B3] tabular-nums whitespace-nowrap">{{ r.percentOfTotalGain
+                    | number:'1.2-2' }}%</td>
                 </tr>
               </ng-template>
 
               <ng-template pTemplate="footer">
                 <tr class="border-t border-[#3A3A3A] bg-[#1A1A1A]">
                   <td class="px-4 py-3 font-bold text-white uppercase text-[10px] tracking-wider" colspan="3">Total</td>
-                  <td class="px-4 py-3 text-right font-semibold text-[#B3B3B3] tabular-nums whitespace-nowrap">{{ perStockTotals.buyQty | number:'1.0-4' }}</td>
-                  <td class="px-4 py-3 text-right font-semibold text-[#B3B3B3] tabular-nums whitespace-nowrap">₹{{ perStockTotals.buyValue | number:'1.2-2' }}</td>
-                  <td class="px-4 py-3 text-right font-semibold text-[#B3B3B3] tabular-nums whitespace-nowrap">{{ perStockTotals.sellQty | number:'1.0-4' }}</td>
-                  <td class="px-4 py-3 text-right font-semibold text-[#B3B3B3] tabular-nums whitespace-nowrap">₹{{ perStockTotals.sellValue | number:'1.2-2' }}</td>
+                  <td class="px-4 py-3 text-right font-semibold text-[#B3B3B3] tabular-nums whitespace-nowrap">{{
+                    perStockTotals.buyQty | number:'1.0-4' }}</td>
+                  <td class="px-4 py-3 text-right font-semibold text-[#B3B3B3] tabular-nums whitespace-nowrap">₹{{
+                    perStockTotals.buyValue | number:'1.2-2' }}</td>
+                  <td class="px-4 py-3 text-right font-semibold text-[#B3B3B3] tabular-nums whitespace-nowrap">{{
+                    perStockTotals.sellQty | number:'1.0-4' }}</td>
+                  <td class="px-4 py-3 text-right font-semibold text-[#B3B3B3] tabular-nums whitespace-nowrap">₹{{
+                    perStockTotals.sellValue | number:'1.2-2' }}</td>
                   <td class="px-4 py-3 text-right font-semibold tabular-nums whitespace-nowrap"
                     [ngClass]="perStockTotals.netQty >= 0 ? 'text-[#22C55E]' : 'text-[#EF4444]'">
                     {{ perStockTotals.netQty | number:'1.0-4' }}
@@ -420,7 +492,24 @@
           </div>
         </div>
       </section>
-    }
+      }
+    </app-expansion-panel>
+
+    <!-- ============================================================== -->
+    <!-- PANEL D — TAX FAQ / NOTES                                        -->
+    <!-- ============================================================== -->
+    <app-expansion-panel [title]="'Tax FAQ / Notes'" subtitle="How taxes are estimated and what's included"
+      [titleIcon]="'Info'" [iconBgClass]="'bg-gradient-to-br from-[#10A37F] to-[#0D8968] p-2 rounded-lg text-white'"
+      [isExpanded]="false">
+      <div class="space-y-3 text-sm text-[#B3B3B3] leading-relaxed">
+        <p><span class="text-white font-semibold">Methodology:</span> Capital gains are computed using FIFO
+          (First-In-First-Out) matching of BUY/SELL transactions per stock.</p>
+        <p><span class="text-white font-semibold">STCG vs LTCG:</span> Equity held &lt; 12 months is short-term; ≥ 12
+          months is long-term (₹1,00,000 LTCG exemption applied to equity-like assets).</p>
+        <p><span class="text-white font-semibold">Estimates only:</span> The Estimated Tax card is a rough calculation.
+          Actual tax depends on your slab, set-off rules, and indexation. Not financial advice.</p>
+      </div>
+    </app-expansion-panel>
 
   </main>
 

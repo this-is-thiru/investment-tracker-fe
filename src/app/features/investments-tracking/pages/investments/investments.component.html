@@ -1,4 +1,30 @@
-<section class="flex flex-col w-full gap-4 px-4 md:px-6 max-w-7xl mx-auto lg:px-8 py-6 bg-background text-white">
+<div class="w-full min-h-screen flex flex-col bg-[#191919] text-white">
+  <!-- ============================================================== -->
+  <!-- HEADER STRIP                                                     -->
+  <!-- ============================================================== -->
+  <section class="relative bg-[#191919] overflow-hidden border-b border-[#2A2A2A]">
+    <div class="absolute inset-0 opacity-30 pointer-events-none">
+      <div class="relative bg-gradient-to-br from-[#0F0F0F] via-[#121212] to-[#191919] w-full h-full"></div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-10 md:py-14 relative z-10">
+      <div class="inline-flex items-center gap-2 bg-[#FACC15]/10 border border-[#FACC15]/20 rounded-full px-3 py-1.5 mb-4">
+        <lucide-icon name="Briefcase" class="w-4 h-4 text-[#FACC15]"></lucide-icon>
+        <span class="text-xs text-[#FACC15] font-semibold uppercase tracking-wider">Investment Tracking</span>
+      </div>
+
+      <h1 class="text-3xl md:text-4xl text-white mb-2 font-semibold">
+        Track your
+        <span class="text-transparent bg-clip-text bg-gradient-to-r from-[#FACC15] to-[#EAB308]">transactions</span>
+      </h1>
+      <p class="text-sm text-[#B3B3B3] max-w-2xl">
+        Manage and track all your investment transactions in one place. Upload your broker sheets to get started.
+      </p>
+    </div>
+  </section>
+
+  <!-- MAIN BODY -->
+  <main class="max-w-7xl mx-auto w-full px-4 md:px-6 lg:px-8 py-8 flex-1 flex flex-col gap-6">
   <!-- Upload Transactions -->
   <app-upload-transactions></app-upload-transactions>
 
@@ -64,6 +90,7 @@
       </ng-template>
     </p-table>
   </div> -->
-</section>
+  </main>
+</div>
 
 <app-footer></app-footer>
