@@ -336,58 +336,58 @@
                       <tr>
                         <th style="width: 3.5rem"></th>
                         @if (visibleColumns.stock) {
-                          <th pSortableColumn="stockName" class="px-4 py-3 text-left cursor-pointer hover:text-white transition-colors whitespace-nowrap">
+                          <th pSortableColumn="stockName" class="text-left cursor-pointer whitespace-nowrap">
                             <div class="flex items-center gap-1 whitespace-nowrap">Stock <p-sortIcon field="stockName"></p-sortIcon></div>
                           </th>
                         }
                         @if (visibleColumns.type) {
-                          <th pSortableColumn="transactionType" class="px-4 py-3 text-left cursor-pointer hover:text-white transition-colors whitespace-nowrap">
+                          <th pSortableColumn="transactionType" class="text-left cursor-pointer whitespace-nowrap">
                             <div class="flex items-center gap-1 whitespace-nowrap">Type <p-sortIcon field="transactionType"></p-sortIcon></div>
                           </th>
                         }
                         @if (visibleColumns.qty) {
-                          <th pSortableColumn="quantity" class="px-4 py-3 text-left cursor-pointer hover:text-white transition-colors whitespace-nowrap">
+                          <th pSortableColumn="quantity" class="text-left cursor-pointer whitespace-nowrap">
                             <div class="flex items-center gap-1 whitespace-nowrap">Qty <p-sortIcon field="quantity"></p-sortIcon></div>
                           </th>
                         }
                         @if (visibleColumns.price) {
-                          <th pSortableColumn="price" class="px-4 py-3 text-left cursor-pointer hover:text-white transition-colors whitespace-nowrap">
+                          <th pSortableColumn="price" class="text-left cursor-pointer whitespace-nowrap">
                             <div class="flex items-center gap-1 whitespace-nowrap">Price <p-sortIcon field="price"></p-sortIcon></div>
                           </th>
                         }
                         @if (visibleColumns.total) {
-                          <th pSortableColumn="totalValue" class="px-4 py-3 text-left cursor-pointer hover:text-white transition-colors whitespace-nowrap">
+                          <th pSortableColumn="totalValue" class="text-left cursor-pointer whitespace-nowrap">
                             <div class="flex items-center gap-1 whitespace-nowrap">Total <p-sortIcon field="totalValue"></p-sortIcon></div>
                           </th>
                         }
                         @if (visibleColumns.date) {
-                          <th pSortableColumn="transactionDate" class="px-4 py-3 text-left cursor-pointer hover:text-white transition-colors whitespace-nowrap">
+                          <th pSortableColumn="transactionDate" class="text-left cursor-pointer whitespace-nowrap">
                             <div class="flex items-center gap-1 whitespace-nowrap">Date <p-sortIcon field="transactionDate"></p-sortIcon></div>
                           </th>
                         }
                         @if (visibleColumns.broker) {
-                          <th pSortableColumn="brokerName" class="px-4 py-3 text-left cursor-pointer hover:text-white transition-colors whitespace-nowrap">
+                          <th pSortableColumn="brokerName" class="text-left cursor-pointer whitespace-nowrap">
                             <div class="flex items-center gap-1 whitespace-nowrap">Broker <p-sortIcon field="brokerName"></p-sortIcon></div>
                           </th>
                         }
                         @if (visibleColumns.exchange) {
-                          <th pSortableColumn="exchangeName" class="px-4 py-3 text-left cursor-pointer hover:text-white transition-colors whitespace-nowrap">
+                          <th pSortableColumn="exchangeName" class="text-left cursor-pointer whitespace-nowrap">
                             <div class="flex items-center gap-1 whitespace-nowrap">Exchange <p-sortIcon field="exchangeName"></p-sortIcon></div>
                           </th>
                         }
                         @if (visibleColumns.asset) {
-                          <th pSortableColumn="assetType" class="px-4 py-3 text-left cursor-pointer hover:text-white transition-colors whitespace-nowrap">
+                          <th pSortableColumn="assetType" class="text-left cursor-pointer whitespace-nowrap">
                             <div class="flex items-center gap-1 whitespace-nowrap">Asset <p-sortIcon field="assetType"></p-sortIcon></div>
                           </th>
                         }
                         @if (visibleColumns.charges) {
-                          <th class="px-4 py-3 text-left whitespace-nowrap">Charges</th>
+                          <th class="text-left whitespace-nowrap">Charges</th>
                         }
                       </tr>
                     </ng-template>
 
                     <ng-template pTemplate="body" let-t let-expanded="expanded">
-                      <tr class="border-b border-[#2a2a2a] hover:bg-[#222] transition-colors duration-150">
+                      <tr>
                         <td class="px-2 py-3 text-center">
                           <button type="button" [pRowToggler]="t"
                             class="p-0 w-8 h-8 flex items-center justify-center text-[#b3b3b3] hover:text-white hover:bg-white/10 rounded-full transition-colors duration-150 focus:outline-none"
@@ -517,58 +517,58 @@
                       <tr>
                         <th style="width: 3.5rem"></th>
                         @if (visibleColumns.stock) {
-                          <th pSortableColumn="stockName" class="px-4 py-3 text-left cursor-pointer hover:text-white transition-colors whitespace-nowrap">
+                          <th pSortableColumn="stockName" class="text-left cursor-pointer whitespace-nowrap">
                             <div class="flex items-center gap-1 whitespace-nowrap">Stock <p-sortIcon field="stockName"></p-sortIcon></div>
                           </th>
                         }
                         @if (visibleColumns.type) {
-                          <th pSortableColumn="transactionType" class="px-4 py-3 text-left cursor-pointer hover:text-white transition-colors whitespace-nowrap">
+                          <th pSortableColumn="transactionType" class="text-left cursor-pointer whitespace-nowrap">
                             <div class="flex items-center gap-1 whitespace-nowrap">Type <p-sortIcon field="transactionType"></p-sortIcon></div>
                           </th>
                         }
                         @if (visibleColumns.qty) {
-                          <th pSortableColumn="quantity" class="px-4 py-3 text-left cursor-pointer hover:text-white transition-colors whitespace-nowrap">
+                          <th pSortableColumn="quantity" class="text-left cursor-pointer whitespace-nowrap">
                             <div class="flex items-center gap-1 whitespace-nowrap">Qty <p-sortIcon field="quantity"></p-sortIcon></div>
                           </th>
                         }
                         @if (visibleColumns.price) {
-                          <th pSortableColumn="price" class="px-4 py-3 text-left cursor-pointer hover:text-white transition-colors whitespace-nowrap">
+                          <th pSortableColumn="price" class="text-left cursor-pointer whitespace-nowrap">
                             <div class="flex items-center gap-1 whitespace-nowrap">Price <p-sortIcon field="price"></p-sortIcon></div>
                           </th>
                         }
                         @if (visibleColumns.total) {
-                          <th pSortableColumn="totalValue" class="px-4 py-3 text-left cursor-pointer hover:text-white transition-colors whitespace-nowrap">
+                          <th pSortableColumn="totalValue" class="text-left cursor-pointer whitespace-nowrap">
                             <div class="flex items-center gap-1 whitespace-nowrap">Total <p-sortIcon field="totalValue"></p-sortIcon></div>
                           </th>
                         }
                         @if (visibleColumns.date) {
-                          <th pSortableColumn="transactionDate" class="px-4 py-3 text-left cursor-pointer hover:text-white transition-colors whitespace-nowrap">
+                          <th pSortableColumn="transactionDate" class="text-left cursor-pointer whitespace-nowrap">
                             <div class="flex items-center gap-1 whitespace-nowrap">Date <p-sortIcon field="transactionDate"></p-sortIcon></div>
                           </th>
                         }
                         @if (visibleColumns.broker) {
-                          <th pSortableColumn="brokerName" class="px-4 py-3 text-left cursor-pointer hover:text-white transition-colors whitespace-nowrap">
+                          <th pSortableColumn="brokerName" class="text-left cursor-pointer whitespace-nowrap">
                             <div class="flex items-center gap-1 whitespace-nowrap">Broker <p-sortIcon field="brokerName"></p-sortIcon></div>
                           </th>
                         }
                         @if (visibleColumns.exchange) {
-                          <th pSortableColumn="exchangeName" class="px-4 py-3 text-left cursor-pointer hover:text-white transition-colors whitespace-nowrap">
+                          <th pSortableColumn="exchangeName" class="text-left cursor-pointer whitespace-nowrap">
                             <div class="flex items-center gap-1 whitespace-nowrap">Exchange <p-sortIcon field="exchangeName"></p-sortIcon></div>
                           </th>
                         }
                         @if (visibleColumns.asset) {
-                          <th pSortableColumn="assetType" class="px-4 py-3 text-left cursor-pointer hover:text-white transition-colors whitespace-nowrap">
+                          <th pSortableColumn="assetType" class="text-left cursor-pointer whitespace-nowrap">
                             <div class="flex items-center gap-1 whitespace-nowrap">Asset <p-sortIcon field="assetType"></p-sortIcon></div>
                           </th>
                         }
                         @if (visibleColumns.charges) {
-                          <th class="px-4 py-3 text-left whitespace-nowrap">Charges</th>
+                          <th class="text-left whitespace-nowrap">Charges</th>
                         }
                       </tr>
                     </ng-template>
 
                     <ng-template pTemplate="body" let-t let-expanded="expanded">
-                      <tr class="border-b border-[#2a2a2a] hover:bg-[#222] transition-colors duration-150">
+                      <tr>
                         <td class="px-2 py-3 text-center">
                           <button type="button" [pRowToggler]="t"
                             class="p-0 w-8 h-8 flex items-center justify-center text-[#b3b3b3] hover:text-white hover:bg-white/10 rounded-full transition-colors duration-150 focus:outline-none"
@@ -579,8 +579,7 @@
                         </td>
                         @if (visibleColumns.stock) {
                           <td class="px-4 py-3">
-                            <div class="font-medium text-white truncate max-w-[220px]" [title]="t.stockName">{{ t.stockName }}</div>
-                            <div class="text-xs text-gray-500 font-mono">{{ t.stockCode }}</div>
+                            <div class="font-medium text-white truncate max-w-[220px] cursor-default" [title]="t.stockCode">{{ t.stockName }}</div>
                           </td>
                         }
                         @if (visibleColumns.type) {
@@ -685,45 +684,44 @@
           responsiveLayout="scroll" styleClass="p-datatable-sm w-full" [rowHover]="true">
           <ng-template pTemplate="header">
             <tr>
-              <th pSortableColumn="stockName" class="px-4 py-3 text-left cursor-pointer hover:text-white transition-colors whitespace-nowrap">
+              <th pSortableColumn="stockName" class="text-left cursor-pointer whitespace-nowrap">
                 <div class="flex items-center gap-1 whitespace-nowrap">Stock <p-sortIcon field="stockName"></p-sortIcon></div>
               </th>
-              <th pSortableColumn="assetType" class="px-4 py-3 text-left cursor-pointer hover:text-white transition-colors whitespace-nowrap">
+              <th pSortableColumn="assetType" class="text-left cursor-pointer whitespace-nowrap">
                 <div class="flex items-center gap-1 whitespace-nowrap">Asset <p-sortIcon field="assetType"></p-sortIcon></div>
               </th>
-              <th pSortableColumn="totalBought" class="px-4 py-3 text-right cursor-pointer hover:text-white transition-colors whitespace-nowrap">
+              <th pSortableColumn="totalBought" class="text-right cursor-pointer whitespace-nowrap">
                 <div class="flex items-center justify-end gap-1 whitespace-nowrap">Bought <p-sortIcon field="totalBought"></p-sortIcon></div>
               </th>
-              <th pSortableColumn="totalSold" class="px-4 py-3 text-right cursor-pointer hover:text-white transition-colors whitespace-nowrap">
+              <th pSortableColumn="totalSold" class="text-right cursor-pointer whitespace-nowrap">
                 <div class="flex items-center justify-end gap-1 whitespace-nowrap">Sold <p-sortIcon field="totalSold"></p-sortIcon></div>
               </th>
-              <th pSortableColumn="netHeld" class="px-4 py-3 text-right cursor-pointer hover:text-white transition-colors whitespace-nowrap">
+              <th pSortableColumn="netHeld" class="text-right cursor-pointer whitespace-nowrap">
                 <div class="flex items-center justify-end gap-1 whitespace-nowrap">Net Held <p-sortIcon field="netHeld"></p-sortIcon></div>
               </th>
-              <th pSortableColumn="totalInvested" class="px-4 py-3 text-right cursor-pointer hover:text-white transition-colors whitespace-nowrap">
+              <th pSortableColumn="totalInvested" class="text-right cursor-pointer whitespace-nowrap">
                 <div class="flex items-center justify-end gap-1 whitespace-nowrap">Invested <p-sortIcon field="totalInvested"></p-sortIcon></div>
               </th>
-              <th pSortableColumn="netInvested" class="px-4 py-3 text-right cursor-pointer hover:text-white transition-colors whitespace-nowrap">
+              <th pSortableColumn="netInvested" class="text-right cursor-pointer whitespace-nowrap">
                 <div class="flex items-center justify-end gap-1 whitespace-nowrap">Net ₹ <p-sortIcon field="netInvested"></p-sortIcon></div>
               </th>
-              <th pSortableColumn="txnCount" class="px-4 py-3 text-right cursor-pointer hover:text-white transition-colors whitespace-nowrap">
+              <th pSortableColumn="txnCount" class="text-right cursor-pointer whitespace-nowrap">
                 <div class="flex items-center justify-end gap-1 whitespace-nowrap">Txns <p-sortIcon field="txnCount"></p-sortIcon></div>
               </th>
-              <th pSortableColumn="avgPrice" class="px-4 py-3 text-right cursor-pointer hover:text-white transition-colors whitespace-nowrap">
+              <th pSortableColumn="avgPrice" class="text-right cursor-pointer whitespace-nowrap">
                 <div class="flex items-center justify-end gap-1 whitespace-nowrap">Avg ₹ <p-sortIcon field="avgPrice"></p-sortIcon></div>
               </th>
-              <th pSortableColumn="totalCharges" class="px-4 py-3 text-right cursor-pointer hover:text-white transition-colors whitespace-nowrap">
+              <th pSortableColumn="totalCharges" class="text-right cursor-pointer whitespace-nowrap">
                 <div class="flex items-center justify-end gap-1 whitespace-nowrap">Charges <p-sortIcon field="totalCharges"></p-sortIcon></div>
               </th>
-              <th class="px-4 py-3 text-left whitespace-nowrap">% Share</th>
+              <th class="text-left whitespace-nowrap">% Share</th>
             </tr>
           </ng-template>
 
           <ng-template pTemplate="body" let-h>
-            <tr class="border-b border-[#2a2a2a] hover:bg-[#222] transition-colors duration-150">
+            <tr>
               <td class="px-4 py-3">
-                <div class="font-medium text-white truncate max-w-[220px]" [title]="h.stockName">{{ h.stockName }}</div>
-                <div class="text-xs text-gray-500 font-mono">{{ h.stockCode }}</div>
+                <div class="font-medium text-white truncate max-w-[220px] cursor-default" [title]="h.stockCode">{{ h.stockName }}</div>
               </td>
               <td class="px-4 py-3 text-gray-300 whitespace-nowrap">{{ h.assetType }}</td>
               <td class="px-4 py-3 text-right text-gray-300 tabular-nums whitespace-nowrap">{{ h.totalBought | number:'1.0-4' }}</td>

@@ -116,3 +116,38 @@
 
 /* Section stack utility */
 :host ::ng-deep .section-stack { display:flex; flex-direction:column; gap:1.5rem; }
+
+/* ── SelectButton (asset-type toggle) dark theme ── */
+:host ::ng-deep .p-selectbutton {
+  display: inline-flex;
+  gap: 0.25rem;
+  background: #252525;
+  border: 1px solid #3A3A3A;
+  border-radius: 0.5rem;
+  padding: 0.2rem;
+}
+
+:host ::ng-deep .p-selectbutton .p-togglebutton {
+  background: transparent;
+  color: #909090;
+  border: none;
+  border-radius: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+:host ::ng-deep .p-selectbutton .p-togglebutton:hover {
+  color: #ffffff;
+  background: #2E2E2E;
+}
+
+:host ::ng-deep .p-selectbutton .p-togglebutton.p-togglebutton-checked,
+:host ::ng-deep .p-selectbutton .p-togglebutton.p-highlight {
+  background: #10A37F;
+  color: #ffffff;
+  font-weight: 600;
+}

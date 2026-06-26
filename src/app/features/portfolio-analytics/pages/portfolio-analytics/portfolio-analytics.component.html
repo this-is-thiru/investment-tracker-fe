@@ -61,53 +61,40 @@
     }
 
     <!-- ====================================================== -->
-    <!-- PANEL A — DATE RANGE FILTER (always visible)           -->
+    <!-- PANEL A — DATE RANGE FILTER (compact inline bar)       -->
     <!-- ====================================================== -->
-    <section class="border border-[#3A3A3A] rounded-xl bg-[#1F1F1F] p-3 md:p-5">
-        <div class="flex items-center justify-between mb-3">
-          <div class="flex items-center gap-2">
-            <lucide-icon name="Calendar" class="w-4 h-4 text-[#10A37F]"></lucide-icon>
-            <h3 class="text-sm font-bold text-white uppercase tracking-wider">Date Range</h3>
-            <span class="text-[10px] text-[#707070]">filters every chart, card, and table below</span>
-          </div>
+    <section class="flex flex-wrap items-center gap-3 rounded-xl bg-[#1A1A1A]/60 backdrop-blur-sm px-4 py-3 border border-[#2A2A2A]">
+        <div class="flex items-center gap-2 text-[#808080]">
+          <lucide-icon name="Calendar" class="w-4 h-4 text-[#10A37F]"></lucide-icon>
+          <span class="text-xs font-medium text-[#A0A0A0] hidden sm:inline">Filter</span>
         </div>
 
-        <div class="flex flex-wrap gap-2 items-center">
-          <p-select [options]="datePresetOptions"
-            [ngModel]="selectedPreset"
-            (ngModelChange)="setDatePreset($event)"
-            optionLabel="label" optionValue="value"
-            placeholder="Date range"
-            styleClass="text-sm"
-            appendTo="body"></p-select>
-
-          <button (click)="resetFilters()"
-            [disabled]="!hasActiveFilters()"
-            class="px-3 py-2 rounded-lg bg-[#2E2E2E] text-xs font-semibold text-[#B3B3B3] border border-[#3A3A3A] hover:text-white hover:border-[#10A37F] disabled:opacity-40 disabled:cursor-not-allowed transition-colors flex items-center gap-1.5 focus:outline-none">
-            <lucide-icon name="X" class="w-3.5 h-3.5"></lucide-icon>
-            Reset
-          </button>
-        </div>
+        <p-select [options]="datePresetOptions"
+          [ngModel]="selectedPreset"
+          (ngModelChange)="setDatePreset($event)"
+          optionLabel="label" optionValue="value"
+          placeholder="Date range"
+          styleClass="text-sm"
+          appendTo="body"></p-select>
 
         @if (selectedPreset === 'custom') {
-          <div class="flex flex-wrap items-center gap-2 mt-3 pl-1">
-            <span class="text-[10px] text-[#A0A0A0] uppercase tracking-wider">Custom range:</span>
+          <div class="flex items-center gap-2">
             <input type="date"
               [ngModel]="from"
               (ngModelChange)="from = $event; onDateFromChange()"
-              class="px-2 py-1 text-xs rounded-md bg-[#2E2E2E] border border-[#3A3A3A] text-white focus:ring-1 focus:ring-[#10A37F] focus:outline-none" />
-            <span class="text-[#707070] text-xs">→</span>
+              class="px-2.5 py-1.5 text-xs rounded-lg bg-[#252525] border border-[#3A3A3A] text-white focus:ring-1 focus:ring-[#10A37F] focus:outline-none" />
+            <span class="text-[#505050] text-xs">→</span>
             <input type="date"
               [ngModel]="to"
               (ngModelChange)="to = $event; onDateToChange()"
-              class="px-2 py-1 text-xs rounded-md bg-[#2E2E2E] border border-[#3A3A3A] text-white focus:ring-1 focus:ring-[#10A37F] focus:outline-none" />
+              class="px-2.5 py-1.5 text-xs rounded-lg bg-[#252525] border border-[#3A3A3A] text-white focus:ring-1 focus:ring-[#10A37F] focus:outline-none" />
           </div>
         }
 
         @if (activeChips.length > 0) {
-          <div class="flex flex-wrap gap-1.5 mt-3">
+          <div class="flex flex-wrap gap-1.5">
             @for (chip of activeChips; track chip.label) {
-              <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-[#10A37F]/10 text-[#10A37F] border border-[#10A37F]/30 text-xs">
+              <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-[#10A37F]/10 text-[#10A37F] border border-[#10A37F]/20 text-[11px] font-medium">
                 {{ chip.label }}
                 <button (click)="removeFilterChip(chip)" class="hover:text-white focus:outline-none" aria-label="Remove filter">
                   <lucide-icon name="X" class="w-3 h-3"></lucide-icon>
@@ -116,7 +103,15 @@
             }
           </div>
         }
-      </section>
+
+        @if (hasActiveFilters()) {
+          <button (click)="resetFilters()"
+            class="ml-auto px-2.5 py-1.5 rounded-lg text-[11px] font-medium text-[#808080] hover:text-white hover:bg-[#2E2E2E] transition-colors flex items-center gap-1 focus:outline-none">
+            <lucide-icon name="RotateCw" class="w-3 h-3"></lucide-icon>
+            Reset
+          </button>
+        }
+    </section>
 
     <!-- ====================================================== -->
     <!-- LOADING / EMPTY / DATA STATES                          -->
@@ -151,70 +146,75 @@
       <!-- PANEL B — PERFORMANCE SUMMARY (5 KPI cards)            -->
       <!-- ====================================================== -->
       <section>
-          <div class="flex items-center gap-2 mb-3">
-            <lucide-icon name="Sparkles" class="w-4 h-4 text-[#10A37F]"></lucide-icon>
-            <h3 class="text-sm font-bold text-white uppercase tracking-wider">Performance Summary</h3>
-            <span class="text-[10px] text-[#707070]">derived from currently filtered rows</span>
-          </div>
           <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
 
             <!-- Total Invested -->
-            <div class="bg-[#1F1F1F] border border-[#3A3A3A] border-l-4 border-l-[#22C55E] rounded-lg p-3 flex flex-col gap-1 hover:border-[#525252] transition-colors">
+            <div class="kpi-card group rounded-xl bg-[#1F1F1F] border border-[#2A2A2A] p-4 flex flex-col gap-2 hover:border-[#3A3A3A] transition-all duration-200">
               <div class="flex items-center justify-between">
-                <span class="text-[10px] text-[#B3B3B3] font-semibold uppercase tracking-wider">Invested</span>
-                <lucide-icon name="TrendingUp" class="w-3.5 h-3.5 text-[#22C55E]"></lucide-icon>
+                <span class="text-[11px] text-[#808080] font-medium tracking-wide">Invested</span>
+                <div class="w-7 h-7 rounded-lg bg-[#22C55E]/10 flex items-center justify-center">
+                  <lucide-icon name="TrendingUp" class="w-3.5 h-3.5 text-[#22C55E]"></lucide-icon>
+                </div>
               </div>
-              <div class="text-xl font-bold text-[#22C55E]">₹{{ totalInvested | number:'1.2-2' }}</div>
-              <div class="text-[10px] text-[#707070]">sum of BUYs</div>
+              <div class="text-xl font-bold text-white tracking-tight">₹{{ totalInvested | number:'1.2-2' }}</div>
+              <div class="text-[10px] text-[#606060]">sum of BUYs</div>
             </div>
 
             <!-- Realized P&L -->
-            <div class="bg-[#1F1F1F] border border-[#3A3A3A] rounded-lg p-3 flex flex-col gap-1 hover:border-[#525252] transition-colors"
-              [ngClass]="realizedPnl >= 0 ? 'border-l-4 border-l-[#22C55E]' : 'border-l-4 border-l-[#EF4444]'">
+            <div class="kpi-card group rounded-xl bg-[#1F1F1F] border border-[#2A2A2A] p-4 flex flex-col gap-2 hover:border-[#3A3A3A] transition-all duration-200">
               <div class="flex items-center justify-between">
-                <span class="text-[10px] text-[#B3B3B3] font-semibold uppercase tracking-wider">Realized P&L</span>
-                <lucide-icon name="TrendingUp" class="w-3.5 h-3.5"
-                  [ngClass]="realizedPnl >= 0 ? 'text-[#22C55E]' : 'text-[#EF4444]'"></lucide-icon>
+                <span class="text-[11px] text-[#808080] font-medium tracking-wide">Realized P&L</span>
+                <div class="w-7 h-7 rounded-lg flex items-center justify-center"
+                  [ngClass]="realizedPnl >= 0 ? 'bg-[#22C55E]/10' : 'bg-[#EF4444]/10'">
+                  <lucide-icon name="TrendingUp" class="w-3.5 h-3.5"
+                    [ngClass]="realizedPnl >= 0 ? 'text-[#22C55E]' : 'text-[#EF4444]'"></lucide-icon>
+                </div>
               </div>
-              <div class="text-xl font-bold"
+              <div class="text-xl font-bold tracking-tight"
                 [ngClass]="realizedPnl >= 0 ? 'text-[#22C55E]' : 'text-[#EF4444]'">
                 ₹{{ realizedPnl | number:'1.2-2' }}
               </div>
-              <div class="text-[10px] text-[#707070]">FIFO gains on SELLs</div>
+              <div class="text-[10px] text-[#606060]">FIFO gains on SELLs</div>
             </div>
 
             <!-- # Holdings -->
-            <div class="bg-[#1F1F1F] border border-[#3A3A3A] border-l-4 border-l-[#3B82F6] rounded-lg p-3 flex flex-col gap-1 hover:border-[#525252] transition-colors">
+            <div class="kpi-card group rounded-xl bg-[#1F1F1F] border border-[#2A2A2A] p-4 flex flex-col gap-2 hover:border-[#3A3A3A] transition-all duration-200">
               <div class="flex items-center justify-between">
-                <span class="text-[10px] text-[#B3B3B3] font-semibold uppercase tracking-wider">Holdings</span>
-                <lucide-icon name="Briefcase" class="w-3.5 h-3.5 text-[#3B82F6]"></lucide-icon>
+                <span class="text-[11px] text-[#808080] font-medium tracking-wide">Holdings</span>
+                <div class="w-7 h-7 rounded-lg bg-[#3B82F6]/10 flex items-center justify-center">
+                  <lucide-icon name="Briefcase" class="w-3.5 h-3.5 text-[#3B82F6]"></lucide-icon>
+                </div>
               </div>
-              <div class="text-2xl font-bold text-white">{{ holdingsCount }}</div>
-              <div class="text-[10px] text-[#707070]">distinct stocks</div>
+              <div class="text-2xl font-bold text-white tracking-tight">{{ holdingsCount }}</div>
+              <div class="text-[10px] text-[#606060]">distinct stocks</div>
             </div>
 
             <!-- Total Charges -->
-            <div class="bg-[#1F1F1F] border border-[#3A3A3A] border-l-4 border-l-[#FACC15] rounded-lg p-3 flex flex-col gap-1 hover:border-[#525252] transition-colors">
+            <div class="kpi-card group rounded-xl bg-[#1F1F1F] border border-[#2A2A2A] p-4 flex flex-col gap-2 hover:border-[#3A3A3A] transition-all duration-200">
               <div class="flex items-center justify-between">
-                <span class="text-[10px] text-[#B3B3B3] font-semibold uppercase tracking-wider">Charges</span>
-                <lucide-icon name="CreditCard" class="w-3.5 h-3.5 text-[#FACC15]"></lucide-icon>
+                <span class="text-[11px] text-[#808080] font-medium tracking-wide">Charges</span>
+                <div class="w-7 h-7 rounded-lg bg-[#FACC15]/10 flex items-center justify-center">
+                  <lucide-icon name="CreditCard" class="w-3.5 h-3.5 text-[#FACC15]"></lucide-icon>
+                </div>
               </div>
-              <div class="text-xl font-bold text-[#FACC15]">₹{{ totalCharges | number:'1.2-2' }}</div>
-              <div class="text-[10px] text-[#707070]">broker + misc</div>
+              <div class="text-xl font-bold text-white tracking-tight">₹{{ totalCharges | number:'1.2-2' }}</div>
+              <div class="text-[10px] text-[#606060]">broker + misc</div>
             </div>
 
             <!-- Biggest Position -->
-            <div class="bg-[#1F1F1F] border border-[#3A3A3A] border-l-4 border-l-[#10A37F] rounded-lg p-3 flex flex-col gap-1 hover:border-[#525252] transition-colors">
+            <div class="kpi-card group rounded-xl bg-[#1F1F1F] border border-[#2A2A2A] p-4 flex flex-col gap-2 hover:border-[#3A3A3A] transition-all duration-200">
               <div class="flex items-center justify-between">
-                <span class="text-[10px] text-[#B3B3B3] font-semibold uppercase tracking-wider">Biggest position</span>
-                <lucide-icon name="Crown" class="w-3.5 h-3.5 text-[#10A37F]"></lucide-icon>
+                <span class="text-[11px] text-[#808080] font-medium tracking-wide">Biggest position</span>
+                <div class="w-7 h-7 rounded-lg bg-[#10A37F]/10 flex items-center justify-center">
+                  <lucide-icon name="Crown" class="w-3.5 h-3.5 text-[#10A37F]"></lucide-icon>
+                </div>
               </div>
               @if (biggestPosition) {
                 <div class="text-sm font-bold text-white truncate" [title]="biggestPosition.name">{{ biggestPosition.name }}</div>
-                <div class="text-[10px] text-[#A0A0A0]">{{ biggestPosition.pct | number:'1.1-1' }}% of invested</div>
+                <div class="text-[10px] text-[#606060]">{{ biggestPosition.pct | number:'1.1-1' }}% of invested</div>
               } @else {
-                <div class="text-sm font-bold text-[#707070]">N/A</div>
-                <div class="text-[10px] text-[#707070]">no positions yet</div>
+                <div class="text-sm font-bold text-[#505050]">N/A</div>
+                <div class="text-[10px] text-[#606060]">no positions yet</div>
               }
             </div>
           </div>
@@ -324,18 +324,16 @@
                 responsiveLayout="scroll" styleClass="p-datatable-sm w-full" [rowHover]="true">
                 <ng-template pTemplate="header">
                   <tr>
-                    <th class="px-4 py-3 text-left text-[10px] uppercase tracking-wider text-[#B3B3B3]">Stock</th>
-                    <th class="px-4 py-3 text-left text-[10px] uppercase tracking-wider text-[#B3B3B3]">Code</th>
-                    <th class="px-4 py-3 text-right text-[10px] uppercase tracking-wider text-[#B3B3B3]">Realized P&L</th>
-                    <th class="px-4 py-3 text-right text-[10px] uppercase tracking-wider text-[#B3B3B3]"># Sells</th>
+                    <th class="text-left whitespace-nowrap">Stock</th>
+                    <th class="text-right whitespace-nowrap">Realized P&L</th>
+                    <th class="text-right whitespace-nowrap"># Sells</th>
                   </tr>
                 </ng-template>
                 <ng-template pTemplate="body" let-m>
-                  <tr class="border-b border-[#2A2A2A] hover:bg-[#222] transition-colors">
+                  <tr>
                     <td class="px-4 py-3">
-                      <div class="font-medium text-white truncate max-w-[200px]" [title]="m.stockName">{{ m.stockName }}</div>
+                      <div class="font-medium text-white truncate max-w-[200px] cursor-default" [title]="m.stockCode">{{ m.stockName }}</div>
                     </td>
-                    <td class="px-4 py-3 text-[#B3B3B3] text-xs font-mono whitespace-nowrap">{{ m.stockCode }}</td>
                     <td class="px-4 py-3 text-right font-semibold tabular-nums whitespace-nowrap text-[#22C55E]">
                       ₹{{ m.gain | number:'1.2-2' }}
                     </td>
@@ -344,7 +342,7 @@
                 </ng-template>
                 <ng-template pTemplate="emptymessage">
                   <tr>
-                    <td colspan="4" class="py-8 px-4 text-center">
+                    <td colspan="3" class="py-8 px-4 text-center">
                       <div class="flex flex-col items-center gap-2 text-[#B3B3B3]">
                         <lucide-icon name="Info" class="w-8 h-8 opacity-50"></lucide-icon>
                         <p class="text-xs">No winners in this range yet.</p>
@@ -370,18 +368,16 @@
                 responsiveLayout="scroll" styleClass="p-datatable-sm w-full" [rowHover]="true">
                 <ng-template pTemplate="header">
                   <tr>
-                    <th class="px-4 py-3 text-left text-[10px] uppercase tracking-wider text-[#B3B3B3]">Stock</th>
-                    <th class="px-4 py-3 text-left text-[10px] uppercase tracking-wider text-[#B3B3B3]">Code</th>
-                    <th class="px-4 py-3 text-right text-[10px] uppercase tracking-wider text-[#B3B3B3]">Realized P&L</th>
-                    <th class="px-4 py-3 text-right text-[10px] uppercase tracking-wider text-[#B3B3B3]"># Sells</th>
+                    <th class="text-left whitespace-nowrap">Stock</th>
+                    <th class="text-right whitespace-nowrap">Realized P&L</th>
+                    <th class="text-right whitespace-nowrap"># Sells</th>
                   </tr>
                 </ng-template>
                 <ng-template pTemplate="body" let-m>
-                  <tr class="border-b border-[#2A2A2A] hover:bg-[#222] transition-colors">
+                  <tr>
                     <td class="px-4 py-3">
-                      <div class="font-medium text-white truncate max-w-[200px]" [title]="m.stockName">{{ m.stockName }}</div>
+                      <div class="font-medium text-white truncate max-w-[200px] cursor-default" [title]="m.stockCode">{{ m.stockName }}</div>
                     </td>
-                    <td class="px-4 py-3 text-[#B3B3B3] text-xs font-mono whitespace-nowrap">{{ m.stockCode }}</td>
                     <td class="px-4 py-3 text-right font-semibold tabular-nums whitespace-nowrap text-[#EF4444]">
                       ₹{{ m.gain | number:'1.2-2' }}
                     </td>
@@ -390,7 +386,7 @@
                 </ng-template>
                 <ng-template pTemplate="emptymessage">
                   <tr>
-                    <td colspan="4" class="py-8 px-4 text-center">
+                    <td colspan="3" class="py-8 px-4 text-center">
                       <div class="flex flex-col items-center gap-2 text-[#B3B3B3]">
                         <lucide-icon name="Info" class="w-8 h-8 opacity-50"></lucide-icon>
                         <p class="text-xs">No losers in this range yet.</p>
@@ -436,47 +432,44 @@
               responsiveLayout="scroll" styleClass="p-datatable-sm w-full" [rowHover]="true">
               <ng-template pTemplate="header">
                 <tr>
-                  <th pSortableColumn="stockName" class="px-4 py-3 text-left cursor-pointer hover:text-white transition-colors whitespace-nowrap">
+                  <th pSortableColumn="stockName" class="text-left cursor-pointer whitespace-nowrap">
                     <div class="flex items-center gap-1 whitespace-nowrap">Stock <p-sortIcon field="stockName"></p-sortIcon></div>
                   </th>
-                  <th pSortableColumn="stockCode" class="px-4 py-3 text-left cursor-pointer hover:text-white transition-colors whitespace-nowrap">
-                    <div class="flex items-center gap-1 whitespace-nowrap">Code <p-sortIcon field="stockCode"></p-sortIcon></div>
-                  </th>
-                  <th pSortableColumn="assetType" class="px-4 py-3 text-left cursor-pointer hover:text-white transition-colors whitespace-nowrap">
+
+                  <th pSortableColumn="assetType" class="text-left cursor-pointer whitespace-nowrap">
                     <div class="flex items-center gap-1 whitespace-nowrap">Asset <p-sortIcon field="assetType"></p-sortIcon></div>
                   </th>
-                  <th pSortableColumn="netHeld" class="px-4 py-3 text-right cursor-pointer hover:text-white transition-colors whitespace-nowrap">
+                  <th pSortableColumn="netHeld" class="text-right cursor-pointer whitespace-nowrap">
                     <div class="flex items-center justify-end gap-1 whitespace-nowrap">Qty Held <p-sortIcon field="netHeld"></p-sortIcon></div>
                   </th>
-                  <th pSortableColumn="avgPrice" class="px-4 py-3 text-right cursor-pointer hover:text-white transition-colors whitespace-nowrap">
+                  <th pSortableColumn="avgPrice" class="text-right cursor-pointer whitespace-nowrap">
                     <div class="flex items-center justify-end gap-1 whitespace-nowrap">Avg Buy Price <p-sortIcon field="avgPrice"></p-sortIcon></div>
                   </th>
-                  <th pSortableColumn="totalInvested" class="px-4 py-3 text-right cursor-pointer hover:text-white transition-colors whitespace-nowrap">
+                  <th pSortableColumn="totalInvested" class="text-right cursor-pointer whitespace-nowrap">
                     <div class="flex items-center justify-end gap-1 whitespace-nowrap">Total Invested <p-sortIcon field="totalInvested"></p-sortIcon></div>
                   </th>
-                  <th pSortableColumn="netInvested" class="px-4 py-3 text-right cursor-pointer hover:text-white transition-colors whitespace-nowrap">
+                  <th pSortableColumn="netInvested" class="text-right cursor-pointer whitespace-nowrap">
                     <div class="flex items-center justify-end gap-1 whitespace-nowrap">Net Invested <p-sortIcon field="netInvested"></p-sortIcon></div>
                   </th>
-                  <th pSortableColumn="totalCharges" class="px-4 py-3 text-right cursor-pointer hover:text-white transition-colors whitespace-nowrap">
+                  <th pSortableColumn="totalCharges" class="text-right cursor-pointer whitespace-nowrap">
                     <div class="flex items-center justify-end gap-1 whitespace-nowrap">Charges <p-sortIcon field="totalCharges"></p-sortIcon></div>
                   </th>
-                  <th pSortableColumn="firstDate" class="px-4 py-3 text-left cursor-pointer hover:text-white transition-colors whitespace-nowrap">
+                  <th pSortableColumn="firstDate" class="text-left cursor-pointer whitespace-nowrap">
                     <div class="flex items-center gap-1 whitespace-nowrap">First Bought <p-sortIcon field="firstDate"></p-sortIcon></div>
                   </th>
-                  <th pSortableColumn="lastDate" class="px-4 py-3 text-left cursor-pointer hover:text-white transition-colors whitespace-nowrap">
+                  <th pSortableColumn="lastDate" class="text-left cursor-pointer whitespace-nowrap">
                     <div class="flex items-center gap-1 whitespace-nowrap">Last Bought <p-sortIcon field="lastDate"></p-sortIcon></div>
                   </th>
-                  <th pSortableColumn="sharePercent" class="px-4 py-3 text-right cursor-pointer hover:text-white transition-colors whitespace-nowrap">
+                  <th pSortableColumn="sharePercent" class="text-right cursor-pointer whitespace-nowrap">
                     <div class="flex items-center justify-end gap-1 whitespace-nowrap">% Portfolio <p-sortIcon field="sharePercent"></p-sortIcon></div>
                   </th>
                 </tr>
               </ng-template>
               <ng-template pTemplate="body" let-h>
-                <tr class="border-b border-[#2A2A2A] hover:bg-[#222] transition-colors">
+                <tr>
                   <td class="px-4 py-3">
-                    <div class="font-medium text-white truncate max-w-[200px]" [title]="h.stockName">{{ h.stockName }}</div>
+                    <div class="font-medium text-white truncate max-w-[200px] cursor-default" [title]="h.stockCode">{{ h.stockName }}</div>
                   </td>
-                  <td class="px-4 py-3 text-[#B3B3B3] text-xs font-mono whitespace-nowrap">{{ h.stockCode }}</td>
                   <td class="px-4 py-3 text-[#B3B3B3] whitespace-nowrap">{{ h.assetType }}</td>
                   <td class="px-4 py-3 text-right font-semibold tabular-nums whitespace-nowrap"
                     [ngClass]="h.netHeld > 0 ? 'text-[#22C55E]' : h.netHeld < 0 ? 'text-[#EF4444]' : 'text-[#B3B3B3]'">
@@ -496,7 +489,7 @@
               </ng-template>
               <ng-template pTemplate="emptymessage">
                 <tr>
-                  <td colspan="11" class="py-12 px-4 text-center">
+                  <td colspan="10" class="py-12 px-4 text-center">
                     <div class="flex flex-col items-center gap-2 text-[#B3B3B3]">
                       <lucide-icon name="Briefcase" class="w-8 h-8 opacity-50"></lucide-icon>
                       <p class="text-xs">No holdings in this range.</p>
