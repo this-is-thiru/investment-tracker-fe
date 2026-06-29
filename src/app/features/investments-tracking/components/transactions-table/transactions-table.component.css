@@ -112,7 +112,7 @@
   color: #ffffff !important;
 }
 
-:host ::ng-deep .p-datatable-tbody > tr.p-datatable-row-expansion {
+:host ::ng-deep .p-datatable-tbody>tr.p-datatable-row-expansion {
   background-color: #171717 !important;
 }
 
@@ -128,14 +128,48 @@
 }
 
 /* Custom horizontal scrollbar for table containers */
-:host ::ng-deep .table-scroll-container {
-  overflow-x: auto;
-  overflow-y: hidden;
-  scroll-behavior: smooth;
+/* Custom horizontal scrollbar for all table containers and internal PrimeNG wrappers */
+:host ::ng-deep * {
   scrollbar-width: thin;
   scrollbar-color: #3A3A3A #191919;
 }
-:host ::ng-deep .table-scroll-container::-webkit-scrollbar { height: 8px; }
-:host ::ng-deep .table-scroll-container::-webkit-scrollbar-track { background: #191919; border-radius: 4px; }
-:host ::ng-deep .table-scroll-container::-webkit-scrollbar-thumb { background: #3A3A3A; border-radius: 4px; }
-:host ::ng-deep .table-scroll-container::-webkit-scrollbar-thumb:hover { background: #4A4A4A; }
+
+:host ::ng-deep *::-webkit-scrollbar {
+  height: 8px;
+  width: 8px;
+}
+
+:host ::ng-deep *::-webkit-scrollbar-track {
+  background: #191919;
+  border-radius: 4px;
+}
+
+:host ::ng-deep *::-webkit-scrollbar-thumb {
+  background: #3A3A3A;
+  border-radius: 4px;
+}
+
+:host ::ng-deep *::-webkit-scrollbar-thumb:hover {
+  background: #4A4A4A;
+}
+
+.table-scroll-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+::ng-deep .p-datatable {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+::ng-deep .p-datatable-wrapper {
+  flex: 1;
+  overflow: auto;
+}
+
+::ng-deep .p-paginator {
+  margin-top: auto;
+}

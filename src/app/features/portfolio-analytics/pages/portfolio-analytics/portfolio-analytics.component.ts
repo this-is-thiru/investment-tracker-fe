@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TransactionService } from '../../../../services/transaction.service';
@@ -63,6 +63,7 @@ const SCALES_AXIS_STYLE = {
 export class PortfolioAnalyticsComponent implements OnInit {
   private transactionService = inject(TransactionService);
   private analytics = inject(PortfolioAnalyticsService);
+  private cdr = inject(ChangeDetectorRef);
 
   // ----- raw data -----
   temporaryTransactions: TransactionsResponse[] = [];
@@ -219,6 +220,7 @@ export class PortfolioAnalyticsComponent implements OnInit {
     // not require the user to click again to refresh the visualization.
     this.applyFilters();
     this.loading = false;
+    this.cdr.detectChanges();
   }
 
   // ============================================================

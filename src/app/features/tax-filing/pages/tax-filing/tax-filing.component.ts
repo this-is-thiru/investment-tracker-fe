@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MessageService } from 'primeng/api';
@@ -80,6 +80,7 @@ export class TaxFilingComponent implements OnInit {
   private transactionService = inject(TransactionService);
   private analytics = inject(PortfolioAnalyticsService);
   private messageService = inject(MessageService);
+  private cdr = inject(ChangeDetectorRef);
 
   // ----- raw -----
   temporaryTransactions: TransactionsResponse[] = [];
@@ -258,6 +259,7 @@ export class TaxFilingComponent implements OnInit {
     // complete data instead of an empty initial snapshot.
     this.recompute();
     this.loading = false;
+    this.cdr.detectChanges();
   }
 
   // ============================================================

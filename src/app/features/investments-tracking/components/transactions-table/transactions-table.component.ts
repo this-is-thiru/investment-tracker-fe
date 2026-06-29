@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MessageService } from 'primeng/api';
@@ -50,6 +50,7 @@ export class TransactionsTableComponent implements OnInit {
   private transactionService = inject(TransactionService);
   private messageService = inject(MessageService);
   private analytics = inject(PortfolioAnalyticsService);
+  private cdr = inject(ChangeDetectorRef);
 
   // ----- view / tab state -----
   viewMode: ViewMode = 'split';
@@ -188,6 +189,7 @@ export class TransactionsTableComponent implements OnInit {
         this.loadingTemp = false;
         this.usingMockTemp = false;
         this.applyFilters();
+        this.cdr.detectChanges();
       },
       error: () => {
         this.loadingTemp = false;
@@ -213,6 +215,7 @@ export class TransactionsTableComponent implements OnInit {
           detail: 'Failed to load temporary transactions',
         });
         this.applyFilters();
+        this.cdr.detectChanges();
       },
     });
   }
@@ -229,6 +232,7 @@ export class TransactionsTableComponent implements OnInit {
         this.loadingPortfolio = false;
         this.usingMockPort = false;
         this.applyFilters();
+        this.cdr.detectChanges();
       },
       error: () => {
         this.loadingPortfolio = false;
@@ -254,6 +258,7 @@ export class TransactionsTableComponent implements OnInit {
           detail: 'Failed to load current transactions',
         });
         this.applyFilters();
+        this.cdr.detectChanges();
       },
     });
   }
