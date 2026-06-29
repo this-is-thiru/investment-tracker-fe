@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "investment-tracker-fe": {
+    "wealthlens": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -23,7 +23,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/investment-tracker-fe",
+            "outputPath": "dist/wealthlens",
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": ["zone.js"],
@@ -97,16 +97,16 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "investment-tracker-fe:build:production"
+              "buildTarget": "wealthlens:build:production"
             },
             "development": {
-              "buildTarget": "investment-tracker-fe:build:development"
+              "buildTarget": "wealthlens:build:development"
             },
             "testing": {
-              "buildTarget": "investment-tracker-fe:build:testing"
+              "buildTarget": "wealthlens:build:testing"
             },
             "staging": {
-              "buildTarget": "investment-tracker-fe:build:staging"
+              "buildTarget": "wealthlens:build:staging"
             }
           },
           "defaultConfiguration": "development"
@@ -114,7 +114,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "buildTarget": "investment-tracker-fe:build"
+            "buildTarget": "wealthlens:build"
           }
         },
         "test": {
