@@ -168,6 +168,7 @@ export class TransactionsTableComponent implements OnInit {
     this.userEmail = localStorage.getItem('userEmail') || '';
     this.loadTemporaryTransactions();
     this.loadPortfolioTransactions();
+    this.loadHoldingsFromApi();
   }
 
   refresh(): void {
@@ -175,6 +176,7 @@ export class TransactionsTableComponent implements OnInit {
     this.usingMockPort = false;
     this.loadTemporaryTransactions();
     this.loadPortfolioTransactions();
+    this.loadHoldingsFromApi();
   }
 
   /** TEMPORARY */
@@ -223,7 +225,8 @@ export class TransactionsTableComponent implements OnInit {
   /** CURRENT / PORTFOLIO */
   loadPortfolioTransactions(): void {
     this.loadingPortfolio = true;
-    this.transactionService.getCurrentTransactions(this.userEmail).subscribe({
+    const apiFilters = this.buildApiFilters();
+    this.transactionService.getCurrentTransactions(this.userEmail, apiFilters).subscribe({
       next: (data) => {
         this.portfolioTransactions = data.map((t, i) => ({
           ...t,
@@ -263,9 +266,125 @@ export class TransactionsTableComponent implements OnInit {
     });
   }
 
+  /** HOLDINGS API */
+  loadHoldingsFromApi(): void {
+    this.transactionService.getAllHoldings(this.userEmail).subscribe({
+      next: (res) => {
+        console.log('Holdings API response:', res);
+        const data = Array.isArray(res) ? res : (res?.data || res?.content || []);
+        let totalAllInvested = 0;
+        this.holdings = data.map((d: any) => {
+          totalAllInvested += d.totalValue || 0;
+          return {
+            stockCode: d.stockCode,
+            stockName: d.stockName,
+            assetType: d.assetType,
+            totalBought: d.totalQuantity || 0, // Using totalQuantity as bought assuming net is quantity
+            totalSold: (d.totalQuantity || 0) - (d.quantity || 0),
+            netHeld: d.quantity || 0,
+            totalInvested: d.totalValue || 0,
+            totalSoldValue: 0,
+            netInvested: d.totalValue || 0,
+            txnCount: (d.buyTransactionIds?.length || 0) + (d.sellTransactionIds?.length || 0) || Object.keys(d.transactionQuantities || {}).length,
+            firstDate: '',
+            lastDate: '',
+            avgPrice: d.price || 0,
+            totalCharges: (d.brokerCharges || 0) + (d.miscCharges || 0),
+            sharePercent: 0
+          };
+        });
+        
+        if (totalAllInvested > 0) {
+          this.holdings.forEach(h => {
+            h.sharePercent = (h.totalInvested / totalAllInvested) * 100;
+          });
+        }
+        
+        this.holdings.sort((a, b) => b.totalInvested - a.totalInvested);
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error('Failed to load holdings from API', err)
+    });
+  }
+
   // ============================================================
   // FILTERS
   // ============================================================
+  private buildApiFilters(): any[] {
+    const filters: any[] = [];
+
+    // Removed searchQuery from API payload as requested (frontend-only search)
+
+    if (this.filterType && this.filterType !== 'ALL') {
+      filters.push({
+        filterKey: 'transaction_type',
+        operation: 'EQUALS',
+        value: this.filterType,
+        logicalOperation: 'AND',
+        expressionLogicalOperation: 'AND',
+        allowEmptyOrNull: false,
+        caseSensitive: false,
+        isDateField: false
+      });
+    }
+
+    if (this.filterAssetType) {
+      filters.push({
+        filterKey: 'asset_type',
+        operation: 'EQUALS',
+        value: this.filterAssetType,
+        logicalOperation: 'AND',
+        expressionLogicalOperation: 'AND',
+        allowEmptyOrNull: false,
+        caseSensitive: false,
+        isDateField: false
+      });
+    }
+
+    if (this.filterBroker) {
+      filters.push({
+        filterKey: 'broker_name',
+        operation: 'EQUALS',
+        value: this.filterBroker,
+        logicalOperation: 'AND',
+        expressionLogicalOperation: 'AND',
+        allowEmptyOrNull: false,
+        caseSensitive: false,
+        isDateField: false
+      });
+    }
+
+    const { from, to } = this.getDateRange();
+    if (from) {
+      const fromStr = from.toISOString().split('T')[0];
+      filters.push({
+        filterKey: 'transaction_date',
+        operation: 'GREATER_THAN',
+        value: fromStr,
+        logicalOperation: 'AND',
+        expressionLogicalOperation: 'AND',
+        allowEmptyOrNull: false,
+        caseSensitive: false,
+        isDateField: true
+      });
+    }
+    if (to) {
+      const toStr = to.toISOString().split('T')[0];
+      filters.push({
+        filterKey: 'transaction_date',
+        operation: 'LESSER_THAN',
+        value: toStr,
+        logicalOperation: 'AND',
+        expressionLogicalOperation: 'AND',
+        allowEmptyOrNull: false,
+        caseSensitive: false,
+        isDateField: true
+      });
+    }
+
+    return filters;
+  }
+
   applyFilters(): void {
     const q = (this.searchQuery || '').toLowerCase().trim();
     const { from, to } = this.getDateRange();
@@ -277,10 +396,6 @@ export class TransactionsTableComponent implements OnInit {
         ].map((v) => (v || '').toLowerCase()).join(' ');
         if (!haystack.includes(q)) return false;
       }
-      if (this.filterType !== 'ALL' && t.transactionType !== this.filterType) return false;
-      if (this.filterAssetType && t.assetType !== this.filterAssetType) return false;
-      if (this.filterBroker && t.brokerName !== this.filterBroker) return false;
-      if ((from || to) && !this.inDateRange(t.transactionDate, from, to)) return false;
       return true;
     };
 
@@ -289,7 +404,6 @@ export class TransactionsTableComponent implements OnInit {
     this.filteredAll = [...this.filteredTemporary, ...this.filteredPortfolio];
 
     this.stats = this.computeStats(this.filteredAll);
-    this.holdings = this.computeHoldings(this.filteredAll);
     this.insights = this.computeInsights(this.filteredAll, this.stats);
 
     this.availableAssetTypes = this.uniqueSorted([
@@ -331,7 +445,7 @@ export class TransactionsTableComponent implements OnInit {
     this.filterDatePreset = 'all';
     this.filterDateFrom = null;
     this.filterDateTo = null;
-    this.applyFilters();
+    this.refresh();
   }
 
   hasActiveFilters(): boolean {
@@ -340,7 +454,10 @@ export class TransactionsTableComponent implements OnInit {
 
   removeFilterChip(chip: FilterChip): void {
     switch (chip.kind) {
-      case 'search': this.searchQuery = ''; break;
+      case 'search': 
+        this.searchQuery = ''; 
+        this.applyFilters();
+        return;
       case 'type': this.filterType = 'ALL'; break;
       case 'asset': this.filterAssetType = null; break;
       case 'broker': this.filterBroker = null; break;
@@ -350,16 +467,16 @@ export class TransactionsTableComponent implements OnInit {
         this.filterDateTo = null;
         break;
     }
-    this.applyFilters();
+    this.refresh();
   }
 
-  setTypeFilter(t: TypeFilter): void { this.filterType = t; this.applyFilters(); }
-  setAssetType(a: string | null): void { this.filterAssetType = a; this.applyFilters(); }
-  setBroker(b: string | null): void { this.filterBroker = b; this.applyFilters(); }
-  setDatePreset(p: DatePreset): void { this.filterDatePreset = p; this.applyFilters(); }
-  onSearchChange(): void { this.applyFilters(); }
-  onDateFromChange(): void { this.applyFilters(); }
-  onDateToChange(): void { this.applyFilters(); }
+  setTypeFilter(t: TypeFilter): void { this.filterType = t; this.refresh(); }
+  setAssetType(a: string | null): void { this.filterAssetType = a; this.refresh(); }
+  setBroker(b: string | null): void { this.filterBroker = b; this.refresh(); }
+  setDatePreset(p: DatePreset): void { this.filterDatePreset = p; this.refresh(); }
+  onSearchChange(): void { this.applyFilters(); } // Search remains frontend-only
+  onDateFromChange(): void { this.refresh(); }
+  onDateToChange(): void { this.refresh(); }
 
   toggleColumn(col: ColumnDef['key']): void {
     this.visibleColumns[col] = !this.visibleColumns[col];

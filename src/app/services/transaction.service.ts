@@ -200,10 +200,10 @@ export class TransactionService {
   }
 
   /** Fetch current transactions */
-  getCurrentTransactions(email: string): Observable<TransactionsResponse[]> {
+  getCurrentTransactions(email: string, filters: any[] = []): Observable<TransactionsResponse[]> {
     const url = `${this.BASE_URL.getBaseUrl()}/transactions/user/${email}`;
     console.log('Token being sent:', localStorage.getItem('jwtToken'));
-    return this.http.get<TransactionsResponse[]>(url);
+    return this.http.post<TransactionsResponse[]>(url, { filters });
   }
 
   /** Fetch temporary transactions */
@@ -211,5 +211,11 @@ export class TransactionService {
     const url = `${this.BASE_URL.getBaseUrl()}/temporary-transactions/user/${email}/all`;
     console.log('Token being sent:', localStorage.getItem('jwtToken'));
     return this.http.get<TransactionsResponse[]>(url);
+  }
+
+  /** Fetch holdings */
+  getAllHoldings(email: string): Observable<any> {
+    const url = `${this.BASE_URL.getBaseUrl()}/portfolio/user/${email}/stocks/all`;
+    return this.http.get<any>(url);
   }
 }
