@@ -25,71 +25,24 @@
 
   <!-- MAIN BODY -->
   <main class="max-w-7xl mx-auto w-full px-4 md:px-6 lg:px-8 py-8 flex-1 flex flex-col gap-6">
-  <!-- Upload Transactions -->
-  <app-upload-transactions></app-upload-transactions>
+    <!-- Section 1: Upload Transactions -->
+    <app-upload-transactions
+      [quarter]="selectedQuarter"
+      (quarterSelected)="onQuarterSelected($event)"
+      (fileSelected)="onFileSelected($event)">
+    </app-upload-transactions>
 
+    <!-- Section 2: Preview & Upload -->
+    @if (selectedFile) {
+      <app-upload-preview-table
+        [file]="selectedFile"
+        [quarter]="selectedQuarter"
+        (uploadComplete)="onUploadComplete()"
+        (fileCleared)="onFileCleared()">
+      </app-upload-preview-table>
+    }
 
-  <app-transactions-table></app-transactions-table>
-
-  <app-all-transactions></app-all-transactions>
-
-  <!-- Table Wrapper -->
-  <!-- <div class="w-full overflow-auto rounded-xl border border-[#4d4d4d] bg-surface shadow-sm">
-    <p-table 
-      *ngIf="excelData.length" 
-      [value]="excelData" 
-      [paginator]="true" 
-      [rows]="10"
-      [rowsPerPageOptions]="[5, 10, 20]" 
-      [globalFilterFields]="headers" 
-      [sortMode]="'multiple'"
-      responsiveLayout="scroll" 
-      editMode="cell" 
-      class="p-datatable-sm p-datatable w-full text-white"> -->
-
-  <!-- Table Header -->
-  <!-- <ng-template pTemplate="header">
-        <tr class="bg-surfaceHover">
-          <th *ngFor="let header of headers" [pSortableColumn]="header" class="px-3 py-2 text-left">
-            {{ header }}
-            <p-columnFilter [field]="header" matchMode="contains"></p-columnFilter>
-            <p-sortIcon [field]="header"></p-sortIcon>
-          </th>
-          <th class="px-3 py-2 text-left">Actions</th>
-        </tr>
-      </ng-template> -->
-
-  <!-- Table Body -->
-  <!-- <ng-template pTemplate="body" let-rowData let-rowIndex="rowIndex">
-        <tr class="hover:bg-[#333] transition-colors duration-200">
-          <td class="px-3 py-2" *ngFor="let header of headers" pEditableColumn>
-            <p-cellEditor>
-              <ng-template pTemplate="input">
-                <input pInputText [(ngModel)]="rowData[header]" 
-                       class="bg-background text-white border border-border rounded px-2 py-1 focus:ring-2 focus:ring-border focus:outline-none"/>
-              </ng-template>
-              <ng-template pTemplate="output">
-                {{ rowData[header] }}
-              </ng-template>
-            </p-cellEditor>
-          </td>
-          <td class="px-3 py-2">
-            <button pButton icon="pi pi-trash" class="p-button-sm p-button-danger hover:bg-red-700 transition-colors"
-                    (click)="deleteRow(rowIndex)"></button>
-          </td>
-        </tr>
-      </ng-template> -->
-
-  <!-- No Data Template -->
-  <!-- <ng-template pTemplate="emptymessage">
-        <tr>
-          <td [attr.colspan]="headers.length + 1" class="text-center py-4 text-text-secondary">
-            No data found. Please upload an Excel file.
-          </td>
-        </tr>
-      </ng-template>
-    </p-table>
-  </div> -->
+    <!-- Sections 3 and 4 will be added here -->
   </main>
 </div>
 
