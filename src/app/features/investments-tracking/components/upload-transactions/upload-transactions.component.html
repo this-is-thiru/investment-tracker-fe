@@ -42,275 +42,63 @@
       </p-select>
     </div>
 
-    @switch (step) {
+    <!-- File selection area -->
+    <div
+      (dragover)="handleDragOver($event)"
+      (drop)="handleDrop($event)"
+      (click)="fileInput.click()"
+      class="border-2 border-dashed border-[#3A3A3A] rounded-xl p-12 text-center hover:border-[#10A37F]/50 hover:bg-[#10A37F]/5 transition-all cursor-pointer group"
+    >
+      <div
+        class="bg-[#10A37F]/10 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform"
+      >
+        <lucide-icon
+          name="upload"
+          class="h-8 w-8 text-[#10A37F]"
+        ></lucide-icon>
+      </div>
+      <p class="text-white mb-2 font-medium">
+        Drag and drop your transaction file here
+      </p>
+      <p class="text-[#B3B3B3] text-sm mb-4">or click to browse files</p>
+      <button
+        type="button"
+        class="px-6 py-2.5 bg-gradient-to-r from-[#10A37F]/60 to-[#0D8968]/60 text-white rounded-lg font-medium hover:shadow-lg transition-all hover-scale"
+      >
+        Select Files
+      </button>
+      <p class="text-xs text-[#666666] mt-4">
+        Supported formats: XLSX, XLS (Max 10MB)
+      </p>
+      <input
+        #fileInput
+        type="file"
+        accept=".xlsx,.xls"
+        class="hidden"
+        (change)="onFilePicked($event)"
+      />
+    </div>
 
-      <!-- ===== Step: pick-file ===== -->
-      @case ('pick-file') {
-        <div
-          (dragover)="handleDragOver($event)"
-          (drop)="handleDrop($event)"
-          (click)="fileInput.click()"
-          class="border-2 border-dashed border-[#3A3A3A] rounded-xl p-12 text-center hover:border-[#10A37F]/50 hover:bg-[#10A37F]/5 transition-all cursor-pointer group"
-        >
-          <div
-            class="bg-[#10A37F]/10 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform"
-          >
-            <lucide-icon
-              name="upload"
-              class="h-8 w-8 text-[#10A37F]"
-            ></lucide-icon>
-          </div>
-          <p class="text-white mb-2 font-medium">
-            Drag and drop your transaction file here
-          </p>
-          <p class="text-[#B3B3B3] text-sm mb-4">or click to browse files</p>
-          <button
-            type="button"
-            class="px-6 py-2.5 bg-gradient-to-r from-[#10A37F]/60 to-[#0D8968]/60 text-white rounded-lg font-medium hover:shadow-lg transition-all hover-scale"
-          >
-            Select Files
-          </button>
-          <p class="text-xs text-[#666666] mt-4">
-            Supported formats: XLSX, XLS (Max 10MB)
-          </p>
-          <input
-            #fileInput
-            type="file"
-            accept=".xlsx,.xls"
-            class="hidden"
-            (change)="onFilePicked($event)"
-          />
+    @if (fileError) {
+      <div
+        class="flex items-start justify-between gap-3 bg-red-500/10 border border-red-500/40 rounded-xl px-4 py-3 animate-fade-in"
+      >
+        <div class="flex items-start gap-2 min-w-0">
+          <lucide-icon
+            name="alert-circle"
+            class="h-5 w-5 text-red-400 mt-0.5 flex-shrink-0"
+          ></lucide-icon>
+          <p class="text-sm text-red-200 break-words">{{ fileError }}</p>
         </div>
-
-        @if (fileError) {
-          <div
-            class="flex items-start justify-between gap-3 bg-red-500/10 border border-red-500/40 rounded-xl px-4 py-3 animate-fade-in"
-          >
-            <div class="flex items-start gap-2 min-w-0">
-              <lucide-icon
-                name="alert-circle"
-                class="h-5 w-5 text-red-400 mt-0.5 flex-shrink-0"
-              ></lucide-icon>
-              <p class="text-sm text-red-200 break-words">{{ fileError }}</p>
-            </div>
-            <button
-              type="button"
-              (click)="dismissFileError()"
-              class="text-red-300 hover:text-red-100 transition-colors flex-shrink-0"
-              aria-label="Dismiss error"
-            >
-              <lucide-icon name="x" class="h-4 w-4"></lucide-icon>
-            </button>
-          </div>
-        }
-      }
-
-      <!-- ===== Step: review ===== -->
-      @case ('review') {
-        <div
-          class="bg-gradient-to-br from-[#353535] to-[#2E2E2E] border border-[#505050] rounded-xl p-5 animate-fade-in-up shadow-lg"
+        <button
+          type="button"
+          (click)="dismissFileError()"
+          class="text-red-300 hover:text-red-100 transition-colors flex-shrink-0"
+          aria-label="Dismiss error"
         >
-          <div class="flex items-start gap-3 mb-4">
-            <div
-              class="bg-gradient-to-br from-[#10A37F]/20 to-[#0D8968]/20 p-2.5 rounded-lg border border-[#10A37F]/30"
-            >
-              <lucide-icon
-                name="file-text"
-                class="h-5 w-5 text-[#10A37F]"
-              ></lucide-icon>
-            </div>
-            <div class="flex-1 min-w-0">
-              <h4 class="text-white font-semibold mb-1 break-words">
-                {{ file?.name }}
-              </h4>
-              <p class="text-[#888888] text-xs">
-                {{ formatFileSize(file?.size ?? 0) }}
-              </p>
-            </div>
-          </div>
-
-          <div
-            class="flex items-center gap-2 mb-5 text-xs text-[#CCCCCC] px-3 py-2 bg-[#232323] border border-[#3A3A3A] rounded-lg"
-          >
-            <lucide-icon
-              name="calendar"
-              class="h-4 w-4 text-[#10A37F]"
-            ></lucide-icon>
-            <span class="text-[#A0A0A0]">Uploading to quarter:</span>
-            <span
-              class="px-2 py-0.5 rounded-full bg-[#10A37F]/15 border border-[#10A37F]/40 text-[#10A37F] font-semibold"
-              >{{ quarter }}</span
-            >
-          </div>
-
-          <div class="flex gap-3">
-            <button
-              type="button"
-              (click)="startUpload()"
-              class="flex-1 bg-gradient-to-r from-[#10A37F] to-[#0D8968] text-white px-4 py-2.5 rounded-lg hover:shadow-xl hover:shadow-[#10A37F]/20 transition-all flex items-center justify-center gap-2 hover-scale"
-            >
-              <lucide-icon name="upload" class="h-4 w-4"></lucide-icon>
-              Upload
-            </button>
-            <button
-              type="button"
-              (click)="removeFile()"
-              class="px-4 py-2.5 rounded-lg border border-[#3A3A3A] text-[#CCCCCC] hover:bg-[#3A3A3A]/40 hover:text-white transition-all"
-            >
-              Choose Different File
-            </button>
-          </div>
-        </div>
-      }
-
-      <!-- ===== Step: uploading ===== -->
-      @case ('uploading') {
-        <div
-          class="space-y-3 animate-fade-in bg-[#232323] border border-[#3A3A3A] rounded-xl p-6"
-        >
-          <div class="flex items-center justify-between gap-3">
-            <p class="text-sm text-[#CCCCCC] truncate">
-              Uploading {{ file?.name }}...
-            </p>
-            <p class="text-sm text-[#10A37F] font-semibold flex-shrink-0">
-              {{ progress }}%
-            </p>
-          </div>
-          <div
-            class="bg-[#2E2E2E] relative h-2.5 w-full overflow-hidden rounded-full border border-[#404040]"
-          >
-            <div
-              class="bg-gradient-to-r from-[#10A37F] to-[#0D8968] h-full transition-all duration-200 shadow-lg shadow-[#10A37F]/50"
-              [style.width.%]="progress"
-            ></div>
-          </div>
-          <div class="flex items-center justify-between pt-1">
-            <div class="flex items-center gap-2 text-xs text-[#888888]">
-              <lucide-icon
-                name="rotate-cw"
-                class="h-4 w-4 animate-spin text-[#10A37F]"
-              ></lucide-icon>
-              <span>Uploading... please wait</span>
-            </div>
-            <button
-              type="button"
-              (click)="cancelUpload()"
-              class="px-3 py-1.5 rounded-lg border border-[#3A3A3A] text-xs text-[#CCCCCC] hover:bg-[#3A3A3A]/40 hover:text-white transition-all"
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
-      }
-
-      <!-- ===== Step: result ===== -->
-      @case ('result') {
-        @if (result?.kind === 'success') {
-          <div
-            class="bg-gradient-to-br from-[#10A37F]/15 to-[#0D8968]/10 border border-[#10A37F]/40 rounded-xl p-5 animate-scale-in shadow-lg"
-          >
-            <div class="flex items-start gap-3 mb-3">
-              <lucide-icon
-                name="check-circle-2"
-                class="h-6 w-6 text-[#10A37F] mt-0.5 flex-shrink-0"
-              ></lucide-icon>
-              <div class="min-w-0 flex-1">
-                <h4 class="text-[#10A37F] font-semibold mb-1">
-                  {{ result?.title }}
-                </h4>
-                <p
-                  class="text-[#CCCCCC] text-sm whitespace-pre-wrap break-words"
-                >
-                  {{ result?.message }}
-                </p>
-                @if (result?.fileName) {
-                  <p class="text-[#888888] text-xs mt-2">
-                    File: {{ result?.fileName }} · Quarter: {{ result?.quarter }}
-                  </p>
-                }
-              </div>
-            </div>
-            <div class="flex flex-wrap gap-3 pt-2">
-              <button
-                type="button"
-                (click)="reset()"
-                class="flex-1 bg-gradient-to-r from-[#10A37F] to-[#0D8968] text-white px-4 py-2.5 rounded-lg hover:shadow-xl hover:shadow-[#10A37F]/20 transition-all flex items-center justify-center gap-2 hover-scale"
-              >
-                <lucide-icon name="upload" class="h-4 w-4"></lucide-icon>
-                Upload Another File
-              </button>
-              <button
-                type="button"
-                (click)="handleDownloadTemplate()"
-                class="flex items-center gap-2 px-3 py-2.5 text-[#10A37F] hover:text-[#0D8968] hover:-translate-y-0.5 active:scale-95 transition-all"
-              >
-                <lucide-icon name="download" class="h-4 w-4"></lucide-icon>
-                <span class="text-sm">Download Template</span>
-              </button>
-            </div>
-          </div>
-        } @else {
-          <div
-            class="bg-red-500/10 border border-red-500/40 rounded-xl p-5 animate-scale-in shadow-lg"
-          >
-            <div class="flex items-start gap-3 mb-3">
-              <lucide-icon
-                name="x-circle"
-                class="h-6 w-6 text-red-400 mt-0.5 flex-shrink-0"
-              ></lucide-icon>
-              <div class="min-w-0 flex-1">
-                <h4 class="text-red-300 font-semibold mb-1">
-                  {{ result?.title }}
-                </h4>
-                <p class="text-[#CCCCCC] text-sm">{{ result?.message }}</p>
-
-                @if (
-                  result?.rawServerMessage &&
-                  (result?.category === 'bad-request' ||
-                    result?.category === 'unsupported-media' ||
-                    result?.category === 'payload-too-large' ||
-                    result?.category === 'server' ||
-                    result?.category === 'network' ||
-                    result?.category === 'unknown')
-                ) {
-                  <details class="mt-3 group">
-                    <summary
-                      class="cursor-pointer text-xs text-[#A0A0A0] hover:text-[#CCCCCC] list-none flex items-center gap-1"
-                    >
-                      <lucide-icon
-                        name="chevron-down"
-                        class="h-3 w-3 transition-transform group-open:rotate-180"
-                      ></lucide-icon>
-                      Technical details
-                    </summary>
-                    <pre
-                      class="mt-2 p-2 bg-[#1A1A1A] border border-[#3A3A3A] rounded text-xs text-[#CCCCCC] whitespace-pre-wrap break-words"
-                      >{{ result?.rawServerMessage }}</pre>
-                  </details>
-                }
-              </div>
-            </div>
-            <div class="flex flex-col sm:flex-row gap-3 pt-2">
-              <button
-                type="button"
-                (click)="retry()"
-                class="flex-1 px-4 py-2.5 rounded-lg border border-[#3A3A3A] text-white hover:bg-[#3A3A3A]/40 transition-all flex items-center justify-center gap-2"
-              >
-                <lucide-icon name="rotate-cw" class="h-4 w-4"></lucide-icon>
-                Try Again
-              </button>
-              <button
-                type="button"
-                (click)="backToFilePick()"
-                class="flex-1 px-4 py-2.5 rounded-lg border border-[#3A3A3A] text-[#CCCCCC] hover:bg-[#3A3A3A]/40 hover:text-white transition-all flex items-center justify-center gap-2"
-              >
-                <lucide-icon name="file-text" class="h-4 w-4"></lucide-icon>
-                Choose Different File
-              </button>
-            </div>
-          </div>
-        }
-      }
+          <lucide-icon name="x" class="h-4 w-4"></lucide-icon>
+        </button>
+      </div>
     }
 
     <!-- Download Template link (always visible at bottom) -->

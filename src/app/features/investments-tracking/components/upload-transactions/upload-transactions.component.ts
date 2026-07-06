@@ -9,8 +9,6 @@ import { ExpansionPanelComponent } from '../../../../shared/components/expansion
 import { CommonModule } from '@angular/common';
 import { MessageService } from 'primeng/api';
 import { Subscription } from 'rxjs';
-import { finalize } from 'rxjs/operators';
-import { HttpEvent, HttpEventType } from '@angular/common/http';
 import { LucideIconsModule } from '../../../../core/icons/lucide-icons.module';
 
 import { FormsModule } from '@angular/forms';
@@ -20,19 +18,6 @@ import { ToastType } from '../../../../models/transaction';
 import { TransactionService } from '../../../../services/transaction.service';
 import { AuthService } from '../../../../services/auth.service';
 import { NotificationService } from '../../../../services/notification.service';
-
-type Step = 'pick-file' | 'review' | 'uploading' | 'result';
-type ResultKind = 'success' | 'error';
-
-interface UploadResult {
-  kind: ResultKind;
-  title: string;
-  message: string;
-  category?: string;
-  fileName?: string;
-  quarter?: string;
-  rawServerMessage?: string;
-}
 
 @Component({
   selector: 'app-upload-transactions',
@@ -48,7 +33,8 @@ interface UploadResult {
   templateUrl: './upload-transactions.component.html',
 })
 export class UploadTransactionsComponent implements OnDestroy {
-  @Output() onUploadComplete = new EventEmitter<string>();
+  @Output() fileSelected = new EventEmitter<File>();
+  @Output() quarterSelected = new EventEmitter<string>();
   @Input('showToast') showToastInput?: (message: string, type: ToastType) => void;
 
   showToast(message: string, type: ToastType): void {
@@ -68,13 +54,8 @@ export class UploadTransactionsComponent implements OnDestroy {
     }
   }
 
-  // ===== State machine =====
-  step: Step = 'pick-file';
   quarter: string = 'Q1';
   file: File | null = null;
-  progress: number = 0;
-  result: UploadResult | null = null;
-  isUploading = false;
   fileError: string | null = null;
 
   quarters = [
@@ -84,7 +65,6 @@ export class UploadTransactionsComponent implements OnDestroy {
     { label: 'Q4 (Oct - Dec)', value: 'Q4' },
   ];
 
-  private uploadSub?: Subscription;
   private readonly MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024; // 10 MB
 
   constructor(
@@ -96,6 +76,7 @@ export class UploadTransactionsComponent implements OnDestroy {
   // ========== Quarter ==========
   onQuarterChange(value: string): void {
     this.quarter = value;
+    this.quarterSelected.emit(value);
   }
 
   // ========== File Selection ==========
@@ -125,7 +106,7 @@ export class UploadTransactionsComponent implements OnDestroy {
 
     this.fileError = null;
     this.file = file;
-    this.step = 'review';
+    this.fileSelected.emit(file);
   }
 
   dismissFileError(): void {
@@ -135,155 +116,6 @@ export class UploadTransactionsComponent implements OnDestroy {
   removeFile(): void {
     this.file = null;
     this.fileError = null;
-    this.progress = 0;
-    this.step = 'pick-file';
-  }
-
-  // ========== Upload ==========
-  startUpload(): void {
-    if (!this.file || this.isUploading) return;
-
-    const email = this.authService.getUserEmail();
-    if (!email) {
-      const classified = this.transactionService.classifyUploadError({
-        category: 'no-email',
-      });
-      this.result = {
-        kind: 'error',
-        title: classified.title,
-        message: classified.message,
-        category: classified.category,
-        fileName: this.file.name,
-        quarter: this.quarter,
-      };
-      this.step = 'result';
-      return;
-    }
-
-    this.progress = 0;
-    this.isUploading = true;
-    this.step = 'uploading';
-
-    this.uploadSub = this.transactionService
-      .uploadTransactions(email, this.file, this.quarter)
-      .pipe(
-        finalize(() => {
-          this.isUploading = false;
-          this.uploadSub = undefined;
-        }),
-      )
-      .subscribe({
-        next: (event: HttpEvent<any>) => {
-          switch (event.type) {
-            case HttpEventType.UploadProgress:
-              if (event.total) {
-                this.progress = Math.round(
-                  (100 * event.loaded) / event.total,
-                );
-              }
-              break;
-            case HttpEventType.Response:
-              this.progress = 100;
-              const body = event.body;
-              let resultMessage: string;
-              let kind: ResultKind = 'success';
-              let category: string | undefined;
-              let rawServerMessage: string | undefined;
-
-              if (typeof body === 'string') {
-                resultMessage = body;
-              } else if (body && typeof body === 'object') {
-                resultMessage =
-                  (body as any).message ||
-                  (body as any).data ||
-                  'Upload completed.';
-                if ((body as any).status || (body as any).error) {
-                  kind = 'error';
-                  category = 'bad-request';
-                  rawServerMessage = resultMessage;
-                }
-              } else {
-                resultMessage = 'Upload completed.';
-              }
-
-              this.result = {
-                kind,
-                title:
-                  kind === 'success'
-                    ? 'Upload Successful'
-                    : "Couldn't process file",
-                message: resultMessage,
-                fileName: this.file?.name,
-                quarter: this.quarter,
-                category,
-                rawServerMessage,
-              };
-              this.onUploadComplete.emit(resultMessage);
-              this.step = 'result';
-              break;
-          }
-        },
-        error: (err) => {
-          console.error('Upload error:', err);
-          const classified = this.transactionService.classifyUploadError(err);
-          const rawServerMessage =
-            (typeof err?.error === 'string' ? err.error : undefined) ||
-            err?.error?.message ||
-            err?.error?.data ||
-            (typeof err?.message === 'string' &&
-            !err.message.startsWith('Http failure')
-              ? err.message
-              : undefined);
-          this.result = {
-            kind: 'error',
-            title: classified.title,
-            message: classified.message,
-            category: classified.category,
-            fileName: this.file?.name,
-            quarter: this.quarter,
-            rawServerMessage,
-          };
-          this.step = 'result';
-          this.onUploadComplete.emit(this.result.message);
-        },
-      });
-  }
-
-  cancelUpload(): void {
-    if (this.uploadSub) {
-      this.uploadSub.unsubscribe();
-      this.uploadSub = undefined;
-    }
-    this.isUploading = false;
-    this.progress = 0;
-    this.step = 'review';
-  }
-
-  retry(): void {
-    if (this.result?.kind === 'error' && this.file) {
-      this.result = null;
-      this.progress = 0;
-      this.step = 'review';
-    } else {
-      this.reset();
-    }
-  }
-
-  backToFilePick(): void {
-    this.file = null;
-    this.fileError = null;
-    this.result = null;
-    this.progress = 0;
-    this.step = 'pick-file';
-  }
-
-  reset(): void {
-    this.file = null;
-    this.fileError = null;
-    this.result = null;
-    this.progress = 0;
-    this.isUploading = false;
-    this.step = 'pick-file';
   }
 
   // ========== Drag & Drop ==========
@@ -325,8 +157,6 @@ export class UploadTransactionsComponent implements OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if (this.uploadSub) {
-      this.uploadSub.unsubscribe();
-    }
+    // No subscriptions to clean up
   }
 }
