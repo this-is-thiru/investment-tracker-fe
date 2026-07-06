@@ -14,6 +14,7 @@ describe('NotificationToastComponent', () => {
 
     fixture = TestBed.createComponent(NotificationToastComponent);
     component = fixture.componentInstance;
+    component.notification = { type: 'info', title: 'Test', message: 'Test message' } as any;
     fixture.detectChanges();
   });
 

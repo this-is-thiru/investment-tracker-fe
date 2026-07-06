@@ -289,7 +289,9 @@ export class PortfolioAnalyticsService {
         if (!h.firstDate || r.transactionDate < h.firstDate) h.firstDate = r.transactionDate;
         if (!h.lastDate || r.transactionDate > h.lastDate) h.lastDate = r.transactionDate;
       }
-      totalAllInvested += value;
+      if (r.transactionType === 'BUY') {
+        totalAllInvested += value;
+      }
     }
     for (const h of map.values()) {
       h.avgPrice = h.totalBought > 0 ? h.totalInvested / h.totalBought : 0;
@@ -644,9 +646,20 @@ export class PortfolioAnalyticsService {
     rows: TransactionsResponse[],
     fy?: string
   ): CapitalGainsSummary {
-    const inScope = fy
-      ? rows.filter((r) => this.getFinancialYearOf(r.transactionDate) === fy)
-      : rows;
+    let inScope: TransactionsResponse[];
+    if (fy) {
+      // For FY-filtered gains we need all BUYs for FIFO cost basis, plus
+      // only SELLs that fall in the requested FY.
+      const sellsInFy = rows.filter(
+        (r) =>
+          r.transactionType === 'SELL' &&
+          this.getFinancialYearOf(r.transactionDate) === fy,
+      );
+      const allBuys = rows.filter((r) => r.transactionType === 'BUY');
+      inScope = [...allBuys, ...sellsInFy];
+    } else {
+      inScope = rows;
+    }
 
     const gains = this.computeFifoRealizedGains(inScope);
 
@@ -734,7 +747,10 @@ export class PortfolioAnalyticsService {
         value: this.round2(value),
         pct: total > 0 ? this.round1((value / total) * 100) : 0,
       }))
-      .sort((a, b) => b.value - a.value);
+      .sort((a, b) => {
+        if (b.value !== a.value) return b.value - a.value;
+        return a.label.localeCompare(b.label);
+      });
   }
 
   /**

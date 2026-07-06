@@ -60,9 +60,45 @@ describe('TransactionsTableComponent', () => {
     mockService = jasmine.createSpyObj<TransactionService>('TransactionService', [
       'getTemporaryTransactions',
       'getCurrentTransactions',
+      'getAllHoldings',
     ]);
     mockService.getTemporaryTransactions.and.returnValue(of(MOCK_TEMP));
     mockService.getCurrentTransactions.and.returnValue(of(MOCK_PORT));
+    mockService.getAllHoldings.and.returnValue(of([
+      {
+        stockCode: 'AAPL',
+        stockName: 'Apple Inc',
+        assetType: 'EQUITY',
+        totalQuantity: 45,
+        quantity: 45,
+        totalValue: 6620,
+        price: 147.11,
+        buyTransactionIds: ['t1', 'p1', 'p2'],
+        sellTransactionIds: [],
+      },
+      {
+        stockCode: 'GOOG',
+        stockName: 'Google',
+        assetType: 'EQUITY',
+        totalQuantity: 0,
+        quantity: -5,
+        totalValue: 0,
+        price: 0,
+        buyTransactionIds: [],
+        sellTransactionIds: ['t2'],
+      },
+      {
+        stockCode: 'TSLA',
+        stockName: 'Tesla',
+        assetType: 'EQUITY',
+        totalQuantity: 0,
+        quantity: -8,
+        totalValue: 0,
+        price: 0,
+        buyTransactionIds: [],
+        sellTransactionIds: ['p3'],
+      },
+    ]));
 
     spyOn(localStorage, 'getItem').and.returnValue('test@example.com');
 
@@ -184,9 +220,10 @@ describe('TransactionsTableComponent', () => {
   });
 
   it('should hide insight when no data', () => {
-    // Simulate no data by directly setting arrays and recomputing
+    // Simulate no transaction data and no holdings from the API
     component.temporaryTransactions = [];
     component.portfolioTransactions = [];
+    component.holdings = [];
     component.applyFilters();
     expect(component.filteredAll.length).toBe(0);
     expect(component.stats.count).toBe(0);

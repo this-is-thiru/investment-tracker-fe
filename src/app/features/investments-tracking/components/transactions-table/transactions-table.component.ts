@@ -396,6 +396,18 @@ export class TransactionsTableComponent implements OnInit {
         ].map((v) => (v || '').toLowerCase()).join(' ');
         if (!haystack.includes(q)) return false;
       }
+      if (this.filterType && this.filterType !== 'ALL' && t.transactionType !== this.filterType) {
+        return false;
+      }
+      if (this.filterAssetType && t.assetType !== this.filterAssetType) {
+        return false;
+      }
+      if (this.filterBroker && t.brokerName !== this.filterBroker) {
+        return false;
+      }
+      if (!this.inDateRange(t.transactionDate, from, to)) {
+        return false;
+      }
       return true;
     };
 
