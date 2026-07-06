@@ -1,23 +1,27 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { UploadTransactionsComponent } from '../../components/upload-transactions/upload-transactions.component';
 import { UploadPreviewTableComponent } from '../../components/upload-preview-table/upload-preview-table.component';
+import { TempCorporateTabsComponent } from '../../components/temp-corporate-tabs/temp-corporate-tabs.component';
+import { PortfolioStocksComponent } from '../../components/portfolio-stocks/portfolio-stocks.component';
 import { FooterComponent } from '../../../../shared/components/footer/footer.component';
-import { TransactionsTableComponent } from "../../components/transactions-table/transactions-table.component";
-import { AllTransactionsComponent } from '../../components/transaction-list/all-transactions.component';
 import { LucideIconsModule } from '../../../../core/icons/lucide-icons.module';
 
 @Component({
     selector: 'app-investments',
     standalone: true,
-    imports: [UploadTransactionsComponent, UploadPreviewTableComponent, FooterComponent, TransactionsTableComponent, AllTransactionsComponent, LucideIconsModule],
+    imports: [UploadTransactionsComponent, UploadPreviewTableComponent, TempCorporateTabsComponent, PortfolioStocksComponent, FooterComponent, LucideIconsModule],
     templateUrl: './investments.component.html',
     styleUrls: ['./investments.component.css'],
     providers: [MessageService]
 })
 export class InvestmentsComponent {
+  @ViewChild(TempCorporateTabsComponent) tempCorporateTabs?: TempCorporateTabsComponent;
+  @ViewChild(PortfolioStocksComponent) portfolioStocks?: PortfolioStocksComponent;
+
   selectedFile: File | null = null;
   selectedQuarter = 'Q1';
+  userEmail = localStorage.getItem('userEmail') || '';
 
   onQuarterSelected(quarter: string): void {
     this.selectedQuarter = quarter;
@@ -29,10 +33,15 @@ export class InvestmentsComponent {
 
   onUploadComplete(): void {
     this.selectedFile = null;
-    // Sections 3 and 4 will be refreshed here once implemented.
+    this.tempCorporateTabs?.refresh();
+    this.portfolioStocks?.refresh();
   }
 
   onFileCleared(): void {
     this.selectedFile = null;
+  }
+
+  onCorporateActionApplied(): void {
+    this.portfolioStocks?.refresh();
   }
 }

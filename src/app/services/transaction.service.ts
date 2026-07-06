@@ -218,4 +218,10 @@ export class TransactionService {
     const url = `${this.BASE_URL.getBaseUrl()}/portfolio/user/${email}/stocks/all`;
     return this.http.get<any>(url);
   }
+
+  /** Fetch transactions for a single stock */
+  getTransactionsByStock(email: string, stockCode: string): Observable<TransactionsResponse[]> {
+    const url = `${this.BASE_URL.getBaseUrl()}/transactions/user/${email}/stock/${stockCode}`;
+    return this.http.get<TransactionsResponse[]>(url);
+  }
 }

@@ -1,0 +1,154 @@
+<app-expansion-panel
+  [title]="'Portfolio Stocks'"
+  [subtitle]="'Holdings with expandable transaction history'"
+  [titleIcon]="'Briefcase'"
+  [iconBgClass]="'bg-gradient-to-br from-[#8B5CF6] to-[#7C3AED] p-2 rounded-lg text-white'"
+  [isExpanded]="true"
+  class="animate-fade-in-up stagger-2"
+>
+  <div class="space-y-4">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <lucide-icon name="Briefcase" class="w-4 h-4 text-[#8B5CF6]"></lucide-icon>
+        <h3 class="text-sm font-bold text-white uppercase tracking-wider">Holdings</h3>
+      </div>
+      <button (click)="refresh()"
+        class="px-3 py-2 rounded-lg bg-[#2E2E2E] text-xs font-semibold text-[#B3B3B3] border border-[#3A3A3A] hover:text-white hover:border-[#8B5CF6] transition-colors flex items-center gap-1.5">
+        <lucide-icon name="RotateCw" class="w-3.5 h-3.5"></lucide-icon>
+        Refresh
+      </button>
+    </div>
+
+    @if (loading) {
+      <div class="text-center py-6 text-gray-400">Loading...</div>
+    } @else {
+      <div class="overflow-x-auto rounded-xl border border-[#3A3A3A]">
+        <p-table
+          [value]="holdings"
+          [paginator]="true"
+          [rows]="10"
+          [rowsPerPageOptions]="[5, 10, 20]"
+          dataKey="stockCode"
+          [expandedRowKeys]="expandedRows"
+          (onRowExpand)="onRowExpand($event)"
+          [tableStyle]="{ 'min-width': '72rem' }"
+          responsiveLayout="scroll"
+          styleClass="p-datatable-sm w-full"
+        >
+          <ng-template pTemplate="header">
+            <tr>
+              <th style="width: 3.5rem"></th>
+              <th pSortableColumn="stockName">Stock <p-sortIcon field="stockName"></p-sortIcon></th>
+              <th pSortableColumn="assetType">Asset <p-sortIcon field="assetType"></p-sortIcon></th>
+              <th pSortableColumn="totalBought" class="text-right">Bought <p-sortIcon field="totalBought"></p-sortIcon></th>
+              <th pSortableColumn="totalSold" class="text-right">Sold <p-sortIcon field="totalSold"></p-sortIcon></th>
+              <th pSortableColumn="netHeld" class="text-right">Net Held <p-sortIcon field="netHeld"></p-sortIcon></th>
+              <th pSortableColumn="totalInvested" class="text-right">Invested <p-sortIcon field="totalInvested"></p-sortIcon></th>
+              <th pSortableColumn="netInvested" class="text-right">Net ₹ <p-sortIcon field="netInvested"></p-sortIcon></th>
+              <th pSortableColumn="txnCount" class="text-right">Txns <p-sortIcon field="txnCount"></p-sortIcon></th>
+              <th pSortableColumn="avgPrice" class="text-right">Avg ₹ <p-sortIcon field="avgPrice"></p-sortIcon></th>
+              <th pSortableColumn="totalCharges" class="text-right">Charges <p-sortIcon field="totalCharges"></p-sortIcon></th>
+              <th>% Share</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-h let-expanded="expanded">
+            <tr>
+              <td class="px-2 py-3 text-center">
+                <button type="button" [pRowToggler]="h"
+                  class="p-0 w-8 h-8 flex items-center justify-center text-[#b3b3b3] hover:text-white hover:bg-white/10 rounded-full transition-colors duration-150"
+                  aria-label="Toggle Row">
+                  <i class="pi text-xs transition-transform duration-200" [ngClass]="expanded ? 'pi-chevron-down' : 'pi-chevron-right'"></i>
+                </button>
+              </td>
+              <td class="px-4 py-3">
+                <div class="font-medium text-white truncate max-w-[220px]" [title]="h.stockCode">{{ h.stockName }}</div>
+              </td>
+              <td class="px-4 py-3 text-gray-300 whitespace-nowrap">{{ h.assetType }}</td>
+              <td class="px-4 py-3 text-right text-gray-300 tabular-nums">{{ h.totalBought | number:'1.0-4' }}</td>
+              <td class="px-4 py-3 text-right text-gray-300 tabular-nums">{{ h.totalSold | number:'1.0-4' }}</td>
+              <td class="px-4 py-3 text-right font-semibold tabular-nums" [ngClass]="h.netHeld >= 0 ? 'text-[#22C55E]' : 'text-[#EF4444]'">
+                {{ h.netHeld | number:'1.0-4' }}
+              </td>
+              <td class="px-4 py-3 text-right text-gray-300 tabular-nums">₹{{ h.totalInvested | number:'1.2-2' }}</td>
+              <td class="px-4 py-3 text-right font-semibold tabular-nums" [ngClass]="h.netInvested >= 0 ? 'text-[#22C55E]' : 'text-[#EF4444]'">
+                ₹{{ h.netInvested | number:'1.2-2' }}
+              </td>
+              <td class="px-4 py-3 text-right text-gray-300 tabular-nums">{{ h.txnCount }}</td>
+              <td class="px-4 py-3 text-right text-gray-300 tabular-nums">₹{{ h.avgPrice | number:'1.2-2' }}</td>
+              <td class="px-4 py-3 text-right text-gray-300 tabular-nums">₹{{ h.totalCharges | number:'1.2-2' }}</td>
+              <td class="px-4 py-3" style="min-width: 160px;">
+                <div class="flex items-center gap-2">
+                  <div class="flex-1 h-2 bg-[#2A2A2A] rounded overflow-hidden min-w-[60px]">
+                    <div class="h-full bg-gradient-to-r from-[#8B5CF6] to-[#A78BFA] rounded" [style.width.%]="h.sharePercent"></div>
+                  </div>
+                  <span class="text-[10px] text-[#B3B3B3] w-10 text-right">{{ h.sharePercent | number:'1.0-1' }}%</span>
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="expandedrow" let-h>
+            <tr>
+              <td colspan="12" class="p-4 bg-[#141414]">
+                <div class="border border-[#2D2D2D] rounded-xl bg-[#1F1F1F] p-4">
+                  <div class="flex items-center gap-2 mb-3">
+                    <lucide-icon name="file-text" class="w-4 h-4 text-[#8B5CF6]"></lucide-icon>
+                    <h4 class="text-sm font-semibold text-white">Transactions for {{ h.stockName }}</h4>
+                  </div>
+
+                  @if (loadingStockTransactions[h.stockCode]) {
+                    <div class="text-center py-4 text-gray-400 text-sm">Loading transactions...</div>
+                  } @else if (stockTransactions[h.stockCode]?.length) {
+                    <div class="overflow-x-auto">
+                      <p-table [value]="stockTransactions[h.stockCode]" [tableStyle]="{ 'min-width': '48rem' }" responsiveLayout="scroll" styleClass="p-datatable-sm w-full">
+                        <ng-template pTemplate="header">
+                          <tr>
+                            <th>Type</th>
+                            <th class="text-right">Qty</th>
+                            <th class="text-right">Price</th>
+                            <th class="text-right">Total</th>
+                            <th>Date</th>
+                            <th>Broker</th>
+                            <th class="text-right">Charges</th>
+                          </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-t>
+                          <tr>
+                            <td class="px-4 py-2">
+                              <span [ngClass]="t.transactionType === 'BUY' ? 'bg-[#22C55E]/10 text-[#22C55E] border-[#22C55E]/20' : 'bg-[#EF4444]/10 text-[#EF4444] border-[#EF4444]/20'"
+                                class="px-2 py-0.5 rounded-full text-[10px] font-bold border uppercase tracking-wider">
+                                {{ t.transactionType }}
+                              </span>
+                            </td>
+                            <td class="px-4 py-2 text-right text-gray-300 tabular-nums">{{ t.quantity | number:'1.0-4' }}</td>
+                            <td class="px-4 py-2 text-right text-gray-300 tabular-nums">₹{{ t.price | number:'1.2-2' }}</td>
+                            <td class="px-4 py-2 text-right text-gray-300 tabular-nums">₹{{ t.totalValue | number:'1.2-2' }}</td>
+                            <td class="px-4 py-2 text-gray-400 text-xs">{{ t.transactionDate }}</td>
+                            <td class="px-4 py-2 text-gray-300">{{ t.brokerName }}</td>
+                            <td class="px-4 py-2 text-right text-gray-300 tabular-nums">₹{{ ((t.brokerCharges || 0) + (t.miscCharges || 0)) | number:'1.2-2' }}</td>
+                          </tr>
+                        </ng-template>
+                      </p-table>
+                    </div>
+                  } @else {
+                    <div class="text-center py-4 text-gray-400 text-sm">No transactions found for {{ h.stockName }}.</div>
+                  }
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="12" class="py-12 px-4 text-center">
+                <div class="flex flex-col items-center justify-center space-y-3 py-6">
+                  <lucide-icon name="Briefcase" class="w-10 h-10 text-[#707070]"></lucide-icon>
+                  <h4 class="text-sm font-semibold text-white">No holdings yet</h4>
+                  <p class="text-xs text-[#B3B3B3]">Upload transactions to see your portfolio stocks.</p>
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    }
+  </div>
+</app-expansion-panel>

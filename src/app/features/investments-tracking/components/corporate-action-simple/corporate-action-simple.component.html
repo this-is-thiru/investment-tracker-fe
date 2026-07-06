@@ -1,0 +1,48 @@
+<section class="border border-[#3A3A3A] rounded-xl bg-[#232323] p-6 space-y-6">
+  <div>
+    <h3 class="text-lg font-semibold text-white mb-1">Apply Corporate Action</h3>
+    <p class="text-sm text-[#B3B3B3]">Select the action type and target stock to process temporary transactions.</p>
+  </div>
+
+  <div class="space-y-4">
+    <div>
+      <label class="block text-xs font-bold text-[#A0A0A0] uppercase tracking-wider mb-2">Action Type</label>
+      <p-select [options]="actionOptions" [(ngModel)]="actionType" optionLabel="label" optionValue="value"
+        placeholder="Select Action" styleClass="w-full md:w-[300px] bg-[#2E2E2E] border border-[#3A3A3A] text-white rounded-md"
+        appendTo="body"></p-select>
+    </div>
+
+    <div>
+      <label class="block text-xs font-bold text-[#A0A0A0] uppercase tracking-wider mb-2">Stock Code</label>
+      <input type="text" [(ngModel)]="stockCode" placeholder="e.g., AAPL"
+        class="w-full md:w-[300px] px-3 py-2 text-sm rounded-lg bg-[#2E2E2E] border border-[#3A3A3A] text-white placeholder-[#666] focus:ring-1 focus:ring-[#10A37F] focus:outline-none" />
+    </div>
+
+    @if (actionType === 'split' || actionType === 'bonus') {
+      <div>
+        <label class="block text-xs font-bold text-[#A0A0A0] uppercase tracking-wider mb-2">Ratio</label>
+        <input type="text" [(ngModel)]="ratio" placeholder="e.g., 2:1"
+          class="w-full md:w-[300px] px-3 py-2 text-sm rounded-lg bg-[#2E2E2E] border border-[#3A3A3A] text-white placeholder-[#666] focus:ring-1 focus:ring-[#10A37F] focus:outline-none" />
+      </div>
+    }
+
+    @if (actionType === 'dividend') {
+      <div>
+        <label class="block text-xs font-bold text-[#A0A0A0] uppercase tracking-wider mb-2">Dividend Amount (₹)</label>
+        <input type="number" [(ngModel)]="dividendAmount" placeholder="e.g., 5"
+          class="w-full md:w-[300px] px-3 py-2 text-sm rounded-lg bg-[#2E2E2E] border border-[#3A3A3A] text-white placeholder-[#666] focus:ring-1 focus:ring-[#10A37F] focus:outline-none" />
+      </div>
+    }
+
+    <button type="button" (click)="applyAction()" [disabled]="isLoading"
+      class="px-6 py-2.5 bg-gradient-to-r from-[#10A37F] to-[#0D8968] text-white rounded-lg hover:shadow-xl transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+      @if (isLoading) {
+        <lucide-icon name="rotate-cw" class="h-4 w-4 animate-spin"></lucide-icon>
+        <span>Processing...</span>
+      } @else {
+        <lucide-icon name="check-circle-2" class="h-4 w-4"></lucide-icon>
+        <span>Apply Action</span>
+      }
+    </button>
+  </div>
+</section>

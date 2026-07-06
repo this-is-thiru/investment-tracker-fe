@@ -42,7 +42,14 @@
       </app-upload-preview-table>
     }
 
-    <!-- Sections 3 and 4 will be added here -->
+    <!-- Section 3: Temporary Transactions & Corporate Actions -->
+    <app-temp-corporate-tabs
+      [userEmail]="userEmail"
+      (dataChanged)="onCorporateActionApplied()">
+    </app-temp-corporate-tabs>
+
+    <!-- Section 4: Portfolio Stocks -->
+    <app-portfolio-stocks [userEmail]="userEmail"></app-portfolio-stocks>
   </main>
 </div>
 

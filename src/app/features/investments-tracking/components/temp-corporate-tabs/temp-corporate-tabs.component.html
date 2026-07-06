@@ -1,0 +1,33 @@
+<app-expansion-panel
+  [title]="'Transactions & Corporate Actions'"
+  [subtitle]="'Review temporary transactions and apply corporate actions'"
+  [titleIcon]="'Database'"
+  [iconBgClass]="'bg-gradient-to-br from-[#FACC15] to-[#EAB308] p-2 rounded-lg text-white'"
+  [isExpanded]="true"
+  class="animate-fade-in-up stagger-2"
+>
+  <div class="space-y-6">
+    <div class="bg-[#232323] border border-[#3A3A3A] rounded-lg p-1 grid grid-cols-2 gap-1 max-w-sm">
+      <button (click)="activeTab = 'temporary'"
+        [ngClass]="activeTab === 'temporary' ? 'bg-[#FACC15]/20 text-[#FACC15] font-medium' : 'text-[#B3B3B3] hover:bg-[#2E2E2E]'"
+        class="flex items-center justify-center gap-2 px-4 py-2 rounded-md transition-all text-sm">
+        <lucide-icon name="database" class="h-4 w-4"></lucide-icon>
+        Temporary
+      </button>
+      <button (click)="activeTab = 'corporate'"
+        [ngClass]="activeTab === 'corporate' ? 'bg-[#10A37F]/20 text-[#10A37F] font-medium' : 'text-[#B3B3B3] hover:bg-[#2E2E2E]'"
+        class="flex items-center justify-center gap-2 px-4 py-2 rounded-md transition-all text-sm">
+        <lucide-icon name="trending-up" class="h-4 w-4"></lucide-icon>
+        Corporate Action
+      </button>
+    </div>
+
+    @if (activeTab === 'temporary') {
+      <app-temp-transactions-table [userEmail]="userEmail"></app-temp-transactions-table>
+    }
+
+    @if (activeTab === 'corporate') {
+      <app-corporate-action-simple [userEmail]="userEmail" (actionApplied)="onActionApplied()"></app-corporate-action-simple>
+    }
+  </div>
+</app-expansion-panel>
