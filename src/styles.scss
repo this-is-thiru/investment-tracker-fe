@@ -489,3 +489,75 @@ html {
     letter-spacing: 0.05em !important;
   }
 }
+
+/* --- PrimeNG Paginator Global Styling --- */
+.p-paginator {
+  background-color: transparent !important;
+  color: #ffffff !important;
+  justify-content: center !important;
+  padding: 0.75rem 0 !important;
+  border-top: 1px solid #2a2a2a !important;
+}
+
+.p-paginator .p-paginator-page {
+  background-color: #2e2e2e !important;
+  color: #ffffff !important;
+  margin: 0 0.125rem !important;
+  min-width: 2.5rem !important;
+  height: 2.5rem !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 0.375rem !important;
+  cursor: pointer !important;
+  transition: background-color 0.15s !important;
+}
+
+.p-paginator .p-paginator-page:hover {
+  background-color: #10a37f !important;
+  color: #ffffff !important;
+}
+
+.p-paginator .p-paginator-page.p-highlight {
+  background-color: #10a37f !important;
+  color: #ffffff !important;
+}
+
+.p-paginator button {
+  color: #b3b3b3 !important;
+  background: transparent !important;
+  border-radius: 0.375rem !important;
+  width: 2.25rem !important;
+  height: 2.25rem !important;
+  transition: background-color 0.15s, color 0.15s !important;
+  margin: 0 0.125rem !important;
+}
+
+.p-paginator button:hover {
+  background-color: #2e2e2e !important;
+  color: #ffffff !important;
+}
+
+.p-paginator button:disabled {
+  opacity: 0.4 !important;
+  cursor: not-allowed !important;
+}
+
+.p-paginator .p-paginator-rpp-options,
+.p-dropdown,
+.p-dropdown-panel {
+  background-color: #2e2e2e !important;
+  color: #ffffff !important;
+  border-radius: 0.375rem !important;
+}
+
+.p-dropdown-items .p-dropdown-item:hover {
+  background-color: #10a37f !important;
+  color: #ffffff !important;
+}
+
+.p-dropdown-items .p-dropdown-item.p-highlight {
+  background-color: #10a37f !important;
+  color: #ffffff !important;
+}
+

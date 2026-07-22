@@ -25,22 +25,10 @@
 
   <!-- MAIN BODY -->
   <main class="max-w-7xl mx-auto w-full px-4 md:px-6 lg:px-8 py-8 flex-1 flex flex-col gap-6">
-    <!-- Section 1: Upload Transactions -->
+    <!-- Section 1: Upload & Preview Transactions (Combined) -->
     <app-upload-transactions
-      [quarter]="selectedQuarter"
-      (quarterSelected)="onQuarterSelected($event)"
-      (fileSelected)="onFileSelected($event)">
+      (uploadComplete)="onUploadComplete()">
     </app-upload-transactions>
-
-    <!-- Section 2: Preview & Upload -->
-    @if (selectedFile) {
-      <app-upload-preview-table
-        [file]="selectedFile"
-        [quarter]="selectedQuarter"
-        (uploadComplete)="onUploadComplete()"
-        (fileCleared)="onFileCleared()">
-      </app-upload-preview-table>
-    }
 
     <!-- Section 3: Temporary Transactions & Corporate Actions -->
     <app-temp-corporate-tabs

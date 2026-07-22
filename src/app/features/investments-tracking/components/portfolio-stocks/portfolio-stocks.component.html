@@ -28,6 +28,7 @@
           [paginator]="true"
           [rows]="10"
           [rowsPerPageOptions]="[5, 10, 20]"
+          paginatorDropdownAppendTo="body"
           dataKey="stockCode"
           [expandedRowKeys]="expandedRows"
           (onRowExpand)="onRowExpand($event)"
@@ -38,17 +39,39 @@
           <ng-template pTemplate="header">
             <tr>
               <th style="width: 3.5rem"></th>
-              <th pSortableColumn="stockName">Stock <p-sortIcon field="stockName"></p-sortIcon></th>
-              <th pSortableColumn="assetType">Asset <p-sortIcon field="assetType"></p-sortIcon></th>
-              <th pSortableColumn="totalBought" class="text-right">Bought <p-sortIcon field="totalBought"></p-sortIcon></th>
-              <th pSortableColumn="totalSold" class="text-right">Sold <p-sortIcon field="totalSold"></p-sortIcon></th>
-              <th pSortableColumn="netHeld" class="text-right">Net Held <p-sortIcon field="netHeld"></p-sortIcon></th>
-              <th pSortableColumn="totalInvested" class="text-right">Invested <p-sortIcon field="totalInvested"></p-sortIcon></th>
-              <th pSortableColumn="netInvested" class="text-right">Net ₹ <p-sortIcon field="netInvested"></p-sortIcon></th>
-              <th pSortableColumn="txnCount" class="text-right">Txns <p-sortIcon field="txnCount"></p-sortIcon></th>
-              <th pSortableColumn="avgPrice" class="text-right">Avg ₹ <p-sortIcon field="avgPrice"></p-sortIcon></th>
-              <th pSortableColumn="totalCharges" class="text-right">Charges <p-sortIcon field="totalCharges"></p-sortIcon></th>
-              <th>% Share</th>
+              <th pSortableColumn="stockName">
+                <div class="flex items-center gap-1 whitespace-nowrap">Stock <p-sortIcon field="stockName"></p-sortIcon></div>
+              </th>
+              <th pSortableColumn="assetType">
+                <div class="flex items-center gap-1 whitespace-nowrap">Asset <p-sortIcon field="assetType"></p-sortIcon></div>
+              </th>
+              <th pSortableColumn="totalBought" class="text-right">
+                <div class="flex items-center justify-end gap-1 whitespace-nowrap">Bought <p-sortIcon field="totalBought"></p-sortIcon></div>
+              </th>
+              <th pSortableColumn="totalSold" class="text-right">
+                <div class="flex items-center justify-end gap-1 whitespace-nowrap">Sold <p-sortIcon field="totalSold"></p-sortIcon></div>
+              </th>
+              <th pSortableColumn="netHeld" class="text-right">
+                <div class="flex items-center justify-end gap-1 whitespace-nowrap">Net Held <p-sortIcon field="netHeld"></p-sortIcon></div>
+              </th>
+              <th pSortableColumn="totalInvested" class="text-right">
+                <div class="flex items-center justify-end gap-1 whitespace-nowrap">Invested <p-sortIcon field="totalInvested"></p-sortIcon></div>
+              </th>
+              <th pSortableColumn="netInvested" class="text-right">
+                <div class="flex items-center justify-end gap-1 whitespace-nowrap">Net ₹ <p-sortIcon field="netInvested"></p-sortIcon></div>
+              </th>
+              <th pSortableColumn="txnCount" class="text-right">
+                <div class="flex items-center justify-end gap-1 whitespace-nowrap">Txns <p-sortIcon field="txnCount"></p-sortIcon></div>
+              </th>
+              <th pSortableColumn="avgPrice" class="text-right">
+                <div class="flex items-center justify-end gap-1 whitespace-nowrap">Avg ₹ <p-sortIcon field="avgPrice"></p-sortIcon></div>
+              </th>
+              <th pSortableColumn="totalCharges" class="text-right">
+                <div class="flex items-center justify-end gap-1 whitespace-nowrap">Charges <p-sortIcon field="totalCharges"></p-sortIcon></div>
+              </th>
+              <th>
+                <div class="flex items-center gap-1 whitespace-nowrap">% Share</div>
+              </th>
             </tr>
           </ng-template>
           <ng-template pTemplate="body" let-h let-expanded="expanded">

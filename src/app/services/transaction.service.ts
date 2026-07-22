@@ -221,7 +221,19 @@ export class TransactionService {
 
   /** Fetch transactions for a single stock */
   getTransactionsByStock(email: string, stockCode: string): Observable<TransactionsResponse[]> {
-    const url = `${this.BASE_URL.getBaseUrl()}/transactions/user/${email}/stock/${stockCode}`;
-    return this.http.get<TransactionsResponse[]>(url);
+    const url = `${this.BASE_URL.getBaseUrl()}/transactions/user/${email}`;
+    const queryFilters = [
+      {
+        filterKey: 'stock_code',
+        operation: 'EQUALS',
+        value: stockCode,
+        logicalOperation: 'AND',
+        expressionLogicalOperation: 'AND',
+        allowEmptyOrNull: false,
+        caseSensitive: false,
+        isDateField: false
+      }
+    ];
+    return this.http.post<TransactionsResponse[]>(url, { queryFilters });
   }
 }

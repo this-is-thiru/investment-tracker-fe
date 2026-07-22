@@ -60,19 +60,39 @@
     } @else {
       <div class="overflow-x-auto">
         <p-table [value]="filteredTransactions" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[5, 10, 20]"
-          [tableStyle]="{ 'min-width': '72rem' }" responsiveLayout="scroll" styleClass="p-datatable-sm w-full">
+          paginatorDropdownAppendTo="body" [tableStyle]="{ 'min-width': '72rem' }" responsiveLayout="scroll" styleClass="p-datatable-sm w-full">
           <ng-template pTemplate="header">
             <tr>
-              <th pSortableColumn="stockName">Stock <p-sortIcon field="stockName"></p-sortIcon></th>
-              <th pSortableColumn="transactionType">Type <p-sortIcon field="transactionType"></p-sortIcon></th>
-              <th pSortableColumn="quantity" class="text-right">Qty <p-sortIcon field="quantity"></p-sortIcon></th>
-              <th pSortableColumn="price" class="text-right">Price <p-sortIcon field="price"></p-sortIcon></th>
-              <th pSortableColumn="totalValue" class="text-right">Total <p-sortIcon field="totalValue"></p-sortIcon></th>
-              <th pSortableColumn="transactionDate">Date <p-sortIcon field="transactionDate"></p-sortIcon></th>
-              <th pSortableColumn="brokerName">Broker <p-sortIcon field="brokerName"></p-sortIcon></th>
-              <th pSortableColumn="exchangeName">Exchange <p-sortIcon field="exchangeName"></p-sortIcon></th>
-              <th pSortableColumn="assetType">Asset <p-sortIcon field="assetType"></p-sortIcon></th>
-              <th class="text-right">Charges</th>
+              <th pSortableColumn="stockName">
+                <div class="flex items-center gap-1 whitespace-nowrap">Stock <p-sortIcon field="stockName"></p-sortIcon></div>
+              </th>
+              <th pSortableColumn="transactionType">
+                <div class="flex items-center gap-1 whitespace-nowrap">Type <p-sortIcon field="transactionType"></p-sortIcon></div>
+              </th>
+              <th pSortableColumn="quantity" class="text-right">
+                <div class="flex items-center justify-end gap-1 whitespace-nowrap">Qty <p-sortIcon field="quantity"></p-sortIcon></div>
+              </th>
+              <th pSortableColumn="price" class="text-right">
+                <div class="flex items-center justify-end gap-1 whitespace-nowrap">Price <p-sortIcon field="price"></p-sortIcon></div>
+              </th>
+              <th pSortableColumn="totalValue" class="text-right">
+                <div class="flex items-center justify-end gap-1 whitespace-nowrap">Total <p-sortIcon field="totalValue"></p-sortIcon></div>
+              </th>
+              <th pSortableColumn="transactionDate">
+                <div class="flex items-center gap-1 whitespace-nowrap">Date <p-sortIcon field="transactionDate"></p-sortIcon></div>
+              </th>
+              <th pSortableColumn="brokerName">
+                <div class="flex items-center gap-1 whitespace-nowrap">Broker <p-sortIcon field="brokerName"></p-sortIcon></div>
+              </th>
+              <th pSortableColumn="exchangeName">
+                <div class="flex items-center gap-1 whitespace-nowrap">Exchange <p-sortIcon field="exchangeName"></p-sortIcon></div>
+              </th>
+              <th pSortableColumn="assetType">
+                <div class="flex items-center gap-1 whitespace-nowrap">Asset <p-sortIcon field="assetType"></p-sortIcon></div>
+              </th>
+              <th class="text-right">
+                <div class="flex items-center justify-end gap-1 whitespace-nowrap">Charges</div>
+              </th>
             </tr>
           </ng-template>
           <ng-template pTemplate="body" let-t>

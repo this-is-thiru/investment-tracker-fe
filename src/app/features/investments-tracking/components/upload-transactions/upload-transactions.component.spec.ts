@@ -75,28 +75,24 @@ describe('UploadTransactionsComponent', () => {
     expect(component.quarter).toBe('Q1');
   });
 
-  it('should emit quarterSelected when quarter changes', () => {
-    spyOn(component.quarterSelected, 'emit');
-
+  it('should update quarter when quarter changes', () => {
     component.onQuarterChange('Q3');
-
     expect(component.quarter).toBe('Q3');
-    expect(component.quarterSelected.emit).toHaveBeenCalledWith('Q3');
   });
 
-  it('should emit fileSelected when a valid file is picked', () => {
-    spyOn(component.fileSelected, 'emit');
+  it('should parse file when a valid file is picked', () => {
+    spyOn(component, 'parseFile');
     const file = makeFile('data.xlsx', 1024);
 
     component.onFilePicked(file);
 
     expect(component.file).toBe(file);
     expect(component.fileError).toBeNull();
-    expect(component.fileSelected.emit).toHaveBeenCalledWith(file);
+    expect(component.parseFile).toHaveBeenCalledWith(file);
   });
 
-  it('should reject .csv files and not emit fileSelected', () => {
-    spyOn(component.fileSelected, 'emit');
+  it('should reject .csv files and not set file', () => {
+    spyOn(component, 'parseFile');
     const file = makeFile('data.csv', 1024);
 
     component.onFilePicked(file);
@@ -104,11 +100,11 @@ describe('UploadTransactionsComponent', () => {
     expect(component.file).toBeNull();
     expect(component.fileError).toBeTruthy();
     expect(component.fileError!).toContain('.xlsx');
-    expect(component.fileSelected.emit).not.toHaveBeenCalled();
+    expect(component.parseFile).not.toHaveBeenCalled();
   });
 
-  it('should reject files larger than 10 MB and not emit fileSelected', () => {
-    spyOn(component.fileSelected, 'emit');
+  it('should reject files larger than 10 MB and not set file', () => {
+    spyOn(component, 'parseFile');
     const oversize = 11 * 1024 * 1024;
     const file = makeFile('big.xlsx', oversize);
 
@@ -117,19 +113,23 @@ describe('UploadTransactionsComponent', () => {
     expect(component.file).toBeNull();
     expect(component.fileError).toBeTruthy();
     expect(component.fileError!).toContain('10');
-    expect(component.fileSelected.emit).not.toHaveBeenCalled();
+    expect(component.parseFile).not.toHaveBeenCalled();
   });
 
-  it('should clear file on removeFile', () => {
+  it('should clear file and reset states on clearFile', () => {
+    spyOn(component, 'parseFile');
     component.onFilePicked(makeFile('data.xlsx', 1024));
 
-    component.removeFile();
+    component.clearFile();
 
     expect(component.file).toBeNull();
     expect(component.fileError).toBeNull();
+    expect(component.headers.length).toBe(0);
+    expect(component.previewRows.length).toBe(0);
   });
 
   it('should clear fileError on dismissFileError', () => {
+    spyOn(component, 'parseFile');
     component.onFilePicked(makeFile('data.csv', 1024));
     expect(component.fileError).toBeTruthy();
 
@@ -139,7 +139,7 @@ describe('UploadTransactionsComponent', () => {
   });
 
   it('should handle drag and drop', () => {
-    spyOn(component.fileSelected, 'emit');
+    spyOn(component, 'parseFile');
     const file = makeFile('drop.xlsx', 1024);
     const event = new DragEvent('drop', {
       dataTransfer: new DataTransfer(),
@@ -149,6 +149,6 @@ describe('UploadTransactionsComponent', () => {
     component.handleDrop(event);
 
     expect(component.file).toBe(file);
-    expect(component.fileSelected.emit).toHaveBeenCalledWith(file);
+    expect(component.parseFile).toHaveBeenCalledWith(file);
   });
 });
