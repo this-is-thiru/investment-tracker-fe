@@ -7,9 +7,9 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { MessageService } from 'primeng/api';
 import { CorporateActionService } from '../../services/corporate-action.service';
 import { AuthService } from '../../../../services/auth.service';
+import { NotificationService } from '../../../../services/notification.service';
 import { LucideIconsModule } from '../../../../core/icons/lucide-icons.module';
 import { PrimeNgModule } from '../../../../core/prime-ng.module';
 
@@ -22,7 +22,6 @@ import { PrimeNgModule } from '../../../../core/prime-ng.module';
     LucideIconsModule,
     PrimeNgModule,
   ],
-  providers: [MessageService],
   templateUrl: './corporate-action-simple.component.html',
 })
 export class CorporateActionSimpleComponent {
@@ -31,7 +30,7 @@ export class CorporateActionSimpleComponent {
 
   private corporateActionService = inject(CorporateActionService);
   private authService = inject(AuthService);
-  private messageService = inject(MessageService);
+  private notificationService = inject(NotificationService);
 
   actionType = 'bonus';
   stockCode = '';
@@ -49,20 +48,20 @@ export class CorporateActionSimpleComponent {
   applyAction(): void {
     const email = this.userEmail || this.authService.getUserEmail();
     if (!email) {
-      this.messageService.add({
-        severity: 'error',
-        summary: 'Please sign in',
-        detail: 'You need to be signed in to apply corporate actions.',
-      });
+      this.notificationService.addNotification(
+        'Authentication Required',
+        'You need to be signed in to apply corporate actions.',
+        'error'
+      );
       return;
     }
 
     if (!this.stockCode.trim()) {
-      this.messageService.add({
-        severity: 'error',
-        summary: 'Validation Error',
-        detail: 'Please enter a stock code.',
-      });
+      this.notificationService.addNotification(
+        'Validation Error',
+        'Please enter a stock code.',
+        'error'
+      );
       return;
     }
 
@@ -73,23 +72,23 @@ export class CorporateActionSimpleComponent {
 
     if (this.actionType === 'split' || this.actionType === 'bonus') {
       if (!this.ratio.trim()) {
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Validation Error',
-          detail: 'Please enter a ratio.',
-        });
-        return;
+        this.notificationService.addNotification(
+          'Validation Error',
+          'Please enter a ratio.',
+          'error'
+        );
+         return;
       }
       payload.ratio = this.ratio.trim();
     }
 
     if (this.actionType === 'dividend') {
       if (this.dividendAmount == null || this.dividendAmount <= 0) {
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Validation Error',
-          detail: 'Please enter a valid dividend amount.',
-        });
+        this.notificationService.addNotification(
+          'Validation Error',
+          'Please enter a valid dividend amount.',
+          'error'
+        );
         return;
       }
       payload.dividendAmount = this.dividendAmount;
@@ -99,22 +98,22 @@ export class CorporateActionSimpleComponent {
     this.corporateActionService.apply(email, payload).subscribe({
       next: () => {
         this.isLoading = false;
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Success',
-          detail: 'Corporate action applied successfully.',
-        });
+        this.notificationService.addNotification(
+          'Corporate Action Applied',
+          `Corporate action '${this.actionType.toUpperCase()}' applied successfully for ${this.stockCode.toUpperCase()}.`,
+          'success'
+        );
         this.actionApplied.emit();
         this.resetForm();
       },
       error: (err) => {
         this.isLoading = false;
         console.error('Corporate action error:', err);
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: 'Failed to apply corporate action.',
-        });
+        this.notificationService.addNotification(
+          'Application Failed',
+          `Failed to apply '${this.actionType.toUpperCase()}' action for stock ${this.stockCode.toUpperCase()}.`,
+          'error'
+        );
       },
     });
   }
@@ -150,38 +149,38 @@ export class CorporateActionSimpleComponent {
   performActions(): void {
     const email = this.userEmail || this.authService.getUserEmail();
     if (!email) {
-      this.messageService.add({
-        severity: 'error',
-        summary: 'Please sign in',
-        detail: 'You need to be signed in to perform corporate actions.',
-      });
+      this.notificationService.addNotification(
+        'Authentication Required',
+        'You need to be signed in to perform corporate actions.',
+        'error'
+      );
       return;
     }
 
     if (!this.performMonth) {
-      this.messageService.add({
-        severity: 'error',
-        summary: 'Validation Error',
-        detail: 'Please select a month.',
-      });
+      this.notificationService.addNotification(
+        'Validation Error',
+        'Please select a month.',
+        'error'
+      );
       return;
     }
 
     if (!this.performYear || this.performYear < 2000 || this.performYear > 2100) {
-      this.messageService.add({
-        severity: 'error',
-        summary: 'Validation Error',
-        detail: 'Please enter a valid year.',
-      });
+      this.notificationService.addNotification(
+        'Validation Error',
+        'Please enter a valid year.',
+        'error'
+      );
       return;
     }
 
     if (!this.performBroker.trim()) {
-      this.messageService.add({
-        severity: 'error',
-        summary: 'Validation Error',
-        detail: 'Please select or enter a broker name.',
-      });
+      this.notificationService.addNotification(
+        'Validation Error',
+        'Please select or enter a broker name.',
+        'error'
+      );
       return;
     }
 
@@ -195,21 +194,21 @@ export class CorporateActionSimpleComponent {
     this.corporateActionService.performCorporateAction(email, payload).subscribe({
       next: () => {
         this.isPerforming = false;
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Success',
-          detail: 'Corporate actions batch performed successfully.',
-        });
+        this.notificationService.addNotification(
+          'Batch Actions Performed',
+          `Corporate actions batch performed successfully for ${this.performMonth} ${this.performYear} (Broker: ${this.performBroker.toUpperCase()}).`,
+          'success'
+        );
         this.actionApplied.emit();
       },
       error: (err) => {
         this.isPerforming = false;
         console.error('Batch perform corporate actions failed:', err);
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: 'Failed to perform corporate actions batch.',
-        });
+        this.notificationService.addNotification(
+          'Batch Actions Failed',
+          `Failed to perform corporate actions batch for ${this.performMonth} ${this.performYear}.`,
+          'error'
+        );
       },
     });
   }

@@ -3,8 +3,9 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { LucideIconsModule } from '../../../core/icons/lucide-icons.module';
 import { AuthService } from '../../../services/auth.service';
-import { Notification } from '../../../models/Notification';
+import { NotificationService, Notification } from '../../../services/notification.service';
 import { NavItem } from '../../../models/Navitem';
+import { map } from 'rxjs/operators';
 
 
 @Component({
@@ -17,6 +18,7 @@ import { NavItem } from '../../../models/Navitem';
 export class HeaderComponent {
   private router = inject(Router);
   private authService = inject(AuthService);
+  private notificationService = inject(NotificationService);
 
   // --- UI States ---
   isProfileDropdownOpen = false;
@@ -35,29 +37,10 @@ export class HeaderComponent {
   ];
 
   // --- Notifications ---
-  notifications: Notification[] = [
-    {
-      id: 1,
-      title: 'Transaction Uploaded',
-      desc: '50 transactions processed successfully',
-      time: '2m ago',
-      unread: true,
-    },
-    {
-      id: 2,
-      title: 'Tax Report Ready',
-      desc: 'Your 2024 tax report is ready to download',
-      time: '1h ago',
-      unread: true,
-    },
-    {
-      id: 3,
-      title: 'Portfolio Update',
-      desc: 'Your portfolio gained 2.5% this week',
-      time: '3h ago',
-      unread: false,
-    },
-  ];
+  notifications$ = this.notificationService.notifications$.pipe(
+    map(list => list.slice(0, 5))
+  );
+  unreadCount$ = this.notificationService.unreadCount$;
 
   // --- Auth-based navigation ---
   onNavigate(route: string): void {
@@ -93,6 +76,39 @@ export class HeaderComponent {
     this.isProfileDropdownOpen = false;
     this.isMobileMenuOpen = false;
     this.isNotificationDropdownOpen = false;
+  }
+
+  // --- Notification Actions ---
+  markAllAsRead(event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
+    this.notificationService.markAllAsRead();
+  }
+
+  viewAllNotifications(): void {
+    this.isNotificationDropdownOpen = false;
+    this.router.navigate(['/notifications']);
+  }
+
+  onNotificationClick(notification: Notification): void {
+    this.notificationService.markAsRead(notification.id);
+    this.isNotificationDropdownOpen = false;
+  }
+
+  formatTimestamp(date: Date): string {
+    const now = new Date();
+    const diff = now.getTime() - new Date(date).getTime();
+    const minutes = Math.floor(diff / 60000);
+    const hours = Math.floor(diff / 3600000);
+    const days = Math.floor(diff / 86400000);
+
+    if (minutes < 1) return 'Just now';
+    if (minutes < 60) return `${minutes}m ago`;
+    if (hours < 24) return `${hours}h ago`;
+    if (days < 7) return `${days}d ago`;
+    
+    return new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
   }
 
   // --- Click outside detection ---

@@ -63,9 +63,11 @@
             class="p-2 text-[#B3B3B3] hover:text-white hover:bg-[#232323] rounded-lg transition-all relative notification-toggle"
           >
             <lucide-icon name="bell" class="h-5 w-5"></lucide-icon>
-            <span
-              class="absolute top-1.5 right-1.5 w-2 h-2 bg-[#10A37F] rounded-full"
-            ></span>
+            @if (((unreadCount$ | async) || 0) > 0) {
+              <span
+                class="absolute top-1.5 right-1.5 w-2 h-2 bg-[#10A37F] rounded-full animate-pulse"
+              ></span>
+            }
           </button>
 
           <!-- Notification Dropdown -->
@@ -77,35 +79,42 @@
                 class="p-4 border-b border-[#3A3A3A] flex items-center justify-between"
               >
                 <h3 class="font-semibold text-white">Notifications</h3>
-                <button class="text-xs text-[#10A37F] hover:text-[#0D8A6B]">
-                  Mark all as read
-                </button>
+                @if (((unreadCount$ | async) || 0) > 0) {
+                  <button (click)="markAllAsRead($event)" class="text-xs text-[#10A37F] hover:text-[#0D8A6B]">
+                    Mark all as read
+                  </button>
+                }
               </div>
 
               <div class="max-h-96 overflow-y-auto">
-                @for (notification of notifications; track notification.id) {
+                @if ((notifications$ | async)?.length === 0) {
+                  <div class="text-center py-8 text-[#B3B3B3] text-sm">
+                    No new notifications
+                  </div>
+                }
+                @for (notification of (notifications$ | async); track notification.id) {
                   <button
-                    (click)="isNotificationDropdownOpen = false"
-                    class="w-full p-4 text-left hover:bg-[#2A2A2A] border-b border-[#3A3A3A]"
-                    [ngClass]="{ 'bg-[#10A37F]/5': notification.unread }"
+                    (click)="onNotificationClick(notification)"
+                    class="w-full p-4 text-left hover:bg-[#2A2A2A] border-b border-[#3A3A3A] transition-colors"
+                    [ngClass]="{ 'bg-[#10A37F]/5': !notification.read }"
                   >
                     <div class="flex items-start gap-3">
                       <div
                         class="w-2 h-2 rounded-full mt-2 shrink-0"
                         [ngClass]="{
-                          'bg-[#10A37F]': notification.unread,
-                          'bg-transparent': !notification.unread,
+                          'bg-[#10A37F]': !notification.read,
+                          'bg-transparent': notification.read,
                         }"
                       ></div>
                       <div class="flex-1 min-w-0">
                         <p class="text-sm font-medium text-white">
                           {{ notification.title }}
                         </p>
-                        <p class="text-xs text-[#B3B3B3]">
-                          {{ notification.desc }}
+                        <p class="text-xs text-[#B3B3B3] line-clamp-2">
+                          {{ notification.message }}
                         </p>
-                        <p class="text-xs text-[#666666]">
-                          {{ notification.time }}
+                        <p class="text-[10px] text-[#666666] mt-1">
+                          {{ formatTimestamp(notification.timestamp) }}
                         </p>
                       </div>
                     </div>
@@ -114,7 +123,7 @@
               </div>
 
               <div class="p-3 border-t border-[#3A3A3A] text-center">
-                <button class="text-sm text-[#10A37F] hover:text-[#0D8A6B]">
+                <button (click)="viewAllNotifications()" class="text-sm text-[#10A37F] hover:text-[#0D8A6B]">
                   View all notifications
                 </button>
               </div>
@@ -196,9 +205,11 @@
             class="p-2 text-[#B3B3B3] hover:text-white hover:bg-[#232323] rounded-lg transition-all relative notification-toggle"
           >
             <lucide-icon name="bell" class="h-5 w-5"></lucide-icon>
-            <span
-              class="absolute top-1.5 right-1.5 w-2 h-2 bg-[#10A37F] rounded-full"
-            ></span>
+            @if (((unreadCount$ | async) || 0) > 0) {
+              <span
+                class="absolute top-1.5 right-1.5 w-2 h-2 bg-[#10A37F] rounded-full animate-pulse"
+              ></span>
+            }
           </button>
 
           <!-- Notification Dropdown -->
@@ -210,34 +221,42 @@
                 class="p-4 border-b border-[#3A3A3A] flex items-center justify-between"
               >
                 <h3 class="font-semibold text-white">Notifications</h3>
-                <button class="text-xs text-[#10A37F] hover:text-[#0D8A6B]">
-                  Mark all as read
-                </button>
+                @if (((unreadCount$ | async) || 0) > 0) {
+                  <button (click)="markAllAsRead($event)" class="text-xs text-[#10A37F] hover:text-[#0D8A6B]">
+                    Mark all as read
+                  </button>
+                }
               </div>
 
               <div class="max-h-96 overflow-y-auto">
-                @for (notification of notifications; track notification.id) {
+                @if ((notifications$ | async)?.length === 0) {
+                  <div class="text-center py-8 text-[#B3B3B3] text-sm">
+                    No new notifications
+                  </div>
+                }
+                @for (notification of (notifications$ | async); track notification.id) {
                   <button
-                    class="w-full p-4 text-left hover:bg-[#2A2A2A] border-b border-[#3A3A3A]"
-                    [ngClass]="{ 'bg-[#10A37F]/5': notification.unread }"
+                    (click)="onNotificationClick(notification)"
+                    class="w-full p-4 text-left hover:bg-[#2A2A2A] border-b border-[#3A3A3A] transition-colors"
+                    [ngClass]="{ 'bg-[#10A37F]/5': !notification.read }"
                   >
                     <div class="flex items-start gap-3">
                       <div
                         class="w-2 h-2 rounded-full mt-2 shrink-0"
                         [ngClass]="{
-                          'bg-[#10A37F]': notification.unread,
-                          'bg-transparent': !notification.unread,
+                          'bg-[#10A37F]': !notification.read,
+                          'bg-transparent': notification.read,
                         }"
                       ></div>
                       <div class="flex-1 min-w-0">
                         <p class="text-sm font-medium text-white">
                           {{ notification.title }}
                         </p>
-                        <p class="text-xs text-[#B3B3B3]">
-                          {{ notification.desc }}
+                        <p class="text-xs text-[#B3B3B3] line-clamp-2">
+                          {{ notification.message }}
                         </p>
-                        <p class="text-xs text-[#666666]">
-                          {{ notification.time }}
+                        <p class="text-[10px] text-[#666666] mt-1">
+                          {{ formatTimestamp(notification.timestamp) }}
                         </p>
                       </div>
                     </div>
@@ -246,7 +265,7 @@
               </div>
 
               <div class="p-3 border-t border-[#3A3A3A] text-center">
-                <button class="text-sm text-[#10A37F] hover:text-[#0D8A6B]">
+                <button (click)="viewAllNotifications()" class="text-sm text-[#10A37F] hover:text-[#0D8A6B]">
                   View all notifications
                 </button>
               </div>

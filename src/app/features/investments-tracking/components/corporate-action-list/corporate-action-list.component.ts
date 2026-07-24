@@ -1,8 +1,8 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MessageService } from 'primeng/api';
 import { CorporateActionService } from '../../services/corporate-action.service';
 import { AuthService } from '../../../../services/auth.service';
+import { NotificationService } from '../../../../services/notification.service';
 import { LucideIconsModule } from '../../../../core/icons/lucide-icons.module';
 import { PrimeNgModule } from '../../../../core/prime-ng.module';
 
@@ -14,12 +14,11 @@ import { PrimeNgModule } from '../../../../core/prime-ng.module';
     LucideIconsModule,
     PrimeNgModule,
   ],
-  providers: [MessageService],
   templateUrl: './corporate-action-list.component.html',
 })
 export class CorporateActionListComponent implements OnInit {
   private corporateActionService = inject(CorporateActionService);
-  private messageService = inject(MessageService);
+  private notificationService = inject(NotificationService);
   public authService = inject(AuthService);
 
   actions: any[] = [];
@@ -77,11 +76,11 @@ export class CorporateActionListComponent implements OnInit {
             date: '2024-10-28'
           }
         ];
-        this.messageService.add({
-          severity: 'warn',
-          summary: 'Fallback Loaded',
-          detail: 'Failed to load actions from API. Loaded mock actions list.',
-        });
+        this.notificationService.addNotification(
+          'API Fallback Loaded',
+          'Failed to load corporate actions from API. Loaded mock actions list.',
+          'warning'
+        );
       },
     });
   }
@@ -128,11 +127,11 @@ export class CorporateActionListComponent implements OnInit {
           }
         } else {
           this.showDetailModal = false;
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Error',
-            detail: 'Failed to fetch details from server.',
-          });
+          this.notificationService.addNotification(
+            'Fetch Failed',
+            'Failed to fetch corporate action details from server.',
+            'error'
+          );
         }
       },
     });
@@ -140,11 +139,11 @@ export class CorporateActionListComponent implements OnInit {
 
   deleteAction(action: any): void {
     if (!action || (!action.id && !action.stockCode)) {
-      this.messageService.add({
-        severity: 'error',
-        summary: 'Error',
-        detail: 'Action identifier is missing.',
-      });
+      this.notificationService.addNotification(
+        'Error',
+        'Action identifier is missing.',
+        'error'
+      );
       return;
     }
 
@@ -167,20 +166,20 @@ export class CorporateActionListComponent implements OnInit {
 
     this.corporateActionService.deleteCorporateAction(actionId, payload).subscribe({
       next: () => {
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Deleted',
-          detail: 'Corporate action deleted successfully.',
-        });
+        this.notificationService.addNotification(
+          'Corporate Action Deleted',
+          `Successfully deleted corporate action for ${action.stockName || action.stockCode}.`,
+          'success'
+        );
         this.loadActions();
       },
       error: (err) => {
         console.error('Failed to delete corporate action', err);
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: 'Failed to delete corporate action.',
-        });
+        this.notificationService.addNotification(
+          'Deletion Failed',
+          `Failed to delete corporate action for ${action.stockName || action.stockCode}.`,
+          'error'
+        );
       },
     });
   }

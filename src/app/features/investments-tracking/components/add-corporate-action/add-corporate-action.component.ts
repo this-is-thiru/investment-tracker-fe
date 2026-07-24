@@ -1,8 +1,8 @@
 import { Component, Output, EventEmitter, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { MessageService } from 'primeng/api';
 import { CorporateActionService } from '../../services/corporate-action.service';
+import { NotificationService } from '../../../../services/notification.service';
 import { LucideIconsModule } from '../../../../core/icons/lucide-icons.module';
 import { PrimeNgModule } from '../../../../core/prime-ng.module';
 
@@ -20,14 +20,13 @@ interface DemergerStock {
     LucideIconsModule,
     PrimeNgModule,
   ],
-  providers: [MessageService],
   templateUrl: './add-corporate-action.component.html',
 })
 export class AddCorporateActionComponent {
   @Output() actionAdded = new EventEmitter<void>();
 
   private corporateActionService = inject(CorporateActionService);
-  private messageService = inject(MessageService);
+  private notificationService = inject(NotificationService);
 
   isLoading = false;
 
@@ -105,17 +104,17 @@ export class AddCorporateActionComponent {
     if (this.exDate) {
       this.recordDate = this.exDate;
       this.date = this.exDate;
-      this.messageService.add({
-        severity: 'info',
-        summary: 'Dates Synced',
-        detail: 'Record Date and Execution Date set to Ex Date.',
-      });
+      this.notificationService.addNotification(
+        'Dates Synced',
+        'Record Date and Execution Date set to Ex Date.',
+        'info'
+      );
     } else {
-      this.messageService.add({
-        severity: 'warn',
-        summary: 'Sync Failed',
-        detail: 'Please select an Ex Date first.',
-      });
+      this.notificationService.addNotification(
+        'Sync Failed',
+        'Please select an Ex Date first.',
+        'warning'
+      );
     }
   }
 
@@ -195,32 +194,28 @@ export class AddCorporateActionComponent {
     this.corporateActionService.addCorporateAction(payload).subscribe({
       next: () => {
         this.isLoading = false;
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Success',
-          detail: 'Corporate action added successfully!',
-        });
+        this.notificationService.addNotification(
+          'Corporate Action Created',
+          `Successfully created corporate action '${this.type}' for ${this.stockCode.toUpperCase()}.`,
+          'success'
+        );
         this.actionAdded.emit();
         this.resetForm();
       },
       error: (err) => {
         this.isLoading = false;
         console.error('Failed to add corporate action', err);
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: 'Failed to add corporate action. Please check parameters.',
-        });
+        this.notificationService.addNotification(
+          'Creation Failed',
+          `Failed to create '${this.type}' corporate action for ${this.stockCode.toUpperCase()}.`,
+          'error'
+        );
       },
     });
   }
 
   private showValidationError(message: string): void {
-    this.messageService.add({
-      severity: 'error',
-      summary: 'Validation Error',
-      detail: message,
-    });
+    this.notificationService.addNotification('Validation Error', message, 'error');
   }
 
   resetForm(): void {
@@ -242,3 +237,4 @@ export class AddCorporateActionComponent {
     this.demergerStocks = [];
   }
 }
+
