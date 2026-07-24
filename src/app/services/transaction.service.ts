@@ -236,4 +236,10 @@ export class TransactionService {
     ];
     return this.http.post<TransactionsResponse[]>(url, { queryFilters });
   }
+
+  /** Clear all portfolio records for a user */
+  clearAllRecords(email: string): Observable<any> {
+    const url = `${this.BASE_URL.getBaseUrl()}/portfolio/user/${email}/clear/all`;
+    return this.http.post(url, {});
+  }
 }

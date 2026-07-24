@@ -7,12 +7,12 @@ import {
 } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { MessageService } from 'primeng/api';
 import { TransactionsResponse } from '../../../../models/TranscationsResponse';
 import { TransactionService } from '../../../../services/transaction.service';
 import { ExpansionPanelComponent } from '../../../../shared/components/expansion-panel/expansion-panel.component';
 import { LucideIconsModule } from '../../../../core/icons/lucide-icons.module';
 import { PrimeNgModule } from '../../../../core/prime-ng.module';
+import { NotificationService } from '../../../../services/notification.service';
 
 export interface PortfolioStockRow {
   stockCode: string;
@@ -41,14 +41,13 @@ export interface PortfolioStockRow {
     ExpansionPanelComponent,
     PrimeNgModule,
   ],
-  providers: [MessageService],
   templateUrl: './portfolio-stocks.component.html',
 })
 export class PortfolioStocksComponent implements OnInit {
   @Input() userEmail = '';
 
   private transactionService = inject(TransactionService);
-  private messageService = inject(MessageService);
+  private notificationService = inject(NotificationService);
   private cdr = inject(ChangeDetectorRef);
 
   holdings: PortfolioStockRow[] = [];
@@ -140,11 +139,11 @@ export class PortfolioStocksComponent implements OnInit {
       error: (err) => {
         console.error('Failed to load holdings', err);
         this.loading = false;
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: 'Failed to load portfolio stocks.',
-        });
+        this.notificationService.addNotification(
+          'Error',
+          'Failed to load portfolio stocks.',
+          'error'
+        );
         this.cdr.detectChanges();
       },
     });
@@ -167,11 +166,11 @@ export class PortfolioStocksComponent implements OnInit {
           console.error('Failed to load stock transactions', err);
           this.loadingStockTransactions[stock.stockCode] = false;
           this.stockTransactions[stock.stockCode] = [];
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Error',
-            detail: `Failed to load transactions for ${stock.stockCode}.`,
-          });
+          this.notificationService.addNotification(
+            'Error',
+            `Failed to load transactions for ${stock.stockCode}.`,
+            'error'
+          );
           this.cdr.detectChanges();
         },
       });

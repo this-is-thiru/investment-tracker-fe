@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Output, inject } from '@angular/core';
 import { NotificationService } from '../../../services/notification.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -6,6 +6,7 @@ import { LucideIconsModule } from '../../../core/icons/lucide-icons.module';
 import { AuthService } from '../../../services/auth.service';
 import { StorageService } from '../../../services/storage.service';
 import { PrimeNgModule } from '../../../core/prime-ng.module';
+import { TransactionService } from '../../../services/transaction.service';
 
 @Component({
     selector: 'app-settings',
@@ -18,6 +19,8 @@ export class SettingsComponent {
   @Output() navigate = new EventEmitter<string>();
 
   activeTab: 'profile' | 'portfolio' | 'alerts' | 'security' | 'billing' | 'data' = 'profile';
+
+  private transactionService = inject(TransactionService);
 
   tabs = [
     { id: 'profile' as const, label: 'Profile & Region', icon: 'user' },
@@ -344,12 +347,20 @@ export class SettingsComponent {
   }
 
   handleResetPortfolio(): void {
+    if (this.isResetting) return;
     this.isResetting = true;
-    setTimeout(() => {
-      this.isResetting = false;
-      this.showResetModal = false;
-      this.notificationService.addNotification('All portfolio transactions and statistics have been reset', '', 'success');
-    }, 1500);
+    this.transactionService.clearAllRecords(this.email).subscribe({
+      next: () => {
+        this.isResetting = false;
+        this.showResetModal = false;
+        this.notificationService.addNotification('All portfolio transactions and statistics have been reset successfully.', '', 'success');
+      },
+      error: (err) => {
+        console.error('Failed to reset portfolio:', err);
+        this.isResetting = false;
+        this.notificationService.addNotification('Failed to clear portfolio records. Please try again.', '', 'error');
+      }
+    });
   }
 
   handleDeleteAccountConfirm(): void {
