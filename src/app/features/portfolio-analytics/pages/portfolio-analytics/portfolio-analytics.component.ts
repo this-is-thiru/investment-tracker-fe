@@ -66,13 +66,14 @@ export class PortfolioAnalyticsComponent implements OnInit {
   private cdr = inject(ChangeDetectorRef);
 
   // ----- raw data -----
-  temporaryTransactions: TransactionsResponse[] = [];
   portfolioTransactions: TransactionsResponse[] = [];
-  rows: MergedTransaction[] = [];
+  apiHoldings: any[] = [];
 
   // ----- derived -----
-  filteredRows: MergedTransaction[] = [];
+  filteredRows: TransactionsResponse[] = [];
   holdings: HoldingRow[] = [];
+  filteredHoldings: HoldingRow[] = [];
+  availableAssetTypes: string[] = [];
   winners: PerStockPnl[] = [];
   losers: PerStockPnl[] = [];
   /** SELL count per stockCode, for the top-movers tables. */
@@ -84,6 +85,26 @@ export class PortfolioAnalyticsComponent implements OnInit {
   holdingsCount = 0;
   totalCharges = 0;
   biggestPosition: { name: string; pct: number } | null = null;
+
+  // ----- advanced states -----
+  activeTab: 'overview' | 'tax' | 'holdings' = 'overview';
+
+  // HHI diversification state
+  hhiScore = 0;
+  hhiCategory: 'low' | 'moderate' | 'high' = 'low';
+  hhiLabel = 'Well Diversified';
+  hhiColor = '#22C55E';
+  hhiPercentWidth = 0;
+
+  // Charges leakage
+  chargesLeakage = 0;
+  chargesImpactLabel = 'Low Impact';
+  chargesImpactColor = '#22C55E';
+  chargesLeakagePercent = 0;
+
+  // Capital gains summaries
+  taxGainsSummary: any = null;
+  fifoGainsList: any[] = [];
 
   // ----- chart data (class fields, reassigned by recompute) -----
   assetAllocData: any = { labels: [], datasets: [{ data: [] }] };
@@ -125,13 +146,9 @@ export class PortfolioAnalyticsComponent implements OnInit {
   // ----- loading / error -----
   loading = true;
   usingMock = false;
-  // BUG FIX NOTE: unlike the previous tax-filing version (which checked
-  // `=== null` against `[]` arrays), this component already uses
-  // `tempLoaded`/`portLoaded` flags. We only need to make sure `recompute()`
-  // runs BEFORE `loading = false`, so chart data is populated by the time
-  // `<p-chart>` mounts.
   private tempLoaded = false;
   private portLoaded = false;
+  private holdingsLoaded = false;
   userEmail = '';
 
   // ----- filter state -----
@@ -145,6 +162,10 @@ export class PortfolioAnalyticsComponent implements OnInit {
   first = 0;
   sortField = 'totalInvested';
   sortOrder = -1;
+
+  // holdings tab filters
+  searchQuery = '';
+  filterAssetType: string | null = null;
 
   readonly datePresetOptions = [
     { label: 'All time', value: 'all' },
@@ -160,38 +181,21 @@ export class PortfolioAnalyticsComponent implements OnInit {
       window.scrollTo({ top: 0, left: 0, behavior: 'instant' as ScrollBehavior });
     }
     this.userEmail = localStorage.getItem('userEmail') || '';
-    this.loadTemporaryTransactions();
-    this.loadPortfolioTransactions();
+    this.refresh();
   }
 
   refresh(): void {
     this.usingMock = false;
-    this.tempLoaded = false;
     this.portLoaded = false;
+    this.holdingsLoaded = false;
     this.loading = true;
-    this.loadTemporaryTransactions();
     this.loadPortfolioTransactions();
+    this.loadApiHoldings();
   }
 
   // ============================================================
   // DATA LOADING
   // ============================================================
-
-  loadTemporaryTransactions(): void {
-    this.transactionService.getTemporaryTransactions(this.userEmail).subscribe({
-      next: (data) => {
-        this.temporaryTransactions = data ?? [];
-        this.tempLoaded = true;
-        this.afterLoad();
-      },
-      error: () => {
-        this.temporaryTransactions = this.mockTempData();
-        this.usingMock = true;
-        this.tempLoaded = true;
-        this.afterLoad();
-      },
-    });
-  }
 
   loadPortfolioTransactions(): void {
     this.transactionService.getCurrentTransactions(this.userEmail).subscribe({
@@ -209,18 +213,86 @@ export class PortfolioAnalyticsComponent implements OnInit {
     });
   }
 
+  loadApiHoldings(): void {
+    this.transactionService.getAllHoldings(this.userEmail).subscribe({
+      next: (res) => {
+        const data = Array.isArray(res) ? res : res?.data || res?.content || [];
+        this.apiHoldings = data.map((d: any) => {
+          const totalBought = d.totalQuantity || 0;
+          const netHeld = d.quantity || 0;
+          const totalSold = totalBought - netHeld;
+          const totalInvested = d.totalValue || 0;
+          return {
+            stockCode: d.stockCode,
+            stockName: d.stockName,
+            assetType: d.assetType,
+            totalBought,
+            totalSold,
+            netHeld,
+            totalInvested,
+            totalSoldValue: 0,
+            netInvested: totalInvested,
+            txnCount:
+              (d.buyTransactionIds?.length || 0) +
+              (d.sellTransactionIds?.length || 0) ||
+              Object.keys(d.transactionQuantities || {}).length,
+            avgPrice: d.price || 0,
+            totalCharges: (d.brokerCharges || 0) + (d.miscCharges || 0),
+            sharePercent: 0,
+            firstDate: '',
+            lastDate: '',
+          };
+        });
+        this.holdingsLoaded = true;
+        this.afterLoad();
+      },
+      error: () => {
+        this.apiHoldings = this.mockApiHoldingsData();
+        this.usingMock = true;
+        this.holdingsLoaded = true;
+        this.afterLoad();
+      },
+    });
+  }
+
   private afterLoad(): void {
-    if (!this.tempLoaded || !this.portLoaded) return;
-    this.rows = this.analytics.mergeTransactions(
-      this.temporaryTransactions,
-      this.portfolioTransactions
-    );
-    // applyFilters() → recompute() populates chart datasets BEFORE `loading`
-    // is cleared. This ensures <p-chart> mounts with complete data and does
-    // not require the user to click again to refresh the visualization.
+    if (!this.portLoaded || !this.holdingsLoaded) return;
+    this.enrichApiHoldings();
     this.applyFilters();
     this.loading = false;
     this.cdr.detectChanges();
+  }
+
+  private enrichApiHoldings(): void {
+    if (!this.apiHoldings.length || !this.portfolioTransactions.length) return;
+    const txnMap = new Map<string, TransactionsResponse[]>();
+    for (const t of this.portfolioTransactions) {
+      const key = t.stockCode || t.stockName || 'unknown';
+      if (!txnMap.has(key)) txnMap.set(key, []);
+      txnMap.get(key)!.push(t);
+    }
+    let totalAllInvested = 0;
+    for (const h of this.apiHoldings) {
+      totalAllInvested += h.totalInvested || 0;
+      const key = h.stockCode || h.stockName || 'unknown';
+      const stockTxns = txnMap.get(key) || [];
+      let firstDate = '';
+      let lastDate = '';
+      for (const t of stockTxns) {
+        if (t.transactionDate) {
+          if (!firstDate || t.transactionDate < firstDate) firstDate = t.transactionDate;
+          if (!lastDate || t.transactionDate > lastDate) lastDate = t.transactionDate;
+        }
+      }
+      h.firstDate = firstDate || 'N/A';
+      h.lastDate = lastDate || 'N/A';
+    }
+    if (totalAllInvested > 0) {
+      for (const h of this.apiHoldings) {
+        h.sharePercent = (h.totalInvested / totalAllInvested) * 100;
+      }
+    }
+    this.apiHoldings.sort((a, b) => b.totalInvested - a.totalInvested);
   }
 
   // ============================================================
@@ -259,7 +331,7 @@ export class PortfolioAnalyticsComponent implements OnInit {
 
   applyFilters(): void {
     const { from, to } = this.getDateRange();
-    this.filteredRows = this.rows.filter((r) => this.inDateRange(r.transactionDate, from, to));
+    this.filteredRows = this.portfolioTransactions.filter((r) => this.inDateRange(r.transactionDate, from, to));
     this.recompute();
     this.first = 0; // reset pagination when filters change
     this.updateActiveChips();
@@ -273,16 +345,28 @@ export class PortfolioAnalyticsComponent implements OnInit {
     // Summary cards
     const stats = this.analytics.computeStats(this.filteredRows);
     this.totalInvested = stats.totalInvested;
-    this.realizedPnl = this.analytics.computeCapitalGainsSummary(this.filteredRows).totalGain;
     this.totalCharges = stats.totalCharges;
 
+    // Capital gains & tax computation
+    this.taxGainsSummary = this.analytics.computeCapitalGainsSummary(this.filteredRows);
+    this.realizedPnl = this.taxGainsSummary.totalGain;
+    this.fifoGainsList = this.analytics.computeFifoRealizedGains(this.filteredRows);
+
     // Holdings + biggest position
-    this.holdings = this.analytics.computeHoldings(this.filteredRows);
+    this.holdings = [...this.apiHoldings];
     this.holdingsCount = this.holdings.length;
     this.biggestPosition =
       this.holdings.length > 0
         ? { name: this.holdings[0].stockName, pct: this.holdings[0].sharePercent }
         : null;
+
+    // Diversification Metrics
+    this.computeHHI(this.holdings);
+    this.hhiPercentWidth = Math.min((this.hhiScore / 10000) * 100, 100);
+
+    // Charges Impact Leakage
+    this.computeChargesLeakage();
+    this.chargesLeakagePercent = Math.min(this.chargesLeakage * 100, 100);
 
     // Top movers
     const movers = this.analytics.computeTopMovers(this.filteredRows, 5);
@@ -293,10 +377,8 @@ export class PortfolioAnalyticsComponent implements OnInit {
     this.sellCountByCode = new Map();
     for (const r of this.filteredRows) {
       if (r.transactionType === 'SELL') {
-        this.sellCountByCode.set(
-          r.stockCode || r.stockName || 'unknown',
-          (this.sellCountByCode.get(r.stockCode || r.stockName || 'unknown') ?? 0) + 1
-        );
+        const key = r.stockCode || r.stockName || 'unknown';
+        this.sellCountByCode.set(key, (this.sellCountByCode.get(key) ?? 0) + 1);
       }
     }
 
@@ -305,6 +387,103 @@ export class PortfolioAnalyticsComponent implements OnInit {
     this.buildBrokerChart();
     this.buildActivityChart();
     this.buildExchangeChart();
+
+    // Filter holdings tab
+    this.availableAssetTypes = Array.from(
+      new Set(this.holdings.map((h) => h.assetType).filter(Boolean))
+    ).sort();
+    this.applyHoldingsFilters();
+  }
+
+  // holdings tab filters
+  applyHoldingsFilters(): void {
+    const query = (this.searchQuery || '').toLowerCase().trim();
+    this.filteredHoldings = this.holdings.filter((h) => {
+      const matchesSearch =
+        !query ||
+        (h.stockName || '').toLowerCase().includes(query) ||
+        (h.stockCode || '').toLowerCase().includes(query) ||
+        (h.assetType || '').toLowerCase().includes(query);
+      const matchesAsset =
+        !this.filterAssetType || h.assetType === this.filterAssetType;
+      return matchesSearch && matchesAsset;
+    });
+  }
+
+  resetHoldingsFilters(): void {
+    this.searchQuery = '';
+    this.filterAssetType = null;
+    this.applyHoldingsFilters();
+  }
+
+  // Advanced calculations
+  computeHHI(holdingsList: HoldingRow[]): void {
+    if (!holdingsList || holdingsList.length === 0) {
+      this.hhiScore = 0;
+      this.hhiCategory = 'low';
+      this.hhiLabel = 'No holdings';
+      this.hhiColor = '#B3B3B3';
+      return;
+    }
+    let sumSquares = 0;
+    for (const h of holdingsList) {
+      sumSquares += h.sharePercent * h.sharePercent;
+    }
+    this.hhiScore = Math.round(sumSquares);
+    if (this.hhiScore < 1500) {
+      this.hhiCategory = 'low';
+      this.hhiLabel = 'Well Diversified';
+      this.hhiColor = '#22C55E';
+    } else if (this.hhiScore <= 2500) {
+      this.hhiCategory = 'moderate';
+      this.hhiLabel = 'Moderately Concentrated';
+      this.hhiColor = '#FACC15';
+    } else {
+      this.hhiCategory = 'high';
+      this.hhiLabel = 'Highly Concentrated';
+      this.hhiColor = '#EF4444';
+    }
+  }
+
+  computeChargesLeakage(): void {
+    if (this.totalInvested > 0) {
+      this.chargesLeakage = (this.totalCharges / this.totalInvested) * 100;
+      if (this.chargesLeakage < 0.2) {
+        this.chargesImpactLabel = 'Negligible Impact';
+        this.chargesImpactColor = '#22C55E';
+      } else if (this.chargesLeakage <= 0.8) {
+        this.chargesImpactLabel = 'Moderate Impact';
+        this.chargesImpactColor = '#FACC15';
+      } else {
+        this.chargesImpactLabel = 'High Impact';
+        this.chargesImpactColor = '#EF4444';
+      }
+    } else {
+      this.chargesLeakage = 0;
+      this.chargesImpactLabel = 'No investments';
+      this.chargesImpactColor = '#B3B3B3';
+    }
+  }
+
+  // Tax calculations
+  get stcgTaxEstimate(): number {
+    const stcg = this.taxGainsSummary?.stcg || 0;
+    return stcg > 0 ? stcg * 0.20 : 0; // 20% flat STCG rate
+  }
+
+  get ltcgTaxEstimate(): number {
+    const ltcg = this.taxGainsSummary?.ltcg || 0;
+    // Exemption of 1.25 Lakhs (125,000)
+    return ltcg > 125000 ? (ltcg - 125000) * 0.125 : 0; // 12.5% rate on excess
+  }
+
+  get totalTaxEstimate(): number {
+    return this.stcgTaxEstimate + this.ltcgTaxEstimate;
+  }
+
+  // Toggles & tab actions
+  setActiveTab(tab: 'overview' | 'tax' | 'holdings'): void {
+    this.activeTab = tab;
   }
 
   private buildAssetAllocChart(): void {
@@ -381,7 +560,6 @@ export class PortfolioAnalyticsComponent implements OnInit {
   // HELPERS
   // ============================================================
 
-  /** Date-preset and custom-range filter, ported from transactions-table. */
   inDateRange(date: string, from: Date | null, to: Date | null): boolean {
     if (!date) return !from && !to;
     const d = new Date(date);
@@ -474,5 +652,32 @@ export class PortfolioAnalyticsComponent implements OnInit {
       miscCharges: 2,
       transactionDate: `2023-${String(((i % 12) + 1)).padStart(2, '0')}-15`,
     }));
+  }
+
+  private mockApiHoldingsData(): any[] {
+    return [
+      {
+        stockCode: 'QUANT_SMALL',
+        stockName: 'QUANT SMALL CAP FUND - DIRECT',
+        assetType: 'MUTUAL_FUND',
+        totalQuantity: 100,
+        quantity: 80,
+        totalValue: 15000,
+        price: 150,
+        brokerCharges: 20,
+        miscCharges: 10,
+      },
+      {
+        stockCode: 'SBI_BLUE',
+        stockName: 'SBI BLUECHIP FUND - DIRECT',
+        assetType: 'MUTUAL_FUND',
+        totalQuantity: 150,
+        quantity: 120,
+        totalValue: 24000,
+        price: 160,
+        brokerCharges: 25,
+        miscCharges: 15,
+      }
+    ];
   }
 }
