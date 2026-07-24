@@ -21,9 +21,10 @@ describe('CorporateActionSimpleComponent', () => {
   beforeEach(async () => {
     mockCorporateActionService = jasmine.createSpyObj<CorporateActionService>(
       'CorporateActionService',
-      ['apply'],
+      ['apply', 'performCorporateAction'],
     );
     mockCorporateActionService.apply.and.returnValue(of({ message: 'ok' }));
+    mockCorporateActionService.performCorporateAction.and.returnValue(of({ message: 'batch_ok' }));
 
     mockAuthService = jasmine.createSpyObj<AuthService>('AuthService', [
       'getUserEmail',
@@ -78,5 +79,24 @@ describe('CorporateActionSimpleComponent', () => {
     component.stockCode = '';
     component.applyAction();
     expect(mockCorporateActionService.apply).not.toHaveBeenCalled();
+  });
+
+  it('should call performCorporateAction on performActions with proper payload', (done) => {
+    spyOn(component.actionApplied, 'emit');
+    component.performMonth = 'OCTOBER';
+    component.performYear = 2025;
+    component.performBroker = 'ZERODHA';
+
+    component.performActions();
+
+    setTimeout(() => {
+      expect(mockCorporateActionService.performCorporateAction).toHaveBeenCalledWith('user@example.com', {
+        month: 'OCTOBER',
+        year: 2025,
+        brokerName: 'ZERODHA',
+      });
+      expect(component.actionApplied.emit).toHaveBeenCalled();
+      done();
+    }, 50);
   });
 });

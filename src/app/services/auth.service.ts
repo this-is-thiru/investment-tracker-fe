@@ -128,4 +128,15 @@ export class AuthService {
       },
     );
   }
+
+  getUserRole(): string | null {
+    const token = this.storageService.getItem('jwtToken');
+    if (!token) return null;
+    return this.storageService.getUserRoleFromToken(token);
+  }
+
+  isAdmin(): boolean {
+    const role = this.getUserRole();
+    return role === 'ADMIN';
+  }
 }

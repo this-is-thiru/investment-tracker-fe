@@ -81,5 +81,16 @@ export class StorageService {
     }
   }
 
+  getUserRoleFromToken(token: string): string | null {
+    try {
+      const [, payload] = token.split('.');
+      if (!payload) return null;
 
+      const decoded = JSON.parse(atob(payload));
+      return decoded.role || decoded.roles || null;
+    } catch (error) {
+      console.error('Error decoding token for role:', error);
+      return null;
+    }
+  }
 }

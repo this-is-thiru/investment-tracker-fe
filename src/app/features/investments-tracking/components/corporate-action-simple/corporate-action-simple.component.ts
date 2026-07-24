@@ -119,6 +119,101 @@ export class CorporateActionSimpleComponent {
     });
   }
 
+  // Batch Perform Action fields
+  performMonth = 'OCTOBER';
+  performYear = 2025;
+  performBroker = 'ZERODHA';
+  isPerforming = false;
+
+  months = [
+    { label: 'January', value: 'JANUARY' },
+    { label: 'February', value: 'FEBRUARY' },
+    { label: 'March', value: 'MARCH' },
+    { label: 'April', value: 'APRIL' },
+    { label: 'May', value: 'MAY' },
+    { label: 'June', value: 'JUNE' },
+    { label: 'July', value: 'JULY' },
+    { label: 'August', value: 'AUGUST' },
+    { label: 'September', value: 'SEPTEMBER' },
+    { label: 'October', value: 'OCTOBER' },
+    { label: 'November', value: 'NOVEMBER' },
+    { label: 'December', value: 'DECEMBER' }
+  ];
+
+  brokers = [
+    { label: 'Zerodha', value: 'ZERODHA' },
+    { label: 'Groww', value: 'GROWW' },
+    { label: 'Upstox', value: 'UPSTOX' },
+    { label: 'Angel One', value: 'ANGEL_ONE' }
+  ];
+
+  performActions(): void {
+    const email = this.userEmail || this.authService.getUserEmail();
+    if (!email) {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Please sign in',
+        detail: 'You need to be signed in to perform corporate actions.',
+      });
+      return;
+    }
+
+    if (!this.performMonth) {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Validation Error',
+        detail: 'Please select a month.',
+      });
+      return;
+    }
+
+    if (!this.performYear || this.performYear < 2000 || this.performYear > 2100) {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Validation Error',
+        detail: 'Please enter a valid year.',
+      });
+      return;
+    }
+
+    if (!this.performBroker.trim()) {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Validation Error',
+        detail: 'Please select or enter a broker name.',
+      });
+      return;
+    }
+
+    const payload = {
+      month: this.performMonth,
+      year: Number(this.performYear),
+      brokerName: this.performBroker.trim().toUpperCase(),
+    };
+
+    this.isPerforming = true;
+    this.corporateActionService.performCorporateAction(email, payload).subscribe({
+      next: () => {
+        this.isPerforming = false;
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Success',
+          detail: 'Corporate actions batch performed successfully.',
+        });
+        this.actionApplied.emit();
+      },
+      error: (err) => {
+        this.isPerforming = false;
+        console.error('Batch perform corporate actions failed:', err);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Failed to perform corporate actions batch.',
+        });
+      },
+    });
+  }
+
   resetForm(): void {
     this.stockCode = '';
     this.ratio = '';
