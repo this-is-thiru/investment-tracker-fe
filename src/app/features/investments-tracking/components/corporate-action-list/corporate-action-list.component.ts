@@ -1,5 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { CorporateActionService } from '../../services/corporate-action.service';
 import { AuthService } from '../../../../services/auth.service';
 import { NotificationService } from '../../../../services/notification.service';
@@ -11,6 +12,7 @@ import { PrimeNgModule } from '../../../../core/prime-ng.module';
   standalone: true,
   imports: [
     CommonModule,
+    FormsModule,
     LucideIconsModule,
     PrimeNgModule,
   ],
@@ -22,6 +24,7 @@ export class CorporateActionListComponent implements OnInit {
   public authService = inject(AuthService);
 
   actions: any[] = [];
+  filteredActions: any[] = [];
   isLoading = false;
 
   // Detail modal state
@@ -29,8 +32,39 @@ export class CorporateActionListComponent implements OnInit {
   showDetailModal = false;
   isDetailLoading = false;
 
+  searchQuery = '';
+  filterType = 'ALL';
+  typeOptions = [
+    { label: 'All Types', value: 'ALL' },
+    { label: 'Bonus Issue', value: 'BONUS' },
+    { label: 'Stock Split', value: 'STOCK_SPLIT' },
+    { label: 'Demerger', value: 'DEMERGER' },
+    { label: 'Merger', value: 'MERGER' },
+    { label: 'Dividend', value: 'DIVIDEND' },
+  ];
+
   ngOnInit(): void {
     this.loadActions();
+  }
+
+  applyFilters(): void {
+    const q = (this.searchQuery || '').toLowerCase().trim();
+    this.filteredActions = this.actions.filter((action) => {
+      if (q) {
+        const haystack = `${action.stockName} ${action.stockCode} ${action.type}`.toLowerCase();
+        if (!haystack.includes(q)) return false;
+      }
+      if (this.filterType !== 'ALL' && action.type !== this.filterType) {
+        return false;
+      }
+      return true;
+    });
+  }
+
+  resetFilters(): void {
+    this.searchQuery = '';
+    this.filterType = 'ALL';
+    this.applyFilters();
   }
 
   loadActions(): void {
@@ -38,6 +72,7 @@ export class CorporateActionListComponent implements OnInit {
     this.corporateActionService.getAllCorporateActions().subscribe({
       next: (data) => {
         this.actions = data || [];
+        this.applyFilters();
         this.isLoading = false;
       },
       error: (err) => {
@@ -76,6 +111,7 @@ export class CorporateActionListComponent implements OnInit {
             date: '2024-10-28'
           }
         ];
+        this.applyFilters();
         this.notificationService.addNotification(
           'API Fallback Loaded',
           'Failed to load corporate actions from API. Loaded mock actions list.',

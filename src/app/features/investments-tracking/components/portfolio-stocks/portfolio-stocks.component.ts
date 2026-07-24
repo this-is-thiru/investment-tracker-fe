@@ -6,6 +6,7 @@ import {
   inject,
 } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { MessageService } from 'primeng/api';
 import { TransactionsResponse } from '../../../../models/TranscationsResponse';
 import { TransactionService } from '../../../../services/transaction.service';
@@ -35,6 +36,7 @@ export interface PortfolioStockRow {
   imports: [
     CommonModule,
     DecimalPipe,
+    FormsModule,
     LucideIconsModule,
     ExpansionPanelComponent,
     PrimeNgModule,
@@ -50,10 +52,15 @@ export class PortfolioStocksComponent implements OnInit {
   private cdr = inject(ChangeDetectorRef);
 
   holdings: PortfolioStockRow[] = [];
+  filteredHoldings: PortfolioStockRow[] = [];
   loading = false;
   expandedRows: { [key: string]: boolean } = {};
   stockTransactions: { [stockCode: string]: TransactionsResponse[] } = {};
   loadingStockTransactions: { [stockCode: string]: boolean } = {};
+
+  searchQuery = '';
+  filterAssetType: string | null = null;
+  availableAssetTypes: string[] = [];
 
   ngOnInit(): void {
     this.loadHoldings();
@@ -61,6 +68,26 @@ export class PortfolioStocksComponent implements OnInit {
 
   refresh(): void {
     this.loadHoldings();
+  }
+
+  applyFilters(): void {
+    const q = (this.searchQuery || '').toLowerCase().trim();
+    this.filteredHoldings = this.holdings.filter((h) => {
+      if (q) {
+        const haystack = `${h.stockName} ${h.stockCode} ${h.assetType}`.toLowerCase();
+        if (!haystack.includes(q)) return false;
+      }
+      if (this.filterAssetType && h.assetType !== this.filterAssetType) {
+        return false;
+      }
+      return true;
+    });
+  }
+
+  resetFilters(): void {
+    this.searchQuery = '';
+    this.filterAssetType = null;
+    this.applyFilters();
   }
 
   loadHoldings(): void {
@@ -101,6 +128,12 @@ export class PortfolioStocksComponent implements OnInit {
           });
         }
         this.holdings.sort((a, b) => b.totalInvested - a.totalInvested);
+        
+        this.availableAssetTypes = Array.from(
+          new Set(this.holdings.map((h) => h.assetType).filter(Boolean))
+        ).sort();
+        this.applyFilters();
+
         this.loading = false;
         this.cdr.detectChanges();
       },
