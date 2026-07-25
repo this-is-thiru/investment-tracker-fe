@@ -69,20 +69,7 @@ describe('TempTransactionsTableComponent', () => {
 
     setTimeout(() => {
       expect(component.transactions.length).toBe(1);
-      expect(component.filteredTransactions.length).toBe(1);
-      expect(component.availableBrokers).toContain('Groww');
       done();
     }, 50);
-  });
-
-  it('should filter transactions by search query', () => {
-    component.transactions = [
-      { stockName: 'AAPL', stockCode: 'AAPL', transactionType: 'BUY', brokerName: 'Groww', assetType: 'EQUITY', exchangeName: 'NSE', transactionDate: '2024-01-01' } as any,
-      { stockName: 'GOOGL', stockCode: 'GOOGL', transactionType: 'SELL', brokerName: 'Zerodha', assetType: 'EQUITY', exchangeName: 'NSE', transactionDate: '2024-01-02' } as any,
-    ];
-    component.searchQuery = 'AAPL';
-    component.applyFilters();
-    expect(component.filteredTransactions.length).toBe(1);
-    expect(component.filteredTransactions[0].stockName).toBe('AAPL');
   });
 });

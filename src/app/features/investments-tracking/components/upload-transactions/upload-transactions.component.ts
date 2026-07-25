@@ -69,6 +69,11 @@ export class UploadTransactionsComponent implements OnDestroy {
   isUploading = false;
   progress = 0;
 
+  private workbook: XLSX.WorkBook | null = null;
+  sheetNames: string[] = [];
+  sheetOptions: { label: string; value: string }[] = [];
+  selectedSheet: string = '';
+
   quarters = [
     { label: 'Q1 (Jan - Mar)', value: 'Q1' },
     { label: 'Q2 (Apr - Jun)', value: 'Q2' },
@@ -88,6 +93,34 @@ export class UploadTransactionsComponent implements OnDestroy {
   // ========== Quarter ==========
   onQuarterChange(value: string): void {
     this.quarter = value;
+    if (this.workbook) {
+      const targetQuarter = value.toLowerCase();
+      const matchingSheet = this.sheetNames.find((name) =>
+        name.toLowerCase().includes(targetQuarter),
+      );
+      if (matchingSheet && matchingSheet !== this.selectedSheet) {
+        this.selectedSheet = matchingSheet;
+        this.loadSheetData(matchingSheet);
+      }
+    }
+  }
+
+  // ========== Sheet Selection ==========
+  onSheetChange(sheetName: string): void {
+    if (!this.workbook || !sheetName) return;
+    this.selectedSheet = sheetName;
+    this.loadSheetData(sheetName);
+
+    const nameLower = sheetName.toLowerCase();
+    if (nameLower.includes('q1')) {
+      this.quarter = 'Q1';
+    } else if (nameLower.includes('q2')) {
+      this.quarter = 'Q2';
+    } else if (nameLower.includes('q3')) {
+      this.quarter = 'Q3';
+    } else if (nameLower.includes('q4')) {
+      this.quarter = 'Q4';
+    }
   }
 
   // ========== File Selection ==========
@@ -133,6 +166,10 @@ export class UploadTransactionsComponent implements OnDestroy {
     this.searchQuery = '';
     this.progress = 0;
     this.isUploading = false;
+    this.workbook = null;
+    this.sheetNames = [];
+    this.sheetOptions = [];
+    this.selectedSheet = '';
   }
 
   // ========== Drag & Drop ==========
@@ -253,55 +290,74 @@ export class UploadTransactionsComponent implements OnDestroy {
     const reader = new FileReader();
     reader.onload = (e) => {
       const binaryString = e.target?.result as string;
-      const workbook = XLSX.read(binaryString, {
+      this.workbook = XLSX.read(binaryString, {
         type: 'binary',
         cellDates: true,
       });
-      const sheet = workbook.Sheets[workbook.SheetNames[0]];
-      const rawData = XLSX.utils.sheet_to_json<unknown[]>(sheet, { header: 1 });
+      this.sheetNames = this.workbook.SheetNames || [];
+      this.sheetOptions = this.sheetNames.map((name) => ({ label: name, value: name }));
 
-      if (rawData.length > 1) {
-        const rawHeaders = (rawData[0] as unknown[]) || [];
-        const excludedColumns = ['email', 'stock code', 'maturity date'];
-        
-        const validHeaderIndices: number[] = [];
-        this.headers = [];
-        
-        rawHeaders.forEach((h, i) => {
-          let headerStr = String(h ?? '').trim();
-          if (!headerStr) {
-            headerStr = `Column ${i + 1}`;
-          }
-          if (!excludedColumns.includes(headerStr.toLowerCase())) {
-            this.headers.push(headerStr);
-            validHeaderIndices.push(i);
-          }
-        });
+      // Auto-select sheet matching the current quarter if any, otherwise default to sheet index 0
+      const targetQuarter = this.quarter.toLowerCase();
+      const matchingSheet = this.sheetNames.find((name) =>
+        name.toLowerCase().includes(targetQuarter),
+      );
 
-        this.previewRows = rawData.slice(1).map((row: any) => {
-          const obj: any = {};
-          this.headers.forEach((header, i) => {
-            const index = validHeaderIndices[i];
-            let val = row[index];
-            if (val === undefined || val === null) {
-              val = '';
-            } else if (this.isDateColumn(header) || val instanceof Date) {
-              val = this.parseDate(val);
-            } else if (this.isPriceColumn(header) || this.isQtyColumn(header)) {
-              val = this.parseNumber(val);
-            }
-            obj[header] = val;
-          });
-          return obj;
-        });
-      } else {
-        this.headers = [];
-        this.previewRows = [];
+      this.selectedSheet = matchingSheet || this.sheetNames[0] || '';
+
+      if (this.selectedSheet) {
+        this.loadSheetData(this.selectedSheet);
       }
-      this.applyFilters();
-      this.cdr.detectChanges();
     };
     reader.readAsBinaryString(file);
+  }
+
+  loadSheetData(sheetName: string): void {
+    if (!this.workbook || !sheetName) return;
+
+    const sheet = this.workbook.Sheets[sheetName];
+    const rawData = XLSX.utils.sheet_to_json<unknown[]>(sheet, { header: 1 });
+
+    if (rawData.length > 1) {
+      const rawHeaders = (rawData[0] as unknown[]) || [];
+      const excludedColumns = ['email', 'stock code', 'maturity date'];
+
+      const validHeaderIndices: number[] = [];
+      this.headers = [];
+
+      rawHeaders.forEach((h, i) => {
+        let headerStr = String(h ?? '').trim();
+        if (!headerStr) {
+          headerStr = `Column ${i + 1}`;
+        }
+        if (!excludedColumns.includes(headerStr.toLowerCase())) {
+          this.headers.push(headerStr);
+          validHeaderIndices.push(i);
+        }
+      });
+
+      this.previewRows = rawData.slice(1).map((row: any) => {
+        const obj: any = {};
+        this.headers.forEach((header, i) => {
+          const index = validHeaderIndices[i];
+          let val = row[index];
+          if (val === undefined || val === null) {
+            val = '';
+          } else if (this.isDateColumn(header) || val instanceof Date) {
+            val = this.parseDate(val);
+          } else if (this.isPriceColumn(header) || this.isQtyColumn(header)) {
+            val = this.parseNumber(val);
+          }
+          obj[header] = val;
+        });
+        return obj;
+      });
+    } else {
+      this.headers = [];
+      this.previewRows = [];
+    }
+    this.applyFilters();
+    this.cdr.detectChanges();
   }
 
   applyFilters(): void {
@@ -341,7 +397,10 @@ export class UploadTransactionsComponent implements OnDestroy {
             this.isUploading = false;
             this.showToast('Transactions uploaded successfully.', 'success');
             this.uploadComplete.emit();
-            this.clearFile(); // Reset back to Step 1 on success
+            // Reset progress back to 0 after 1.5 seconds, but don't clear the file
+            setTimeout(() => {
+              this.progress = 0;
+            }, 1500);
           }
         },
         error: (err) => {
