@@ -2,9 +2,9 @@ import { Component, Output, EventEmitter, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CorporateActionService } from '../../services/corporate-action.service';
-import { NotificationService } from '../../../../services/notification.service';
-import { LucideIconsModule } from '../../../../core/icons/lucide-icons.module';
-import { PrimeNgModule } from '../../../../core/prime-ng.module';
+import { NotificationService } from '@services/notification.service';
+import { LucideIconsModule } from '@core/icons/lucide-icons.module';
+import { PrimeNgModule } from '@core/prime-ng.module';
 
 interface DemergerStock {
   stockCode: string;

@@ -2,10 +2,10 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CorporateActionService } from '../../services/corporate-action.service';
-import { AuthService } from '../../../../services/auth.service';
-import { NotificationService } from '../../../../services/notification.service';
-import { LucideIconsModule } from '../../../../core/icons/lucide-icons.module';
-import { PrimeNgModule } from '../../../../core/prime-ng.module';
+import { AuthService } from '@services/auth.service';
+import { NotificationService } from '@services/notification.service';
+import { LucideIconsModule } from '@core/icons/lucide-icons.module';
+import { PrimeNgModule } from '@core/prime-ng.module';
 
 @Component({
   selector: 'app-corporate-action-list',

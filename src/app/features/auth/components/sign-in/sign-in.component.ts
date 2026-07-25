@@ -6,13 +6,13 @@ import {
 } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AuthService } from '../../../../services/auth.service';
-import { LoginRequest } from '../../../../models/LoginRequest';
+import { AuthService } from '@services/auth.service';
+import { LoginRequest } from '@models/login-request.model';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { finalize } from 'rxjs/operators'; // added
-import { LucideIconsModule } from '../../../../core/icons/lucide-icons.module';
+import { LucideIconsModule } from '@core/icons/lucide-icons.module';
 
 @Component({
     selector: 'app-sign-in',

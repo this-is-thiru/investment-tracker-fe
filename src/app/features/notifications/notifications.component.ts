@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { NotificationService, Notification } from '../../services/notification.service';
-import { LucideIconsModule } from '../../core/icons/lucide-icons.module';
+import { NotificationService, Notification } from '@services/notification.service';
+import { LucideIconsModule } from '@core/icons/lucide-icons.module';
 import { Observable, map } from 'rxjs';
 
 @Component({

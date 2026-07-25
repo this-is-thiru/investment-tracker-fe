@@ -5,13 +5,13 @@ import {
 } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AuthService } from '../../../../services/auth.service';
+import { AuthService } from '@services/auth.service';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { finalize } from 'rxjs/operators';
-import { RegisterRequest } from '../../../../models/RegisterRequest';
-import { LucideIconsModule } from '../../../../core/icons/lucide-icons.module';
+import { RegisterRequest } from '@models/register-request.model';
+import { LucideIconsModule } from '@core/icons/lucide-icons.module';
 
 @Component({
     selector: 'app-sign-up',

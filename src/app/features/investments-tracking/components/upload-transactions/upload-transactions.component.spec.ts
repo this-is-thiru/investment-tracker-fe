@@ -6,12 +6,12 @@ import { of } from 'rxjs';
 import { MessageService } from 'primeng/api';
 
 import { UploadTransactionsComponent } from './upload-transactions.component';
-import { TransactionService } from '../../../../services/transaction.service';
-import { AuthService } from '../../../../services/auth.service';
-import { NotificationService } from '../../../../services/notification.service';
-import { ExpansionPanelComponent } from '../../../../shared/components/expansion-panel/expansion-panel.component';
-import { LucideIconsModule } from '../../../../core/icons/lucide-icons.module';
-import { PrimeNgModule } from '../../../../core/prime-ng.module';
+import { TransactionService } from '@services/transaction.service';
+import { AuthService } from '@services/auth.service';
+import { NotificationService } from '@services/notification.service';
+import { ExpansionPanelComponent } from '@shared/components/expansion-panel/expansion-panel.component';
+import { LucideIconsModule } from '@core/icons/lucide-icons.module';
+import { PrimeNgModule } from '@core/prime-ng.module';
 
 describe('UploadTransactionsComponent', () => {
   let component: UploadTransactionsComponent;

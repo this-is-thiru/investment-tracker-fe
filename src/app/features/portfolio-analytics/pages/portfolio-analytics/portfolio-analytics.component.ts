@@ -1,18 +1,18 @@
 import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { TransactionService } from '../../../../services/transaction.service';
-import { TransactionsResponse } from '../../../../models/TranscationsResponse';
-import { LucideIconsModule } from '../../../../core/icons/lucide-icons.module';
-import { PrimeNgModule } from '../../../../core/prime-ng.module';
-import { FooterComponent } from '../../../../shared/components/footer/footer.component';
+import { TransactionService } from '@services/transaction.service';
+import { TransactionsResponse } from '@models/transactions-response.model';
+import { LucideIconsModule } from '@core/icons/lucide-icons.module';
+import { PrimeNgModule } from '@core/prime-ng.module';
+import { FooterComponent } from '@shared/components/footer/footer.component';
 import {
   PortfolioAnalyticsService,
   MergedTransaction,
   HoldingRow,
   PerStockPnl,
-} from '../../../../core/services/portfolio-analytics.service';
-import { ExpansionPanelComponent } from '../../../../shared/components/expansion-panel/expansion-panel.component';
+} from '@core/services/portfolio-analytics.service';
+import { ExpansionPanelComponent } from '@shared/components/expansion-panel/expansion-panel.component';
 
 type DatePreset = 'all' | '7d' | '30d' | '90d' | 'ytd' | 'custom';
 

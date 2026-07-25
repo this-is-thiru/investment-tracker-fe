@@ -6,21 +6,21 @@ import {
   OnDestroy,
   ChangeDetectorRef,
 } from '@angular/core';
-import { ExpansionPanelComponent } from '../../../../shared/components/expansion-panel/expansion-panel.component';
+import { ExpansionPanelComponent } from '@shared/components/expansion-panel/expansion-panel.component';
 import { CommonModule } from '@angular/common';
 import { MessageService } from 'primeng/api';
 import { Subscription } from 'rxjs';
-import { LucideIconsModule } from '../../../../core/icons/lucide-icons.module';
+import { LucideIconsModule } from '@core/icons/lucide-icons.module';
 import { HttpEvent, HttpEventType } from '@angular/common/http';
 import * as XLSX from 'xlsx';
 
 import { FormsModule } from '@angular/forms';
-import { PrimeNgModule } from '../../../../core/prime-ng.module';
+import { PrimeNgModule } from '@core/prime-ng.module';
 
-import { ToastType } from '../../../../models/transaction';
-import { TransactionService } from '../../../../services/transaction.service';
-import { AuthService } from '../../../../services/auth.service';
-import { NotificationService } from '../../../../services/notification.service';
+import { ToastType } from '@models/transaction.model';
+import { TransactionService } from '@services/transaction.service';
+import { AuthService } from '@services/auth.service';
+import { NotificationService } from '@services/notification.service';
 
 @Component({
   selector: 'app-upload-transactions',

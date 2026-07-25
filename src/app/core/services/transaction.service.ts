@@ -3,7 +3,7 @@ import { Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { HttpClient, HttpEvent, HttpEventType } from '@angular/common/http';
 import { BaseurlService } from './baseurl.service';
-import { TransactionsResponse } from '../models/TranscationsResponse';
+import { TransactionsResponse } from '@models/transactions-response.model';
 
 @Injectable({
   providedIn: 'root',

@@ -3,9 +3,9 @@ import { Observable } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { LoginRequest } from '../models/LoginRequest';
-import { LoginResponse } from '../models/LoginResponse';
-import { RegisterRequest } from '../models/RegisterRequest';
+import { LoginRequest } from '@models/login-request.model';
+import { LoginResponse } from '@models/login-response.model';
+import { RegisterRequest } from '@models/register-request.model';
 import { StorageService } from './storage.service';
 import { BaseurlService } from './baseurl.service';
 

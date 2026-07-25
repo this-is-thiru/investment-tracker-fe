@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { BaseurlService } from '../../../services/baseurl.service';
+import { BaseurlService } from '@services/baseurl.service';
 
 export interface CorporateActionPayload {
   actionType: string;

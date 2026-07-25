@@ -7,9 +7,9 @@ import { MessageService } from 'primeng/api';
 
 import { AddCorporateActionComponent } from './add-corporate-action.component';
 import { CorporateActionService } from '../../services/corporate-action.service';
-import { ExpansionPanelComponent } from '../../../../shared/components/expansion-panel/expansion-panel.component';
-import { LucideIconsModule } from '../../../../core/icons/lucide-icons.module';
-import { PrimeNgModule } from '../../../../core/prime-ng.module';
+import { ExpansionPanelComponent } from '@shared/components/expansion-panel/expansion-panel.component';
+import { LucideIconsModule } from '@core/icons/lucide-icons.module';
+import { PrimeNgModule } from '@core/prime-ng.module';
 
 describe('AddCorporateActionComponent', () => {
   let component: AddCorporateActionComponent;

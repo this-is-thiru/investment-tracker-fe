@@ -10,8 +10,8 @@ import { TempTransactionsTableComponent } from '../temp-transactions-table/temp-
 import { CorporateActionSimpleComponent } from '../corporate-action-simple/corporate-action-simple.component';
 import { AddCorporateActionComponent } from '../add-corporate-action/add-corporate-action.component';
 import { CorporateActionListComponent } from '../corporate-action-list/corporate-action-list.component';
-import { ExpansionPanelComponent } from '../../../../shared/components/expansion-panel/expansion-panel.component';
-import { LucideIconsModule } from '../../../../core/icons/lucide-icons.module';
+import { ExpansionPanelComponent } from '@shared/components/expansion-panel/expansion-panel.component';
+import { LucideIconsModule } from '@core/icons/lucide-icons.module';
 
 type Tab = 'temporary' | 'corporate' | 'add-action' | 'list-actions';
 

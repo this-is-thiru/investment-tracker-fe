@@ -7,12 +7,12 @@ import {
 } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { TransactionsResponse } from '../../../../models/TranscationsResponse';
-import { TransactionService } from '../../../../services/transaction.service';
-import { ExpansionPanelComponent } from '../../../../shared/components/expansion-panel/expansion-panel.component';
-import { LucideIconsModule } from '../../../../core/icons/lucide-icons.module';
-import { PrimeNgModule } from '../../../../core/prime-ng.module';
-import { NotificationService } from '../../../../services/notification.service';
+import { TransactionsResponse } from '@models/transactions-response.model';
+import { TransactionService } from '@services/transaction.service';
+import { ExpansionPanelComponent } from '@shared/components/expansion-panel/expansion-panel.component';
+import { LucideIconsModule } from '@core/icons/lucide-icons.module';
+import { PrimeNgModule } from '@core/prime-ng.module';
+import { NotificationService } from '@services/notification.service';
 
 export interface PortfolioStockRow {
   stockCode: string;

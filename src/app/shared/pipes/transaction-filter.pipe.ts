@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { TransactionsResponse } from '../../models/TranscationsResponse';
+import { TransactionsResponse } from '@models/transactions-response.model';
 
 @Pipe({
   name: 'transactionFilter',

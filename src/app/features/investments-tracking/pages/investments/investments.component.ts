@@ -3,8 +3,8 @@ import { MessageService } from 'primeng/api';
 import { UploadTransactionsComponent } from '../../components/upload-transactions/upload-transactions.component';
 import { TempCorporateTabsComponent } from '../../components/temp-corporate-tabs/temp-corporate-tabs.component';
 import { PortfolioStocksComponent } from '../../components/portfolio-stocks/portfolio-stocks.component';
-import { FooterComponent } from '../../../../shared/components/footer/footer.component';
-import { LucideIconsModule } from '../../../../core/icons/lucide-icons.module';
+import { FooterComponent } from '@shared/components/footer/footer.component';
+import { LucideIconsModule } from '@core/icons/lucide-icons.module';
 
 @Component({
     selector: 'app-investments',

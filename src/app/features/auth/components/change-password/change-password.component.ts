@@ -6,10 +6,10 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { AuthService } from '../../../../services/auth.service';
+import { AuthService } from '@services/auth.service';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { LucideIconsModule } from '../../../../core/icons/lucide-icons.module';
+import { LucideIconsModule } from '@core/icons/lucide-icons.module';
 
 @Component({
     selector: 'app-change-password',

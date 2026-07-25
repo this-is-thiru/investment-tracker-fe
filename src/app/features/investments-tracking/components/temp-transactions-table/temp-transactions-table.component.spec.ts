@@ -6,10 +6,10 @@ import { of } from 'rxjs';
 import { MessageService } from 'primeng/api';
 
 import { TempTransactionsTableComponent } from './temp-transactions-table.component';
-import { TransactionService } from '../../../../services/transaction.service';
-import { ExpansionPanelComponent } from '../../../../shared/components/expansion-panel/expansion-panel.component';
-import { LucideIconsModule } from '../../../../core/icons/lucide-icons.module';
-import { PrimeNgModule } from '../../../../core/prime-ng.module';
+import { TransactionService } from '@services/transaction.service';
+import { ExpansionPanelComponent } from '@shared/components/expansion-panel/expansion-panel.component';
+import { LucideIconsModule } from '@core/icons/lucide-icons.module';
+import { PrimeNgModule } from '@core/prime-ng.module';
 
 describe('TempTransactionsTableComponent', () => {
   let component: TempTransactionsTableComponent;

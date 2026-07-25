@@ -1,5 +1,5 @@
 import { PortfolioAnalyticsService } from './portfolio-analytics.service';
-import { TransactionsResponse } from '../../models/TranscationsResponse';
+import { TransactionsResponse } from '@models/transactions-response.model';
 
 // =============================================================================
 // Fixtures

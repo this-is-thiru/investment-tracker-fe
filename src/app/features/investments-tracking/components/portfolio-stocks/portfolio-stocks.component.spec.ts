@@ -5,10 +5,10 @@ import { of } from 'rxjs';
 import { MessageService } from 'primeng/api';
 
 import { PortfolioStocksComponent, PortfolioStockRow } from './portfolio-stocks.component';
-import { TransactionService } from '../../../../services/transaction.service';
-import { ExpansionPanelComponent } from '../../../../shared/components/expansion-panel/expansion-panel.component';
-import { LucideIconsModule } from '../../../../core/icons/lucide-icons.module';
-import { PrimeNgModule } from '../../../../core/prime-ng.module';
+import { TransactionService } from '@services/transaction.service';
+import { ExpansionPanelComponent } from '@shared/components/expansion-panel/expansion-panel.component';
+import { LucideIconsModule } from '@core/icons/lucide-icons.module';
+import { PrimeNgModule } from '@core/prime-ng.module';
 
 describe('PortfolioStocksComponent', () => {
   let component: PortfolioStocksComponent;

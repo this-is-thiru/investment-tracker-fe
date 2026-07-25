@@ -4,17 +4,17 @@ import { FormsModule } from '@angular/forms';
 import { MessageService } from 'primeng/api';
 import * as XLSX from 'xlsx';
 
-import { TransactionService } from '../../../../services/transaction.service';
-import { TransactionsResponse } from '../../../../models/TranscationsResponse';
+import { TransactionService } from '@services/transaction.service';
+import { TransactionsResponse } from '@models/transactions-response.model';
 import {
   PortfolioAnalyticsService,
   MergedTransaction,
   CapitalGainsSummary,
-} from '../../../../core/services/portfolio-analytics.service';
-import { LucideIconsModule } from '../../../../core/icons/lucide-icons.module';
-import { PrimeNgModule } from '../../../../core/prime-ng.module';
-import { FooterComponent } from '../../../../shared/components/footer/footer.component';
-import { ExpansionPanelComponent } from '../../../../shared/components/expansion-panel/expansion-panel.component';
+} from '@core/services/portfolio-analytics.service';
+import { LucideIconsModule } from '@core/icons/lucide-icons.module';
+import { PrimeNgModule } from '@core/prime-ng.module';
+import { FooterComponent } from '@shared/components/footer/footer.component';
+import { ExpansionPanelComponent } from '@shared/components/expansion-panel/expansion-panel.component';
 
 interface FilterChip {
   kind: 'fy' | 'asset';

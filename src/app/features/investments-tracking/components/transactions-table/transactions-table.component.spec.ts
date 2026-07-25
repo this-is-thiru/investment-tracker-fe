@@ -2,8 +2,8 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { MessageService } from 'primeng/api';
 import { TransactionsTableComponent } from './transactions-table.component';
-import { TransactionService } from '../../../../services/transaction.service';
-import { TransactionsResponse } from '../../../../models/TranscationsResponse';
+import { TransactionService } from '@services/transaction.service';
+import { TransactionsResponse } from '@models/transactions-response.model';
 
 describe('TransactionsTableComponent', () => {
   let component: TransactionsTableComponent;

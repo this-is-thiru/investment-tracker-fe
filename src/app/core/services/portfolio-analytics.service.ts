@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { TransactionsResponse } from '../../models/TranscationsResponse';
+import { TransactionsResponse } from '@models/transactions-response.model';
 
 // =============================================================================
 // Public types — exported so spec, downstream pages, and other chunks can

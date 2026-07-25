@@ -1,12 +1,12 @@
 import { Component, EventEmitter, Output, inject } from '@angular/core';
-import { NotificationService } from '../../../services/notification.service';
+import { NotificationService } from '@services/notification.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { LucideIconsModule } from '../../../core/icons/lucide-icons.module';
-import { AuthService } from '../../../services/auth.service';
-import { StorageService } from '../../../services/storage.service';
-import { PrimeNgModule } from '../../../core/prime-ng.module';
-import { TransactionService } from '../../../services/transaction.service';
+import { LucideIconsModule } from '@core/icons/lucide-icons.module';
+import { AuthService } from '@services/auth.service';
+import { StorageService } from '@services/storage.service';
+import { PrimeNgModule } from '@core/prime-ng.module';
+import { TransactionService } from '@services/transaction.service';
 
 @Component({
     selector: 'app-settings',

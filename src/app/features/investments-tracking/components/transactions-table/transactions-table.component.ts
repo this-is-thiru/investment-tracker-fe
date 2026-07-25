@@ -3,17 +3,17 @@ import { CommonModule, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MessageService } from 'primeng/api';
 import * as XLSX from 'xlsx';
-import { TransactionService } from '../../../../services/transaction.service';
-import { TransactionsResponse } from '../../../../models/TranscationsResponse';
-import { ExpansionPanelComponent } from '../../../../shared/components/expansion-panel/expansion-panel.component';
-import { LucideIconsModule } from '../../../../core/icons/lucide-icons.module';
-import { PrimeNgModule } from '../../../../core/prime-ng.module';
+import { TransactionService } from '@services/transaction.service';
+import { TransactionsResponse } from '@models/transactions-response.model';
+import { ExpansionPanelComponent } from '@shared/components/expansion-panel/expansion-panel.component';
+import { LucideIconsModule } from '@core/icons/lucide-icons.module';
+import { PrimeNgModule } from '@core/prime-ng.module';
 import {
   PortfolioAnalyticsService,
   SummaryStats,
   HoldingRow,
   InsightItem,
-} from '../../../../core/services/portfolio-analytics.service';
+} from '@core/services/portfolio-analytics.service';
 
 type ViewMode = 'split' | 'temp' | 'port';
 type ActiveTab = 'transactions' | 'holdings' | 'insights';

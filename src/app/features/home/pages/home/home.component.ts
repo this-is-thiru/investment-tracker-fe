@@ -1,10 +1,10 @@
 import { Component, OnInit, AfterViewInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { FooterComponent } from '../../../../shared/components/footer/footer.component';
-import { AuthService } from '../../../../services/auth.service';
-import { Benefit } from '../../../../models/Benefit';
-import { LucideIconsModule } from '../../../../core/icons/lucide-icons.module';
+import { FooterComponent } from '@shared/components/footer/footer.component';
+import { AuthService } from '@services/auth.service';
+import { Benefit } from '@models/benefit.model';
+import { LucideIconsModule } from '@core/icons/lucide-icons.module';
 
 @Component({
     selector: 'app-home',

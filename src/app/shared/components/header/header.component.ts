@@ -1,10 +1,10 @@
 import { Component, HostListener, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
-import { LucideIconsModule } from '../../../core/icons/lucide-icons.module';
-import { AuthService } from '../../../services/auth.service';
-import { NotificationService, Notification } from '../../../services/notification.service';
-import { NavItem } from '../../../models/Navitem';
+import { LucideIconsModule } from '@core/icons/lucide-icons.module';
+import { AuthService } from '@services/auth.service';
+import { NotificationService, Notification } from '@services/notification.service';
+import { NavItem } from '@models/nav-item.model';
 import { map } from 'rxjs/operators';
 
 

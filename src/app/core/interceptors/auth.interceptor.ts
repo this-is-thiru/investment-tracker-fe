@@ -1,7 +1,7 @@
 import { HttpInterceptorFn, HttpResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { map } from 'rxjs/operators';
-import { StorageService } from '../services/storage.service';
+import { StorageService } from '@services/storage.service';
 
 export const AuthInterceptor: HttpInterceptorFn = (req, next) => {
   const storageService = inject(StorageService);
