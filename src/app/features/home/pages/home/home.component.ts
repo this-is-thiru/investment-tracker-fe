@@ -88,6 +88,10 @@ export class HomeComponent implements OnInit, AfterViewInit {
     }
   }
 
+  exploreDemo() {
+    this.auth.loginAsDemo();
+  }
+
   getBenefitStyle(benefit: Benefit, index: number): any {
     const isHovered = this.hoveredBenefit === index;
     return {

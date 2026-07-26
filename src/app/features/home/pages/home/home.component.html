@@ -44,19 +44,32 @@
             and analyze performance—all in one simple platform.
           </p>
 
-          <button
-            (click)="onNavigate('investments-tracking')"
-            class="group px-8 py-4 bg-gradient-to-r from-[#10A37F] to-[#0D8A6B] text-white rounded-lg shadow-lg hover:shadow-xl hover:shadow-[#10A37F]/30 transition-all duration-200 hover:scale-105 inline-flex items-center gap-2 relative overflow-hidden flow-slide-right flow-delay-4"
-          >
-            <div
-              class="absolute inset-0 bg-gradient-to-r from-[#0D8A6B] to-[#0B7A5E] translate-x-[-100%] group-hover:translate-x-0 transition-transform duration-300"
-            ></div>
-            <span class="relative z-10">Get Started</span>
-            <lucide-icon
-              name="arrow-right"
-              class="h-5 w-5 relative z-10 group-hover:translate-x-1 transition-transform"
-            ></lucide-icon>
-          </button>
+          <div class="flex flex-wrap gap-4 items-center justify-start flow-slide-right flow-delay-4">
+            <button
+              (click)="onNavigate('investments-tracking')"
+              class="group px-8 py-4 bg-gradient-to-r from-[#10A37F] to-[#0D8A6B] text-white rounded-lg shadow-lg hover:shadow-xl hover:shadow-[#10A37F]/30 transition-all duration-200 hover:scale-105 inline-flex items-center gap-2 relative overflow-hidden"
+            >
+              <div
+                class="absolute inset-0 bg-gradient-to-r from-[#0D8A6B] to-[#0B7A5E] translate-x-[-100%] group-hover:translate-x-0 transition-transform duration-300"
+              ></div>
+              <span class="relative z-10 font-semibold">Get Started</span>
+              <lucide-icon
+                name="arrow-right"
+                class="h-5 w-5 relative z-10 group-hover:translate-x-1 transition-transform"
+              ></lucide-icon>
+            </button>
+
+            <button
+              (click)="exploreDemo()"
+              class="group px-8 py-4 bg-transparent border border-[#3A3A3A] hover:border-[#10A37F] text-white rounded-lg transition-all duration-200 hover:scale-105 inline-flex items-center gap-2 relative overflow-hidden hover:bg-[#10A37F]/10 hover:shadow-xl hover:shadow-[#10A37F]/10"
+            >
+              <span class="relative z-10 font-semibold">Explore Demo Dashboard</span>
+              <lucide-icon
+                name="play-circle"
+                class="h-5 w-5 relative z-10 text-[#10A37F] group-hover:scale-110 transition-transform"
+              ></lucide-icon>
+            </button>
+          </div>
         </div>
 
         <div class="lg:col-span-2 flow-slide-left flow-delay-5">
@@ -136,7 +149,7 @@
         (click)="onNavigate('investments-tracking')"
         (mouseenter)="hoveredCard = 'investment'"
         (mouseleave)="hoveredCard = null"
-        class="group bg-[#232323] border border-[#3A3A3A] rounded-2xl p-8 hover:border-[#10A37F]/50 transition-all duration-300 hover:-translate-y-2 text-left relative overflow-hidden hover:shadow-xl hover:shadow-[#10A37F]/20 scroll-reveal"
+        class="group premium-card p-8 hover:border-[#10A37F]/50 hover:-translate-y-2 text-left relative overflow-hidden hover:shadow-xl hover:shadow-[#10A37F]/20 scroll-reveal"
         style="transition-delay: 0.1s"
       >
         <div
@@ -170,7 +183,7 @@
         (click)="onNavigate('tax-filing')"
         (mouseenter)="hoveredCard = 'tax'"
         (mouseleave)="hoveredCard = null"
-        class="group bg-[#232323] border border-[#3A3A3A] rounded-2xl p-8 hover:border-[#3B82F6]/50 transition-all duration-300 hover:-translate-y-2 text-left relative overflow-hidden hover:shadow-xl hover:shadow-[#3B82F6]/20 scroll-reveal"
+        class="group premium-card p-8 hover:border-[#3B82F6]/50 hover:-translate-y-2 text-left relative overflow-hidden hover:shadow-xl hover:shadow-[#3B82F6]/20 scroll-reveal"
         style="transition-delay: 0.2s"
       >
         <div
@@ -204,7 +217,7 @@
         (click)="onNavigate('portfolio-analytics')"
         (mouseenter)="hoveredCard = 'analytics'"
         (mouseleave)="hoveredCard = null"
-        class="group bg-[#232323] border border-[#3A3A3A] rounded-2xl p-8 hover:border-[#8B5CF6]/50 transition-all duration-300 hover:-translate-y-2 text-left relative overflow-hidden hover:shadow-xl hover:shadow-[#8B5CF6]/20 scroll-reveal"
+        class="group premium-card p-8 hover:border-[#8B5CF6]/50 hover:-translate-y-2 text-left relative overflow-hidden hover:shadow-xl hover:shadow-[#8B5CF6]/20 scroll-reveal"
         style="transition-delay: 0.3s"
       >
         <div

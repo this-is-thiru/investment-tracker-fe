@@ -89,6 +89,20 @@ export class AuthService {
     this.router.navigate(['/home']);
   }
 
+  loginAsDemo(): void {
+    const payloadObj = {
+      email: 'demo@wealthlens.com',
+      exp: Math.floor(Date.now() / 1000) + 86400,
+      role: 'USER'
+    };
+    const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.' + btoa(JSON.stringify(payloadObj)) + '.demoSignature';
+    this.storageService.setItem('jwtToken', token);
+    this.storageService.setItem('userEmail', 'demo@wealthlens.com');
+    this.userEmail.set('demo@wealthlens.com');
+    this.isLoggedIn.set(true);
+    this.router.navigate(['/portfolio-analytics']);
+  }
+
   isUserAuthenticated(): boolean {
     const token = this.storageService.getItem('jwtToken');
     return !!token && this.storageService.isTokenValid(token);

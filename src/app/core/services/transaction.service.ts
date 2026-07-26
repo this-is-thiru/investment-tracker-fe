@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
-import { Observable, throwError } from 'rxjs';
+import { Observable, throwError, of } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
-import { HttpClient, HttpEvent, HttpEventType } from '@angular/common/http';
+import { HttpClient, HttpEvent, HttpEventType, HttpErrorResponse } from '@angular/common/http';
 import { BaseurlService } from './baseurl.service';
 import { TransactionsResponse } from '@models/transactions-response.model';
 
@@ -12,8 +12,76 @@ export class TransactionService {
   private http = inject(HttpClient);
   private BASE_URL = inject(BaseurlService);
 
+  private mockTempData(): any[] {
+    return Array.from({ length: 3 }, (_, i) => ({
+      id: i + 100,
+      rowId: `temp-${i}`,
+      email: 'demo@wealthlens.com',
+      stockName: `Mock Temp Stock ${i + 1}`,
+      stockCode: `MOCKT${i + 1}`,
+      assetType: 'MUTUAL_FUND',
+      exchangeName: 'NSE',
+      brokerName: 'Groww',
+      quantity: 5 * (i + 1),
+      transactionType: 'BUY',
+      price: 150 * (i + 1),
+      totalValue: 150 * 5 * (i + 1) * (i + 1),
+      transactionDate: '2023-09-10',
+    }));
+  }
+
+  private mockPortfolioData(): any[] {
+    return Array.from({ length: 19 }, (_, i) => ({
+      id: i,
+      rowId: `port-${i}`,
+      email: 'demo@wealthlens.com',
+      stockName: i % 2 === 0 ? 'QUANT SMALL CAP FUND - DIRECT' : 'SBI BLUECHIP FUND - DIRECT',
+      stockCode: i % 2 === 0 ? 'QUANT_SMALL' : 'SBI_BLUE',
+      assetType: 'MUTUAL_FUND',
+      exchangeName: i % 3 === 0 ? 'BSE' : 'NSE',
+      brokerName: i % 2 === 0 ? 'Zerodha' : 'Groww',
+      quantity: 5 + i * 0.1,
+      transactionType: i % 4 === 0 ? 'SELL' : 'BUY',
+      price: 195.76,
+      totalValue: 1000 + i * 100,
+      brokerCharges: 5,
+      miscCharges: 2,
+      transactionDate: `2023-${String(((i % 12) + 1)).padStart(2, '0')}-15`,
+    }));
+  }
+
+  private mockApiHoldingsData(): any[] {
+    return [
+      {
+        stockCode: 'QUANT_SMALL',
+        stockName: 'QUANT SMALL CAP FUND - DIRECT',
+        assetType: 'MUTUAL_FUND',
+        totalQuantity: 100,
+        quantity: 80,
+        totalValue: 15000,
+        price: 150,
+        brokerCharges: 20,
+        miscCharges: 10,
+      },
+      {
+        stockCode: 'SBI_BLUE',
+        stockName: 'SBI BLUECHIP FUND - DIRECT',
+        assetType: 'MUTUAL_FUND',
+        totalQuantity: 150,
+        quantity: 120,
+        totalValue: 24000,
+        price: 160,
+        brokerCharges: 25,
+        miscCharges: 15,
+      }
+    ];
+  }
+
   // existing APIs left unchanged...
   getUserTransactions(email: string): Observable<any> {
+    if (email === 'demo@wealthlens.com') {
+      return of(this.mockPortfolioData());
+    }
     const url = `${this.BASE_URL.getBaseUrl()}/${email}/all/transactions`;
     return this.http.get(url).pipe(
       catchError((error) => {
@@ -24,6 +92,12 @@ export class TransactionService {
   }
 
   addTransaction(email: string, transactionData: any): Observable<any> {
+    if (email === 'demo@wealthlens.com') {
+      return throwError(() => new HttpErrorResponse({
+        status: 403,
+        error: { message: 'Adding transactions is disabled in read-only guest session.' }
+      }));
+    }
     const url = `${this.BASE_URL.getBaseUrl()}/${email}/transaction`;
     return this.http.post(url, transactionData).pipe(
       catchError((error) => {
@@ -63,6 +137,12 @@ export class TransactionService {
   // }
 
   uploadTransactions(email: string, file: File, quarter?: string): Observable<HttpEvent<any>> {
+    if (email === 'demo@wealthlens.com') {
+      return throwError(() => new HttpErrorResponse({
+        status: 403,
+        error: { message: 'File import is disabled in read-only guest session.' }
+      }));
+    }
     const formData = new FormData();
     formData.append('file', file);
 
@@ -201,6 +281,9 @@ export class TransactionService {
 
   /** Fetch current transactions */
   getCurrentTransactions(email: string, filters: any[] = []): Observable<TransactionsResponse[]> {
+    if (email === 'demo@wealthlens.com') {
+      return of(this.mockPortfolioData());
+    }
     const url = `${this.BASE_URL.getBaseUrl()}/transactions/user/${email}`;
     console.log('Token being sent:', localStorage.getItem('jwtToken'));
     return this.http.post<TransactionsResponse[]>(url, { filters });
@@ -208,6 +291,9 @@ export class TransactionService {
 
   /** Fetch temporary transactions */
   getTemporaryTransactions(email: string): Observable<TransactionsResponse[]> {
+    if (email === 'demo@wealthlens.com') {
+      return of(this.mockTempData());
+    }
     const url = `${this.BASE_URL.getBaseUrl()}/temporary-transactions/user/${email}/all`;
     console.log('Token being sent:', localStorage.getItem('jwtToken'));
     return this.http.get<TransactionsResponse[]>(url);
@@ -215,12 +301,19 @@ export class TransactionService {
 
   /** Fetch holdings */
   getAllHoldings(email: string): Observable<any> {
+    if (email === 'demo@wealthlens.com') {
+      return of(this.mockApiHoldingsData());
+    }
     const url = `${this.BASE_URL.getBaseUrl()}/portfolio/user/${email}/stocks/all`;
     return this.http.get<any>(url);
   }
 
   /** Fetch transactions for a single stock */
   getTransactionsByStock(email: string, stockCode: string): Observable<TransactionsResponse[]> {
+    if (email === 'demo@wealthlens.com') {
+      const all = this.mockPortfolioData();
+      return of(all.filter(t => t.stockCode === stockCode));
+    }
     const url = `${this.BASE_URL.getBaseUrl()}/transactions/user/${email}`;
     const queryFilters = [
       {
@@ -239,6 +332,12 @@ export class TransactionService {
 
   /** Clear all portfolio records for a user */
   clearAllRecords(email: string): Observable<any> {
+    if (email === 'demo@wealthlens.com') {
+      return throwError(() => new HttpErrorResponse({
+        status: 403,
+        error: { message: 'Clearing records is disabled in read-only guest session.' }
+      }));
+    }
     const url = `${this.BASE_URL.getBaseUrl()}/portfolio/user/${email}/clear/all`;
     return this.http.post(url, {});
   }

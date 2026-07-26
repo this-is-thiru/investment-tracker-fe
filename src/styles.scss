@@ -66,11 +66,20 @@
     scrollbar-color: theme('colors.gray.600') theme('colors.gray.900');
   }
 
-  :has(router-outlet[name="modal"]:not(:empty)) main {
-  filter: blur(3px);
-  pointer-events: none;
+  :has(app-sign-in, app-sign-up, app-change-password) main {
+    filter: blur(3px);
+    pointer-events: none;
+  }
+
 }
 
+.premium-card {
+  background: linear-gradient(135deg, rgba(35, 35, 35, 0.7) 0%, rgba(25, 25, 25, 0.8) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-card);
+  backdrop-filter: blur(10px);
+  transition: border-color var(--transition-duration-slow) ease, transform var(--transition-duration-fast) ease;
 }
 
 /* --- Custom Variables (from :root and @theme inline) --- */

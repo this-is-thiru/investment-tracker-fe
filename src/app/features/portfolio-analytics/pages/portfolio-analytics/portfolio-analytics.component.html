@@ -48,14 +48,31 @@
       </div>
     }
 
-    <!-- ====================================================== -->
-    <!-- LOADING BAR                                            -->
-    <!-- ====================================================== -->
     @if (loading) {
-      <div class="border border-[#3A3A3A] rounded-xl bg-[#1F1F1F] p-12 text-center">
-        <div class="inline-flex items-center gap-3 text-[#B3B3B3]">
-          <span class="w-4 h-4 rounded-full border-2 border-[#10A37F] border-t-transparent animate-spin"></span>
-          Loading transactions…
+      <div class="space-y-6">
+        <!-- Control Bar Skeleton -->
+        <div class="flex items-center justify-between p-4 bg-[#232323]/40 border border-[#3A3A3A] rounded-xl">
+          <p-skeleton width="150px" height="32px" borderRadius="8px" styleClass="bg-[#2E2E2E]"></p-skeleton>
+          <p-skeleton width="200px" height="32px" borderRadius="8px" styleClass="bg-[#2E2E2E]"></p-skeleton>
+        </div>
+        <!-- Cards Skeleton -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div *ngFor="let i of [1, 2, 3, 4]" class="bg-[#232323]/60 border border-[#3A3A3A] rounded-xl p-5 space-y-3">
+            <p-skeleton width="60%" height="16px" styleClass="bg-[#2E2E2E]"></p-skeleton>
+            <p-skeleton width="40%" height="32px" styleClass="bg-[#2E2E2E]"></p-skeleton>
+            <p-skeleton width="80%" height="12px" styleClass="bg-[#2E2E2E]"></p-skeleton>
+          </div>
+        </div>
+        <!-- Main Content Skeleton -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div class="lg:col-span-2 bg-[#232323]/60 border border-[#3A3A3A] rounded-xl p-6 space-y-4">
+            <p-skeleton width="30%" height="24px" styleClass="bg-[#2E2E2E]"></p-skeleton>
+            <p-skeleton width="100%" height="280px" styleClass="bg-[#2E2E2E]"></p-skeleton>
+          </div>
+          <div class="bg-[#232323]/60 border border-[#3A3A3A] rounded-xl p-6 space-y-4">
+            <p-skeleton width="50%" height="24px" styleClass="bg-[#2E2E2E]"></p-skeleton>
+            <p-skeleton width="100%" height="280px" styleClass="bg-[#2E2E2E]"></p-skeleton>
+          </div>
         </div>
       </div>
     } @else {
@@ -495,7 +512,10 @@
               <!-- Net Gain -->
               <div class="kpi-card rounded-xl bg-[#1F1F1F] border border-[#2A2A2A] p-5 flex flex-col justify-between hover:border-[#3A3A3A] transition-all">
                 <div class="flex items-center justify-between text-xs text-[#808080] font-bold uppercase tracking-wider">
-                  <span>Net Realized Gain</span>
+                  <span class="flex items-center gap-1">
+                    Net Realized Gain
+                    <lucide-icon name="info" class="w-3.5 h-3.5 text-[#B3B3B3] hover:text-white cursor-pointer" pTooltip="First-In, First-Out (FIFO) Net Realized Gain: Total gains minus losses realized on all assets sold during the period." tooltipPosition="top"></lucide-icon>
+                  </span>
                   <lucide-icon name="TrendingUp" class="w-4 h-4 text-[#8B5CF6]"></lucide-icon>
                 </div>
                 <div class="text-2xl font-extrabold tracking-tight my-2" [ngClass]="realizedPnl >= 0 ? 'text-[#22C55E]' : 'text-[#EF4444]'">
@@ -507,7 +527,10 @@
               <!-- STCG -->
               <div class="kpi-card rounded-xl bg-[#1F1F1F] border border-[#2A2A2A] p-5 flex flex-col justify-between hover:border-[#3A3A3A] transition-all">
                 <div class="flex items-center justify-between text-xs text-[#808080] font-bold uppercase tracking-wider">
-                  <span>Short-Term (STCG)</span>
+                  <span class="flex items-center gap-1">
+                    Short-Term (STCG)
+                    <lucide-icon name="info" class="w-3.5 h-3.5 text-[#B3B3B3] hover:text-white cursor-pointer" pTooltip="Short-Term Capital Gains: Gains made on assets held for less than 1 year (3 years for debt). Taxed at 20% for equities/equity mutual funds in India." tooltipPosition="top"></lucide-icon>
+                  </span>
                   <span class="px-2 py-0.5 rounded bg-[#3B82F6]/10 text-[#3B82F6] border border-[#3B82F6]/20 text-[9px] font-bold">ST BADGE</span>
                 </div>
                 <div class="text-2xl font-extrabold tracking-tight my-2 text-[#3B82F6]">
@@ -519,7 +542,10 @@
               <!-- LTCG -->
               <div class="kpi-card rounded-xl bg-[#1F1F1F] border border-[#2A2A2A] p-5 flex flex-col justify-between hover:border-[#3A3A3A] transition-all">
                 <div class="flex items-center justify-between text-xs text-[#808080] font-bold uppercase tracking-wider">
-                  <span>Long-Term (LTCG)</span>
+                  <span class="flex items-center gap-1">
+                    Long-Term (LTCG)
+                    <lucide-icon name="info" class="w-3.5 h-3.5 text-[#B3B3B3] hover:text-white cursor-pointer" pTooltip="Long-Term Capital Gains: Gains made on assets held for 1 year or longer (3 years for debt). Exempt up to ₹1.25L for equities/equity mutual funds, then taxed at 12.5% in India." tooltipPosition="top"></lucide-icon>
+                  </span>
                   <span class="px-2 py-0.5 rounded bg-[#10A37F]/10 text-[#10A37F] border border-[#10A37F]/20 text-[9px] font-bold">LT BADGE</span>
                 </div>
                 <div class="text-2xl font-extrabold tracking-tight my-2 text-[#10A37F]">

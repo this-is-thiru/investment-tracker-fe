@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Observable, throwError } from 'rxjs';
 import { BaseurlService } from '@services/baseurl.service';
 
 export interface CorporateActionPayload {
@@ -17,6 +17,12 @@ export class CorporateActionService {
   private BASE_URL = inject(BaseurlService);
 
   apply(email: string, payload: CorporateActionPayload): Observable<any> {
+    if (email === 'demo@wealthlens.com') {
+      return throwError(() => new HttpErrorResponse({
+        status: 403,
+        error: { message: 'Applying corporate actions is disabled in read-only guest session.' }
+      }));
+    }
     const url = `${this.BASE_URL.getBaseUrl()}/corporate-actions/user/${email}/apply`;
     return this.http.post(url, payload);
   }
@@ -37,6 +43,12 @@ export class CorporateActionService {
   }
 
   performCorporateAction(email: string, payload: any): Observable<any> {
+    if (email === 'demo@wealthlens.com') {
+      return throwError(() => new HttpErrorResponse({
+        status: 403,
+        error: { message: 'Performing batch corporate actions is disabled in read-only guest session.' }
+      }));
+    }
     const url = `${this.BASE_URL.getBaseUrl()}/corporate-action/user/${email}/perform`;
     return this.http.put(url, payload);
   }
