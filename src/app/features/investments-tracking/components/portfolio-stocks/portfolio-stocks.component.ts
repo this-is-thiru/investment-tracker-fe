@@ -56,10 +56,57 @@ export class PortfolioStocksComponent implements OnInit {
   expandedRows: { [key: string]: boolean } = {};
   stockTransactions: { [stockCode: string]: TransactionsResponse[] } = {};
   loadingStockTransactions: { [stockCode: string]: boolean } = {};
+  transactionTypeFilter: { [stockCode: string]: 'ALL' | 'BUY' | 'SELL' } = {};
 
   searchQuery = '';
   filterAssetType: string | null = null;
   availableAssetTypes: string[] = [];
+
+  setTransactionFilter(stockCode: string, type: string): void {
+    this.transactionTypeFilter[stockCode] = type as 'ALL' | 'BUY' | 'SELL';
+    this.cdr.detectChanges();
+  }
+
+  getFilteredTransactions(stockCode: string): TransactionsResponse[] {
+    const txns = this.stockTransactions[stockCode] || [];
+    const filter = this.transactionTypeFilter[stockCode] || 'ALL';
+    if (filter === 'ALL') return txns;
+    return txns.filter((t) => t.transactionType === filter);
+  }
+
+  getTransactionSummary(stockCode: string): any {
+    const txns = this.stockTransactions[stockCode] || [];
+    let buyQty = 0;
+    let sellQty = 0;
+    let totalBuyValue = 0;
+    let totalSellValue = 0;
+    let totalCharges = 0;
+
+    txns.forEach((t) => {
+      const charges = (t.brokerCharges || 0) + (t.miscCharges || 0);
+      totalCharges += charges;
+      if (t.transactionType === 'BUY') {
+        buyQty += t.quantity;
+        totalBuyValue += t.totalValue;
+      } else if (t.transactionType === 'SELL') {
+        sellQty += t.quantity;
+        totalSellValue += t.totalValue;
+      }
+    });
+
+    const avgBuyPrice = buyQty > 0 ? totalBuyValue / buyQty : 0;
+    const avgSellPrice = sellQty > 0 ? totalSellValue / sellQty : 0;
+
+    return {
+      buyQty,
+      sellQty,
+      totalBuyValue,
+      totalSellValue,
+      avgBuyPrice,
+      avgSellPrice,
+      totalCharges,
+    };
+  }
 
   ngOnInit(): void {
     this.loadHoldings();
@@ -151,7 +198,11 @@ export class PortfolioStocksComponent implements OnInit {
 
   onRowExpand(event: any): void {
     const stock = event.data as PortfolioStockRow;
-    if (!stock?.stockCode || this.stockTransactions[stock.stockCode]) return;
+    if (!stock?.stockCode) return;
+    if (!this.transactionTypeFilter[stock.stockCode]) {
+      this.transactionTypeFilter[stock.stockCode] = 'ALL';
+    }
+    if (this.stockTransactions[stock.stockCode]) return;
 
     this.loadingStockTransactions[stock.stockCode] = true;
     this.transactionService

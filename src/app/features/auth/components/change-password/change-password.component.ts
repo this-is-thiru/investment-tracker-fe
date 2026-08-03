@@ -11,6 +11,8 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { LucideIconsModule } from '@core/icons/lucide-icons.module';
 
+import { NotificationService } from '@services/notification.service';
+
 @Component({
     selector: 'app-change-password',
     standalone: true,
@@ -23,13 +25,12 @@ export class ChangePasswordComponent implements OnInit {
 
   changePasswordForm!: FormGroup;
   isLoading = false;
-  message: string | null = null;
-  isError = false;
 
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
     public router: Router,
+    private notificationService: NotificationService,
   ) {}
 
   ngOnInit(): void {
@@ -61,26 +62,22 @@ export class ChangePasswordComponent implements OnInit {
     const email = this.authService.getUserEmail(); // get logged-in user's email
 
     if (!email) {
-      this.isError = true;
-      this.message = 'User email not found!';
+      this.notificationService.addNotification('Error', 'User email not found!', 'error');
       return;
     }
 
     this.isLoading = true;
-    this.message = null;
-    this.isError = false;
 
     this.authService.changePassword(email, oldPassword, newPassword).subscribe({
       next: () => {
         this.isLoading = false;
-        this.isError = false;
-        this.message = 'Password changed successfully!';
+        this.notificationService.addNotification('Password Updated', 'Password changed successfully!', 'success');
         this.changePasswordForm.reset();
       },
       error: (err) => {
         this.isLoading = false;
-        this.isError = true;
-        this.message = err?.error?.message || (typeof err?.error === 'string' ? err.error : null) || 'Failed to change password.';
+        const errorMsg = err?.error?.message || (typeof err?.error === 'string' ? err.error : null) || 'Failed to change password.';
+        this.notificationService.addNotification('Password Update Failed', errorMsg, 'error');
       },
     });
   }

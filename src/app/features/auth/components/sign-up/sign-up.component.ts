@@ -11,6 +11,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { finalize } from 'rxjs/operators';
 import { RegisterRequest } from '@models/register-request.model';
+import { NotificationService } from '@services/notification.service';
 import { LucideIconsModule } from '@core/icons/lucide-icons.module';
 
 @Component({
@@ -24,8 +25,6 @@ import { LucideIconsModule } from '@core/icons/lucide-icons.module';
 export class SignUpComponent {
   registrationForm: FormGroup;
   isLoading = false;
-  errorMessage: string | null = null;
-  successMessage: string | null = null;
   hideRegistrationP = true;
   hideRegistrationCP = true;
 
@@ -33,7 +32,8 @@ export class SignUpComponent {
     public router: Router, // Changed to public for template access
     private authService: AuthService,
     private formBuilder: FormBuilder,
-    private cd: ChangeDetectorRef
+    private cd: ChangeDetectorRef,
+    private notificationService: NotificationService
   ) {
     this.registrationForm = this.initForm();
   }
@@ -62,8 +62,6 @@ export class SignUpComponent {
     }
 
     this.isLoading = true;
-    this.errorMessage = null;
-    this.successMessage = null;
     this.cd.markForCheck();
 
     const signUpData: RegisterRequest = {
@@ -79,27 +77,27 @@ export class SignUpComponent {
       })
     ).subscribe({
       next: (response) => {
-        this.successMessage = 'Account created successfully! You can now sign in.';
-        this.cd.markForCheck();
-        
-        // Wait for user to see success message, then redirect to sign-in
-        setTimeout(() => {
-          this.router.navigate([{ outlets: { modal: ['sign-in'] } }]);
-        }, 2000);
+        this.notificationService.addNotification(
+          'Registration Success',
+          'Account created successfully! You can now sign in.',
+          'success'
+        );
+        this.router.navigate([{ outlets: { modal: ['sign-in'] } }]);
       },
       error: (err) => {
         console.error('Registration error:', err);
         
         // User-friendly error messages
+        let message = 'Registration failed. Please try again later.';
         if (err.status === 409) {
-          this.errorMessage = 'This email is already registered. Please try signing in instead.';
+          message = 'This email is already registered. Please try signing in instead.';
         } else if (err.status === 400) {
-          this.errorMessage = 'Please check your information and try again.';
+          message = 'Please check your information and try again.';
         } else if (err.status === 0) {
-          this.errorMessage = 'Unable to connect to the server. Please check your internet connection.';
-        } else {
-          this.errorMessage = 'Registration failed. Please try again later.';
+          message = 'Unable to connect to the server. Please check your internet connection.';
         }
+        
+        this.notificationService.addNotification('Registration Failed', message, 'error');
         this.cd.markForCheck();
       }
     });

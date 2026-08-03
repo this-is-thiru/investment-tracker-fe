@@ -32,25 +32,6 @@
         </p>
       </header>
 
-      <!-- Messages -->
-      <div aria-live="polite" class="mb-3">
-        @if (successMessage) {
-          <div
-            class="text-sm text-green-400 text-center mb-2 success-message"
-          >
-            {{ successMessage }}
-          </div>
-        }
-        @if (errorMessage) {
-          <div
-            class="text-sm text-red-400 text-center mb-2"
-            [class.shake]="errorMessage"
-          >
-            {{ errorMessage }}
-          </div>
-        }
-      </div>
-
       <!-- Registration Form -->
       <form
         (ngSubmit)="onRegistration()"

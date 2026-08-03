@@ -6,7 +6,7 @@ import {
   inject,
 } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
-import { MessageService } from 'primeng/api';
+import { NotificationService } from '@services/notification.service';
 import { TransactionsResponse } from '@models/transactions-response.model';
 import { TransactionService } from '@services/transaction.service';
 import { LucideIconsModule } from '@core/icons/lucide-icons.module';
@@ -22,13 +22,12 @@ import { PrimeNgModule } from '@core/prime-ng.module';
     PrimeNgModule,
   ],
   templateUrl: './temp-transactions-table.component.html',
-  providers: [MessageService],
 })
 export class TempTransactionsTableComponent implements OnInit {
   @Input() userEmail = '';
 
   private transactionService = inject(TransactionService);
-  private messageService = inject(MessageService);
+  private notificationService = inject(NotificationService);
   private cdr = inject(ChangeDetectorRef);
 
   transactions: TransactionsResponse[] = [];
@@ -56,11 +55,11 @@ export class TempTransactionsTableComponent implements OnInit {
       },
       error: () => {
         this.loading = false;
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: 'Failed to load temporary transactions',
-        });
+        this.notificationService.addNotification(
+          'Error',
+          'Failed to load temporary transactions',
+          'error'
+        );
         this.cdr.detectChanges();
       },
     });

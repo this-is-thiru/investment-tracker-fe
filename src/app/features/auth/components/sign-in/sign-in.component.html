@@ -24,25 +24,6 @@
         <p class="text-xs text-[#999999]">Access your WealthLens account</p>
       </header>
 
-      <!-- ARIA live region for server-side messages -->
-      <div aria-live="polite" class="mb-3">
-        @if (successMessage) {
-          <div
-            class="text-sm text-green-400 text-center mb-2"
-          >
-            {{ successMessage }}
-          </div>
-        }
-        @if (errorMessage) {
-          <div
-            class="text-sm text-red-400 text-center mb-2"
-            [class.shake]="errorMessage"
-          >
-            {{ errorMessage }}
-          </div>
-        }
-      </div>
-
       <form (ngSubmit)="onLogin()" [formGroup]="loginForm" class="space-y-4">
         <div>
           <label for="login-email" class="block text-xs text-[#B3B3B3] mb-1.5">

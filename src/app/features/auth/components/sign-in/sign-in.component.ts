@@ -13,6 +13,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { finalize } from 'rxjs/operators'; // added
 import { LucideIconsModule } from '@core/icons/lucide-icons.module';
+import { NotificationService } from '@services/notification.service';
 
 @Component({
     selector: 'app-sign-in',
@@ -27,14 +28,13 @@ export class SignInComponent implements OnInit {
   isLoading = false;
   hideLogin = true;
   hideLoginP = true;
-  errorMessage: string | null = null;
-  successMessage: string | null = null; // added
 
   constructor(
     public router: Router,
     private authService: AuthService,
     private formBuilder: FormBuilder,
     private cd: ChangeDetectorRef, // added
+    private notificationService: NotificationService,
   ) {
     this.loginForm = this.initLoginForm();
   }
@@ -55,8 +55,6 @@ export class SignInComponent implements OnInit {
       return;
     }
     this.isLoading = true;
-    this.errorMessage = null;
-    this.successMessage = null;
     this.cd.markForCheck();
 
     const loginRequest: LoginRequest = this.loginForm.value;
@@ -69,30 +67,25 @@ export class SignInComponent implements OnInit {
       .subscribe({
         next: (res) => {
           console.log('Login success:', res);
-          this.successMessage = 'Signed in successfully';
-          this.cd.markForCheck();
-          setTimeout(() => {
-            this.successMessage = null;
-            this.router.navigate([{ outlets: { primary: ['home'], modal: null } }]);
-          }, 700);
+          this.notificationService.addNotification('Login Success', 'Signed in successfully', 'success');
+          this.router.navigate([{ outlets: { primary: ['home'], modal: null } }]);
         },
         error: (err) => {
           console.error('Login error:', err);
           
           // Provide user-friendly error messages based on error type
+          let message = 'Something went wrong. Please try again later.';
           if (err.status === 401) {
-            this.errorMessage = 'Invalid email or password. Please check your credentials and try again.';
+            message = 'Invalid email or password. Please check your credentials and try again.';
           } else if (err.status === 404) {
-            this.errorMessage = 'Account not found. Please check your email address.';
+            message = 'Account not found. Please check your email address.';
           } else if (err.status === 403) {
-            this.errorMessage = 'Your account is locked. Please contact support.';
+            message = 'Your account is locked. Please contact support.';
           } else if (err.status === 0) {
-            this.errorMessage = 'Unable to connect to the server. Please check your internet connection.';
-          } else {
-            // Fallback message for other errors
-            this.errorMessage = 'Something went wrong. Please try again later.';
+            message = 'Unable to connect to the server. Please check your internet connection.';
           }
           
+          this.notificationService.addNotification('Login Failed', message, 'error');
           this.cd.markForCheck();
         },
       });

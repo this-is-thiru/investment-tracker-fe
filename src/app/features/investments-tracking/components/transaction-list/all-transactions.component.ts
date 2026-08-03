@@ -1,9 +1,10 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { interval, Subject, takeUntil } from 'rxjs';
+import { Subject } from 'rxjs';
 import { LucideIconsModule } from '@core/icons/lucide-icons.module';
 import { PrimeNgModule } from '@core/prime-ng.module';
+import { NotificationService } from '@services/notification.service';
 
 // Interfaces
 export interface Transaction {
@@ -12,11 +13,6 @@ export interface Transaction {
   quantity: number;
   status: string;
   actionDate: string;
-}
-
-export interface Toast {
-  message: string;
-  type: 'success' | 'error' | 'info';
 }
 
 @Component({
@@ -46,10 +42,11 @@ export class AllTransactionsComponent implements OnInit, OnDestroy {
   uploadProgress: number = 0;
   isUploading: boolean = false;
   activeTableTab: 'temporary' | 'portfolio' = 'temporary';
-  toast: Toast | null = null;
   rowsPerPage: number = 5;
 
   private destroy$ = new Subject<void>();
+
+  constructor(private notificationService: NotificationService) {}
 
   // --- Lifecycle Hooks ---
   ngOnInit(): void {
@@ -63,18 +60,10 @@ export class AllTransactionsComponent implements OnInit, OnDestroy {
 
   // --- Utility Functions ---
 
-  /** Shows a toast notification for 3 seconds */
+  /** Shows a toast notification */
   showToast(message: string, type: 'success' | 'error' | 'info'): void {
-    this.toast = { message, type };
-
-    // Clear toast after 3 seconds
-    interval(3000)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(() => {
-        if (this.toast && this.toast.message === message) {
-          this.toast = null;
-        }
-      });
+    const title = type === 'success' ? 'Success' : type === 'error' ? 'Error' : 'Info';
+    this.notificationService.addNotification(title, message, type);
   }
 
   // --- File Upload Logic ---

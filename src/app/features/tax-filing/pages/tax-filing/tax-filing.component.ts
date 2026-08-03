@@ -1,7 +1,6 @@
 import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { MessageService } from 'primeng/api';
 import * as XLSX from 'xlsx';
 
 import { TransactionService } from '@services/transaction.service';
@@ -15,6 +14,7 @@ import { LucideIconsModule } from '@core/icons/lucide-icons.module';
 import { PrimeNgModule } from '@core/prime-ng.module';
 import { FooterComponent } from '@shared/components/footer/footer.component';
 import { ExpansionPanelComponent } from '@shared/components/expansion-panel/expansion-panel.component';
+import { NotificationService } from '@services/notification.service';
 
 interface FilterChip {
   kind: 'fy' | 'asset';
@@ -74,12 +74,11 @@ const LTCG_EQUITY_EXEMPTION = 100000;
   ],
   templateUrl: './tax-filing.component.html',
   styleUrls: ['./tax-filing.component.css'],
-  providers: [MessageService],
 })
 export class TaxFilingComponent implements OnInit {
   private transactionService = inject(TransactionService);
   private analytics = inject(PortfolioAnalyticsService);
-  private messageService = inject(MessageService);
+  private notificationService = inject(NotificationService);
   private cdr = inject(ChangeDetectorRef);
 
   // ----- raw -----
@@ -187,11 +186,11 @@ export class TaxFilingComponent implements OnInit {
           totalValue: 150 * 5 * (i + 1) * (i + 1),
           transactionDate: '2023-09-10',
         }));
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: 'Failed to load temporary transactions',
-        });
+        this.notificationService.addNotification(
+          'Error',
+          'Failed to load temporary transactions',
+          'error'
+        );
         this.tempLoaded = true;
         this.onDataReady();
       },
@@ -223,11 +222,11 @@ export class TaxFilingComponent implements OnInit {
           totalValue: 1000 + i * 100,
           transactionDate: '2023-09-01',
         }));
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: 'Failed to load current transactions',
-        });
+        this.notificationService.addNotification(
+          'Error',
+          'Failed to load current transactions',
+          'error'
+        );
         this.portLoaded = true;
         this.onDataReady();
       },
@@ -521,17 +520,9 @@ export class TaxFilingComponent implements OnInit {
       const csv = this.toCsv(this.perStockRows);
       const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
       this.downloadBlob(blob, `tax-report_${this.userEmail || 'user'}_${this.todayStr()}.csv`);
-      this.messageService.add({
-        severity: 'success',
-        summary: 'Export',
-        detail: `Exported ${this.perStockRows.length} rows to CSV`,
-      });
+      this.notificationService.addNotification('Export', `Exported ${this.perStockRows.length} rows to CSV`, 'success');
     } catch {
-      this.messageService.add({
-        severity: 'error',
-        summary: 'Export failed',
-        detail: 'Could not generate CSV file',
-      });
+      this.notificationService.addNotification('Export failed', 'Could not generate CSV file', 'error');
     }
   }
 
@@ -555,17 +546,9 @@ export class TaxFilingComponent implements OnInit {
       const wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, ws, 'TaxReport');
       XLSX.writeFile(wb, `tax-report_${this.userEmail || 'user'}_${this.todayStr()}.xlsx`);
-      this.messageService.add({
-        severity: 'success',
-        summary: 'Export',
-        detail: `Exported ${rows.length} rows to Excel`,
-      });
+      this.notificationService.addNotification('Export', `Exported ${rows.length} rows to Excel`, 'success');
     } catch {
-      this.messageService.add({
-        severity: 'error',
-        summary: 'Export failed',
-        detail: 'Could not generate Excel file',
-      });
+      this.notificationService.addNotification('Export failed', 'Could not generate Excel file', 'error');
     }
   }
 

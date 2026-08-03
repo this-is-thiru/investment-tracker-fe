@@ -130,48 +130,178 @@
           <ng-template pTemplate="expandedrow" let-h>
             <tr>
               <td colspan="12" class="p-4 bg-[#141414]">
-                <div class="border border-[#2D2D2D] rounded-xl bg-[#1F1F1F] p-4">
-                  <div class="flex items-center gap-2 mb-3">
-                    <lucide-icon name="file-text" class="w-4 h-4 text-[#8B5CF6]"></lucide-icon>
-                    <h4 class="text-sm font-semibold text-white">Transactions for {{ h.stockName }}</h4>
+                <div class="border-l-4 border-l-[#8B5CF6] border-y border-r border-[#2D2D2D] rounded-xl bg-[#181818] p-5 shadow-[0_4px_20px_rgba(0,0,0,0.4)]">
+                  
+                  <!-- Card Header -->
+                  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+                    <div class="flex items-center gap-2">
+                      <lucide-icon name="file-text" class="w-4 h-4 text-[#8B5CF6]"></lucide-icon>
+                      <h4 class="text-sm font-semibold text-white">Transactions for {{ h.stockName }}</h4>
+                    </div>
+
+                    <!-- Filter Control Tab Buttons -->
+                    @if (!loadingStockTransactions[h.stockCode] && stockTransactions[h.stockCode]?.length) {
+                      <div class="flex bg-[#252525] p-0.5 rounded-lg border border-[#333] gap-0.5">
+                        @for (opt of ['ALL', 'BUY', 'SELL']; track opt) {
+                          <button type="button" (click)="setTransactionFilter(h.stockCode, opt)"
+                            [class]="(transactionTypeFilter[h.stockCode] || 'ALL') === opt ? 'bg-[#8B5CF6] text-white shadow-md' : 'text-gray-400 hover:text-white hover:bg-white/5'"
+                            class="px-2.5 py-1 text-[10px] font-bold rounded-md transition-all duration-150 uppercase cursor-pointer">
+                            {{ opt }}
+                          </button>
+                        }
+                      </div>
+                    }
                   </div>
 
+                  <!-- Loading Skeleton State -->
                   @if (loadingStockTransactions[h.stockCode]) {
-                    <div class="text-center py-4 text-gray-400 text-sm">Loading transactions...</div>
-                  } @else if (stockTransactions[h.stockCode]?.length) {
-                    <div class="overflow-x-auto">
-                      <p-table [value]="stockTransactions[h.stockCode]" [tableStyle]="{ 'min-width': '48rem' }" responsiveLayout="scroll" styleClass="p-datatable-sm w-full">
-                        <ng-template pTemplate="header">
-                          <tr>
-                            <th>Type</th>
-                            <th class="text-right">Qty</th>
-                            <th class="text-right">Price</th>
-                            <th class="text-right">Total</th>
-                            <th>Date</th>
-                            <th>Broker</th>
-                            <th class="text-right">Charges</th>
-                          </tr>
-                        </ng-template>
-                        <ng-template pTemplate="body" let-t>
-                          <tr>
-                            <td class="px-4 py-2">
-                              <span [ngClass]="t.transactionType === 'BUY' ? 'bg-[#22C55E]/10 text-[#22C55E] border-[#22C55E]/20' : 'bg-[#EF4444]/10 text-[#EF4444] border-[#EF4444]/20'"
-                                class="px-2 py-0.5 rounded-full text-[10px] font-bold border uppercase tracking-wider">
-                                {{ t.transactionType }}
-                              </span>
-                            </td>
-                            <td class="px-4 py-2 text-right text-gray-300 tabular-nums">{{ t.quantity | number:'1.0-4' }}</td>
-                            <td class="px-4 py-2 text-right text-gray-300 tabular-nums">₹{{ t.price | number:'1.2-2' }}</td>
-                            <td class="px-4 py-2 text-right text-gray-300 tabular-nums">₹{{ t.totalValue | number:'1.2-2' }}</td>
-                            <td class="px-4 py-2 text-gray-400 text-xs">{{ t.transactionDate }}</td>
-                            <td class="px-4 py-2 text-gray-300">{{ t.brokerName }}</td>
-                            <td class="px-4 py-2 text-right text-gray-300 tabular-nums">₹{{ ((t.brokerCharges || 0) + (t.miscCharges || 0)) | number:'1.2-2' }}</td>
-                          </tr>
-                        </ng-template>
-                      </p-table>
+                    <div class="space-y-4 animate-pulse">
+                      <!-- Stats Skeleton -->
+                      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        @for (s of [1, 2, 3]; track s) {
+                          <div class="bg-[#1F1F1F] p-3 rounded-lg border border-[#2D2D2D] h-[60px] flex flex-col justify-between">
+                            <p-skeleton width="40%" height="0.6rem" styleClass="bg-[#2D2D2D]"></p-skeleton>
+                            <p-skeleton width="70%" height="1rem" styleClass="bg-[#2D2D2D]"></p-skeleton>
+                          </div>
+                        }
+                      </div>
+                      <!-- Table Skeleton -->
+                      <div class="border border-[#2D2D2D] rounded-lg overflow-hidden bg-[#1F1F1F]">
+                        <div class="h-10 bg-[#252525] border-b border-[#2D2D2D] flex items-center px-4 justify-between">
+                          <p-skeleton width="12%" height="0.7rem" styleClass="bg-[#2D2D2D]"></p-skeleton>
+                          <p-skeleton width="10%" height="0.7rem" styleClass="bg-[#2D2D2D]"></p-skeleton>
+                          <p-skeleton width="12%" height="0.7rem" styleClass="bg-[#2D2D2D]"></p-skeleton>
+                          <p-skeleton width="15%" height="0.7rem" styleClass="bg-[#2D2D2D]"></p-skeleton>
+                          <p-skeleton width="15%" height="0.7rem" styleClass="bg-[#2D2D2D]"></p-skeleton>
+                          <p-skeleton width="10%" height="0.7rem" styleClass="bg-[#2D2D2D]"></p-skeleton>
+                        </div>
+                        <div class="divide-y divide-[#2D2D2D]/60">
+                          @for (r of [1, 2, 3]; track r) {
+                            <div class="h-11 flex items-center px-4 justify-between">
+                              <p-skeleton width="10%" height="1.1rem" styleClass="bg-[#2D2D2D] rounded-full"></p-skeleton>
+                              <p-skeleton width="8%" height="0.7rem" styleClass="bg-[#2D2D2D]"></p-skeleton>
+                              <p-skeleton width="10%" height="0.7rem" styleClass="bg-[#2D2D2D]"></p-skeleton>
+                              <p-skeleton width="12%" height="0.7rem" styleClass="bg-[#2D2D2D]"></p-skeleton>
+                              <p-skeleton width="15%" height="0.7rem" styleClass="bg-[#2D2D2D]"></p-skeleton>
+                              <p-skeleton width="10%" height="0.7rem" styleClass="bg-[#2D2D2D]"></p-skeleton>
+                            </div>
+                          }
+                        </div>
+                      </div>
                     </div>
+                  } @else if (stockTransactions[h.stockCode]?.length) {
+                    
+                    <!-- Stats Summary Cards -->
+                    @let summary = getTransactionSummary(h.stockCode);
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
+                      <!-- BUY Stats Card -->
+                      <div class="bg-[#122A1E]/30 border border-[#22C55E]/15 rounded-lg p-3 flex items-center justify-between">
+                        <div>
+                          <span class="text-[9px] font-bold text-[#8E9B93] uppercase tracking-wider">Total Bought</span>
+                          <div class="text-xs font-bold text-white mt-0.5 tabular-nums">
+                            {{ summary.buyQty | number:'1.0-4' }} <span class="text-[9px] font-normal text-[#8E9B93]">units</span>
+                          </div>
+                          <div class="text-[10px] text-gray-400 mt-0.5">Avg: ₹{{ summary.avgBuyPrice | number:'1.2-2' }}</div>
+                        </div>
+                        <div class="text-right">
+                          <span class="text-[9px] text-[#8E9B93] block">Capital Invested</span>
+                          <span class="text-xs font-extrabold text-[#22C55E] tabular-nums">₹{{ summary.totalBuyValue | number:'1.2-2' }}</span>
+                        </div>
+                      </div>
+
+                      <!-- SELL Stats Card -->
+                      <div class="bg-[#2D161B]/30 border border-[#EF4444]/15 rounded-lg p-3 flex items-center justify-between">
+                        <div>
+                          <span class="text-[9px] font-bold text-[#9B8E90] uppercase tracking-wider">Total Sold</span>
+                          <div class="text-xs font-bold text-white mt-0.5 tabular-nums">
+                            {{ summary.sellQty | number:'1.0-4' }} <span class="text-[9px] font-normal text-[#9B8E90]">units</span>
+                          </div>
+                          <div class="text-[10px] text-gray-400 mt-0.5">Avg: ₹{{ summary.avgSellPrice | number:'1.2-2' }}</div>
+                        </div>
+                        <div class="text-right">
+                          <span class="text-[9px] text-[#9B8E90] block">Realized Value</span>
+                          <span class="text-xs font-extrabold text-[#EF4444] tabular-nums">₹{{ summary.totalSellValue | number:'1.2-2' }}</span>
+                        </div>
+                      </div>
+
+                      <!-- Friction Costs Card -->
+                      <div class="bg-[#1E192D]/30 border border-[#8B5CF6]/15 rounded-lg p-3 flex items-center justify-between">
+                        <div>
+                          <span class="text-[9px] font-bold text-[#938EB0] uppercase tracking-wider">Friction Costs</span>
+                          <div class="text-[10px] text-gray-400 mt-1">Total taxes & broker commissions</div>
+                        </div>
+                        <div class="text-right">
+                          <span class="text-[9px] text-[#938EB0] block">Total Charges</span>
+                          <span class="text-xs font-extrabold text-white tabular-nums">₹{{ summary.totalCharges | number:'1.2-2' }}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Inner Table -->
+                    @let filteredTxns = getFilteredTransactions(h.stockCode);
+                    @if (filteredTxns.length) {
+                      <div class="overflow-x-auto rounded-lg border border-[#2D2D2D] bg-[#121212]/50">
+                        <p-table [value]="filteredTxns" [tableStyle]="{ 'min-width': '48rem' }" responsiveLayout="scroll" styleClass="p-datatable-sm w-full">
+                          <ng-template pTemplate="header">
+                            <tr class="border-b border-[#2D2D2D] bg-[#1E1E1E]">
+                              <th class="px-4 py-2 text-[10px] font-bold text-gray-400 uppercase tracking-wider text-left">Type</th>
+                              <th class="px-4 py-2 text-[10px] font-bold text-gray-400 uppercase tracking-wider text-right">Qty</th>
+                              <th class="px-4 py-2 text-[10px] font-bold text-gray-400 uppercase tracking-wider text-right">Price</th>
+                              <th class="px-4 py-2 text-[10px] font-bold text-gray-400 uppercase tracking-wider text-right">Total</th>
+                              <th class="px-4 py-2 text-[10px] font-bold text-gray-400 uppercase tracking-wider text-left">Date</th>
+                              <th class="px-4 py-2 text-[10px] font-bold text-gray-400 uppercase tracking-wider text-left">Broker</th>
+                              <th class="px-4 py-2 text-[10px] font-bold text-gray-400 uppercase tracking-wider text-right">Charges</th>
+                            </tr>
+                          </ng-template>
+                          <ng-template pTemplate="body" let-t>
+                            <tr class="border-b border-[#2D2D2D]/40 hover:bg-white/5 transition-colors duration-150">
+                              <td class="px-4 py-2">
+                                @if (t.transactionType === 'BUY') {
+                                  <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[9px] font-bold bg-[#22C55E]/10 text-[#22C55E] border border-[#22C55E]/20 uppercase tracking-wider">
+                                    <span class="w-1 h-1 rounded-full bg-[#22C55E] animate-pulse"></span>
+                                    BUY
+                                  </span>
+                                } @else {
+                                  <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[9px] font-bold bg-[#EF4444]/10 text-[#EF4444] border border-[#EF4444]/20 uppercase tracking-wider">
+                                    <span class="w-1 h-1 rounded-full bg-[#EF4444] animate-pulse"></span>
+                                    SELL
+                                  </span>
+                                }
+                              </td>
+                              <td class="px-4 py-2 text-right text-gray-200 font-semibold tabular-nums">{{ t.quantity | number:'1.0-4' }}</td>
+                              <td class="px-4 py-2 text-right text-gray-300 tabular-nums">₹{{ t.price | number:'1.2-2' }}</td>
+                              <td class="px-4 py-2 text-right text-white font-semibold tabular-nums">₹{{ t.totalValue | number:'1.2-2' }}</td>
+                              <td class="px-4 py-2 text-gray-400 text-xs whitespace-nowrap">{{ t.transactionDate }}</td>
+                              <td class="px-4 py-2 text-gray-300 text-xs">{{ t.brokerName }}</td>
+                              <td class="px-4 py-2 text-right text-gray-300 tabular-nums cursor-help underline decoration-dotted decoration-[#444] hover:decoration-white/40"
+                                  [pTooltip]="tooltipContent" tooltipPosition="top" [escape]="false">
+                                ₹{{ ((t.brokerCharges || 0) + (t.miscCharges || 0)) | number:'1.2-2' }}
+                                
+                                <ng-template #tooltipContent>
+                                  <div class="p-1 text-[10px] leading-normal min-w-[120px]">
+                                    <div class="flex justify-between gap-4 mb-0.5">
+                                      <span class="text-gray-400">Brokerage:</span>
+                                      <span class="text-white font-bold">₹{{ (t.brokerCharges || 0) | number:'1.2-2' }}</span>
+                                    </div>
+                                    <div class="flex justify-between gap-4 border-t border-white/10 mt-1 pt-1">
+                                      <span class="text-gray-400">Misc/Taxes:</span>
+                                      <span class="text-white font-bold">₹{{ (t.miscCharges || 0) | number:'1.2-2' }}</span>
+                                    </div>
+                                  </div>
+                                </ng-template>
+                              </td>
+                            </tr>
+                          </ng-template>
+                        </p-table>
+                      </div>
+                    } @else {
+                      <div class="text-center py-8 text-gray-400 text-xs bg-[#1E1E1E]/20 border border-[#2D2D2D] rounded-lg">
+                        No transactions found matching filter "{{ transactionTypeFilter[h.stockCode] || 'ALL' }}".
+                      </div>
+                    }
+
                   } @else {
-                    <div class="text-center py-4 text-gray-400 text-sm">No transactions found for {{ h.stockName }}.</div>
+                    <div class="text-center py-6 text-gray-400 text-sm">No transactions found for {{ h.stockName }}.</div>
                   }
                 </div>
               </td>

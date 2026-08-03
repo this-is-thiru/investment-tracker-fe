@@ -1,7 +1,6 @@
 import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { MessageService } from 'primeng/api';
 import * as XLSX from 'xlsx';
 import { TransactionService } from '@services/transaction.service';
 import { TransactionsResponse } from '@models/transactions-response.model';
@@ -14,6 +13,7 @@ import {
   HoldingRow,
   InsightItem,
 } from '@core/services/portfolio-analytics.service';
+import { NotificationService } from '@services/notification.service';
 
 type ViewMode = 'split' | 'temp' | 'port';
 type ActiveTab = 'transactions' | 'holdings' | 'insights';
@@ -43,12 +43,11 @@ interface ColumnDef {
         PrimeNgModule,
     ],
     templateUrl: './transactions-table.component.html',
-    styleUrls: ['./transactions-table.component.css'],
-    providers: [MessageService]
+    styleUrls: ['./transactions-table.component.css']
 })
 export class TransactionsTableComponent implements OnInit {
   private transactionService = inject(TransactionService);
-  private messageService = inject(MessageService);
+  private notificationService = inject(NotificationService);
   private analytics = inject(PortfolioAnalyticsService);
   private cdr = inject(ChangeDetectorRef);
 
@@ -211,11 +210,11 @@ export class TransactionsTableComponent implements OnInit {
           totalValue: 150 * 5 * (i + 1) * (i + 1),
           transactionDate: '2023-09-10',
         }));
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: 'Failed to load temporary transactions',
-        });
+        this.notificationService.addNotification(
+          'Error',
+          'Failed to load temporary transactions',
+          'error'
+        );
         this.applyFilters();
         this.cdr.detectChanges();
       },
@@ -255,11 +254,11 @@ export class TransactionsTableComponent implements OnInit {
           totalValue: 1000 + i * 100,
           transactionDate: '2023-09-01',
         }));
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: 'Failed to load current transactions',
-        });
+        this.notificationService.addNotification(
+          'Error',
+          'Failed to load current transactions',
+          'error'
+        );
         this.applyFilters();
         this.cdr.detectChanges();
       },
@@ -500,13 +499,13 @@ export class TransactionsTableComponent implements OnInit {
   filterByStock(stockCode: string): void {
     this.searchQuery = stockCode;
     this.applyFilters();
-    this.messageService.add({ severity: 'info', summary: 'Filter applied', detail: `Filtered by stock ${stockCode}` });
+    this.notificationService.addNotification('Filter applied', `Filtered by stock ${stockCode}`, 'info');
   }
 
   filterByBroker(brokerName: string): void {
     this.filterBroker = brokerName;
     this.applyFilters();
-    this.messageService.add({ severity: 'info', summary: 'Filter applied', detail: `Filtered by broker ${brokerName}` });
+    this.notificationService.addNotification('Filter applied', `Filtered by broker ${brokerName}`, 'info');
   }
 
   filterByDate(date: string): void {
@@ -514,7 +513,7 @@ export class TransactionsTableComponent implements OnInit {
     this.filterDateFrom = date;
     this.filterDateTo = date;
     this.applyFilters();
-    this.messageService.add({ severity: 'info', summary: 'Filter applied', detail: `Filtered to ${date}` });
+    this.notificationService.addNotification('Filter applied', `Filtered to ${date}`, 'info');
   }
 
   copyTransaction(t: TransactionsResponse): void {
@@ -522,14 +521,14 @@ export class TransactionsTableComponent implements OnInit {
     try {
       if (navigator?.clipboard?.writeText) {
         navigator.clipboard.writeText(text).then(
-          () => this.messageService.add({ severity: 'success', summary: 'Copied', detail: 'Transaction details copied to clipboard' }),
-          () => this.messageService.add({ severity: 'info', summary: 'Copied', detail: text }),
+          () => this.notificationService.addNotification('Copied', 'Transaction details copied to clipboard', 'success'),
+          () => this.notificationService.addNotification('Copied', text, 'info'),
         );
       } else {
-        this.messageService.add({ severity: 'info', summary: 'Copied', detail: text });
+        this.notificationService.addNotification('Copied', text, 'info');
       }
     } catch {
-      this.messageService.add({ severity: 'info', summary: 'Copied', detail: text });
+      this.notificationService.addNotification('Copied', text, 'info');
     }
   }
 
@@ -540,7 +539,7 @@ export class TransactionsTableComponent implements OnInit {
     const csv = this.toCsv(this.filteredAll);
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     this.downloadBlob(blob, `transactions_${this.userEmail || 'user'}_${this.todayStr()}.csv`);
-    this.messageService.add({ severity: 'success', summary: 'Export', detail: `Exported ${this.filteredAll.length} rows to CSV` });
+    this.notificationService.addNotification('Export', `Exported ${this.filteredAll.length} rows to CSV`, 'success');
   }
 
   exportExcel(): void {
@@ -562,7 +561,7 @@ export class TransactionsTableComponent implements OnInit {
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Transactions');
     XLSX.writeFile(wb, `transactions_${this.userEmail || 'user'}_${this.todayStr()}.xlsx`);
-    this.messageService.add({ severity: 'success', summary: 'Export', detail: `Exported ${rows.length} rows to Excel` });
+    this.notificationService.addNotification('Export', `Exported ${rows.length} rows to Excel`, 'success');
   }
 
   // ============================================================

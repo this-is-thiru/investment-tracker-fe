@@ -1,14 +1,3 @@
-@if (toast) {
-  <div class="fixed top-4 right-4 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-in slide-in-from-top"
-    [ngClass]="{
-      'bg-green-500/60': toast.type === 'success',
-      'bg-red-500/60': toast.type === 'error',
-      'bg-blue-500/60': toast.type === 'info'
-    }">
-    {{ toast.message }}
-  </div>
-}
-
 <div class="min-h-screen bg-[#191919]">
   <div class="max-w-7xl mx-auto p-4 md:p-6 lg:p-8 space-y-6">
     <div class="space-y-2">
