@@ -12,7 +12,7 @@ import { RouterModule } from '@angular/router';
 import { finalize } from 'rxjs/operators';
 import { RegisterRequest } from '@models/register-request.model';
 import { NotificationService } from '@services/notification.service';
-import { LucideIconsModule } from '@core/icons/lucide-icons.module';
+import { LucideIconsModule } from '@core/icons/lucide-icons.module'; // import LucideIconsModule for custom SVG icons
 
 @Component({
     selector: 'app-sign-up',

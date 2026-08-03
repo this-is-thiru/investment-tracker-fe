@@ -7,13 +7,12 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TempTransactionsTableComponent } from '../temp-transactions-table/temp-transactions-table.component';
-import { CorporateActionSimpleComponent } from '../corporate-action-simple/corporate-action-simple.component';
 import { AddCorporateActionComponent } from '../add-corporate-action/add-corporate-action.component';
 import { CorporateActionListComponent } from '../corporate-action-list/corporate-action-list.component';
 import { ExpansionPanelComponent } from '@shared/components/expansion-panel/expansion-panel.component';
 import { LucideIconsModule } from '@core/icons/lucide-icons.module';
 
-type Tab = 'temporary' | 'corporate' | 'add-action' | 'list-actions';
+type Tab = 'temporary' | 'add-action' | 'list-actions';
 
 @Component({
   selector: 'app-temp-corporate-tabs',
@@ -21,7 +20,6 @@ type Tab = 'temporary' | 'corporate' | 'add-action' | 'list-actions';
   imports: [
     CommonModule,
     TempTransactionsTableComponent,
-    CorporateActionSimpleComponent,
     AddCorporateActionComponent,
     CorporateActionListComponent,
     ExpansionPanelComponent,

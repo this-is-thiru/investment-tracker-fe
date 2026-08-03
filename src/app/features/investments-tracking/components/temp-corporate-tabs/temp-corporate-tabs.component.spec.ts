@@ -4,7 +4,6 @@ import { CommonModule } from '@angular/common';
 
 import { TempCorporateTabsComponent } from './temp-corporate-tabs.component';
 import { TempTransactionsTableComponent } from '../temp-transactions-table/temp-transactions-table.component';
-import { CorporateActionSimpleComponent } from '../corporate-action-simple/corporate-action-simple.component';
 import { ExpansionPanelComponent } from '@shared/components/expansion-panel/expansion-panel.component';
 import { LucideIconsModule } from '@core/icons/lucide-icons.module';
 
@@ -17,7 +16,6 @@ describe('TempCorporateTabsComponent', () => {
       imports: [
         TempCorporateTabsComponent,
         TempTransactionsTableComponent,
-        CorporateActionSimpleComponent,
         CommonModule,
         LucideIconsModule,
         ExpansionPanelComponent,
