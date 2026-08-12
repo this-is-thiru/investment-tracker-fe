@@ -1,25 +1,24 @@
 /* Table dark overrides — mirror transactions-table.component.css */
 :host ::ng-deep .p-datatable,
 :host ::ng-deep .p-datatable table {
-  background-color: #232323;
   color: #ffffff;
   border-color: #3a3a3a;
 }
 
 :host ::ng-deep .p-datatable thead th {
-  background-color: #232323;
   color: #b3b3b3;
   border-bottom: 1px solid #2a2a2a;
 }
 
 :host ::ng-deep .p-datatable tbody tr {
-  background-color: #232323;
-  color: #ffffff;
-  border-bottom: 1px solid #2a2a2a;
+  color: #ffffff !important;
+  border-bottom: 1px solid #2a2a2a !important;
 }
 
+:host ::ng-deep .p-datatable tbody tr td {}
+
 :host ::ng-deep .p-datatable tbody tr:hover {
-  background-color: #2e2e2e;
+  background-color: #2e2e2e !important;
 }
 
 :host {
@@ -35,14 +34,12 @@
 }
 
 :host ::ng-deep .p-paginator {
-  background-color: #232323;
   color: #ffffff;
   justify-content: center;
   padding: 0.5rem 0;
 }
 
 :host ::ng-deep .p-paginator .p-paginator-page {
-  background-color: #2e2e2e;
   color: #ffffff;
   margin: 0 0.125rem;
   min-width: 2.5rem;
@@ -70,7 +67,7 @@
 :host ::ng-deep .p-dropdown-panel,
 :host ::ng-deep .p-select-overlay,
 :host ::ng-deep .p-select {
-  background-color: #2e2e2e !important;
+
   color: #ffffff !important;
   border-radius: 0.5rem;
 }
@@ -103,19 +100,38 @@
   scrollbar-width: thin;
   scrollbar-color: #3A3A3A #191919;
 }
-:host ::ng-deep .table-scroll-container::-webkit-scrollbar { height: 8px; }
-:host ::ng-deep .table-scroll-container::-webkit-scrollbar-track { background: #191919; border-radius: 4px; }
-:host ::ng-deep .table-scroll-container::-webkit-scrollbar-thumb { background: #3A3A3A; border-radius: 4px; }
-:host ::ng-deep .table-scroll-container::-webkit-scrollbar-thumb:hover { background: #4A4A4A; }
+
+:host ::ng-deep .table-scroll-container::-webkit-scrollbar {
+  height: 8px;
+}
+
+:host ::ng-deep .table-scroll-container::-webkit-scrollbar-track {
+  background: #191919;
+  border-radius: 4px;
+}
+
+:host ::ng-deep .table-scroll-container::-webkit-scrollbar-thumb {
+  background: #3A3A3A;
+  border-radius: 4px;
+}
+
+:host ::ng-deep .table-scroll-container::-webkit-scrollbar-thumb:hover {
+  background: #4A4A4A;
+}
 
 /* Tighten table cell padding to match investment-tracking reference */
-:host ::ng-deep .p-datatable .p-datatable-thead > tr > th,
-:host ::ng-deep .p-datatable .p-datatable-tbody > tr > td {
-  padding: 0.75rem 1rem !important; /* py-3 px-4 */
+:host ::ng-deep .p-datatable .p-datatable-thead>tr>th,
+:host ::ng-deep .p-datatable .p-datatable-tbody>tr>td {
+  padding: 0.75rem 1rem !important;
+  /* py-3 px-4 */
 }
 
 /* Section stack utility */
-:host ::ng-deep .section-stack { display:flex; flex-direction:column; gap:1.5rem; }
+:host ::ng-deep .section-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
 
 /* ── SelectButton (asset-type toggle) dark theme ── */
 :host ::ng-deep .p-selectbutton {

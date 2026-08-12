@@ -21,7 +21,9 @@
       </h1>
       <p class="text-sm text-[#B3B3B3] max-w-2xl flex items-center flex-wrap gap-1">
         FIFO-based
-        <lucide-icon name="info" class="inline-block w-4 h-4 text-[#B3B3B3] hover:text-white cursor-pointer" pTooltip="First-In, First-Out: An accounting method where the assets bought first are assumed to be sold first when calculating capital gains." tooltipPosition="top"></lucide-icon>
+        <lucide-icon name="info" class="inline-block w-4 h-4 text-[#B3B3B3] hover:text-white cursor-pointer"
+          pTooltip="First-In, First-Out: An accounting method where the assets bought first are assumed to be sold first when calculating capital gains."
+          tooltipPosition="top"></lucide-icon>
         realized gains across all your BUY/SELL transactions, grouped by financial year and asset type.
       </p>
     </div>
@@ -45,6 +47,51 @@
       </button>
     </div>
     }
+
+    <!-- ============================================================== -->
+    <section
+      class="flex flex-wrap items-center gap-3 rounded-xl bg-[#1A1A1A]/60 backdrop-blur-sm px-4 py-3 border border-[#2A2A2A]">
+      <div class="flex items-center gap-2 text-[#808080]">
+        <lucide-icon name="Filter" class="w-4 h-4 text-[#10A37F]"></lucide-icon>
+        <span class="text-xs font-medium text-[#A0A0A0] hidden sm:inline">Filter</span>
+      </div>
+
+      <div class="ml-auto flex flex-wrap items-center gap-3">
+        <!-- FY Select -->
+        <p-select [options]="availableFys" [ngModel]="selectedFy" (ngModelChange)="setFy($event)" optionLabel="label"
+          optionValue="value" appendTo="body" styleClass="text-sm"></p-select>
+
+        <!-- Asset Type SelectButton -->
+        <p-selectButton [options]="assetTypeOptions" [ngModel]="selectedAssetType"
+          (ngModelChange)="setAssetType($event)" optionLabel="label" optionValue="value"
+          styleClass="text-sm"></p-selectButton>
+
+        <!-- Active filter chips -->
+        @if (activeFilterChips.length > 0) {
+        <div class="flex flex-wrap gap-1.5">
+          @for (chip of activeFilterChips; track chip.label) {
+          <span
+            class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-[#10A37F]/10 text-[#10A37F] border border-[#10A37F]/20 text-[11px] font-medium">
+            {{ chip.label }}
+            <button (click)="removeFilterChip(chip)" class="hover:text-white focus:outline-none"
+              aria-label="Remove filter">
+              <lucide-icon name="X" class="w-3 h-3"></lucide-icon>
+            </button>
+          </span>
+          }
+        </div>
+        }
+
+        <!-- Reset -->
+        @if (hasActiveFilters()) {
+        <button (click)="resetFilters()"
+          class="px-2.5 py-1.5 rounded-lg text-[11px] font-medium text-[#808080] hover:text-white hover:bg-[#2E2E2E] transition-colors flex items-center gap-1 focus:outline-none">
+          <lucide-icon name="RotateCw" class="w-3 h-3"></lucide-icon>
+          Reset
+        </button>
+        }
+      </div>
+    </section>
 
     <!-- ============================================================== -->
     <!-- PANEL A — TAX SUMMARY                                            -->
@@ -84,7 +131,9 @@
           <div class="flex items-center justify-between">
             <span class="text-[10px] text-[#B3B3B3] font-semibold uppercase tracking-wider flex items-center gap-1">
               STCG
-              <lucide-icon name="info" class="w-3.5 h-3.5 text-[#B3B3B3] hover:text-white cursor-pointer" pTooltip="Short-Term Capital Gains: Gains made on assets held for less than 1 year (3 years for debt). Taxed at 20% for equities/equity mutual funds in India." tooltipPosition="top"></lucide-icon>
+              <lucide-icon name="info" class="w-3.5 h-3.5 text-[#B3B3B3] hover:text-white cursor-pointer"
+                pTooltip="Short-Term Capital Gains: Gains made on assets held for less than 1 year (3 years for debt). Taxed at 20% for equities/equity mutual funds in India."
+                tooltipPosition="top"></lucide-icon>
             </span>
             <lucide-icon name="Clock" class="w-3.5 h-3.5 text-[#FACC15]"></lucide-icon>
           </div>
@@ -101,7 +150,9 @@
           <div class="flex items-center justify-between">
             <span class="text-[10px] text-[#B3B3B3] font-semibold uppercase tracking-wider flex items-center gap-1">
               LTCG
-              <lucide-icon name="info" class="w-3.5 h-3.5 text-[#B3B3B3] hover:text-white cursor-pointer" pTooltip="Long-Term Capital Gains: Gains made on assets held for 1 year or longer (3 years for debt). Exempt up to ₹1.25L for equities/equity mutual funds, then taxed at 12.5% in India." tooltipPosition="top"></lucide-icon>
+              <lucide-icon name="info" class="w-3.5 h-3.5 text-[#B3B3B3] hover:text-white cursor-pointer"
+                pTooltip="Long-Term Capital Gains: Gains made on assets held for 1 year or longer (3 years for debt). Exempt up to ₹1.25L for equities/equity mutual funds, then taxed at 12.5% in India."
+                tooltipPosition="top"></lucide-icon>
             </span>
             <lucide-icon name="Calendar" class="w-3.5 h-3.5 text-[#10A37F]"></lucide-icon>
           </div>
@@ -127,53 +178,13 @@
       </div>
       } @else {
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-        <div *ngFor="let i of [1, 2, 3, 4]" class="bg-[#1F1F1F] border border-[#3A3A3A] rounded-lg p-3 flex flex-col gap-2">
+        <div *ngFor="let i of [1, 2, 3, 4]"
+          class="bg-[#1F1F1F] border border-[#3A3A3A] rounded-lg p-3 flex flex-col gap-2">
           <p-skeleton width="50%" height="12px" styleClass="bg-[#2E2E2E]"></p-skeleton>
           <p-skeleton width="70%" height="24px" styleClass="bg-[#2E2E2E]"></p-skeleton>
           <p-skeleton width="40%" height="10px" styleClass="bg-[#2E2E2E]"></p-skeleton>
         </div>
       </div>
-      }
-    </section>
-
-    <section class="flex flex-wrap items-center gap-3 rounded-xl bg-[#1A1A1A]/60 backdrop-blur-sm px-4 py-3 border border-[#2A2A2A]">
-      <div class="flex items-center gap-2 text-[#808080]">
-        <lucide-icon name="Filter" class="w-4 h-4 text-[#10A37F]"></lucide-icon>
-        <span class="text-xs font-medium text-[#A0A0A0] hidden sm:inline">Filter</span>
-      </div>
-
-      <!-- FY Select -->
-      <p-select [options]="availableFys" [ngModel]="selectedFy" (ngModelChange)="setFy($event)"
-        optionLabel="label" optionValue="value" appendTo="body" styleClass="text-sm"></p-select>
-
-      <!-- Asset Type SelectButton -->
-      <p-selectButton [options]="assetTypeOptions" [ngModel]="selectedAssetType"
-        (ngModelChange)="setAssetType($event)" optionLabel="label" optionValue="value"
-        styleClass="text-sm"></p-selectButton>
-
-      <!-- Active filter chips -->
-      @if (activeFilterChips.length > 0) {
-      <div class="flex flex-wrap gap-1.5">
-        @for (chip of activeFilterChips; track chip.label) {
-        <span
-          class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-[#10A37F]/10 text-[#10A37F] border border-[#10A37F]/20 text-[11px] font-medium">
-          {{ chip.label }}
-          <button (click)="removeFilterChip(chip)" class="hover:text-white focus:outline-none"
-            aria-label="Remove filter">
-            <lucide-icon name="X" class="w-3 h-3"></lucide-icon>
-          </button>
-        </span>
-        }
-      </div>
-      }
-
-      <!-- Reset -->
-      @if (hasActiveFilters()) {
-      <button (click)="resetFilters()"
-        class="ml-auto px-2.5 py-1.5 rounded-lg text-[11px] font-medium text-[#808080] hover:text-white hover:bg-[#2E2E2E] transition-colors flex items-center gap-1 focus:outline-none">
-        <lucide-icon name="RotateCw" class="w-3 h-3"></lucide-icon>
-        Reset
-      </button>
       }
     </section>
 
@@ -209,106 +220,8 @@
       </div>
       } @else if (hasRows) {
 
-      <!-- FY-WISE CAPITAL GAINS TABLE -->
-      <section class="border border-[#3A3A3A] rounded-xl bg-[#191919] overflow-hidden">
-        <div class="px-4 py-3 border-b border-[#2A2A2A] flex items-center justify-between gap-3">
-          <div class="flex items-center gap-2">
-            <lucide-icon name="Calendar" class="w-4 h-4 text-[#10A37F]"></lucide-icon>
-            <h3 class="text-sm font-bold text-white uppercase tracking-wider">FY-wise Capital Gains</h3>
-            <span class="text-[10px] text-[#707070]">one row per FY (cross-asset)</span>
-          </div>
-        </div>
-
-        <div class="p-4">
-          <div class="table-scroll-container">
-            <p-table [value]="fyRows" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[5, 10, 20]"
-              paginatorDropdownAppendTo="body" [tableStyle]="{ 'min-width': '64rem' }" responsiveLayout="scroll"
-              styleClass="p-datatable-sm w-full" [rowHover]="true">
-              <ng-template pTemplate="header">
-                <tr>
-                  <th pSortableColumn="financialYear" class="text-left cursor-pointer whitespace-nowrap">
-                    <div class="flex items-center gap-1 whitespace-nowrap">FY <p-sortIcon
-                        field="financialYear"></p-sortIcon></div>
-                  </th>
-                  <th class="text-left whitespace-nowrap">Asset Type</th>
-                  <th pSortableColumn="sellValue" class="text-right cursor-pointer whitespace-nowrap">
-                    <div class="flex items-center justify-end gap-1 whitespace-nowrap">Sell Value <p-sortIcon
-                        field="sellValue"></p-sortIcon></div>
-                  </th>
-                  <th pSortableColumn="gain" class="text-right cursor-pointer whitespace-nowrap">
-                    <div class="flex items-center justify-end gap-1 whitespace-nowrap">Realized Gain <p-sortIcon
-                        field="gain"></p-sortIcon></div>
-                  </th>
-                  <th pSortableColumn="stcg" class="text-right cursor-pointer whitespace-nowrap">
-                    <div class="flex items-center justify-end gap-1 whitespace-nowrap">STCG <p-sortIcon
-                        field="stcg"></p-sortIcon></div>
-                  </th>
-                  <th pSortableColumn="ltcg" class="text-right cursor-pointer whitespace-nowrap">
-                    <div class="flex items-center justify-end gap-1 whitespace-nowrap">LTCG <p-sortIcon
-                        field="ltcg"></p-sortIcon></div>
-                  </th>
-                  <th pSortableColumn="count" class="text-right cursor-pointer whitespace-nowrap">
-                    <div class="flex items-center justify-end gap-1 whitespace-nowrap"># Sells <p-sortIcon
-                        field="count"></p-sortIcon></div>
-                  </th>
-                </tr>
-              </ng-template>
-
-              <ng-template pTemplate="body" let-r>
-                <tr>
-                  <td class="px-4 py-3 font-mono text-white whitespace-nowrap">{{ r.financialYear }}</td>
-                  <td class="px-4 py-3 text-[#B3B3B3] whitespace-nowrap">All</td>
-                  <td class="px-4 py-3 text-right text-[#B3B3B3] tabular-nums whitespace-nowrap">₹{{ r.sellValue |
-                    number:'1.2-2' }}</td>
-                  <td class="px-4 py-3 text-right font-semibold tabular-nums whitespace-nowrap"
-                    [ngClass]="r.gain >= 0 ? 'text-[#22C55E]' : 'text-[#EF4444]'">
-                    ₹{{ r.gain | number:'1.2-2' }}
-                  </td>
-                  <td class="px-4 py-3 text-right text-[#FACC15] tabular-nums whitespace-nowrap">₹{{ r.stcg |
-                    number:'1.2-2' }}</td>
-                  <td class="px-4 py-3 text-right text-[#10A37F] tabular-nums whitespace-nowrap">₹{{ r.ltcg |
-                    number:'1.2-2' }}</td>
-                  <td class="px-4 py-3 text-right text-[#B3B3B3] tabular-nums whitespace-nowrap">{{ r.count }}</td>
-                </tr>
-              </ng-template>
-
-              <ng-template pTemplate="footer">
-                <tr class="border-t border-[#3A3A3A] bg-[#1A1A1A]">
-                  <td class="px-4 py-3 font-bold text-white uppercase text-[10px] tracking-wider">Total</td>
-                  <td class="px-4 py-3"></td>
-                  <td class="px-4 py-3 text-right font-semibold text-[#B3B3B3] tabular-nums whitespace-nowrap">₹{{
-                    fyRowTotals.sellValue | number:'1.2-2' }}</td>
-                  <td class="px-4 py-3 text-right font-bold tabular-nums whitespace-nowrap"
-                    [ngClass]="fyRowTotals.gain >= 0 ? 'text-[#22C55E]' : 'text-[#EF4444]'">
-                    ₹{{ fyRowTotals.gain | number:'1.2-2' }}
-                  </td>
-                  <td class="px-4 py-3 text-right font-semibold text-[#FACC15] tabular-nums whitespace-nowrap">₹{{
-                    fyRowTotals.stcg | number:'1.2-2' }}</td>
-                  <td class="px-4 py-3 text-right font-semibold text-[#10A37F] tabular-nums whitespace-nowrap">₹{{
-                    fyRowTotals.ltcg | number:'1.2-2' }}</td>
-                  <td class="px-4 py-3 text-right font-semibold text-[#B3B3B3] tabular-nums whitespace-nowrap">{{
-                    fyRowTotals.count }}</td>
-                </tr>
-              </ng-template>
-
-              <ng-template pTemplate="emptymessage">
-                <tr>
-                  <td colspan="7" class="py-12 px-4 text-center">
-                    <div class="flex flex-col items-center justify-center space-y-2 py-6">
-                      <lucide-icon name="Info" class="w-10 h-10 text-[#707070]"></lucide-icon>
-                      <h4 class="text-sm font-semibold text-white">No realized gains in this filter</h4>
-                      <p class="text-xs text-[#B3B3B3]">Try selecting a different financial year or asset type.</p>
-                    </div>
-                  </td>
-                </tr>
-              </ng-template>
-            </p-table>
-          </div>
-        </div>
-      </section>
-
       <!-- PER-STOCK TAX REPORT TABLE -->
-      <section class="border border-[#3A3A3A] rounded-xl bg-[#191919] overflow-hidden mt-6">
+      <section class="border border-[#3A3A3A] rounded-xl bg-[#191919] overflow-hidden">
         <div
           class="px-4 py-3 border-b border-[#2A2A2A] flex flex-col md:flex-row md:items-center md:justify-between gap-3">
           <div class="flex items-center gap-2">
@@ -346,7 +259,7 @@
         <div class="p-4">
           <div class="table-scroll-container">
             <p-table [value]="perStockRows" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[5, 10, 20, 50]"
-              paginatorDropdownAppendTo="body" [tableStyle]="{ 'min-width': '80rem' }" responsiveLayout="scroll"
+              paginatorDropdownAppendTo="body" [tableStyle]="{ 'min-width': '70rem' }" responsiveLayout="scroll"
               styleClass="p-datatable-sm w-full" [rowHover]="true">
               <ng-template pTemplate="header">
                 <tr>
@@ -354,30 +267,21 @@
                     <div class="flex items-center gap-1 whitespace-nowrap">Stock <p-sortIcon
                         field="stockName"></p-sortIcon></div>
                   </th>
-
                   <th pSortableColumn="assetType" class="text-left cursor-pointer whitespace-nowrap">
                     <div class="flex items-center gap-1 whitespace-nowrap">Asset <p-sortIcon
                         field="assetType"></p-sortIcon></div>
-                  </th>
-                  <th pSortableColumn="buyQty" class="text-right cursor-pointer whitespace-nowrap">
-                    <div class="flex items-center justify-end gap-1 whitespace-nowrap">Buy Qty <p-sortIcon
-                        field="buyQty"></p-sortIcon></div>
-                  </th>
-                  <th pSortableColumn="buyValue" class="text-right cursor-pointer whitespace-nowrap">
-                    <div class="flex items-center justify-end gap-1 whitespace-nowrap">Buy Value <p-sortIcon
-                        field="buyValue"></p-sortIcon></div>
                   </th>
                   <th pSortableColumn="sellQty" class="text-right cursor-pointer whitespace-nowrap">
                     <div class="flex items-center justify-end gap-1 whitespace-nowrap">Sell Qty <p-sortIcon
                         field="sellQty"></p-sortIcon></div>
                   </th>
+                  <th pSortableColumn="costBasis" class="text-right cursor-pointer whitespace-nowrap">
+                    <div class="flex items-center justify-end gap-1 whitespace-nowrap">Cost Basis <p-sortIcon
+                        field="costBasis"></p-sortIcon></div>
+                  </th>
                   <th pSortableColumn="sellValue" class="text-right cursor-pointer whitespace-nowrap">
                     <div class="flex items-center justify-end gap-1 whitespace-nowrap">Sell Value <p-sortIcon
                         field="sellValue"></p-sortIcon></div>
-                  </th>
-                  <th pSortableColumn="netQty" class="text-right cursor-pointer whitespace-nowrap">
-                    <div class="flex items-center justify-end gap-1 whitespace-nowrap">Net Qty <p-sortIcon
-                        field="netQty"></p-sortIcon></div>
                   </th>
                   <th pSortableColumn="gain" class="text-right cursor-pointer whitespace-nowrap">
                     <div class="flex items-center justify-end gap-1 whitespace-nowrap">Realized P&amp;L <p-sortIcon
@@ -402,18 +306,12 @@
                     </div>
                   </td>
                   <td class="px-4 py-3 text-[#B3B3B3] whitespace-nowrap">{{ r.assetType }}</td>
-                  <td class="px-4 py-3 text-right text-[#B3B3B3] tabular-nums whitespace-nowrap">{{ r.buyQty |
-                    number:'1.0-4' }}</td>
-                  <td class="px-4 py-3 text-right text-[#B3B3B3] tabular-nums whitespace-nowrap">₹{{ r.buyValue |
-                    number:'1.2-2' }}</td>
                   <td class="px-4 py-3 text-right text-[#B3B3B3] tabular-nums whitespace-nowrap">{{ r.sellQty |
                     number:'1.0-4' }}</td>
+                  <td class="px-4 py-3 text-right text-[#B3B3B3] tabular-nums whitespace-nowrap">₹{{ r.costBasis |
+                    number:'1.2-2' }}</td>
                   <td class="px-4 py-3 text-right text-[#B3B3B3] tabular-nums whitespace-nowrap">₹{{ r.sellValue |
                     number:'1.2-2' }}</td>
-                  <td class="px-4 py-3 text-right font-semibold tabular-nums whitespace-nowrap"
-                    [ngClass]="r.netQty >= 0 ? 'text-[#22C55E]' : 'text-[#EF4444]'">
-                    {{ r.netQty | number:'1.0-4' }}
-                  </td>
                   <td class="px-4 py-3 text-right font-semibold tabular-nums whitespace-nowrap"
                     [ngClass]="r.gain >= 0 ? 'text-[#22C55E]' : 'text-[#EF4444]'">
                     ₹{{ r.gain | number:'1.2-2' }}
@@ -437,30 +335,24 @@
 
               <ng-template pTemplate="footer">
                 <tr class="border-t border-[#3A3A3A] bg-[#1A1A1A]">
-                  <td class="px-4 py-3 font-bold text-white uppercase text-[10px] tracking-wider" colspan="3">Total</td>
-                  <td class="px-4 py-3 text-right font-semibold text-[#B3B3B3] tabular-nums whitespace-nowrap">{{
-                    perStockTotals.buyQty | number:'1.0-4' }}</td>
-                  <td class="px-4 py-3 text-right font-semibold text-[#B3B3B3] tabular-nums whitespace-nowrap">₹{{
-                    perStockTotals.buyValue | number:'1.2-2' }}</td>
+                  <td class="px-4 py-3 font-bold text-white uppercase text-[10px] tracking-wider" colspan="2">Total</td>
                   <td class="px-4 py-3 text-right font-semibold text-[#B3B3B3] tabular-nums whitespace-nowrap">{{
                     perStockTotals.sellQty | number:'1.0-4' }}</td>
                   <td class="px-4 py-3 text-right font-semibold text-[#B3B3B3] tabular-nums whitespace-nowrap">₹{{
+                    perStockTotals.costBasis | number:'1.2-2' }}</td>
+                  <td class="px-4 py-3 text-right font-semibold text-[#B3B3B3] tabular-nums whitespace-nowrap">₹{{
                     perStockTotals.sellValue | number:'1.2-2' }}</td>
-                  <td class="px-4 py-3 text-right font-semibold tabular-nums whitespace-nowrap"
-                    [ngClass]="perStockTotals.netQty >= 0 ? 'text-[#22C55E]' : 'text-[#EF4444]'">
-                    {{ perStockTotals.netQty | number:'1.0-4' }}
-                  </td>
                   <td class="px-4 py-3 text-right font-bold tabular-nums whitespace-nowrap"
                     [ngClass]="perStockTotals.gain >= 0 ? 'text-[#22C55E]' : 'text-[#EF4444]'">
                     ₹{{ perStockTotals.gain | number:'1.2-2' }}
                   </td>
-                  <td class="px-4 py-3" colspan="3"></td>
+                  <td class="px-4 py-3" colspan="2"></td>
                 </tr>
               </ng-template>
 
               <ng-template pTemplate="emptymessage">
                 <tr>
-                  <td colspan="11" class="py-12 px-4 text-center">
+                  <td colspan="8" class="py-12 px-4 text-center">
                     <div class="flex flex-col items-center justify-center space-y-2 py-6">
                       <lucide-icon name="FileSpreadsheet" class="w-10 h-10 text-[#707070]"></lucide-icon>
                       <h4 class="text-sm font-semibold text-white">No realized P&amp;L for this filter</h4>
@@ -473,6 +365,201 @@
           </div>
         </div>
       </section>
+
+      <!-- ACCRUAL/RECEIPT (TABLE F) REPORT TABLE -->
+      <section class="border border-[#3A3A3A] rounded-xl bg-[#191919] overflow-hidden mt-6">
+        <div
+          class="px-4 py-3 border-b border-[#2A2A2A] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div class="flex items-center gap-2">
+            <lucide-icon name="Calendar" class="w-4 h-4 text-[#10A37F]"></lucide-icon>
+            <h3 class="text-sm font-bold text-white uppercase tracking-wider">Accrual/Receipt of Capital Gains (Table F)
+            </h3>
+            <span class="text-[10px] text-[#707070]" *ngIf="accrualTargetFy">FY {{ accrualTargetFy }}</span>
+          </div>
+          <div *ngIf="selectedFy === ALL"
+            class="text-xs text-[#FACC15] bg-[#FACC15]/10 border border-[#FACC15]/20 rounded-md px-2 py-1 flex items-center gap-1.5 self-start sm:self-auto">
+            <lucide-icon name="Info" class="w-3.5 h-3.5"></lucide-icon>
+            <span>Showing latest FY {{ accrualTargetFy }} by default</span>
+          </div>
+        </div>
+
+        <div class="p-4">
+          <div class="table-scroll-container">
+            <p-table [value]="accrualRows" styleClass="p-datatable-sm w-full" [tableStyle]="{ 'min-width': '64rem' }">
+              <ng-template pTemplate="header">
+                <tr>
+                  <th class="text-left whitespace-nowrap min-w-[20rem]">Computation / Category</th>
+                  <th class="text-right whitespace-nowrap">Upto 15/6</th>
+                  <th class="text-right whitespace-nowrap">16/6 to 15/9</th>
+                  <th class="text-right whitespace-nowrap">16/9 to 15/12</th>
+                  <th class="text-right whitespace-nowrap">16/12 to 15/3</th>
+                  <th class="text-right whitespace-nowrap">16/3 to 31/3</th>
+                  <th class="text-right whitespace-nowrap">Total</th>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-row>
+                <tr>
+                  <td class="px-4 py-3 font-medium text-white whitespace-nowrap">
+                    <div class="flex items-center gap-2.5">
+                      <span
+                        [ngClass]="row.category === 'Short Term' ? 'text-[#FACC15] bg-[#FACC15]/5 border-[#FACC15]/10' : 'text-[#10A37F] bg-[#10A37F]/5 border-[#10A37F]/10'"
+                        class="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded border">
+                        {{ row.category === 'Short Term' ? 'ST' : 'LT' }}
+                      </span>
+                      <span class="text-xs text-[#B3B3B3]">{{ row.label }}</span>
+                    </div>
+                  </td>
+                  <td *ngFor="let periodVal of row.periods"
+                    class="px-4 py-3 text-right font-mono tabular-nums whitespace-nowrap"
+                    [ngClass]="periodVal > 0 ? 'text-[#22C55E]' : periodVal < 0 ? 'text-[#EF4444]' : 'text-[#606060]'">
+                    ₹{{ periodVal | number:'1.2-2' }}
+                  </td>
+                  <td class="px-4 py-3 text-right font-bold font-mono tabular-nums whitespace-nowrap"
+                    [ngClass]="row.total > 0 ? 'text-[#22C55E]' : row.total < 0 ? 'text-[#EF4444]' : 'text-[#808080]'">
+                    ₹{{ row.total | number:'1.2-2' }}
+                  </td>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="footer">
+                <tr class="border-t border-[#3A3A3A] bg-[#1A1A1A]">
+                  <td class="px-4 py-3 font-bold text-white uppercase text-[10px] tracking-wider">Total</td>
+                  <td *ngFor="let colTotal of accrualRowTotals"
+                    class="px-4 py-3 text-right font-bold font-mono tabular-nums whitespace-nowrap"
+                    [ngClass]="colTotal > 0 ? 'text-[#22C55E]' : colTotal < 0 ? 'text-[#EF4444]' : 'text-[#B3B3B3]'">
+                    ₹{{ colTotal | number:'1.2-2' }}
+                  </td>
+                  <td class="px-4 py-3 text-right font-black font-mono tabular-nums whitespace-nowrap"
+                    [ngClass]="accrualGrandTotal > 0 ? 'text-[#22C55E]' : accrualGrandTotal < 0 ? 'text-[#EF4444]' : 'text-white'">
+                    ₹{{ accrualGrandTotal | number:'1.2-2' }}
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+        </div>
+      </section>
+      }
+    </app-expansion-panel>
+
+    <!-- ============================================================== -->
+    <!-- PANEL E — TAX LOSS HARVESTING OPTIMIZER                           -->
+    <!-- ============================================================== -->
+    <app-expansion-panel [title]="'Tax Loss Harvesting Optimizer'"
+      subtitle="Offset realized capital gains by selling underperforming assets" [titleIcon]="'TrendingDown'"
+      [iconBgClass]="'bg-gradient-to-br from-[#FACC15] to-[#D8B4FE] p-2 rounded-lg text-black'" [isExpanded]="false"
+      class="mt-6">
+
+      @if (loading) {
+      <p-skeleton width="100%" height="150px" styleClass="bg-[#2E2E2E]" borderRadius="12px"></p-skeleton>
+      } @else {
+      <div class="space-y-6 mt-2">
+
+        <!-- Summary Alert/Card -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <!-- Potential Savings -->
+          <div class="bg-[#1F1F1F] border border-[#3A3A3A] rounded-xl p-4 flex items-center gap-3">
+            <div class="p-3 rounded-lg bg-[#22C55E]/10 border border-[#22C55E]/20 text-[#22C55E]">
+              <lucide-icon name="Sparkles" class="w-6 h-6"></lucide-icon>
+            </div>
+            <div>
+              <span class="text-[10px] text-[#B3B3B3] font-semibold uppercase tracking-wider">Potential Tax
+                Savings</span>
+              <div class="text-xl font-bold text-[#22C55E]">₹{{ potentialTaxSavings | number:'1.2-2' }}</div>
+            </div>
+          </div>
+
+          <!-- Total Harvestable Loss -->
+          <div class="bg-[#1F1F1F] border border-[#3A3A3A] rounded-xl p-4 flex items-center gap-3">
+            <div class="p-3 rounded-lg bg-[#EF4444]/10 border border-[#EF4444]/20 text-[#EF4444]">
+              <lucide-icon name="TrendingDown" class="w-6 h-6"></lucide-icon>
+            </div>
+            <div>
+              <span class="text-[10px] text-[#B3B3B3] font-semibold uppercase tracking-wider">Total Harvestable
+                Loss</span>
+              <div class="text-xl font-bold text-white">₹{{ totalHarvestableLoss | number:'1.2-2' }}</div>
+            </div>
+          </div>
+
+          <!-- Opportunities Count -->
+          <div class="bg-[#1F1F1F] border border-[#3A3A3A] rounded-xl p-4 flex items-center gap-3">
+            <div class="p-3 rounded-lg bg-[#3B82F6]/10 border border-[#3B82F6]/20 text-[#3B82F6]">
+              <lucide-icon name="AlertCircle" class="w-6 h-6"></lucide-icon>
+            </div>
+            <div>
+              <span class="text-[10px] text-[#B3B3B3] font-semibold uppercase tracking-wider">Harvesting
+                Candidates</span>
+              <div class="text-xl font-bold text-white">{{ harvestOpportunities.length }} holding(s)</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Info alert -->
+        <div
+          class="flex gap-2.5 px-4 py-3 bg-[#3B82F6]/10 border border-[#3B82F6]/20 rounded-xl text-xs text-[#B3B3B3] leading-relaxed">
+          <lucide-icon name="Info" class="w-4 h-4 text-[#3B82F6] shrink-0 mt-0.5"></lucide-icon>
+          <div>
+            <span class="text-white font-semibold">What is Tax Loss Harvesting?</span> You can sell assets currently
+            sitting at an unrealized loss before the end of the financial year to offset your realized capital gains. In
+            India, short-term capital losses (STCL) can offset both STCG and LTCG, while long-term capital losses (LTCL)
+            can only offset LTCG.
+          </div>
+        </div>
+
+        <!-- Opportunities Table -->
+        @if (harvestOpportunities.length > 0) {
+        <div class="border border-[#3A3A3A] rounded-xl overflow-hidden bg-[#191919]">
+          <div class="table-scroll-container">
+            <p-table [value]="harvestOpportunities" styleClass="p-datatable-sm w-full"
+              [tableStyle]="{ 'min-width': '60rem' }">
+              <ng-template pTemplate="header">
+                <tr>
+                  <th class="text-left whitespace-nowrap">Stock</th>
+                  <th class="text-left whitespace-nowrap">Asset</th>
+                  <th class="text-right whitespace-nowrap">Qty</th>
+                  <th class="text-right whitespace-nowrap">Avg Cost</th>
+                  <th class="text-right whitespace-nowrap">Market Price</th>
+                  <th class="text-right whitespace-nowrap">Unrealized Loss</th>
+                  <th class="text-center whitespace-nowrap">Term</th>
+                  <th class="text-right whitespace-nowrap text-[#22C55E]">Est. Tax Saved</th>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-op>
+                <tr>
+                  <td class="px-4 py-3 font-semibold text-white whitespace-nowrap">{{ op.stockName }}</td>
+                  <td class="px-4 py-3 text-[#B3B3B3] whitespace-nowrap">{{ op.assetType }}</td>
+                  <td class="px-4 py-3 text-right text-[#B3B3B3] tabular-nums whitespace-nowrap">{{ op.netHeld |
+                    number:'1.0-4' }}</td>
+                  <td class="px-4 py-3 text-right text-[#B3B3B3] tabular-nums whitespace-nowrap">₹{{ op.avgPrice |
+                    number:'1.2-2' }}</td>
+                  <td class="px-4 py-3 text-right text-[#B3B3B3] tabular-nums whitespace-nowrap">₹{{ op.currentPrice |
+                    number:'1.2-2' }}</td>
+                  <td class="px-4 py-3 text-right font-semibold text-[#EF4444] tabular-nums whitespace-nowrap">
+                    ₹{{ op.unrealizedLoss | number:'1.2-2' }}
+                  </td>
+                  <td class="px-4 py-3 text-center whitespace-nowrap">
+                    @if (op.holdingPeriod === 'ST') {
+                    <span
+                      class="px-2 py-0.5 rounded-full text-[10px] font-bold border bg-[#FACC15]/10 text-[#FACC15] border-[#FACC15]/20">ST</span>
+                    } @else {
+                    <span
+                      class="px-2 py-0.5 rounded-full text-[10px] font-bold border bg-[#10A37F]/10 text-[#10A37F] border-[#10A37F]/20">LT</span>
+                    }
+                  </td>
+                  <td class="px-4 py-3 text-right font-bold text-[#22C55E] tabular-nums whitespace-nowrap">
+                    ₹{{ op.potentialSavings | number:'1.2-2' }}
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+        </div>
+        } @else {
+        <div class="text-center py-8 border border-dashed border-[#3A3A3A] rounded-xl text-sm text-[#808080]">
+          <lucide-icon name="CheckCircle2" class="w-8 h-8 mx-auto text-[#22C55E] mb-2"></lucide-icon>
+          <span>No tax-loss harvesting candidates found. All active positions are in profit!</span>
+        </div>
+        }
+      </div>
       }
     </app-expansion-panel>
 

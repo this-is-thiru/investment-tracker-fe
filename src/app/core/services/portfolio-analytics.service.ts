@@ -143,6 +143,14 @@ export interface PerStockPnl {
   sellValue: number;
 }
 
+export interface AccrualSummaryRow {
+  category: 'Short Term' | 'Long Term';
+  label: string;
+  section: string;
+  periods: number[];
+  total: number;
+}
+
 // =============================================================================
 // Service
 // =============================================================================
@@ -886,5 +894,118 @@ export class PortfolioAnalyticsService {
     // Bottom-N in ascending order (most negative first).
     const losers = arr.slice(-limit).reverse();
     return { winners, losers };
+  }
+
+  /**
+   * Maps an ISO date (YYYY-MM-DD) within the Indian FY to one of the 5 advance tax periods:
+   *   0: Upto 15/6 (April 1 to June 15)
+   *   1: 16/6 to 15/9 (June 16 to September 15)
+   *   2: 16/9 to 15/12 (September 16 to December 15)
+   *   3: 16/12 to 15/3 (December 16 to March 15)
+   *   4: 16/3 to 31/3 (March 16 to March 31)
+   * Returns -1 if date is invalid or missing.
+   */
+  getAccrualPeriod(isoDate: string): number {
+    if (!isoDate || typeof isoDate !== 'string') return -1;
+    const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(isoDate);
+    if (!m) return -1;
+    const month = parseInt(m[2], 10);
+    const day = parseInt(m[3], 10);
+    if (!Number.isFinite(month) || !Number.isFinite(day)) return -1;
+
+    // Period 0: April 1 to June 15
+    if (month === 4 || month === 5 || (month === 6 && day <= 15)) {
+      return 0;
+    }
+    // Period 1: June 16 to Sept 15
+    if ((month === 6 && day >= 16) || month === 7 || month === 8 || (month === 9 && day <= 15)) {
+      return 1;
+    }
+    // Period 2: Sept 16 to Dec 15
+    if ((month === 9 && day >= 16) || month === 10 || month === 11 || (month === 12 && day <= 15)) {
+      return 2;
+    }
+    // Period 3: Dec 16 to Mar 15
+    if ((month === 12 && day >= 16) || month === 1 || month === 2 || (month === 3 && day <= 15)) {
+      return 3;
+    }
+    // Period 4: Mar 16 to Mar 31
+    if (month === 3 && day >= 16) {
+      return 4;
+    }
+    return -1;
+  }
+
+  /**
+   * Aggregates realized gains for a financial year into Table F accrual periods and tax rows.
+   */
+  computeAccrualSummary(
+    rows: TransactionsResponse[],
+    fy: string
+  ): AccrualSummaryRow[] {
+    const sellsInFy = rows.filter(
+      (r) =>
+        r.transactionType === 'SELL' &&
+        this.getFinancialYearOf(r.transactionDate) === fy,
+    );
+    const allBuys = rows.filter((r) => r.transactionType === 'BUY');
+    const inScope = [...allBuys, ...sellsInFy];
+
+    const gains = this.computeFifoRealizedGains(inScope);
+
+    const resultRows: AccrualSummaryRow[] = [
+      { category: 'Short Term', label: 'Taxed at 15% / 20% (Section 111A)', section: '111A', periods: [0, 0, 0, 0, 0], total: 0 },
+      { category: 'Short Term', label: 'Taxed at 30% (Section 115AD(1)(b)(ii) / VDA)', section: '115AD/VDA', periods: [0, 0, 0, 0, 0], total: 0 },
+      { category: 'Short Term', label: 'Taxed at applicable rates (Slab)', section: 'Slab', periods: [0, 0, 0, 0, 0], total: 0 },
+      { category: 'Long Term', label: 'Taxed at 10% / 12.5% (Section 112A)', section: '112A', periods: [0, 0, 0, 0, 0], total: 0 },
+      { category: 'Long Term', label: 'Taxed at 20% (Section 112 with indexation)', section: '112 (20%)', periods: [0, 0, 0, 0, 0], total: 0 },
+      { category: 'Long Term', label: 'Taxed at 10% (Section 112 without indexation)', section: '112 (10%)', periods: [0, 0, 0, 0, 0], total: 0 },
+      { category: 'Long Term', label: 'Taxed at 12.5% (Section 112 / Other)', section: '112 (12.5%)', periods: [0, 0, 0, 0, 0], total: 0 },
+      { category: 'Long Term', label: 'Taxed at DTAA rates', section: 'DTAA', periods: [0, 0, 0, 0, 0], total: 0 },
+      { category: 'Long Term', label: 'Taxed at other rates', section: 'Other', periods: [0, 0, 0, 0, 0], total: 0 },
+    ];
+
+    const EQUITY_LIKE = new Set(['EQUITY', 'MUTUAL_FUND', 'ETF']);
+    for (const g of gains) {
+      if (g.financialYear !== fy) continue;
+      
+      const periodIndex = this.getAccrualPeriod(g.sellDate);
+      if (periodIndex < 0 || periodIndex > 4) continue;
+
+      let rowIndex = -1;
+      const isEquityLike = EQUITY_LIKE.has(g.assetType);
+
+      if (g.holdingPeriod === 'ST' || g.holdingPeriod === 'UNKNOWN') {
+        if (isEquityLike) {
+          rowIndex = 0;
+        } else {
+          rowIndex = 2;
+        }
+      } else if (g.holdingPeriod === 'LT') {
+        if (isEquityLike) {
+          rowIndex = 3;
+        } else if (g.assetType === 'DEBT') {
+          rowIndex = 4;
+        } else if (g.assetType === 'OTHER') {
+          rowIndex = 5;
+        } else {
+          rowIndex = 8;
+        }
+      }
+
+      if (rowIndex >= 0) {
+        resultRows[rowIndex].periods[periodIndex] += g.gain;
+        resultRows[rowIndex].total += g.gain;
+      }
+    }
+
+    for (const r of resultRows) {
+      r.total = this.round2(r.total);
+      for (let i = 0; i < 5; i++) {
+        r.periods[i] = this.round2(r.periods[i]);
+      }
+    }
+
+    return resultRows;
   }
 }

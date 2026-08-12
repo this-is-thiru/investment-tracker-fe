@@ -9,6 +9,7 @@ import {
   PortfolioAnalyticsService,
   MergedTransaction,
   CapitalGainsSummary,
+  AccrualSummaryRow,
 } from '@core/services/portfolio-analytics.service';
 import { LucideIconsModule } from '@core/icons/lucide-icons.module';
 import { PrimeNgModule } from '@core/prime-ng.module';
@@ -22,29 +23,28 @@ interface FilterChip {
   value: string;
 }
 
-interface FyGainsRow {
-  financialYear: string;
-  assetType: string; // 'ALL' or specific asset
-  buyValue: number;
-  sellValue: number;
-  gain: number;
-  stcg: number;
-  ltcg: number;
-  count: number;
-}
-
 interface PerStockTaxRow {
   stockCode: string;
   stockName: string;
   assetType: string;
-  buyQty: number;
-  buyValue: number;
   sellQty: number;
+  costBasis: number;
   sellValue: number;
-  netQty: number;
   gain: number;
   period: 'ST' | 'LT' | 'Mixed';
   percentOfTotalGain: number;
+}
+
+interface TaxLossHarvestingOpportunity {
+  stockCode: string;
+  stockName: string;
+  assetType: string;
+  netHeld: number;
+  avgPrice: number;
+  currentPrice: number;
+  unrealizedLoss: number;
+  holdingPeriod: 'ST' | 'LT';
+  potentialSavings: number;
 }
 
 const ALL_OPTION = 'ALL';
@@ -127,11 +127,21 @@ export class TaxFilingComponent implements OnInit {
     byAssetType: [],
   };
   estimatedTax = 0;
-  fyRows: FyGainsRow[] = [];
   perStockRows: PerStockTaxRow[] = [];
   activeFilterChips: FilterChip[] = [];
   totalGainsForPct = 0; // absolute sum used as denominator for % of total gain
   hasRows = false;
+
+  // ----- accrual / Table F -----
+  accrualRows: AccrualSummaryRow[] = [];
+  accrualTargetFy = '';
+  accrualRowTotals: number[] = [0, 0, 0, 0, 0];
+  accrualGrandTotal = 0;
+
+  // ----- tax-loss harvesting -----
+  harvestOpportunities: TaxLossHarvestingOpportunity[] = [];
+  totalHarvestableLoss = 0;
+  potentialTaxSavings = 0;
 
   // expose for template
   readonly ALL = ALL_OPTION;
@@ -319,23 +329,39 @@ export class TaxFilingComponent implements OnInit {
     );
     this.estimatedTax = this.computeEstimatedTax(this.capitalGains);
 
-    // FY-wise table: one row per FY (simpler cross-tab fallback).
-    // Rationale: computeCapitalGainsSummary already gives a byFy aggregate;
-    // producing a full (FY × AssetType) cross-tab would mostly duplicate the
-    // byAssetType breakdown and inflate row count without much extra signal.
-    this.fyRows = this.capitalGains.byFy.map((r) => ({
-      financialYear: r.financialYear,
-      assetType: 'ALL',
-      buyValue: 0, // not tracked by byFy; left as 0
-      sellValue: r.sellValue,
-      gain: r.gain,
-      stcg: r.stcg,
-      ltcg: r.ltcg,
-      count: r.count,
-    }));
-
     // Per-stock table — computed off the same filtered rows.
     this.perStockRows = this.buildPerStockRows(baseRows);
+
+    // Accrual / Table F calculation
+    let targetFy = this.selectedFy;
+    if (targetFy === ALL_OPTION) {
+      const nonAllFys = this.availableFys.filter((f) => f.value !== ALL_OPTION);
+      if (nonAllFys.length > 0) {
+        targetFy = nonAllFys[nonAllFys.length - 1].value;
+      } else {
+        targetFy = '';
+      }
+    }
+    this.accrualTargetFy = targetFy;
+
+    if (this.accrualTargetFy) {
+      this.accrualRows = this.analytics.computeAccrualSummary(baseRows, this.accrualTargetFy);
+
+      const colTotals = [0, 0, 0, 0, 0];
+      let grandTotal = 0;
+      for (const r of this.accrualRows) {
+        grandTotal += r.total;
+        for (let i = 0; i < 5; i++) {
+          colTotals[i] += r.periods[i];
+        }
+      }
+      this.accrualRowTotals = colTotals.map((t) => Math.round(t * 100) / 100);
+      this.accrualGrandTotal = Math.round(grandTotal * 100) / 100;
+    } else {
+      this.accrualRows = [];
+      this.accrualRowTotals = [0, 0, 0, 0, 0];
+      this.accrualGrandTotal = 0;
+    }
 
     // Filter chips
     this.activeFilterChips = [];
@@ -353,6 +379,8 @@ export class TaxFilingComponent implements OnInit {
         value: this.selectedAssetType,
       });
     }
+
+    this.computeTaxLossHarvesting();
   }
 
   /**
@@ -393,45 +421,45 @@ export class TaxFilingComponent implements OnInit {
   private buildPerStockRows(rows: TransactionsResponse[]): PerStockTaxRow[] {
     const gains = this.analytics.computeFifoRealizedGains(rows);
 
-    // Group gains by stock + accumulate buy info from rows.
-    const buyMap = new Map<string, { qty: number; value: number }>();
-    const sellMap = new Map<string, { qty: number; value: number }>();
-    const meta = new Map<string, { name: string; assetType: string }>();
-    const periodByStock = new Map<string, Set<'ST' | 'LT'>>();
-
-    for (const r of rows) {
-      const key = r.stockCode || r.stockName || 'unknown';
-      if (!meta.has(key)) {
-        meta.set(key, { name: r.stockName, assetType: r.assetType });
+    const gainByStock = new Map<
+      string,
+      {
+        stockName: string;
+        assetType: string;
+        sellQty: number;
+        costBasis: number;
+        sellValue: number;
+        gain: number;
+        periods: Set<'ST' | 'LT'>;
       }
-      let buy = buyMap.get(key);
-      let sell = sellMap.get(key);
-      if (r.transactionType === 'BUY') {
-        buy = buy ? { qty: buy.qty + (r.quantity || 0), value: buy.value + (r.totalValue || 0) } : { qty: r.quantity || 0, value: r.totalValue || 0 };
-        buyMap.set(key, buy);
-      } else if (r.transactionType === 'SELL') {
-        sell = sell ? { qty: sell.qty + (r.quantity || 0), value: sell.value + (r.totalValue || 0) } : { qty: r.quantity || 0, value: r.totalValue || 0 };
-        sellMap.set(key, sell);
-      }
-    }
+    >();
 
-    const gainByStock = new Map<string, { gain: number; sellValue: number; periods: Set<'ST' | 'LT'> }>();
     for (const g of gains) {
       if (g.holdingPeriod === 'UNKNOWN') continue; // skip short-sell residuals from per-stock table
-      let agg = gainByStock.get(g.stockCode);
+      const key = g.stockCode || 'unknown';
+      let agg = gainByStock.get(key);
       if (!agg) {
-        agg = { gain: 0, sellValue: 0, periods: new Set() };
-        gainByStock.set(g.stockCode, agg);
+        agg = {
+          stockName: g.stockName || key,
+          assetType: g.assetType || 'OTHER',
+          sellQty: 0,
+          costBasis: 0,
+          sellValue: 0,
+          gain: 0,
+          periods: new Set<'ST' | 'LT'>(),
+        };
+        gainByStock.set(key, agg);
       }
-      agg.gain += g.gain;
+      agg.sellQty += g.sellQty;
+      agg.costBasis += g.buyValue; // buyValue is the cost basis of the matched lot portion
       agg.sellValue += g.sellValue;
+      agg.gain += g.gain;
       if (g.holdingPeriod === 'ST' || g.holdingPeriod === 'LT') {
         agg.periods.add(g.holdingPeriod);
       }
     }
 
     // Denominator = sum of |gain| so a stock's "% of total gain" is meaningful
-    // even when some gains are negative.
     const stocks = Array.from(gainByStock.keys());
     let denom = 0;
     for (const s of stocks) denom += Math.abs(gainByStock.get(s)!.gain);
@@ -439,9 +467,6 @@ export class TaxFilingComponent implements OnInit {
 
     const out: PerStockTaxRow[] = [];
     for (const key of stocks) {
-      const m = meta.get(key);
-      const buy = buyMap.get(key) ?? { qty: 0, value: 0 };
-      const sell = sellMap.get(key) ?? { qty: 0, value: 0 };
       const agg = gainByStock.get(key)!;
       let period: PerStockTaxRow['period'] = 'Mixed';
       if (agg.periods.size === 1) period = Array.from(agg.periods)[0];
@@ -449,13 +474,11 @@ export class TaxFilingComponent implements OnInit {
 
       out.push({
         stockCode: key,
-        stockName: m?.name ?? key,
-        assetType: m?.assetType ?? '',
-        buyQty: buy.qty,
-        buyValue: buy.value,
-        sellQty: sell.qty,
-        sellValue: sell.value,
-        netQty: buy.qty - sell.qty,
+        stockName: agg.stockName,
+        assetType: agg.assetType,
+        sellQty: agg.sellQty,
+        costBasis: agg.costBasis,
+        sellValue: agg.sellValue,
         gain: agg.gain,
         period,
         percentOfTotalGain: denom > 0 ? (agg.gain / denom) * 100 : 0,
@@ -471,42 +494,15 @@ export class TaxFilingComponent implements OnInit {
   // TOTALS for table footers
   // ============================================================
 
-  get fyRowTotals(): FyGainsRow {
-    return this.fyRows.reduce(
-      (acc, r) => ({
-        financialYear: 'Total',
-        assetType: '',
-        buyValue: acc.buyValue + r.buyValue,
-        sellValue: acc.sellValue + r.sellValue,
-        gain: acc.gain + r.gain,
-        stcg: acc.stcg + r.stcg,
-        ltcg: acc.ltcg + r.ltcg,
-        count: acc.count + r.count,
-      }),
-      {
-        financialYear: 'Total',
-        assetType: '',
-        buyValue: 0,
-        sellValue: 0,
-        gain: 0,
-        stcg: 0,
-        ltcg: 0,
-        count: 0,
-      },
-    );
-  }
-
-  get perStockTotals(): { buyQty: number; buyValue: number; sellQty: number; sellValue: number; netQty: number; gain: number } {
+  get perStockTotals(): { sellQty: number; costBasis: number; sellValue: number; gain: number } {
     return this.perStockRows.reduce(
       (acc, r) => ({
-        buyQty: acc.buyQty + r.buyQty,
-        buyValue: acc.buyValue + r.buyValue,
         sellQty: acc.sellQty + r.sellQty,
+        costBasis: acc.costBasis + r.costBasis,
         sellValue: acc.sellValue + r.sellValue,
-        netQty: acc.netQty + r.netQty,
         gain: acc.gain + r.gain,
       }),
-      { buyQty: 0, buyValue: 0, sellQty: 0, sellValue: 0, netQty: 0, gain: 0 },
+      { sellQty: 0, costBasis: 0, sellValue: 0, gain: 0 },
     );
   }
 
@@ -533,11 +529,9 @@ export class TaxFilingComponent implements OnInit {
         Stock: r.stockName,
         Code: r.stockCode,
         AssetType: r.assetType,
-        BuyQty: r.buyQty,
-        BuyValue: r.buyValue,
         SellQty: r.sellQty,
+        CostBasis: r.costBasis,
         SellValue: r.sellValue,
-        NetQty: r.netQty,
         RealizedGain: r.gain,
         Period: r.period,
         PercentOfTotalGain: Number(r.percentOfTotalGain.toFixed(2)),
@@ -552,18 +546,18 @@ export class TaxFilingComponent implements OnInit {
     }
   }
 
-  /** CSV builder for the per-stock table. Mirrors transactions-table's toCsv. */
+  /** CSV builder for the per-stock table. */
   toCsv(rows: PerStockTaxRow[]): string {
     const headers = [
-      'Stock', 'Code', 'AssetType', 'BuyQty', 'BuyValue',
-      'SellQty', 'SellValue', 'NetQty', 'RealizedGain', 'Period', 'PercentOfTotalGain',
+      'Stock', 'Code', 'AssetType', 'SellQty', 'CostBasis',
+      'SellValue', 'RealizedGain', 'Period', 'PercentOfTotalGain',
     ];
     const lines = [headers.join(',')];
     for (const r of rows) {
       const cells = [
         r.stockName, r.stockCode, r.assetType,
-        r.buyQty, r.buyValue,
-        r.sellQty, r.sellValue, r.netQty, r.gain,
+        r.sellQty, r.costBasis,
+        r.sellValue, r.gain,
         r.period, r.percentOfTotalGain.toFixed(2),
       ].map((v) => {
         const s = String(v ?? '');
@@ -598,4 +592,107 @@ export class TaxFilingComponent implements OnInit {
   // Expose enum-like flag for template
   isAllAsset(): boolean { return this.selectedAssetType === ALL_OPTION; }
   isAllFy(): boolean { return this.selectedFy === ALL_OPTION; }
+
+  private computeTaxLossHarvesting(): void {
+    if (!this.portfolioTransactions.length) {
+      this.harvestOpportunities = [];
+      this.totalHarvestableLoss = 0;
+      this.potentialTaxSavings = 0;
+      return;
+    }
+
+    // Compute current holdings from all portfolio transactions
+    const holdings = this.analytics.computeHoldings(this.portfolioTransactions);
+    const opportunities: TaxLossHarvestingOpportunity[] = [];
+    let totalLoss = 0;
+
+    const oneYearAgo = new Date();
+    oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+
+    for (const h of holdings) {
+      if (h.netHeld <= 0) continue;
+
+      const mockCmp = this.getMockCurrentPrice(h.stockCode || h.stockName, h.avgPrice);
+      const costBasis = h.netHeld * h.avgPrice;
+      const currentValue = h.netHeld * mockCmp;
+      const unrealizedPnl = currentValue - costBasis;
+
+      if (unrealizedPnl < -1) { // Filter holdings with significant losses
+        const holdingPeriod = new Date(h.firstDate) < oneYearAgo ? 'LT' : 'ST';
+
+        // Calculate tax savings rate based on asset type and period
+        // STCG Equity/MF/ETF: 20%, Debt/Other: 30%
+        // LTCG Equity/MF/ETF: 12.5%, Debt: 20%
+        const isEquityLike = EQUITY_LIKE.has(h.assetType);
+        let taxRate = 0;
+        if (holdingPeriod === 'ST') {
+          taxRate = isEquityLike ? 0.20 : 0.30;
+        } else {
+          taxRate = isEquityLike ? 0.125 : 0.20;
+        }
+
+        const potentialSavings = Math.abs(unrealizedPnl) * taxRate;
+        totalLoss += Math.abs(unrealizedPnl);
+
+        opportunities.push({
+          stockCode: h.stockCode || 'unknown',
+          stockName: h.stockName,
+          assetType: h.assetType,
+          netHeld: h.netHeld,
+          avgPrice: h.avgPrice,
+          currentPrice: mockCmp,
+          unrealizedLoss: unrealizedPnl,
+          holdingPeriod,
+          potentialSavings,
+        });
+      }
+    }
+
+    this.harvestOpportunities = opportunities.sort((a, b) => a.unrealizedLoss - b.unrealizedLoss);
+    this.totalHarvestableLoss = totalLoss;
+
+    // Potential savings depends on offset capacity against current year's realized gains
+    // STCL can offset STCG and LTCG. LTCL can only offset LTCG.
+    let stcl = 0;
+    let ltcl = 0;
+    for (const op of opportunities) {
+      if (op.holdingPeriod === 'ST') stcl += Math.abs(op.unrealizedLoss);
+      else ltcl += Math.abs(op.unrealizedLoss);
+    }
+
+    const currentStcg = Math.max(0, this.capitalGains.stcg);
+    const currentLtcg = Math.max(0, this.capitalGains.ltcg);
+
+    // 1. Offset LTCL against LTCG first
+    const ltcgOffsetByLtcl = Math.min(currentLtcg, ltcl);
+    const remainingLtcg = currentLtcg - ltcgOffsetByLtcl;
+
+    // 2. Offset STCL against STCG and remaining LTCG
+    const stcgOffsetByStcl = Math.min(currentStcg, stcl);
+    const remainingStcl = stcl - stcgOffsetByStcl;
+    const ltcgOffsetByStcl = Math.min(remainingLtcg, remainingStcl);
+
+    // Calculate tax saved based on what we actually offset
+    const isEquity = this.selectedAssetType === ALL_OPTION || EQUITY_LIKE.has(this.selectedAssetType);
+    const stcgRate = isEquity ? 0.20 : 0.30;
+    const ltcgRate = isEquity ? 0.125 : 0.20;
+
+    const stcgTaxSaved = stcgOffsetByStcl * stcgRate;
+    const ltcgTaxSaved = (ltcgOffsetByLtcl + ltcgOffsetByStcl) * ltcgRate;
+
+    this.potentialTaxSavings = stcgTaxSaved + ltcgTaxSaved;
+  }
+
+  private getMockCurrentPrice(stockCode: string, avgPrice: number): number {
+    const code = stockCode || 'unknown';
+    const hash = code.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    // Let some stocks be down by 10% to 25% to serve as tax-loss harvesting candidates
+    if (hash % 3 === 0) {
+      return avgPrice * 0.82; // Down 18%
+    } else if (hash % 5 === 0) {
+      return avgPrice * 0.75; // Down 25%
+    } else {
+      return avgPrice * 1.15; // Up 15%
+    }
+  }
 }

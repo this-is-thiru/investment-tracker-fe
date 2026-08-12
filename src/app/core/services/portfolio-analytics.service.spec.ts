@@ -525,4 +525,69 @@ describe('PortfolioAnalyticsService', () => {
       expect(stats.totalCharges).toBe(0);
     });
   });
+
+  // ---------------------------------------------------------------------------
+  // Accrual / Advance Tax Periods (Table F) Tests
+  // ---------------------------------------------------------------------------
+  describe('getAccrualPeriod', () => {
+    it('categorizes dates into correct advance tax periods', () => {
+      // Period 0: April 1 to June 15
+      expect(svc.getAccrualPeriod('2023-04-01')).toBe(0);
+      expect(svc.getAccrualPeriod('2023-06-15')).toBe(0);
+
+      // Period 1: June 16 to Sept 15
+      expect(svc.getAccrualPeriod('2023-06-16')).toBe(1);
+      expect(svc.getAccrualPeriod('2023-09-15')).toBe(1);
+
+      // Period 2: Sept 16 to Dec 15
+      expect(svc.getAccrualPeriod('2023-09-16')).toBe(2);
+      expect(svc.getAccrualPeriod('2023-12-15')).toBe(2);
+
+      // Period 3: Dec 16 to Mar 15
+      expect(svc.getAccrualPeriod('2023-12-16')).toBe(3);
+      expect(svc.getAccrualPeriod('2024-03-15')).toBe(3);
+
+      // Period 4: Mar 16 to Mar 31
+      expect(svc.getAccrualPeriod('2024-03-16')).toBe(4);
+      expect(svc.getAccrualPeriod('2024-03-31')).toBe(4);
+
+      // Edge cases & invalid inputs
+      expect(svc.getAccrualPeriod('')).toBe(-1);
+      expect(svc.getAccrualPeriod('invalid-date')).toBe(-1);
+    });
+  });
+
+  describe('computeAccrualSummary', () => {
+    it('correctly groups realized gains by period and asset type', () => {
+      const rows: TransactionsResponse[] = [
+        // AAPL (EQUITY) -> STCG 111A (Row 0)
+        txn({ stockCode: 'AAPL', assetType: 'EQUITY', transactionType: 'BUY', quantity: 10, totalValue: 1000, transactionDate: '2023-04-10' }),
+        // Sell 5 AAPL on May 12 (Period 0). Cost: 500, Sell: 750, Gain: 250
+        txn({ stockCode: 'AAPL', assetType: 'EQUITY', transactionType: 'SELL', quantity: 5, totalValue: 750, transactionDate: '2023-05-12' }),
+        
+        // DEBT_MF (DEBT) -> LTCG 20% Section 112 (Row 4)
+        txn({ stockCode: 'DEBT_MF', assetType: 'DEBT', transactionType: 'BUY', quantity: 100, totalValue: 10000, transactionDate: '2020-04-01' }),
+        // Sell 100 DEBT_MF on July 10, 2023 (Period 1, >3 years). Cost: 10000, Sell: 15000, Gain: 5000
+        txn({ stockCode: 'DEBT_MF', assetType: 'DEBT', transactionType: 'SELL', quantity: 100, totalValue: 15000, transactionDate: '2023-07-10' }),
+      ];
+
+      const accrual = svc.computeAccrualSummary(rows, '2023-24');
+      
+      // Verify row 0 (STCG 111A) has 250 in period 0
+      expect(accrual[0].periods[0]).toBe(250);
+      expect(accrual[0].periods[1]).toBe(0);
+      expect(accrual[0].total).toBe(250);
+
+      // Verify row 4 (LTCG 20% Section 112) has 5000 in period 1
+      expect(accrual[4].periods[0]).toBe(0);
+      expect(accrual[4].periods[1]).toBe(5000);
+      expect(accrual[4].total).toBe(5000);
+
+      // Verify all other periods and rows are 0
+      expect(accrual[1].total).toBe(0);
+      expect(accrual[2].total).toBe(0);
+      expect(accrual[3].total).toBe(0);
+      expect(accrual[5].total).toBe(0);
+    });
+  });
 });
