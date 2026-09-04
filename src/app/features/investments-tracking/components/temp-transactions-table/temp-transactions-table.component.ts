@@ -16,6 +16,7 @@ import { CorporateActionService } from '../../services/corporate-action.service'
 import { AuthService } from '@services/auth.service';
 import { LucideIconsModule } from '@core/icons/lucide-icons.module';
 import { PrimeNgModule } from '@core/prime-ng.module';
+import { TooltipDirective } from '@shared/directives/tooltip/tooltip.directive';
 
 @Component({
   selector: 'app-temp-transactions-table',
@@ -26,6 +27,7 @@ import { PrimeNgModule } from '@core/prime-ng.module';
     FormsModule,
     LucideIconsModule,
     PrimeNgModule,
+    TooltipDirective,
   ],
   templateUrl: './temp-transactions-table.component.html',
 })

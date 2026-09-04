@@ -204,6 +204,8 @@
           <button
             (click)="toggleNotificationDropdown()"
             class="p-2 text-[#B3B3B3] hover:text-white hover:bg-[#232323] rounded-lg transition-all relative notification-toggle"
+            appTooltip="Notifications"
+            appTooltipPosition="bottom"
           >
             <lucide-icon name="bell" class="h-5 w-5"></lucide-icon>
             @if (((unreadCount$ | async) || 0) > 0) {
@@ -279,6 +281,8 @@
           <button
             (click)="toggleProfileDropdown()"
             class="flex items-center gap-2 p-2 pr-3 text-[#B3B3B3] hover:text-white hover:bg-[#232323] rounded-lg transition-all profile-toggle"
+            appTooltip="Account & Settings"
+            appTooltipPosition="bottom"
           >
             <lucide-icon name="user" class="h-5 w-5"></lucide-icon>
             <lucide-icon

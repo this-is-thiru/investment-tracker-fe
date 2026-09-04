@@ -13,6 +13,7 @@ import {
   PerStockPnl,
 } from '@core/services/portfolio-analytics.service';
 import { ExpansionPanelComponent } from '@shared/components/expansion-panel/expansion-panel.component';
+import { TooltipDirective } from '@shared/directives/tooltip/tooltip.directive';
 
 type DatePreset = 'all' | '7d' | '30d' | '90d' | 'ytd' | 'custom';
 
@@ -56,6 +57,7 @@ const SCALES_AXIS_STYLE = {
     PrimeNgModule,
     FooterComponent,
     ExpansionPanelComponent,
+    TooltipDirective,
   ],
   templateUrl: './portfolio-analytics.component.html',
   styleUrls: ['./portfolio-analytics.component.css'],

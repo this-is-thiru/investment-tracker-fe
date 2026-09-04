@@ -2,12 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NotificationService, Notification } from '@services/notification.service';
 import { LucideIconsModule } from '@core/icons/lucide-icons.module';
+import { TooltipDirective } from '@shared/directives/tooltip/tooltip.directive';
 import { Observable, map } from 'rxjs';
 
 @Component({
     selector: 'app-notifications-page',
     standalone: true,
-    imports: [CommonModule, LucideIconsModule],
+    imports: [CommonModule, LucideIconsModule, TooltipDirective],
     template: `
     <div class="min-h-screen bg-[#191919] py-8">
       <div class="max-w-4xl mx-auto px-4 md:px-6 lg:px-8">
@@ -83,14 +84,15 @@ import { Observable, map } from 'rxjs';
                     *ngIf="!notification.read"
                     (click)="markAsRead(notification.id)"
                     class="p-2 text-[#B3B3B3] hover:text-[#10A37F] hover:bg-[#10A37F]/10 rounded-lg transition-all"
-                    title="Mark as read"
+                    appTooltip="Mark as read"
                   >
                     <lucide-icon name="check-check" class="h-4 w-4"></lucide-icon>
                   </button>
                   <button
                     (click)="clearNotification(notification.id)"
                     class="p-2 text-[#B3B3B3] hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all"
-                    title="Delete notification"
+                    appTooltip="Delete notification"
+                    appTooltipVariant="danger"
                   >
                     <lucide-icon name="trash-2" class="h-4 w-4"></lucide-icon>
                   </button>

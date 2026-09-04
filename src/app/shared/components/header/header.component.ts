@@ -2,6 +2,7 @@ import { Component, HostListener, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { LucideIconsModule } from '@core/icons/lucide-icons.module';
+import { TooltipDirective } from '@shared/directives/tooltip/tooltip.directive';
 import { AuthService } from '@services/auth.service';
 import { NotificationService, Notification } from '@services/notification.service';
 import { NavItem } from '@models/nav-item.model';
@@ -11,7 +12,7 @@ import { map } from 'rxjs/operators';
 @Component({
     selector: 'app-header',
     standalone: true,
-    imports: [CommonModule, LucideIconsModule, RouterModule],
+    imports: [CommonModule, LucideIconsModule, RouterModule, TooltipDirective],
     templateUrl: './header.component.html',
     styleUrls: ['./header.component.css']
 })

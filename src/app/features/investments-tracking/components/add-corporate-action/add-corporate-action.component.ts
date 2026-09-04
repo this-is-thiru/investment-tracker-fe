@@ -5,6 +5,7 @@ import { CorporateActionService } from '../../services/corporate-action.service'
 import { NotificationService } from '@services/notification.service';
 import { LucideIconsModule } from '@core/icons/lucide-icons.module';
 import { PrimeNgModule } from '@core/prime-ng.module';
+import { TooltipDirective } from '@shared/directives/tooltip/tooltip.directive';
 
 interface DemergerStock {
   stockCode: string;
@@ -19,6 +20,7 @@ interface DemergerStock {
     FormsModule,
     LucideIconsModule,
     PrimeNgModule,
+    TooltipDirective,
   ],
   templateUrl: './add-corporate-action.component.html',
 })

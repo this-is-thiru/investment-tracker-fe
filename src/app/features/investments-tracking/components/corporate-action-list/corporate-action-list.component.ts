@@ -6,6 +6,7 @@ import { AuthService } from '@services/auth.service';
 import { NotificationService } from '@services/notification.service';
 import { LucideIconsModule } from '@core/icons/lucide-icons.module';
 import { PrimeNgModule } from '@core/prime-ng.module';
+import { TooltipDirective } from '@shared/directives/tooltip/tooltip.directive';
 
 @Component({
   selector: 'app-corporate-action-list',
@@ -15,6 +16,7 @@ import { PrimeNgModule } from '@core/prime-ng.module';
     FormsModule,
     LucideIconsModule,
     PrimeNgModule,
+    TooltipDirective,
   ],
   templateUrl: './corporate-action-list.component.html',
 })

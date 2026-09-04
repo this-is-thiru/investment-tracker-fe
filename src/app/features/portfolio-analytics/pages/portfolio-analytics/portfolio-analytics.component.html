@@ -255,7 +255,7 @@
                   </div>
                 </div>
                 @if (biggestPosition) {
-                  <div class="text-sm font-bold text-white truncate" [title]="biggestPosition.name">{{ biggestPosition.name }}</div>
+                  <div class="text-sm font-bold text-white truncate cursor-default" [appTooltip]="biggestPosition.name">{{ biggestPosition.name }}</div>
                   <div class="text-[10px] text-[#606060]">{{ biggestPosition.pct | number:'1.1-1' }}% of invested</div>
                 } @else {
                   <div class="text-sm font-bold text-[#505050]">N/A</div>
@@ -430,7 +430,7 @@
                     <ng-template pTemplate="body" let-m>
                       <tr>
                         <td class="px-4 py-2.5">
-                          <div class="font-semibold text-white truncate max-w-[200px]" [title]="m.stockCode">{{ m.stockName }}</div>
+                          <div class="font-semibold text-white truncate max-w-[200px] cursor-default" [appTooltip]="m.stockCode">{{ m.stockName }}</div>
                           <span class="text-[9px] text-[#707070] uppercase font-mono tracking-wider">{{ m.stockCode }}</span>
                         </td>
                         <td class="px-4 py-2.5 text-right font-bold tabular-nums text-[#22C55E]">
@@ -475,7 +475,7 @@
                     <ng-template pTemplate="body" let-m>
                       <tr>
                         <td class="px-4 py-2.5">
-                          <div class="font-semibold text-white truncate max-w-[200px]" [title]="m.stockCode">{{ m.stockName }}</div>
+                          <div class="font-semibold text-white truncate max-w-[200px] cursor-default" [appTooltip]="m.stockCode">{{ m.stockName }}</div>
                           <span class="text-[9px] text-[#707070] uppercase font-mono tracking-wider">{{ m.stockCode }}</span>
                         </td>
                         <td class="px-4 py-2.5 text-right font-bold tabular-nums text-[#EF4444]">
@@ -514,7 +514,7 @@
                 <div class="flex items-center justify-between text-xs text-[#808080] font-bold uppercase tracking-wider">
                   <span class="flex items-center gap-1">
                     Net Realized Gain
-                    <lucide-icon name="info" class="w-3.5 h-3.5 text-[#B3B3B3] hover:text-white cursor-pointer" pTooltip="First-In, First-Out (FIFO) Net Realized Gain: Total gains minus losses realized on all assets sold during the period." tooltipPosition="top"></lucide-icon>
+                    <lucide-icon name="info" class="w-3.5 h-3.5 text-[#B3B3B3] hover:text-white cursor-pointer transition-colors" appTooltip="First-In, First-Out (FIFO) Net Realized Gain: Total gains minus losses realized on all assets sold during the period." appTooltipVariant="info" appTooltipPosition="top"></lucide-icon>
                   </span>
                   <lucide-icon name="TrendingUp" class="w-4 h-4 text-[#8B5CF6]"></lucide-icon>
                 </div>
@@ -529,7 +529,7 @@
                 <div class="flex items-center justify-between text-xs text-[#808080] font-bold uppercase tracking-wider">
                   <span class="flex items-center gap-1">
                     Short-Term (STCG)
-                    <lucide-icon name="info" class="w-3.5 h-3.5 text-[#B3B3B3] hover:text-white cursor-pointer" pTooltip="Short-Term Capital Gains: Gains made on assets held for less than 1 year (3 years for debt). Taxed at 20% for equities/equity mutual funds in India." tooltipPosition="top"></lucide-icon>
+                    <lucide-icon name="info" class="w-3.5 h-3.5 text-[#B3B3B3] hover:text-white cursor-pointer transition-colors" appTooltip="Short-Term Capital Gains: Gains made on assets held for less than 1 year (3 years for debt). Taxed at 20% for equities/equity mutual funds in India." appTooltipVariant="warning" appTooltipPosition="top"></lucide-icon>
                   </span>
                   <span class="px-2 py-0.5 rounded bg-[#3B82F6]/10 text-[#3B82F6] border border-[#3B82F6]/20 text-[9px] font-bold">ST BADGE</span>
                 </div>
@@ -544,7 +544,7 @@
                 <div class="flex items-center justify-between text-xs text-[#808080] font-bold uppercase tracking-wider">
                   <span class="flex items-center gap-1">
                     Long-Term (LTCG)
-                    <lucide-icon name="info" class="w-3.5 h-3.5 text-[#B3B3B3] hover:text-white cursor-pointer" pTooltip="Long-Term Capital Gains: Gains made on assets held for 1 year or longer (3 years for debt). Exempt up to ₹1.25L for equities/equity mutual funds, then taxed at 12.5% in India." tooltipPosition="top"></lucide-icon>
+                    <lucide-icon name="info" class="w-3.5 h-3.5 text-[#B3B3B3] hover:text-white cursor-pointer transition-colors" appTooltip="Long-Term Capital Gains: Gains made on assets held for 1 year or longer (3 years for debt). Exempt up to ₹1.25L for equities/equity mutual funds, then taxed at 12.5% in India." appTooltipVariant="success" appTooltipPosition="top"></lucide-icon>
                   </span>
                   <span class="px-2 py-0.5 rounded bg-[#10A37F]/10 text-[#10A37F] border border-[#10A37F]/20 text-[9px] font-bold">LT BADGE</span>
                 </div>
@@ -681,7 +681,7 @@
                   <ng-template pTemplate="body" let-g>
                     <tr>
                       <td class="px-4 py-3">
-                        <div class="font-semibold text-white truncate max-w-[200px]" [title]="g.stockName">{{ g.stockName }}</div>
+                        <div class="font-semibold text-white truncate max-w-[200px] cursor-default" [appTooltip]="g.stockName">{{ g.stockName }}</div>
                         <span class="text-[9px] text-[#707070] font-mono uppercase">{{ g.stockCode }} · {{ g.assetType }}</span>
                       </td>
                       <td class="px-4 py-3 text-xs text-gray-300 font-mono">{{ g.sellDate }}</td>
@@ -803,7 +803,7 @@
                     <ng-template pTemplate="body" let-h>
                       <tr>
                         <td class="px-4 py-3">
-                          <div class="font-semibold text-white truncate max-w-[200px]" [title]="h.stockName">{{ h.stockName }}</div>
+                          <div class="font-semibold text-white truncate max-w-[200px] cursor-default" [appTooltip]="h.stockName">{{ h.stockName }}</div>
                           <span class="text-[9px] text-[#707070] font-mono uppercase">{{ h.stockCode }}</span>
                         </td>
                         <td class="px-4 py-3 text-gray-300 text-xs whitespace-nowrap">

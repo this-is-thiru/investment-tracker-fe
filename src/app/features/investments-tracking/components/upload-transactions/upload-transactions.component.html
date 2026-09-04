@@ -75,6 +75,7 @@
           <button
             type="button"
             (click)="handleDownloadTemplate()"
+            appTooltip="Download sample Excel transaction template"
             class="flex items-center gap-2 text-[#10A37F] hover:text-[#0D8968] hover:-translate-y-0.5 active:scale-95 transition-all"
           >
             <lucide-icon name="download" class="h-4 w-4"></lucide-icon>
@@ -141,6 +142,7 @@
             <button
               type="button"
               (click)="clearFile()"
+              appTooltip="Select a different transaction file"
               class="px-4 py-2 text-xs font-semibold rounded-lg border border-[#3A3A3A] text-[#CCCCCC] hover:bg-[#3A3A3A]/40 hover:text-white transition-all flex items-center gap-1.5 active:scale-95"
             >
               <lucide-icon name="arrow-left" class="h-3.5 w-3.5"></lucide-icon>

@@ -5,6 +5,7 @@ import * as XLSX from 'xlsx';
 import { TransactionService } from '@services/transaction.service';
 import { TransactionsResponse } from '@models/transactions-response.model';
 import { ExpansionPanelComponent } from '@shared/components/expansion-panel/expansion-panel.component';
+import { TooltipDirective } from '@shared/directives/tooltip/tooltip.directive';
 import { LucideIconsModule } from '@core/icons/lucide-icons.module';
 import { PrimeNgModule } from '@core/prime-ng.module';
 import {
@@ -41,6 +42,7 @@ interface ColumnDef {
         LucideIconsModule,
         ExpansionPanelComponent,
         PrimeNgModule,
+        TooltipDirective,
     ],
     templateUrl: './transactions-table.component.html',
     styleUrls: ['./transactions-table.component.css']

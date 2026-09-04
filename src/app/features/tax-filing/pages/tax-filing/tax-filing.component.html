@@ -21,9 +21,9 @@
       </h1>
       <p class="text-sm text-[#B3B3B3] max-w-2xl flex items-center flex-wrap gap-1">
         FIFO-based
-        <lucide-icon name="info" class="inline-block w-4 h-4 text-[#B3B3B3] hover:text-white cursor-pointer"
-          pTooltip="First-In, First-Out: An accounting method where the assets bought first are assumed to be sold first when calculating capital gains."
-          tooltipPosition="top"></lucide-icon>
+        <lucide-icon name="info" class="inline-block w-4 h-4 text-[#B3B3B3] hover:text-white cursor-pointer transition-colors"
+          appTooltip="First-In, First-Out: An accounting method where the assets bought first are assumed to be sold first when calculating capital gains."
+          appTooltipVariant="info" appTooltipPosition="top"></lucide-icon>
         realized gains across all your BUY/SELL transactions, grouped by financial year and asset type.
       </p>
     </div>
@@ -131,9 +131,9 @@
           <div class="flex items-center justify-between">
             <span class="text-[10px] text-[#B3B3B3] font-semibold uppercase tracking-wider flex items-center gap-1">
               STCG
-              <lucide-icon name="info" class="w-3.5 h-3.5 text-[#B3B3B3] hover:text-white cursor-pointer"
-                pTooltip="Short-Term Capital Gains: Gains made on assets held for less than 1 year (3 years for debt). Taxed at 20% for equities/equity mutual funds in India."
-                tooltipPosition="top"></lucide-icon>
+              <lucide-icon name="info" class="w-3.5 h-3.5 text-[#B3B3B3] hover:text-white cursor-pointer transition-colors"
+                appTooltip="Short-Term Capital Gains: Gains made on assets held for less than 1 year (3 years for debt). Taxed at 20% for equities/equity mutual funds in India."
+                appTooltipVariant="warning" appTooltipPosition="top"></lucide-icon>
             </span>
             <lucide-icon name="Clock" class="w-3.5 h-3.5 text-[#FACC15]"></lucide-icon>
           </div>
@@ -150,9 +150,9 @@
           <div class="flex items-center justify-between">
             <span class="text-[10px] text-[#B3B3B3] font-semibold uppercase tracking-wider flex items-center gap-1">
               LTCG
-              <lucide-icon name="info" class="w-3.5 h-3.5 text-[#B3B3B3] hover:text-white cursor-pointer"
-                pTooltip="Long-Term Capital Gains: Gains made on assets held for 1 year or longer (3 years for debt). Exempt up to ₹1.25L for equities/equity mutual funds, then taxed at 12.5% in India."
-                tooltipPosition="top"></lucide-icon>
+              <lucide-icon name="info" class="w-3.5 h-3.5 text-[#B3B3B3] hover:text-white cursor-pointer transition-colors"
+                appTooltip="Long-Term Capital Gains: Gains made on assets held for 1 year or longer (3 years for debt). Exempt up to ₹1.25L for equities/equity mutual funds, then taxed at 12.5% in India."
+                appTooltipVariant="success" appTooltipPosition="top"></lucide-icon>
             </span>
             <lucide-icon name="Calendar" class="w-3.5 h-3.5 text-[#10A37F]"></lucide-icon>
           </div>
@@ -164,11 +164,11 @@
 
         <!-- Estimated Tax -->
         <div
-          class="bg-[#1F1F1F] border border-[#3A3A3A] border-l-4 border-l-[#10A37F] rounded-lg p-3 flex flex-col gap-1 hover:border-[#525252] transition-colors"
-          [title]="taxTooltip">
+          class="bg-[#1F1F1F] border border-[#3A3A3A] border-l-4 border-l-[#10A37F] rounded-lg p-3 flex flex-col gap-1 hover:border-[#525252] transition-colors">
           <div class="flex items-center justify-between">
             <span class="text-[10px] text-[#B3B3B3] font-semibold uppercase tracking-wider">Estimated Tax</span>
-            <lucide-icon name="Info" class="w-3.5 h-3.5 text-[#10A37F]"></lucide-icon>
+            <lucide-icon name="Info" class="w-3.5 h-3.5 text-[#10A37F] cursor-pointer"
+              [appTooltip]="taxTooltip" appTooltipVariant="success" appTooltipPosition="top"></lucide-icon>
           </div>
           <div class="text-xl font-bold text-[#10A37F]">
             ₹{{ estimatedTax | number:'1.2-2' }}
@@ -301,7 +301,7 @@
               <ng-template pTemplate="body" let-r>
                 <tr>
                   <td class="px-4 py-3">
-                    <div class="font-medium text-white truncate max-w-[220px] cursor-default" [title]="r.stockCode">{{
+                    <div class="font-medium text-white truncate max-w-[220px] cursor-default" [appTooltip]="r.stockCode">{{
                       r.stockName }}
                     </div>
                   </td>

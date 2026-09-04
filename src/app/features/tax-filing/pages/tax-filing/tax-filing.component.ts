@@ -17,6 +17,7 @@ import { LucideIconsModule } from '@core/icons/lucide-icons.module';
 import { PrimeNgModule } from '@core/prime-ng.module';
 import { FooterComponent } from '@shared/components/footer/footer.component';
 import { ExpansionPanelComponent } from '@shared/components/expansion-panel/expansion-panel.component';
+import { TooltipDirective } from '@shared/directives/tooltip/tooltip.directive';
 import { NotificationService } from '@services/notification.service';
 
 interface FilterChip {
@@ -73,6 +74,7 @@ const LTCG_EQUITY_EXEMPTION = 100000;
     PrimeNgModule,
     FooterComponent,
     ExpansionPanelComponent,
+    TooltipDirective,
   ],
   templateUrl: './tax-filing.component.html',
   styleUrls: ['./tax-filing.component.css'],

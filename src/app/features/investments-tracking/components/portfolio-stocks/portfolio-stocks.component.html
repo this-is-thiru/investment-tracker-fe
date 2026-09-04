@@ -96,13 +96,15 @@
             <tr>
               <td class="px-2 py-3 text-center">
                 <button type="button" [pRowToggler]="h"
+                  [appTooltip]="expanded ? 'Collapse transactions' : 'Expand transactions'"
+                  appTooltipPosition="right"
                   class="p-0 w-8 h-8 flex items-center justify-center text-[#b3b3b3] hover:text-white hover:bg-white/10 rounded-full transition-colors duration-150"
                   aria-label="Toggle Row">
                   <i class="pi text-xs transition-transform duration-200" [ngClass]="expanded ? 'pi-chevron-down' : 'pi-chevron-right'"></i>
                 </button>
               </td>
               <td class="px-4 py-3">
-                <div class="font-medium text-white truncate max-w-[220px]" [title]="h.stockCode">{{ h.stockName }}</div>
+                <div class="font-medium text-white truncate max-w-[220px] cursor-default" [appTooltip]="h.stockCode">{{ h.stockName }}</div>
               </td>
               <td class="px-4 py-3 text-gray-300 whitespace-nowrap">{{ h.assetType }}</td>
               <td class="px-4 py-3 text-right text-gray-300 tabular-nums">{{ h.totalBought | number:'1.0-4' }}</td>
@@ -118,7 +120,7 @@
               <td class="px-4 py-3 text-right text-gray-300 tabular-nums">₹{{ h.avgPrice | number:'1.2-2' }}</td>
               <td class="px-4 py-3 text-right text-gray-300 tabular-nums">₹{{ h.totalCharges | number:'1.2-2' }}</td>
               <td class="px-4 py-3" style="min-width: 160px;">
-                <div class="flex items-center gap-2">
+                <div class="flex items-center gap-2" [appTooltip]="(h.sharePercent | number:'1.0-1') + '% of total portfolio'">
                   <div class="flex-1 h-2 bg-[#2A2A2A] rounded overflow-hidden min-w-[60px]">
                     <div class="h-full bg-gradient-to-r from-[#8B5CF6] to-[#A78BFA] rounded" [style.width.%]="h.sharePercent"></div>
                   </div>
@@ -274,11 +276,11 @@
                               <td class="px-4 py-2 text-gray-400 text-xs whitespace-nowrap">{{ t.transactionDate }}</td>
                               <td class="px-4 py-2 text-gray-300 text-xs">{{ t.brokerName }}</td>
                               <td class="px-4 py-2 text-right text-gray-300 tabular-nums cursor-help underline decoration-dotted decoration-[#444] hover:decoration-white/40"
-                                  [pTooltip]="tooltipContent" tooltipPosition="top" [escape]="false">
+                                  [appTooltip]="tooltipContent" appTooltipPosition="top" appTooltipMaxWidth="180px">
                                 ₹{{ ((t.brokerCharges || 0) + (t.miscCharges || 0)) | number:'1.2-2' }}
-                                
+
                                 <ng-template #tooltipContent>
-                                  <div class="p-1 text-[10px] leading-normal min-w-[120px]">
+                                  <div class="text-[10px] leading-normal min-w-[110px]">
                                     <div class="flex justify-between gap-4 mb-0.5">
                                       <span class="text-gray-400">Brokerage:</span>
                                       <span class="text-white font-bold">₹{{ (t.brokerCharges || 0) | number:'1.2-2' }}</span>
