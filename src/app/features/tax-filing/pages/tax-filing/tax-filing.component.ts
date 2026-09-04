@@ -1,9 +1,11 @@
 import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
+import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import * as XLSX from 'xlsx';
 
 import { TransactionService } from '@services/transaction.service';
+import { LivePriceService } from '@services/live-price.service';
 import { TransactionsResponse } from '@models/transactions-response.model';
 import {
   PortfolioAnalyticsService,
@@ -77,9 +79,15 @@ const LTCG_EQUITY_EXEMPTION = 100000;
 })
 export class TaxFilingComponent implements OnInit {
   private transactionService = inject(TransactionService);
+  private livePriceService = inject(LivePriceService);
   private analytics = inject(PortfolioAnalyticsService);
   private notificationService = inject(NotificationService);
   private cdr = inject(ChangeDetectorRef);
+  private router = inject(Router);
+
+  private livePrices = new Map<string, number>();
+  livePriceStatus: 'not_configured' | 'success' | 'failed' = 'not_configured';
+  loadedSymbolsCount = 0;
 
   // ----- raw -----
   temporaryTransactions: TransactionsResponse[] = [];
@@ -153,8 +161,7 @@ export class TaxFilingComponent implements OnInit {
       window.scrollTo({ top: 0, left: 0, behavior: 'instant' as ScrollBehavior });
     }
     this.userEmail = localStorage.getItem('userEmail') || '';
-    this.loadTemporary();
-    this.loadPortfolio();
+    this.loadLivePrices();
   }
 
   refresh(): void {
@@ -163,8 +170,39 @@ export class TaxFilingComponent implements OnInit {
     this.tempLoaded = false;
     this.portLoaded = false;
     this.loading = true;
-    this.loadTemporary();
-    this.loadPortfolio();
+    this.loadLivePrices();
+  }
+
+  private loadLivePrices(): void {
+    this.livePriceService.fetchPrices().subscribe({
+      next: (prices) => {
+        this.livePrices = prices;
+        this.loadedSymbolsCount = prices.size;
+        
+        const url = this.livePriceService.getGoogleSheetUrl();
+        if (!url) {
+          this.livePriceStatus = 'not_configured';
+        } else if (prices.size > 0) {
+          this.livePriceStatus = 'success';
+        } else {
+          this.livePriceStatus = 'failed';
+        }
+        
+        this.loadTemporary();
+        this.loadPortfolio();
+      },
+      error: () => {
+        this.livePrices = new Map<string, number>();
+        this.loadedSymbolsCount = 0;
+        this.livePriceStatus = 'failed';
+        this.loadTemporary();
+        this.loadPortfolio();
+      }
+    });
+  }
+
+  onNavigateSettings(): void {
+    this.router.navigate(['/settings']);
   }
 
   // ============================================================
@@ -180,27 +218,7 @@ export class TaxFilingComponent implements OnInit {
         this.onDataReady();
       },
       error: () => {
-        this.usingMockTemp = true;
-        this.temporaryTransactions = Array.from({ length: 3 }, (_, i) => ({
-          id: i + 100,
-          rowId: `temp-${i}`,
-          email: 'test@gmail.com',
-          stockName: `Mock Temp Stock ${i + 1}`,
-          stockCode: `MOCKT${i + 1}`,
-          assetType: 'MUTUAL_FUND',
-          exchangeName: 'NSE',
-          brokerName: 'Groww',
-          quantity: 5 * (i + 1),
-          transactionType: 'BUY',
-          price: 150 * (i + 1),
-          totalValue: 150 * 5 * (i + 1) * (i + 1),
-          transactionDate: '2023-09-10',
-        }));
-        this.notificationService.addNotification(
-          'Error',
-          'Failed to load temporary transactions',
-          'error'
-        );
+        this.temporaryTransactions = [];
         this.tempLoaded = true;
         this.onDataReady();
       },
@@ -217,26 +235,92 @@ export class TaxFilingComponent implements OnInit {
       },
       error: () => {
         this.usingMockPort = true;
-        this.portfolioTransactions = Array.from({ length: 19 }, (_, i) => ({
-          id: i,
-          rowId: `port-${i}`,
-          email: 'test@gmail.com',
-          stockName: i % 2 === 0 ? 'QUANT SMALL CAP FUND - DIRECT' : 'SBI BLUECHIP FUND - DIRECT',
-          stockCode: i % 2 === 0 ? 'QUANT_SMALL' : 'SBI_BLUE',
-          assetType: 'MUTUAL_FUND',
-          exchangeName: 'NSE',
-          brokerName: 'Groww',
-          quantity: 5 + i * 0.1,
-          transactionType: 'BUY',
-          price: 195.76,
-          totalValue: 1000 + i * 100,
-          transactionDate: '2023-09-01',
-        }));
-        this.notificationService.addNotification(
-          'Error',
-          'Failed to load current transactions',
-          'error'
-        );
+        this.portfolioTransactions = [
+          {
+            id: 1, rowId: 'port-1', email: 'test@gmail.com',
+            stockName: 'QUANT HEALTHCARE FUND - DIRECT', stockCode: 'QUANT_HC',
+            assetType: 'MUTUAL_FUND', exchangeName: 'NSE', brokerName: 'Groww',
+            quantity: 1394.12, transactionType: 'BUY', price: 14.35,
+            totalValue: 1394.12 * 14.35, transactionDate: '2024-04-15'
+          },
+          {
+            id: 2, rowId: 'port-2', email: 'test@gmail.com',
+            stockName: 'QUANT TAX PLAN-DIRECT GROWTH P', stockCode: 'QUANT_TAX',
+            assetType: 'MUTUAL_FUND', exchangeName: 'NSE', brokerName: 'Groww',
+            quantity: 24.79, transactionType: 'BUY', price: 443.74,
+            totalValue: 24.79 * 443.74, transactionDate: '2024-04-15'
+          },
+          {
+            id: 3, rowId: 'port-3', email: 'test@gmail.com',
+            stockName: 'QUANT SMALL CAP FUND DIRECT PLAN - GROWTH', stockCode: 'QUANT_SMALL',
+            assetType: 'MUTUAL_FUND', exchangeName: 'NSE', brokerName: 'Groww',
+            quantity: 24.72, transactionType: 'BUY', price: 283.16,
+            totalValue: 24.72 * 283.16, transactionDate: '2024-04-15'
+          },
+          {
+            id: 4, rowId: 'port-4', email: 'test@gmail.com',
+            stockName: 'ICICI PRUDENTIAL NIFTY 50 INDEX FUND - DIRECT PLAN GROWTH', stockCode: 'ICICI_NIFTY50',
+            assetType: 'MUTUAL_FUND', exchangeName: 'NSE', brokerName: 'Groww',
+            quantity: 17.312, transactionType: 'BUY', price: 259.94,
+            totalValue: 17.312 * 259.94, transactionDate: '2024-04-15'
+          },
+          {
+            id: 5, rowId: 'port-5', email: 'test@gmail.com',
+            stockName: 'NIFTYBEES', stockCode: 'NIFTYBEES',
+            assetType: 'EQUITY', exchangeName: 'NSE', brokerName: 'Groww',
+            quantity: 23, transactionType: 'BUY', price: 266.62,
+            totalValue: 23 * 266.62, transactionDate: '2024-04-15'
+          },
+          {
+            id: 6, rowId: 'port-6', email: 'test@gmail.com',
+            stockName: 'MID150BEES', stockCode: 'MID150BEES',
+            assetType: 'EQUITY', exchangeName: 'NSE', brokerName: 'Groww',
+            quantity: 15, transactionType: 'BUY', price: 218.94,
+            totalValue: 15 * 218.94, transactionDate: '2024-04-15'
+          },
+          {
+            id: 7, rowId: 'port-7', email: 'test@gmail.com',
+            stockName: 'ICICI PRUDENTIAL NIFTY IT INDE', stockCode: 'ICICI_IT',
+            assetType: 'MUTUAL_FUND', exchangeName: 'NSE', brokerName: 'Groww',
+            quantity: 260.01, transactionType: 'BUY', price: 11.54,
+            totalValue: 260.01 * 11.54, transactionDate: '2024-04-15'
+          },
+          {
+            id: 8, rowId: 'port-8', email: 'test@gmail.com',
+            stockName: 'ICICI Prudential Nifty Index F', stockCode: 'ICICI_NIFTY_IDX',
+            assetType: 'MUTUAL_FUND', exchangeName: 'NSE', brokerName: 'Groww',
+            quantity: 15.87, transactionType: 'BUY', price: 201.62,
+            totalValue: 15.87 * 201.62, transactionDate: '2024-04-15'
+          },
+          {
+            id: 9, rowId: 'port-9', email: 'test@gmail.com',
+            stockName: 'ICICI PRUDENTIAL NIFTY BANK IN', stockCode: 'ICICI_BANK',
+            assetType: 'MUTUAL_FUND', exchangeName: 'NSE', brokerName: 'Groww',
+            quantity: 153.46, transactionType: 'BUY', price: 13.04,
+            totalValue: 153.46 * 13.04, transactionDate: '2024-04-15'
+          },
+          {
+            id: 10, rowId: 'port-10', email: 'test@gmail.com',
+            stockName: 'DAMCAPITAL', stockCode: 'DAMCAPITAL',
+            assetType: 'EQUITY', exchangeName: 'NSE', brokerName: 'Groww',
+            quantity: 7, transactionType: 'BUY', price: 273.44,
+            totalValue: 7 * 273.44, transactionDate: '2024-04-15'
+          },
+          {
+            id: 11, rowId: 'port-11', email: 'test@gmail.com',
+            stockName: 'ITBEES', stockCode: 'ITBEES',
+            assetType: 'EQUITY', exchangeName: 'NSE', brokerName: 'Groww',
+            quantity: 37, transactionType: 'BUY', price: 39.38,
+            totalValue: 37 * 39.38, transactionDate: '2026-05-15'
+          },
+          {
+            id: 12, rowId: 'port-12', email: 'test@gmail.com',
+            stockName: 'ALOKINDS', stockCode: 'ALOKINDS',
+            assetType: 'EQUITY', exchangeName: 'NSE', brokerName: 'Groww',
+            quantity: 2, transactionType: 'BUY', price: 26.99,
+            totalValue: 2 * 26.99, transactionDate: '2024-04-15'
+          }
+        ];
         this.portLoaded = true;
         this.onDataReady();
       },
@@ -612,7 +696,16 @@ export class TaxFilingComponent implements OnInit {
     for (const h of holdings) {
       if (h.netHeld <= 0) continue;
 
-      const mockCmp = this.getMockCurrentPrice(h.stockCode || h.stockName, h.avgPrice);
+      const codeKey = (h.stockCode || '').toUpperCase();
+      const nameKey = (h.stockName || '').toUpperCase();
+      let livePrice = this.livePrices.get(codeKey);
+      if (livePrice === undefined) {
+        livePrice = this.livePrices.get(nameKey);
+      }
+      const mockCmp = (livePrice !== undefined && !isNaN(livePrice))
+        ? livePrice
+        : this.getMockCurrentPrice(h.stockCode || h.stockName, h.avgPrice);
+
       const costBasis = h.netHeld * h.avgPrice;
       const currentValue = h.netHeld * mockCmp;
       const unrealizedPnl = currentValue - costBasis;

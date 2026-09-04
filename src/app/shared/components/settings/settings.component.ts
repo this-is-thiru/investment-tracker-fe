@@ -7,6 +7,7 @@ import { AuthService } from '@services/auth.service';
 import { StorageService } from '@services/storage.service';
 import { PrimeNgModule } from '@core/prime-ng.module';
 import { TransactionService } from '@services/transaction.service';
+import { LivePriceService } from '@services/live-price.service';
 
 @Component({
     selector: 'app-settings',
@@ -21,6 +22,7 @@ export class SettingsComponent {
   activeTab: 'profile' | 'portfolio' | 'alerts' | 'security' | 'billing' | 'data' = 'profile';
 
   private transactionService = inject(TransactionService);
+  private livePriceService = inject(LivePriceService);
 
   tabs = [
     { id: 'profile' as const, label: 'Profile & Region', icon: 'user' },
@@ -30,6 +32,9 @@ export class SettingsComponent {
     { id: 'billing' as const, label: 'Plans & Billing', icon: 'credit-card' },
     { id: 'data' as const, label: 'Data & Advanced', icon: 'database' },
   ];
+
+  // Google Sheets Live Price Config
+  googleSheetCsvUrl: string = '';
 
   // 1. General Profile State
   fullName: string = 'John Doe';
@@ -154,6 +159,8 @@ export class SettingsComponent {
   }
 
   private loadSettings(): void {
+    this.googleSheetCsvUrl = this.livePriceService.getGoogleSheetUrl();
+
     const storedFullName = this.storageService.getItem('settings_fullName');
     if (storedFullName) this.fullName = storedFullName;
 
@@ -373,6 +380,11 @@ export class SettingsComponent {
         this.authService.logOut();
       }, 1000);
     }, 1500);
+  }
+
+  handleSaveLivePriceUrl(): void {
+    this.livePriceService.saveGoogleSheetUrl(this.googleSheetCsvUrl);
+    this.notificationService.addNotification('Google Sheets Live Price URL saved successfully', '', 'success');
   }
 
   onNavigate(page: string): void {

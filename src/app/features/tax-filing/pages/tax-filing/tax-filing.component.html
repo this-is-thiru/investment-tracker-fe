@@ -493,6 +493,38 @@
           </div>
         </div>
 
+        <!-- Live Price Status Banner -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-4 py-3 bg-[#1F1F1F] border border-[#3A3A3A] rounded-xl text-xs">
+          <div class="flex items-center gap-2.5">
+            <div class="p-1.5 rounded-md" [ngClass]="{
+              'bg-[#10A37F]/10 border border-[#10A37F]/20 text-[#10A37F]': livePriceStatus === 'success',
+              'bg-[#FACC15]/10 border border-[#FACC15]/20 text-[#FACC15]': livePriceStatus === 'not_configured',
+              'bg-[#EF4444]/10 border border-[#EF4444]/20 text-[#EF4444]': livePriceStatus === 'failed'
+            }">
+              <lucide-icon name="Globe" class="w-4 h-4"></lucide-icon>
+            </div>
+            <div>
+              <span class="text-[#B3B3B3] font-semibold">Live Stock Pricing: </span>
+              @if (livePriceStatus === 'success') {
+                <span class="text-[#10A37F] font-bold">Connected</span> ({{ loadedSymbolsCount }} symbols loaded from Google Sheet)
+              } @else if (livePriceStatus === 'failed') {
+                <span class="text-[#EF4444] font-bold">Connection Failed</span> (Using Mock Price Fallback)
+              } @else {
+                <span class="text-[#FACC15] font-bold">Not Configured</span> (Using Mock Price Fallback)
+              }
+            </div>
+          </div>
+          @if (livePriceStatus === 'not_configured' || livePriceStatus === 'failed') {
+            <button
+              (click)="onNavigateSettings()"
+              class="text-xs text-[#10A37F] hover:underline cursor-pointer flex items-center gap-1 font-semibold self-start sm:self-auto border border-[#10A37F]/20 px-2.5 py-1 rounded-lg bg-[#10A37F]/5 hover:bg-[#10A37F]/10 transition-colors"
+            >
+              Configure Google Sheet URL
+              <lucide-icon name="ArrowRight" class="w-3.5 h-3.5"></lucide-icon>
+            </button>
+          }
+        </div>
+
         <!-- Info alert -->
         <div
           class="flex gap-2.5 px-4 py-3 bg-[#3B82F6]/10 border border-[#3B82F6]/20 rounded-xl text-xs text-[#B3B3B3] leading-relaxed">
