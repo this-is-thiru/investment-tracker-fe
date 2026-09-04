@@ -8,7 +8,7 @@
       <div class="relative bg-gradient-to-br from-[#0F0F0F] via-[#121212] to-[#191919] w-full h-full"></div>
     </div>
 
-    <div class="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-8 md:py-10 relative z-10">
+    <div class="w-full max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-8 2xl:px-12 py-8 md:py-10 relative z-10">
       <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
         <div class="inline-flex items-center gap-2 bg-[#8B5CF6]/10 border border-[#8B5CF6]/20 rounded-full px-3 py-1.5">
           <lucide-icon name="BarChart3" class="w-4 h-4 text-[#8B5CF6]"></lucide-icon>
@@ -31,7 +31,7 @@
     </div>
   </section>
 
-  <main class="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-6 space-y-6">
+  <main class="w-full max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-8 2xl:px-12 py-6 space-y-6">
 
     <!-- ====================================================== -->
     <!-- MOCK-DATA BANNER                                       -->
@@ -771,9 +771,6 @@
                         <th pSortableColumn="stockName" class="text-left cursor-pointer whitespace-nowrap">
                           <div class="flex items-center gap-1">Stock <p-sortIcon field="stockName"></p-sortIcon></div>
                         </th>
-                        <th pSortableColumn="assetType" class="text-left cursor-pointer whitespace-nowrap">
-                          <div class="flex items-center gap-1">Asset <p-sortIcon field="assetType"></p-sortIcon></div>
-                        </th>
                         <th pSortableColumn="totalBought" class="text-right cursor-pointer whitespace-nowrap">
                           <div class="flex items-center justify-end gap-1">Bought Qty <p-sortIcon field="totalBought"></p-sortIcon></div>
                         </th>
@@ -806,9 +803,6 @@
                           <div class="font-semibold text-white truncate max-w-[200px] cursor-default" [appTooltip]="h.stockName">{{ h.stockName }}</div>
                           <span class="text-[9px] text-[#707070] font-mono uppercase">{{ h.stockCode }}</span>
                         </td>
-                        <td class="px-4 py-3 text-gray-300 text-xs whitespace-nowrap">
-                          <span class="px-2 py-0.5 bg-[#252525] rounded-full border border-[#3A3A3A] font-medium">{{ h.assetType }}</span>
-                        </td>
                         <td class="px-4 py-3 text-right font-semibold text-gray-300 tabular-nums whitespace-nowrap">{{ h.totalBought | number:'1.0-4' }}</td>
                         <td class="px-4 py-3 text-right text-gray-400 tabular-nums whitespace-nowrap">{{ h.totalSold | number:'1.0-4' }}</td>
                         <td class="px-4 py-3 text-right font-bold tabular-nums whitespace-nowrap text-[#22C55E]">
@@ -830,7 +824,7 @@
                     </ng-template>
                     <ng-template pTemplate="emptymessage">
                       <tr>
-                        <td colspan="10" class="py-12 px-4 text-center">
+                        <td colspan="9" class="py-12 px-4 text-center">
                           <div class="flex flex-col items-center gap-2 text-[#B3B3B3]">
                             <lucide-icon name="Briefcase" class="w-8 h-8 opacity-45"></lucide-icon>
                             <p class="text-xs">No holdings found for selected filters.</p>

@@ -19,6 +19,7 @@ export interface PortfolioStockRow {
   stockCode: string;
   stockName: string;
   assetType: string;
+  brokerName?: string;
   totalBought: number;
   totalSold: number;
   netHeld: number;
@@ -58,26 +59,23 @@ export class PortfolioStocksComponent implements OnInit {
   expandedRows: { [key: string]: boolean } = {};
   stockTransactions: { [stockCode: string]: TransactionsResponse[] } = {};
   loadingStockTransactions: { [stockCode: string]: boolean } = {};
-  transactionTypeFilter: { [stockCode: string]: 'ALL' | 'BUY' | 'SELL' } = {};
 
   searchQuery = '';
   filterAssetType: string | null = null;
+  filterBroker: string | null = null;
+  filterType: string | null = null;
   availableAssetTypes: string[] = [];
-
-  setTransactionFilter(stockCode: string, type: string): void {
-    this.transactionTypeFilter[stockCode] = type as 'ALL' | 'BUY' | 'SELL';
-    this.cdr.detectChanges();
-  }
+  availableBrokers: string[] = [];
+  availableTypes: string[] = ['BUY', 'SELL'];
 
   getFilteredTransactions(stockCode: string): TransactionsResponse[] {
     const txns = this.stockTransactions[stockCode] || [];
-    const filter = this.transactionTypeFilter[stockCode] || 'ALL';
-    if (filter === 'ALL') return txns;
-    return txns.filter((t) => t.transactionType === filter);
+    if (!this.filterType) return txns;
+    return txns.filter((t) => t.transactionType === this.filterType);
   }
 
   getTransactionSummary(stockCode: string): any {
-    const txns = this.stockTransactions[stockCode] || [];
+    const txns = this.getFilteredTransactions(stockCode);
     let buyQty = 0;
     let sellQty = 0;
     let totalBuyValue = 0;
@@ -122,11 +120,18 @@ export class PortfolioStocksComponent implements OnInit {
     const q = (this.searchQuery || '').toLowerCase().trim();
     this.filteredHoldings = this.holdings.filter((h) => {
       if (q) {
-        const haystack = `${h.stockName} ${h.stockCode} ${h.assetType}`.toLowerCase();
+        const haystack = `${h.stockName} ${h.stockCode} ${h.assetType} ${h.brokerName || ''}`.toLowerCase();
         if (!haystack.includes(q)) return false;
       }
       if (this.filterAssetType && h.assetType !== this.filterAssetType) {
         return false;
+      }
+      if (this.filterBroker && h.brokerName && h.brokerName !== this.filterBroker) {
+        return false;
+      }
+      if (this.filterType) {
+        if (this.filterType === 'BUY' && h.totalBought <= 0) return false;
+        if (this.filterType === 'SELL' && h.totalSold <= 0) return false;
       }
       return true;
     });
@@ -135,6 +140,8 @@ export class PortfolioStocksComponent implements OnInit {
   resetFilters(): void {
     this.searchQuery = '';
     this.filterAssetType = null;
+    this.filterBroker = null;
+    this.filterType = null;
     this.applyFilters();
   }
 
@@ -155,6 +162,7 @@ export class PortfolioStocksComponent implements OnInit {
             stockCode: d.stockCode,
             stockName: d.stockName,
             assetType: d.assetType,
+            brokerName: d.brokerName || d.broker || '',
             totalBought,
             totalSold,
             netHeld,
@@ -180,6 +188,10 @@ export class PortfolioStocksComponent implements OnInit {
         this.availableAssetTypes = Array.from(
           new Set(this.holdings.map((h) => h.assetType).filter(Boolean))
         ).sort();
+
+        this.availableBrokers = Array.from(
+          new Set(this.holdings.map((h) => h.brokerName).filter(Boolean) as string[])
+        ).sort();
         this.applyFilters();
 
         this.loading = false;
@@ -201,9 +213,6 @@ export class PortfolioStocksComponent implements OnInit {
   onRowExpand(event: any): void {
     const stock = event.data as PortfolioStockRow;
     if (!stock?.stockCode) return;
-    if (!this.transactionTypeFilter[stock.stockCode]) {
-      this.transactionTypeFilter[stock.stockCode] = 'ALL';
-    }
     if (this.stockTransactions[stock.stockCode]) return;
 
     this.loadingStockTransactions[stock.stockCode] = true;

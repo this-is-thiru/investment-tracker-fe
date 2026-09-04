@@ -11,7 +11,7 @@ import { Observable, map } from 'rxjs';
     imports: [CommonModule, LucideIconsModule, TooltipDirective],
     template: `
     <div class="min-h-screen bg-[#191919] py-8">
-      <div class="max-w-4xl mx-auto px-4 md:px-6 lg:px-8">
+      <div class="w-full max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-8 2xl:px-12">
         <!-- Header -->
         <div class="mb-8 flow-slide-up flow-delay-1">
           <h1 class="text-2xl md:text-3xl text-white mb-2">Notifications</h1>

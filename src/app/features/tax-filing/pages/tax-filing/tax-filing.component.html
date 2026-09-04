@@ -8,7 +8,7 @@
       <div class="relative bg-gradient-to-br from-[#0F0F0F] via-[#121212] to-[#191919] w-full h-full"></div>
     </div>
 
-    <div class="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-10 md:py-14 relative z-10">
+    <div class="w-full max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-8 2xl:px-12 py-10 md:py-14 relative z-10">
       <div
         class="inline-flex items-center gap-2 bg-[#10A37F]/10 border border-[#10A37F]/20 rounded-full px-3 py-1.5 mb-4">
         <lucide-icon name="FileText" class="w-4 h-4 text-[#10A37F]"></lucide-icon>
@@ -32,7 +32,7 @@
   <!-- ============================================================== -->
   <!-- MAIN BODY                                                        -->
   <!-- ============================================================== -->
-  <main class="max-w-7xl mx-auto w-full px-4 md:px-6 lg:px-8 py-8 flex-1 space-y-8">
+  <main class="w-full max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-8 2xl:px-12 py-8 flex-1 space-y-8">
 
     <!-- MOCK-DATA BANNER -->
     @if (usingMockTemp || usingMockPort) {
@@ -267,10 +267,6 @@
                     <div class="flex items-center gap-1 whitespace-nowrap">Stock <p-sortIcon
                         field="stockName"></p-sortIcon></div>
                   </th>
-                  <th pSortableColumn="assetType" class="text-left cursor-pointer whitespace-nowrap">
-                    <div class="flex items-center gap-1 whitespace-nowrap">Asset <p-sortIcon
-                        field="assetType"></p-sortIcon></div>
-                  </th>
                   <th pSortableColumn="sellQty" class="text-right cursor-pointer whitespace-nowrap">
                     <div class="flex items-center justify-end gap-1 whitespace-nowrap">Sell Qty <p-sortIcon
                         field="sellQty"></p-sortIcon></div>
@@ -305,7 +301,6 @@
                       r.stockName }}
                     </div>
                   </td>
-                  <td class="px-4 py-3 text-[#B3B3B3] whitespace-nowrap">{{ r.assetType }}</td>
                   <td class="px-4 py-3 text-right text-[#B3B3B3] tabular-nums whitespace-nowrap">{{ r.sellQty |
                     number:'1.0-4' }}</td>
                   <td class="px-4 py-3 text-right text-[#B3B3B3] tabular-nums whitespace-nowrap">₹{{ r.costBasis |
@@ -546,7 +541,6 @@
               <ng-template pTemplate="header">
                 <tr>
                   <th class="text-left whitespace-nowrap">Stock</th>
-                  <th class="text-left whitespace-nowrap">Asset</th>
                   <th class="text-right whitespace-nowrap">Qty</th>
                   <th class="text-right whitespace-nowrap">Avg Cost</th>
                   <th class="text-right whitespace-nowrap">Market Price</th>
@@ -558,7 +552,6 @@
               <ng-template pTemplate="body" let-op>
                 <tr>
                   <td class="px-4 py-3 font-semibold text-white whitespace-nowrap">{{ op.stockName }}</td>
-                  <td class="px-4 py-3 text-[#B3B3B3] whitespace-nowrap">{{ op.assetType }}</td>
                   <td class="px-4 py-3 text-right text-[#B3B3B3] tabular-nums whitespace-nowrap">{{ op.netHeld |
                     number:'1.0-4' }}</td>
                   <td class="px-4 py-3 text-right text-[#B3B3B3] tabular-nums whitespace-nowrap">₹{{ op.avgPrice |

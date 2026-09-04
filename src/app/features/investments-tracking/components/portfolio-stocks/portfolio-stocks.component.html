@@ -22,8 +22,16 @@
       <p-select [options]="availableAssetTypes" [(ngModel)]="filterAssetType" (ngModelChange)="applyFilters()"
         placeholder="Asset type" styleClass="text-sm" appendTo="body"></p-select>
 
+      <!-- Broker Dropdown -->
+      <p-select [options]="availableBrokers" [(ngModel)]="filterBroker" (ngModelChange)="applyFilters()"
+        placeholder="Broker" styleClass="text-sm" appendTo="body"></p-select>
+
+      <!-- Transaction Type Dropdown -->
+      <p-select [options]="availableTypes" [(ngModel)]="filterType" (ngModelChange)="applyFilters()"
+        placeholder="Type" styleClass="text-sm" appendTo="body"></p-select>
+
       <!-- Reset -->
-      <button (click)="resetFilters()" [disabled]="!searchQuery && !filterAssetType"
+      <button (click)="resetFilters()" [disabled]="!searchQuery && !filterAssetType && !filterBroker && !filterType"
         class="px-3 py-2 rounded-lg bg-[#2E2E2E] text-xs font-semibold text-[#B3B3B3] border border-[#3A3A3A] hover:text-white hover:border-[#8B5CF6] disabled:opacity-40 transition-colors flex items-center gap-1.5">
         <lucide-icon name="X" class="w-3.5 h-3.5"></lucide-icon>
         Reset
@@ -59,9 +67,6 @@
               <th style="width: 3.5rem"></th>
               <th pSortableColumn="stockName">
                 <div class="flex items-center gap-1 whitespace-nowrap">Stock <p-sortIcon field="stockName"></p-sortIcon></div>
-              </th>
-              <th pSortableColumn="assetType">
-                <div class="flex items-center gap-1 whitespace-nowrap">Asset <p-sortIcon field="assetType"></p-sortIcon></div>
               </th>
               <th pSortableColumn="totalBought" class="text-right">
                 <div class="flex items-center justify-end gap-1 whitespace-nowrap">Bought <p-sortIcon field="totalBought"></p-sortIcon></div>
@@ -106,7 +111,6 @@
               <td class="px-4 py-3">
                 <div class="font-medium text-white truncate max-w-[220px] cursor-default" [appTooltip]="h.stockCode">{{ h.stockName }}</div>
               </td>
-              <td class="px-4 py-3 text-gray-300 whitespace-nowrap">{{ h.assetType }}</td>
               <td class="px-4 py-3 text-right text-gray-300 tabular-nums">{{ h.totalBought | number:'1.0-4' }}</td>
               <td class="px-4 py-3 text-right text-gray-300 tabular-nums">{{ h.totalSold | number:'1.0-4' }}</td>
               <td class="px-4 py-3 text-right font-semibold tabular-nums" [ngClass]="h.netHeld >= 0 ? 'text-[#22C55E]' : 'text-[#EF4444]'">
@@ -131,28 +135,13 @@
           </ng-template>
           <ng-template pTemplate="expandedrow" let-h>
             <tr>
-              <td colspan="12" class="p-4 bg-[#141414]">
+              <td colspan="11" class="p-4 bg-[#141414]">
                 <div class="border-l-4 border-l-[#8B5CF6] border-y border-r border-[#2D2D2D] rounded-xl bg-[#181818] p-5 shadow-[0_4px_20px_rgba(0,0,0,0.4)]">
                   
                   <!-- Card Header -->
-                  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
-                    <div class="flex items-center gap-2">
-                      <lucide-icon name="file-text" class="w-4 h-4 text-[#8B5CF6]"></lucide-icon>
-                      <h4 class="text-sm font-semibold text-white">Transactions for {{ h.stockName }}</h4>
-                    </div>
-
-                    <!-- Filter Control Tab Buttons -->
-                    @if (!loadingStockTransactions[h.stockCode] && stockTransactions[h.stockCode]?.length) {
-                      <div class="flex bg-[#252525] p-0.5 rounded-lg border border-[#333] gap-0.5">
-                        @for (opt of ['ALL', 'BUY', 'SELL']; track opt) {
-                          <button type="button" (click)="setTransactionFilter(h.stockCode, opt)"
-                            [class]="(transactionTypeFilter[h.stockCode] || 'ALL') === opt ? 'bg-[#8B5CF6] text-white shadow-md' : 'text-gray-400 hover:text-white hover:bg-white/5'"
-                            class="px-2.5 py-1 text-[10px] font-bold rounded-md transition-all duration-150 uppercase cursor-pointer">
-                            {{ opt }}
-                          </button>
-                        }
-                      </div>
-                    }
+                  <div class="flex items-center gap-2 mb-4">
+                    <lucide-icon name="file-text" class="w-4 h-4 text-[#8B5CF6]"></lucide-icon>
+                    <h4 class="text-sm font-semibold text-white">Transactions for {{ h.stockName }}</h4>
                   </div>
 
                   <!-- Loading Skeleton State -->
@@ -170,11 +159,12 @@
                       <!-- Table Skeleton -->
                       <div class="border border-[#2D2D2D] rounded-lg overflow-hidden bg-[#1F1F1F]">
                         <div class="h-10 bg-[#252525] border-b border-[#2D2D2D] flex items-center px-4 justify-between">
-                          <p-skeleton width="12%" height="0.7rem" styleClass="bg-[#2D2D2D]"></p-skeleton>
+                          <p-skeleton width="10%" height="0.7rem" styleClass="bg-[#2D2D2D]"></p-skeleton>
+                          <p-skeleton width="10%" height="0.7rem" styleClass="bg-[#2D2D2D]"></p-skeleton>
                           <p-skeleton width="10%" height="0.7rem" styleClass="bg-[#2D2D2D]"></p-skeleton>
                           <p-skeleton width="12%" height="0.7rem" styleClass="bg-[#2D2D2D]"></p-skeleton>
-                          <p-skeleton width="15%" height="0.7rem" styleClass="bg-[#2D2D2D]"></p-skeleton>
-                          <p-skeleton width="15%" height="0.7rem" styleClass="bg-[#2D2D2D]"></p-skeleton>
+                          <p-skeleton width="12%" height="0.7rem" styleClass="bg-[#2D2D2D]"></p-skeleton>
+                          <p-skeleton width="10%" height="0.7rem" styleClass="bg-[#2D2D2D]"></p-skeleton>
                           <p-skeleton width="10%" height="0.7rem" styleClass="bg-[#2D2D2D]"></p-skeleton>
                         </div>
                         <div class="divide-y divide-[#2D2D2D]/60">
@@ -184,8 +174,9 @@
                               <p-skeleton width="8%" height="0.7rem" styleClass="bg-[#2D2D2D]"></p-skeleton>
                               <p-skeleton width="10%" height="0.7rem" styleClass="bg-[#2D2D2D]"></p-skeleton>
                               <p-skeleton width="12%" height="0.7rem" styleClass="bg-[#2D2D2D]"></p-skeleton>
-                              <p-skeleton width="15%" height="0.7rem" styleClass="bg-[#2D2D2D]"></p-skeleton>
+                              <p-skeleton width="12%" height="0.7rem" styleClass="bg-[#2D2D2D]"></p-skeleton>
                               <p-skeleton width="10%" height="0.7rem" styleClass="bg-[#2D2D2D]"></p-skeleton>
+                              <p-skeleton width="8%" height="0.7rem" styleClass="bg-[#2D2D2D]"></p-skeleton>
                             </div>
                           }
                         </div>
@@ -298,7 +289,7 @@
                       </div>
                     } @else {
                       <div class="text-center py-8 text-gray-400 text-xs bg-[#1E1E1E]/20 border border-[#2D2D2D] rounded-lg">
-                        No transactions found matching filter "{{ transactionTypeFilter[h.stockCode] || 'ALL' }}".
+                        No transactions found matching filter "{{ filterType || 'ALL' }}".
                       </div>
                     }
 
@@ -311,7 +302,7 @@
           </ng-template>
           <ng-template pTemplate="emptymessage">
             <tr>
-              <td colspan="12" class="py-12 px-4 text-center">
+              <td colspan="11" class="py-12 px-4 text-center">
                 <div class="flex flex-col items-center justify-center space-y-3 py-6">
                   <lucide-icon name="Briefcase" class="w-10 h-10 text-[#707070]"></lucide-icon>
                   <h4 class="text-sm font-semibold text-white">No holdings yet</h4>
