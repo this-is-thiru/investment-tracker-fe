@@ -17,7 +17,7 @@
       <div class="flex flex-wrap items-center gap-3 flex-1">
         <!-- Action Type -->
         <div class="w-44">
-          <label class="block text-[10px] font-bold text-[#A0A0A0] uppercase tracking-wider mb-1">Action Type</label>
+          <label class="block text-[9px] font-bold text-[#A0A0A0] uppercase tracking-wider mb-1">Action Type</label>
           <p-select [options]="actionOptions" [(ngModel)]="actionType" optionLabel="label" optionValue="value"
             styleClass="w-full bg-[#2E2E2E] border border-[#3A3A3A] text-white rounded-lg text-xs"
             appendTo="body"></p-select>
@@ -25,7 +25,7 @@
 
         <!-- Broker Name -->
         <div class="w-36">
-          <label class="block text-[10px] font-bold text-[#A0A0A0] uppercase tracking-wider mb-1">Broker Name</label>
+          <label class="block text-[9px] font-bold text-[#A0A0A0] uppercase tracking-wider mb-1">Broker Name</label>
           <p-select [options]="brokers" [(ngModel)]="performBroker" optionLabel="label" optionValue="value"
             styleClass="w-full bg-[#2E2E2E] border border-[#3A3A3A] text-white rounded-lg text-xs"
             appendTo="body"></p-select>
@@ -33,7 +33,7 @@
 
         <!-- Month -->
         <div class="w-32">
-          <label class="block text-[10px] font-bold text-[#A0A0A0] uppercase tracking-wider mb-1">Month</label>
+          <label class="block text-[9px] font-bold text-[#A0A0A0] uppercase tracking-wider mb-1">Month</label>
           <p-select [options]="months" [(ngModel)]="performMonth" optionLabel="label" optionValue="value"
             styleClass="w-full bg-[#2E2E2E] border border-[#3A3A3A] text-white rounded-lg text-xs"
             appendTo="body"></p-select>
@@ -41,7 +41,7 @@
 
         <!-- Year -->
         <div class="w-24">
-          <label class="block text-[10px] font-bold text-[#A0A0A0] uppercase tracking-wider mb-1">Year</label>
+          <label class="block text-[9px] font-bold text-[#A0A0A0] uppercase tracking-wider mb-1">Year</label>
           <input type="number" [(ngModel)]="performYear" placeholder="e.g., 2025"
             class="w-full px-3 py-1.5 text-xs rounded-lg bg-[#2E2E2E] border border-[#3A3A3A] text-white placeholder-[#666] focus:ring-1 focus:ring-[#FACC15] focus:outline-none" />
         </div>
@@ -110,7 +110,7 @@
               </td>
               <td class="px-4 py-3">
                 <span [ngClass]="t.transactionType === 'BUY' ? 'bg-[#22C55E]/10 text-[#22C55E] border-[#22C55E]/20' : 'bg-[#EF4444]/10 text-[#EF4444] border-[#EF4444]/20'"
-                  class="px-2.5 py-0.5 rounded-full text-[10px] font-bold border uppercase tracking-wider">
+                  class="px-2.5 py-0.5 rounded-full text-[9px] font-bold border uppercase tracking-wider">
                   {{ t.transactionType }}
                 </span>
               </td>

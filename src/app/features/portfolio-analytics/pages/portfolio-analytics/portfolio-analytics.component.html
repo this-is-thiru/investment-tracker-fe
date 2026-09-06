@@ -115,7 +115,7 @@
             @if (activeChips.length > 0) {
               <div class="flex flex-wrap gap-1.5">
                 @for (chip of activeChips; track chip.label) {
-                  <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[#10A37F]/10 text-[#10A37F] border border-[#10A37F]/20 text-[10px] font-semibold">
+                  <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[#10A37F]/10 text-[#10A37F] border border-[#10A37F]/20 text-[9px] font-semibold">
                     {{ chip.label }}
                     <button (click)="removeFilterChip(chip)" class="hover:text-white focus:outline-none" aria-label="Remove filter">
                       <lucide-icon name="X" class="w-2.5 h-2.5"></lucide-icon>
@@ -127,7 +127,7 @@
 
             @if (hasActiveFilters()) {
               <button (click)="resetFilters()"
-                class="px-2 py-1 rounded bg-[#2A2A2A] hover:bg-[#333] text-[10px] text-[#808080] hover:text-white transition-colors flex items-center gap-1 focus:outline-none">
+                class="px-2 py-1 rounded bg-[#2A2A2A] hover:bg-[#333] text-[9px] text-[#808080] hover:text-white transition-colors flex items-center gap-1 focus:outline-none">
                 <lucide-icon name="RotateCw" class="w-2.5 h-2.5"></lucide-icon> Reset
               </button>
             }
@@ -196,19 +196,19 @@
               <!-- Total Invested -->
               <div class="kpi-card rounded-xl bg-[#1F1F1F] border border-[#2A2A2A] p-4 flex flex-col gap-2 hover:border-[#3A3A3A] transition-all duration-200">
                 <div class="flex items-center justify-between">
-                  <span class="text-[11px] text-[#808080] font-medium tracking-wide uppercase">Invested</span>
+                  <span class="text-[10px] text-[#808080] font-medium tracking-wide uppercase">Invested</span>
                   <div class="w-7 h-7 rounded-lg bg-[#22C55E]/10 flex items-center justify-center">
                     <lucide-icon name="TrendingUp" class="w-3.5 h-3.5 text-[#22C55E]"></lucide-icon>
                   </div>
                 </div>
                 <div class="text-xl font-bold text-white tracking-tight">₹{{ totalInvested | number:'1.2-2' }}</div>
-                <div class="text-[10px] text-[#606060]">sum of BUYs</div>
+                <div class="text-[9px] text-[#606060]">sum of BUYs</div>
               </div>
 
               <!-- Realized P&L -->
               <div class="kpi-card rounded-xl bg-[#1F1F1F] border border-[#2A2A2A] p-4 flex flex-col gap-2 hover:border-[#3A3A3A] transition-all duration-200">
                 <div class="flex items-center justify-between">
-                  <span class="text-[11px] text-[#808080] font-medium tracking-wide uppercase">Realized P&amp;L</span>
+                  <span class="text-[10px] text-[#808080] font-medium tracking-wide uppercase">Realized P&amp;L</span>
                   <div class="w-7 h-7 rounded-lg flex items-center justify-center"
                     [ngClass]="realizedPnl >= 0 ? 'bg-[#22C55E]/10' : 'bg-[#EF4444]/10'">
                     <lucide-icon name="TrendingUp" class="w-3.5 h-3.5"
@@ -219,47 +219,47 @@
                   [ngClass]="realizedPnl >= 0 ? 'text-[#22C55E]' : 'text-[#EF4444]'">
                   ₹{{ realizedPnl | number:'1.2-2' }}
                 </div>
-                <div class="text-[10px] text-[#606060]">FIFO gains on SELLs</div>
+                <div class="text-[9px] text-[#606060]">FIFO gains on SELLs</div>
               </div>
 
               <!-- # Holdings -->
               <div class="kpi-card rounded-xl bg-[#1F1F1F] border border-[#2A2A2A] p-4 flex flex-col gap-2 hover:border-[#3A3A3A] transition-all duration-200">
                 <div class="flex items-center justify-between">
-                  <span class="text-[11px] text-[#808080] font-medium tracking-wide uppercase">Holdings</span>
+                  <span class="text-[10px] text-[#808080] font-medium tracking-wide uppercase">Holdings</span>
                   <div class="w-7 h-7 rounded-lg bg-[#3B82F6]/10 flex items-center justify-center">
                     <lucide-icon name="Briefcase" class="w-3.5 h-3.5 text-[#3B82F6]"></lucide-icon>
                   </div>
                 </div>
                 <div class="text-2xl font-bold text-white tracking-tight">{{ holdingsCount }}</div>
-                <div class="text-[10px] text-[#606060]">distinct stocks</div>
+                <div class="text-[9px] text-[#606060]">distinct stocks</div>
               </div>
 
               <!-- Total Charges -->
               <div class="kpi-card rounded-xl bg-[#1F1F1F] border border-[#2A2A2A] p-4 flex flex-col gap-2 hover:border-[#3A3A3A] transition-all duration-200">
                 <div class="flex items-center justify-between">
-                  <span class="text-[11px] text-[#808080] font-medium tracking-wide uppercase">Charges</span>
+                  <span class="text-[10px] text-[#808080] font-medium tracking-wide uppercase">Charges</span>
                   <div class="w-7 h-7 rounded-lg bg-[#FACC15]/10 flex items-center justify-center">
                     <lucide-icon name="CreditCard" class="w-3.5 h-3.5 text-[#FACC15]"></lucide-icon>
                   </div>
                 </div>
                 <div class="text-xl font-bold text-white tracking-tight">₹{{ totalCharges | number:'1.2-2' }}</div>
-                <div class="text-[10px] text-[#606060]">broker + misc</div>
+                <div class="text-[9px] text-[#606060]">broker + misc</div>
               </div>
 
               <!-- Biggest Position -->
               <div class="kpi-card rounded-xl bg-[#1F1F1F] border border-[#2A2A2A] p-4 flex flex-col gap-2 hover:border-[#3A3A3A] transition-all duration-200">
                 <div class="flex items-center justify-between">
-                  <span class="text-[11px] text-[#808080] font-medium tracking-wide uppercase">Biggest position</span>
+                  <span class="text-[10px] text-[#808080] font-medium tracking-wide uppercase">Biggest position</span>
                   <div class="w-7 h-7 rounded-lg bg-[#10A37F]/10 flex items-center justify-center">
                     <lucide-icon name="Crown" class="w-3.5 h-3.5 text-[#10A37F]"></lucide-icon>
                   </div>
                 </div>
                 @if (biggestPosition) {
                   <div class="text-sm font-bold text-white truncate cursor-default" [appTooltip]="biggestPosition.name">{{ biggestPosition.name }}</div>
-                  <div class="text-[10px] text-[#606060]">{{ biggestPosition.pct | number:'1.1-1' }}% of invested</div>
+                  <div class="text-[9px] text-[#606060]">{{ biggestPosition.pct | number:'1.1-1' }}% of invested</div>
                 } @else {
                   <div class="text-sm font-bold text-[#505050]">N/A</div>
-                  <div class="text-[10px] text-[#606060]">no positions yet</div>
+                  <div class="text-[9px] text-[#606060]">no positions yet</div>
                 }
               </div>
             </section>
@@ -274,16 +274,16 @@
                     <span class="text-xs font-bold text-white uppercase tracking-wider">Portfolio Concentration (HHI)</span>
                   </div>
                   <span [style.background-color]="hhiColor + '15'" [style.color]="hhiColor" [style.border-color]="hhiColor + '30'"
-                    class="px-2.5 py-0.5 rounded-full text-[10px] font-semibold border uppercase tracking-wider">
+                    class="px-2.5 py-0.5 rounded-full text-[9px] font-semibold border uppercase tracking-wider">
                     {{ hhiLabel }}
                   </span>
                 </div>
                 <div class="flex items-end justify-between">
                   <div>
                     <div class="text-2xl font-extrabold text-white tracking-tight">{{ hhiScore }}</div>
-                    <div class="text-[10px] text-[#808080] mt-1">Herfindahl-Hirschman Index</div>
+                    <div class="text-[9px] text-[#808080] mt-1">Herfindahl-Hirschman Index</div>
                   </div>
-                  <div class="text-[10px] text-[#B3B3B3] text-right max-w-[220px]">
+                  <div class="text-[9px] text-[#B3B3B3] text-right max-w-[220px]">
                     @if (hhiScore < 1500) {
                       Low concentration risk. Excellent diversification across assets.
                     } @else if (hhiScore <= 2500) {
@@ -306,16 +306,16 @@
                     <span class="text-xs font-bold text-white uppercase tracking-wider">Charges Leakage Impact</span>
                   </div>
                   <span [style.background-color]="chargesImpactColor + '15'" [style.color]="chargesImpactColor" [style.border-color]="chargesImpactColor + '30'"
-                    class="px-2.5 py-0.5 rounded-full text-[10px] font-semibold border uppercase tracking-wider">
+                    class="px-2.5 py-0.5 rounded-full text-[9px] font-semibold border uppercase tracking-wider">
                     {{ chargesImpactLabel }}
                   </span>
                 </div>
                 <div class="flex items-end justify-between">
                   <div>
                     <div class="text-2xl font-extrabold text-white tracking-tight">{{ chargesLeakage | number:'1.2-2' }}%</div>
-                    <div class="text-[10px] text-[#808080] mt-1">Leakage of total invested capital</div>
+                    <div class="text-[9px] text-[#808080] mt-1">Leakage of total invested capital</div>
                   </div>
-                  <div class="text-[10px] text-[#B3B3B3] text-right max-w-[220px]">
+                  <div class="text-[9px] text-[#B3B3B3] text-right max-w-[220px]">
                     @if (chargesLeakage < 0.2) {
                       Favorable. Minimal transaction fee leakage.
                     } @else if (chargesLeakage <= 0.8) {
@@ -347,7 +347,7 @@
                       <lucide-icon name="Database" class="w-4 h-4 text-[#10A37F]"></lucide-icon>
                       <h3 class="text-xs font-bold text-white uppercase tracking-wider">Asset Allocation</h3>
                     </div>
-                    <span class="text-[10px] text-[#707070]">cost basis by asset type</span>
+                    <span class="text-[9px] text-[#707070]">cost basis by asset type</span>
                   </div>
                   <div class="h-64">
                     <p-chart type="doughnut" [data]="assetAllocData" [options]="circularChartOptions"></p-chart>
@@ -361,7 +361,7 @@
                       <lucide-icon name="Briefcase" class="w-4 h-4 text-[#3B82F6]"></lucide-icon>
                       <h3 class="text-xs font-bold text-white uppercase tracking-wider">Broker Breakdown</h3>
                     </div>
-                    <span class="text-[10px] text-[#707070]">buy vs sell value per broker</span>
+                    <span class="text-[9px] text-[#707070]">buy vs sell value per broker</span>
                   </div>
                   <div class="h-64">
                     <p-chart type="bar" [data]="brokerData" [options]="axisChartOptions"></p-chart>
@@ -375,7 +375,7 @@
                       <lucide-icon name="TrendingUp" class="w-4 h-4 text-[#22C55E]"></lucide-icon>
                       <h3 class="text-xs font-bold text-white uppercase tracking-wider">Transaction Activity</h3>
                     </div>
-                    <span class="text-[10px] text-[#707070]">monthly buy vs sell value</span>
+                    <span class="text-[9px] text-[#707070]">monthly buy vs sell value</span>
                   </div>
                   <div class="h-64">
                     <p-chart type="line" [data]="activityData" [options]="axisChartOptions"></p-chart>
@@ -389,7 +389,7 @@
                       <lucide-icon name="Globe" class="w-4 h-4 text-[#FACC15]"></lucide-icon>
                       <h3 class="text-xs font-bold text-white uppercase tracking-wider">Exchange Breakdown</h3>
                     </div>
-                    <span class="text-[10px] text-[#707070]">total value per exchange</span>
+                    <span class="text-[9px] text-[#707070]">total value per exchange</span>
                   </div>
                   <div class="h-64">
                     <p-chart type="pie" [data]="exchangeData" [options]="circularChartOptions"></p-chart>
@@ -431,7 +431,7 @@
                       <tr>
                         <td class="px-4 py-2.5">
                           <div class="font-semibold text-white truncate max-w-[200px] cursor-default" [appTooltip]="m.stockCode">{{ m.stockName }}</div>
-                          <span class="text-[9px] text-[#707070] uppercase font-mono tracking-wider">{{ m.stockCode }}</span>
+                          <span class="text-[8px] text-[#707070] uppercase font-mono tracking-wider">{{ m.stockCode }}</span>
                         </td>
                         <td class="px-4 py-2.5 text-right font-bold tabular-nums text-[#22C55E]">
                           ₹{{ m.gain | number:'1.2-2' }}
@@ -476,7 +476,7 @@
                       <tr>
                         <td class="px-4 py-2.5">
                           <div class="font-semibold text-white truncate max-w-[200px] cursor-default" [appTooltip]="m.stockCode">{{ m.stockName }}</div>
-                          <span class="text-[9px] text-[#707070] uppercase font-mono tracking-wider">{{ m.stockCode }}</span>
+                          <span class="text-[8px] text-[#707070] uppercase font-mono tracking-wider">{{ m.stockCode }}</span>
                         </td>
                         <td class="px-4 py-2.5 text-right font-bold tabular-nums text-[#EF4444]">
                           ₹{{ m.gain | number:'1.2-2' }}
@@ -521,7 +521,7 @@
                 <div class="text-2xl font-extrabold tracking-tight my-2" [ngClass]="realizedPnl >= 0 ? 'text-[#22C55E]' : 'text-[#EF4444]'">
                   ₹{{ realizedPnl | number:'1.2-2' }}
                 </div>
-                <div class="text-[10px] text-[#606060]">Total FIFO P&amp;L from all sold assets</div>
+                <div class="text-[9px] text-[#606060]">Total FIFO P&amp;L from all sold assets</div>
               </div>
 
               <!-- STCG -->
@@ -531,12 +531,12 @@
                     Short-Term (STCG)
                     <lucide-icon name="info" class="w-3.5 h-3.5 text-[#B3B3B3] hover:text-white cursor-pointer transition-colors" appTooltip="Short-Term Capital Gains: Gains made on assets held for less than 1 year (3 years for debt). Taxed at 20% for equities/equity mutual funds in India." appTooltipVariant="warning" appTooltipPosition="top"></lucide-icon>
                   </span>
-                  <span class="px-2 py-0.5 rounded bg-[#3B82F6]/10 text-[#3B82F6] border border-[#3B82F6]/20 text-[9px] font-bold">ST BADGE</span>
+                  <span class="px-2 py-0.5 rounded bg-[#3B82F6]/10 text-[#3B82F6] border border-[#3B82F6]/20 text-[8px] font-bold">ST BADGE</span>
                 </div>
                 <div class="text-2xl font-extrabold tracking-tight my-2 text-[#3B82F6]">
                   ₹{{ taxGainsSummary?.stcg | number:'1.2-2' }}
                 </div>
-                <div class="text-[10px] text-[#606060]">Held &lt;12m (equity) or &lt;36m (debt)</div>
+                <div class="text-[9px] text-[#606060]">Held &lt;12m (equity) or &lt;36m (debt)</div>
               </div>
 
               <!-- LTCG -->
@@ -546,12 +546,12 @@
                     Long-Term (LTCG)
                     <lucide-icon name="info" class="w-3.5 h-3.5 text-[#B3B3B3] hover:text-white cursor-pointer transition-colors" appTooltip="Long-Term Capital Gains: Gains made on assets held for 1 year or longer (3 years for debt). Exempt up to ₹1.25L for equities/equity mutual funds, then taxed at 12.5% in India." appTooltipVariant="success" appTooltipPosition="top"></lucide-icon>
                   </span>
-                  <span class="px-2 py-0.5 rounded bg-[#10A37F]/10 text-[#10A37F] border border-[#10A37F]/20 text-[9px] font-bold">LT BADGE</span>
+                  <span class="px-2 py-0.5 rounded bg-[#10A37F]/10 text-[#10A37F] border border-[#10A37F]/20 text-[8px] font-bold">LT BADGE</span>
                 </div>
                 <div class="text-2xl font-extrabold tracking-tight my-2 text-[#10A37F]">
                   ₹{{ taxGainsSummary?.ltcg | number:'1.2-2' }}
                 </div>
-                <div class="text-[10px] text-[#606060]">Held &ge;12m (equity) or &ge;36m (debt)</div>
+                <div class="text-[9px] text-[#606060]">Held &ge;12m (equity) or &ge;36m (debt)</div>
               </div>
 
               <!-- Tax Estimate -->
@@ -564,7 +564,7 @@
                 <div class="text-2xl font-extrabold tracking-tight my-2 text-[#EF4444] relative z-10">
                   ₹{{ totalTaxEstimate | number:'1.2-2' }}
                 </div>
-                <div class="text-[9px] text-[#808080] relative z-10 leading-relaxed font-medium">
+                <div class="text-[8px] text-[#808080] relative z-10 leading-relaxed font-medium">
                   20% on STCG + 12.5% on LTCG (excl. ₹1.25L exempt)
                 </div>
               </div>
@@ -682,7 +682,7 @@
                     <tr>
                       <td class="px-4 py-3">
                         <div class="font-semibold text-white truncate max-w-[200px] cursor-default" [appTooltip]="g.stockName">{{ g.stockName }}</div>
-                        <span class="text-[9px] text-[#707070] font-mono uppercase">{{ g.stockCode }} · {{ g.assetType }}</span>
+                        <span class="text-[8px] text-[#707070] font-mono uppercase">{{ g.stockCode }} · {{ g.assetType }}</span>
                       </td>
                       <td class="px-4 py-3 text-xs text-gray-300 font-mono">{{ g.sellDate }}</td>
                       <td class="px-4 py-3 text-xs text-gray-400 font-mono">
@@ -693,7 +693,7 @@
                       <td class="px-4 py-3 text-right font-semibold text-gray-400 tabular-nums">₹{{ g.buyValue | number:'1.2-2' }}</td>
                       <td class="px-4 py-3 text-center">
                         <span [ngClass]="g.holdingPeriod === 'LT' ? 'bg-[#10A37F]/10 text-[#10A37F] border-[#10A37F]/20' : g.holdingPeriod === 'ST' ? 'bg-[#3B82F6]/10 text-[#3B82F6] border-[#3B82F6]/20' : 'bg-gray-700/10 text-gray-400 border-gray-700/20'"
-                          class="px-2 py-0.5 rounded text-[10px] font-bold border tracking-wider">
+                          class="px-2 py-0.5 rounded text-[9px] font-bold border tracking-wider">
                           {{ g.holdingPeriod }}
                         </span>
                       </td>
@@ -801,7 +801,7 @@
                       <tr>
                         <td class="px-4 py-3">
                           <div class="font-semibold text-white truncate max-w-[200px] cursor-default" [appTooltip]="h.stockName">{{ h.stockName }}</div>
-                          <span class="text-[9px] text-[#707070] font-mono uppercase">{{ h.stockCode }}</span>
+                          <span class="text-[8px] text-[#707070] font-mono uppercase">{{ h.stockCode }}</span>
                         </td>
                         <td class="px-4 py-3 text-right font-semibold text-gray-300 tabular-nums whitespace-nowrap">{{ h.totalBought | number:'1.0-4' }}</td>
                         <td class="px-4 py-3 text-right text-gray-400 tabular-nums whitespace-nowrap">{{ h.totalSold | number:'1.0-4' }}</td>
@@ -817,7 +817,7 @@
                             <div class="w-16 h-1.5 bg-[#252525] rounded overflow-hidden">
                               <div class="h-full bg-gradient-to-r from-[#8B5CF6] to-[#A78BFA] rounded" [style.width.%]="h.sharePercent"></div>
                             </div>
-                            <span class="text-[10px] text-gray-400 font-bold font-mono w-9 text-right">{{ h.sharePercent | number:'1.1-1' }}%</span>
+                            <span class="text-[9px] text-gray-400 font-bold font-mono w-9 text-right">{{ h.sharePercent | number:'1.1-1' }}%</span>
                           </div>
                         </td>
                       </tr>

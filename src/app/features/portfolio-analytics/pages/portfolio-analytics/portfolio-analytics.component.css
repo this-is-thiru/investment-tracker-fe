@@ -28,14 +28,14 @@
 /* Font consistency */
 :host {
   font-family: 'Inter', 'Manrope', system-ui, sans-serif !important;
-  font-size: 14px !important;
+  font-size: 13px !important;
 }
 
 :host ::ng-deep .p-datatable,
 :host ::ng-deep .p-datatable td,
 :host ::ng-deep .p-datatable th {
   font-family: 'Inter', 'Manrope', system-ui, sans-serif !important;
-  font-size: 14px !important;
+  font-size: 13px !important;
 }
 
 /* Paginator dark style */

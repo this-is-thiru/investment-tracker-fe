@@ -128,7 +128,7 @@
                   <div class="flex-1 h-2 bg-[#2A2A2A] rounded overflow-hidden min-w-[60px]">
                     <div class="h-full bg-gradient-to-r from-[#8B5CF6] to-[#A78BFA] rounded" [style.width.%]="h.sharePercent"></div>
                   </div>
-                  <span class="text-[10px] text-[#B3B3B3] w-10 text-right">{{ h.sharePercent | number:'1.0-1' }}%</span>
+                  <span class="text-[9px] text-[#B3B3B3] w-10 text-right">{{ h.sharePercent | number:'1.0-1' }}%</span>
                 </div>
               </td>
             </tr>
@@ -190,14 +190,14 @@
                       <!-- BUY Stats Card -->
                       <div class="bg-[#122A1E]/30 border border-[#22C55E]/15 rounded-lg p-3 flex items-center justify-between">
                         <div>
-                          <span class="text-[9px] font-bold text-[#8E9B93] uppercase tracking-wider">Total Bought</span>
+                          <span class="text-[8px] font-bold text-[#8E9B93] uppercase tracking-wider">Total Bought</span>
                           <div class="text-xs font-bold text-white mt-0.5 tabular-nums">
-                            {{ summary.buyQty | number:'1.0-4' }} <span class="text-[9px] font-normal text-[#8E9B93]">units</span>
+                            {{ summary.buyQty | number:'1.0-4' }} <span class="text-[8px] font-normal text-[#8E9B93]">units</span>
                           </div>
-                          <div class="text-[10px] text-gray-400 mt-0.5">Avg: ₹{{ summary.avgBuyPrice | number:'1.2-2' }}</div>
+                          <div class="text-[9px] text-gray-400 mt-0.5">Avg: ₹{{ summary.avgBuyPrice | number:'1.2-2' }}</div>
                         </div>
                         <div class="text-right">
-                          <span class="text-[9px] text-[#8E9B93] block">Capital Invested</span>
+                          <span class="text-[8px] text-[#8E9B93] block">Capital Invested</span>
                           <span class="text-xs font-extrabold text-[#22C55E] tabular-nums">₹{{ summary.totalBuyValue | number:'1.2-2' }}</span>
                         </div>
                       </div>
@@ -205,14 +205,14 @@
                       <!-- SELL Stats Card -->
                       <div class="bg-[#2D161B]/30 border border-[#EF4444]/15 rounded-lg p-3 flex items-center justify-between">
                         <div>
-                          <span class="text-[9px] font-bold text-[#9B8E90] uppercase tracking-wider">Total Sold</span>
+                          <span class="text-[8px] font-bold text-[#9B8E90] uppercase tracking-wider">Total Sold</span>
                           <div class="text-xs font-bold text-white mt-0.5 tabular-nums">
-                            {{ summary.sellQty | number:'1.0-4' }} <span class="text-[9px] font-normal text-[#9B8E90]">units</span>
+                            {{ summary.sellQty | number:'1.0-4' }} <span class="text-[8px] font-normal text-[#9B8E90]">units</span>
                           </div>
-                          <div class="text-[10px] text-gray-400 mt-0.5">Avg: ₹{{ summary.avgSellPrice | number:'1.2-2' }}</div>
+                          <div class="text-[9px] text-gray-400 mt-0.5">Avg: ₹{{ summary.avgSellPrice | number:'1.2-2' }}</div>
                         </div>
                         <div class="text-right">
-                          <span class="text-[9px] text-[#9B8E90] block">Realized Value</span>
+                          <span class="text-[8px] text-[#9B8E90] block">Realized Value</span>
                           <span class="text-xs font-extrabold text-[#EF4444] tabular-nums">₹{{ summary.totalSellValue | number:'1.2-2' }}</span>
                         </div>
                       </div>
@@ -220,11 +220,11 @@
                       <!-- Friction Costs Card -->
                       <div class="bg-[#1E192D]/30 border border-[#8B5CF6]/15 rounded-lg p-3 flex items-center justify-between">
                         <div>
-                          <span class="text-[9px] font-bold text-[#938EB0] uppercase tracking-wider">Friction Costs</span>
-                          <div class="text-[10px] text-gray-400 mt-1">Total taxes & broker commissions</div>
+                          <span class="text-[8px] font-bold text-[#938EB0] uppercase tracking-wider">Friction Costs</span>
+                          <div class="text-[9px] text-gray-400 mt-1">Total taxes & broker commissions</div>
                         </div>
                         <div class="text-right">
-                          <span class="text-[9px] text-[#938EB0] block">Total Charges</span>
+                          <span class="text-[8px] text-[#938EB0] block">Total Charges</span>
                           <span class="text-xs font-extrabold text-white tabular-nums">₹{{ summary.totalCharges | number:'1.2-2' }}</span>
                         </div>
                       </div>
@@ -237,25 +237,25 @@
                         <p-table [value]="filteredTxns" [tableStyle]="{ 'min-width': '48rem' }" responsiveLayout="scroll" styleClass="p-datatable-sm w-full">
                           <ng-template pTemplate="header">
                             <tr class="border-b border-[#2D2D2D] bg-[#1E1E1E]">
-                              <th class="px-4 py-2 text-[10px] font-bold text-gray-400 uppercase tracking-wider text-left">Type</th>
-                              <th class="px-4 py-2 text-[10px] font-bold text-gray-400 uppercase tracking-wider text-right">Qty</th>
-                              <th class="px-4 py-2 text-[10px] font-bold text-gray-400 uppercase tracking-wider text-right">Price</th>
-                              <th class="px-4 py-2 text-[10px] font-bold text-gray-400 uppercase tracking-wider text-right">Total</th>
-                              <th class="px-4 py-2 text-[10px] font-bold text-gray-400 uppercase tracking-wider text-left">Date</th>
-                              <th class="px-4 py-2 text-[10px] font-bold text-gray-400 uppercase tracking-wider text-left">Broker</th>
-                              <th class="px-4 py-2 text-[10px] font-bold text-gray-400 uppercase tracking-wider text-right">Charges</th>
+                              <th class="px-4 py-2 text-[9px] font-bold text-gray-400 uppercase tracking-wider text-left">Type</th>
+                              <th class="px-4 py-2 text-[9px] font-bold text-gray-400 uppercase tracking-wider text-right">Qty</th>
+                              <th class="px-4 py-2 text-[9px] font-bold text-gray-400 uppercase tracking-wider text-right">Price</th>
+                              <th class="px-4 py-2 text-[9px] font-bold text-gray-400 uppercase tracking-wider text-right">Total</th>
+                              <th class="px-4 py-2 text-[9px] font-bold text-gray-400 uppercase tracking-wider text-left">Date</th>
+                              <th class="px-4 py-2 text-[9px] font-bold text-gray-400 uppercase tracking-wider text-left">Broker</th>
+                              <th class="px-4 py-2 text-[9px] font-bold text-gray-400 uppercase tracking-wider text-right">Charges</th>
                             </tr>
                           </ng-template>
                           <ng-template pTemplate="body" let-t>
                             <tr class="border-b border-[#2D2D2D]/40 hover:bg-white/5 transition-colors duration-150">
                               <td class="px-4 py-2">
                                 @if (t.transactionType === 'BUY') {
-                                  <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[9px] font-bold bg-[#22C55E]/10 text-[#22C55E] border border-[#22C55E]/20 uppercase tracking-wider">
+                                  <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[8px] font-bold bg-[#22C55E]/10 text-[#22C55E] border border-[#22C55E]/20 uppercase tracking-wider">
                                     <span class="w-1 h-1 rounded-full bg-[#22C55E] animate-pulse"></span>
                                     BUY
                                   </span>
                                 } @else {
-                                  <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[9px] font-bold bg-[#EF4444]/10 text-[#EF4444] border border-[#EF4444]/20 uppercase tracking-wider">
+                                  <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[8px] font-bold bg-[#EF4444]/10 text-[#EF4444] border border-[#EF4444]/20 uppercase tracking-wider">
                                     <span class="w-1 h-1 rounded-full bg-[#EF4444] animate-pulse"></span>
                                     SELL
                                   </span>
@@ -271,7 +271,7 @@
                                 ₹{{ ((t.brokerCharges || 0) + (t.miscCharges || 0)) | number:'1.2-2' }}
 
                                 <ng-template #tooltipContent>
-                                  <div class="text-[10px] leading-normal min-w-[110px]">
+                                  <div class="text-[9px] leading-normal min-w-[110px]">
                                     <div class="flex justify-between gap-4 mb-0.5">
                                       <span class="text-gray-400">Brokerage:</span>
                                       <span class="text-white font-bold">₹{{ (t.brokerCharges || 0) | number:'1.2-2' }}</span>
