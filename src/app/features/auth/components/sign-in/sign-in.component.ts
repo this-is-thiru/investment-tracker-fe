@@ -7,18 +7,21 @@ import {
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '@services/auth.service';
-import { LoginRequest } from '@models/login-request.model';
+import { LoginRequest } from '../../models/login-request.model';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { finalize } from 'rxjs/operators'; // added
 import { LucideIconsModule } from '@core/icons/lucide-icons.module';
 import { NotificationService } from '@services/notification.service';
+import { ModalComponent } from '@shared/ui/modal/modal.component';
+import { InputComponent } from '@shared/ui/input/input.component';
+import { ButtonComponent } from '@shared/ui/button/button.component';
 
 @Component({
     selector: 'app-sign-in',
     standalone: true,
-    imports: [ReactiveFormsModule, FormsModule, CommonModule, RouterModule, LucideIconsModule],
+    imports: [ReactiveFormsModule, FormsModule, CommonModule, RouterModule, LucideIconsModule, ModalComponent, InputComponent, ButtonComponent],
     templateUrl: './sign-in.component.html',
     styleUrls: ['./sign-in.component.css'], // fixed property name
     changeDetection: ChangeDetectionStrategy.OnPush

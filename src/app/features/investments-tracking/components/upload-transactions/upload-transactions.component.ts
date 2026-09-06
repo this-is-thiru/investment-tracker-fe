@@ -18,10 +18,13 @@ import { FormsModule } from '@angular/forms';
 import { PrimeNgModule } from '@core/prime-ng.module';
 import { TooltipDirective } from '@shared/directives/tooltip/tooltip.directive';
 
-import { ToastType } from '@models/transaction.model';
+import { ToastType } from '@models/toast.model';
 import { TransactionService } from '@services/transaction.service';
 import { AuthService } from '@services/auth.service';
 import { NotificationService } from '@services/notification.service';
+import { ButtonComponent } from '@shared/ui/button/button.component';
+import { BadgeComponent } from '@shared/ui/badge/badge.component';
+import { EmptyStateComponent } from '@shared/ui/empty-state/empty-state.component';
 
 @Component({
   selector: 'app-upload-transactions',
@@ -33,6 +36,9 @@ import { NotificationService } from '@services/notification.service';
     FormsModule,
     PrimeNgModule,
     TooltipDirective,
+    ButtonComponent,
+    BadgeComponent,
+    EmptyStateComponent,
   ],
   providers: [MessageService],
   templateUrl: './upload-transactions.component.html',

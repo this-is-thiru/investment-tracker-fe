@@ -1,0 +1,14 @@
+<div
+  class="ui-radio-card"
+  [class.ui-radio-card--selected]="selected"
+  [class.ui-radio-card--disabled]="disabled"
+>
+  <span class="ui-radio-card__dot" [class.ui-radio-card__dot--selected]="selected">
+    @if (selected) {
+      <span class="ui-radio-card__dot-inner"></span>
+    }
+  </span>
+  <span class="ui-radio-card__content">
+    <ng-content></ng-content>
+  </span>
+</div>

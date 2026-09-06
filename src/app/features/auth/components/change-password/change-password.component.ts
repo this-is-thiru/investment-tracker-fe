@@ -12,11 +12,14 @@ import { CommonModule } from '@angular/common';
 import { LucideIconsModule } from '@core/icons/lucide-icons.module';
 
 import { NotificationService } from '@services/notification.service';
+import { ModalComponent } from '@shared/ui/modal/modal.component';
+import { InputComponent } from '@shared/ui/input/input.component';
+import { ButtonComponent } from '@shared/ui/button/button.component';
 
 @Component({
     selector: 'app-change-password',
     standalone: true,
-    imports: [CommonModule, FormsModule, LucideIconsModule, ReactiveFormsModule],
+    imports: [CommonModule, FormsModule, LucideIconsModule, ReactiveFormsModule, ModalComponent, InputComponent, ButtonComponent],
     templateUrl: './change-password.component.html',
     styleUrls: ['./change-password.component.css']
 })

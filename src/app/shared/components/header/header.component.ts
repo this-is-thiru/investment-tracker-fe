@@ -7,14 +7,14 @@ import { AuthService } from '@services/auth.service';
 import { NotificationService, Notification } from '@services/notification.service';
 import { NavItem } from '@models/nav-item.model';
 import { map } from 'rxjs/operators';
+import { ButtonComponent } from "@shared/ui/button/button.component";
 
 
 @Component({
-    selector: 'app-header',
-    standalone: true,
-    imports: [CommonModule, LucideIconsModule, RouterModule, TooltipDirective],
-    templateUrl: './header.component.html',
-    styleUrls: ['./header.component.css']
+  selector: 'app-header',
+  imports: [CommonModule, LucideIconsModule, RouterModule, TooltipDirective, ButtonComponent],
+  templateUrl: './header.component.html',
+  styleUrls: ['./header.component.css']
 })
 export class HeaderComponent {
   private router = inject(Router);
@@ -108,7 +108,7 @@ export class HeaderComponent {
     if (minutes < 60) return `${minutes}m ago`;
     if (hours < 24) return `${hours}h ago`;
     if (days < 7) return `${days}d ago`;
-    
+
     return new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
   }
 

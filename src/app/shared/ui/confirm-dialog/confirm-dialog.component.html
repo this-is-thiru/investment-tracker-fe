@@ -1,0 +1,16 @@
+@if (request(); as req) {
+  <ui-modal [open]="true" size="sm" [dismissible]="true" (closed)="cancel()">
+    <div class="ui-confirm-dialog">
+      <div class="ui-confirm-dialog__icon" [class.ui-confirm-dialog__icon--danger]="req.tone === 'danger'">
+        <lucide-icon [name]="req.tone === 'danger' ? 'alert-triangle' : 'info'" class="w-6 h-6"></lucide-icon>
+      </div>
+      <h3 class="ui-confirm-dialog__title">{{ req.title }}</h3>
+      <p class="ui-confirm-dialog__message">{{ req.message }}</p>
+    </div>
+
+    <div modalFooter class="ui-confirm-dialog__actions">
+      <ui-button variant="secondary" [fullWidth]="true" (click)="cancel()">{{ req.cancelLabel }}</ui-button>
+      <ui-button [variant]="req.tone === 'danger' ? 'danger' : 'primary'" [fullWidth]="true" (click)="confirm()">{{ req.confirmLabel }}</ui-button>
+    </div>
+  </ui-modal>
+}

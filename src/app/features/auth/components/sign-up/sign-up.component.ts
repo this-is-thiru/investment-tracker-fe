@@ -10,16 +10,19 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { finalize } from 'rxjs/operators';
-import { RegisterRequest } from '@models/register-request.model';
+import { RegisterRequest } from '../../models/register-request.model';
 import { NotificationService } from '@services/notification.service';
 import { LucideIconsModule } from '@core/icons/lucide-icons.module'; // import LucideIconsModule for custom SVG icons
+import { ModalComponent } from '@shared/ui/modal/modal.component';
+import { InputComponent } from '@shared/ui/input/input.component';
+import { ButtonComponent } from '@shared/ui/button/button.component';
 
 @Component({
     selector: 'app-sign-up',
     standalone: true,
     templateUrl: './sign-up.component.html',
     styleUrls: ['./sign-up.component.css'],
-    imports: [ReactiveFormsModule, CommonModule, RouterModule, LucideIconsModule],
+    imports: [ReactiveFormsModule, CommonModule, RouterModule, LucideIconsModule, ModalComponent, InputComponent, ButtonComponent],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SignUpComponent {

@@ -13,6 +13,10 @@ export const routes: Routes = [
         loadComponent: () => import('./features/home/pages/home/home.component').then(m => m.HomeComponent)
       },
       {
+        path: 'style-guide',
+        loadComponent: () => import('./features/style-guide/style-guide.component').then(m => m.StyleGuideComponent)
+      },
+      {
         path: 'investments-tracking',
         loadComponent: () => import('./features/investments-tracking/pages/investments/investments.component').then(m => m.InvestmentsComponent),
         canActivate: [authGuard]

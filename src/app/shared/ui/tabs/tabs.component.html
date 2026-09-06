@@ -1,0 +1,12 @@
+<div class="ui-tabs">
+  @for (item of items; track item.value) {
+    <button
+      type="button"
+      class="ui-tabs__item"
+      [class.ui-tabs__item--active]="item.value === value"
+      (click)="select(item)"
+    >
+      {{ item.label }}
+    </button>
+  }
+</div>

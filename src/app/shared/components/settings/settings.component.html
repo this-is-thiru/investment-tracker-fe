@@ -128,13 +128,10 @@
               </div>
 
               <div class="mt-6 flex justify-end">
-                <button
-                  (click)="handleSaveProfile()"
-                  class="px-6 py-3 bg-gradient-to-r from-[#10A37F] to-[#0D8968] text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-[#10A37F]/20 transition-all duration-200 flex items-center gap-2 text-sm"
-                >
+                <ui-button variant="primary" (click)="handleSaveProfile()">
                   <lucide-icon name="check-circle-2" class="h-4 w-4"></lucide-icon>
                   Save Account Changes
-                </button>
+                </ui-button>
               </div>
             </div>
 
@@ -200,13 +197,10 @@
               </div>
 
               <div class="mt-6 flex justify-end">
-                <button
-                  (click)="handleSaveProfile()"
-                  class="px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-blue-500/20 transition-all duration-200 flex items-center gap-2 text-sm"
-                >
+                <ui-button variant="primary" (click)="handleSaveProfile()">
                   <lucide-icon name="check-circle-2" class="h-4 w-4"></lucide-icon>
                   Save Regional Preferences
-                </button>
+                </ui-button>
               </div>
             </div>
           </div>
@@ -234,71 +228,35 @@
                 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <!-- TWR Card -->
-                  <div
-                    (click)="returnCalculation = 'TWR'"
-                    [ngClass]="{
-                      'border-[#10A37F] bg-[#10A37F]/5 ring-1 ring-[#10A37F]': returnCalculation === 'TWR',
-                      'border-[#303030] bg-[#222] hover:border-[#404040]': returnCalculation !== 'TWR'
-                    }"
-                    class="border-2 rounded-xl p-5 cursor-pointer transition-all duration-200 flex flex-col justify-between"
-                  >
-                    <div>
-                      <div class="flex items-center justify-between mb-2">
-                        <span class="text-sm font-bold text-white">TWR (Time-Weighted)</span>
-                        <div class="h-4 w-4 rounded-full border border-gray-500 flex items-center justify-center">
-                          <div *ngIf="returnCalculation === 'TWR'" class="h-2 w-2 rounded-full bg-[#10A37F]"></div>
-                        </div>
-                      </div>
+                  <ui-radio-card [selected]="returnCalculation === 'TWR'" (click)="returnCalculation = 'TWR'">
+                    <div class="flex flex-col">
+                      <span class="text-sm font-bold text-white mb-1">TWR (Time-Weighted)</span>
                       <p class="text-xs text-[#909090] leading-relaxed">
                         Measures the compound growth rate of the portfolio. Recommended for tracking portfolio manager performance because it eliminates cash inflow/outflow distortions.
                       </p>
+                      <ui-badge tone="accent" class="mt-3 self-start">Recommended</ui-badge>
                     </div>
-                    <span class="text-[9px] uppercase font-mono font-bold text-[#10A37F] mt-4 self-start bg-[#10A37F]/10 px-2 py-0.5 rounded">Recommended</span>
-                  </div>
+                  </ui-radio-card>
 
                   <!-- IRR/MWR Card -->
-                  <div
-                    (click)="returnCalculation = 'IRR'"
-                    [ngClass]="{
-                      'border-[#10A37F] bg-[#10A37F]/5 ring-1 ring-[#10A37F]': returnCalculation === 'IRR',
-                      'border-[#303030] bg-[#222] hover:border-[#404040]': returnCalculation !== 'IRR'
-                    }"
-                    class="border-2 rounded-xl p-5 cursor-pointer transition-all duration-200 flex flex-col justify-between"
-                  >
-                    <div>
-                      <div class="flex items-center justify-between mb-2">
-                        <span class="text-sm font-bold text-white">IRR (Money-Weighted)</span>
-                        <div class="h-4 w-4 rounded-full border border-gray-500 flex items-center justify-center">
-                          <div *ngIf="returnCalculation === 'IRR'" class="h-2 w-2 rounded-full bg-[#10A37F]"></div>
-                        </div>
-                      </div>
+                  <ui-radio-card [selected]="returnCalculation === 'IRR'" (click)="returnCalculation = 'IRR'">
+                    <div class="flex flex-col">
+                      <span class="text-sm font-bold text-white mb-1">IRR (Money-Weighted)</span>
                       <p class="text-xs text-[#909090] leading-relaxed">
                         Computes the internal rate of return. Accounts for the timing and size of cash transactions. Best for reflecting your personal dollar-earned returns.
                       </p>
                     </div>
-                  </div>
+                  </ui-radio-card>
 
                   <!-- Simple Return Card -->
-                  <div
-                    (click)="returnCalculation = 'SIMPLE'"
-                    [ngClass]="{
-                      'border-[#10A37F] bg-[#10A37F]/5 ring-1 ring-[#10A37F]': returnCalculation === 'SIMPLE',
-                      'border-[#303030] bg-[#222] hover:border-[#404040]': returnCalculation !== 'SIMPLE'
-                    }"
-                    class="border-2 rounded-xl p-5 cursor-pointer transition-all duration-200 flex flex-col justify-between"
-                  >
-                    <div>
-                      <div class="flex items-center justify-between mb-2">
-                        <span class="text-sm font-bold text-white">Simple Return</span>
-                        <div class="h-4 w-4 rounded-full border border-gray-500 flex items-center justify-center">
-                          <div *ngIf="returnCalculation === 'SIMPLE'" class="h-2 w-2 rounded-full bg-[#10A37F]"></div>
-                        </div>
-                      </div>
+                  <ui-radio-card [selected]="returnCalculation === 'SIMPLE'" (click)="returnCalculation = 'SIMPLE'">
+                    <div class="flex flex-col">
+                      <span class="text-sm font-bold text-white mb-1">Simple Return</span>
                       <p class="text-xs text-[#909090] leading-relaxed">
                         Basic gain percentage calculation: (Current Value - Total Invested) / Total Invested. Simple to understand, but does not account for holding duration.
                       </p>
                     </div>
-                  </div>
+                  </ui-radio-card>
                 </div>
               </div>
 
@@ -357,16 +315,7 @@
                     <h4 class="text-sm font-bold text-white">Stocks & ETFs</h4>
                     <p class="text-[10px] text-[#707070]">Equity trading</p>
                   </div>
-                  <button
-                    (click)="activeAssetClasses.stocks = !activeAssetClasses.stocks"
-                    [ngClass]="activeAssetClasses.stocks ? 'bg-[#10A37F]' : 'bg-[#404040]'"
-                    class="relative w-11 h-6 rounded-full transition-colors duration-200"
-                  >
-                    <div
-                      [ngClass]="activeAssetClasses.stocks ? 'translate-x-6' : 'translate-x-1'"
-                      class="absolute top-1 left-0.5 w-4 h-4 bg-white rounded-full transition-transform duration-200"
-                    ></div>
-                  </button>
+                  <ui-toggle [(ngModel)]="activeAssetClasses.stocks"></ui-toggle>
                 </div>
 
                 <!-- Crypto -->
@@ -375,16 +324,7 @@
                     <h4 class="text-sm font-bold text-white">Cryptocurrency</h4>
                     <p class="text-[10px] text-[#707070]">Bitcoin & Altcoins</p>
                   </div>
-                  <button
-                    (click)="activeAssetClasses.crypto = !activeAssetClasses.crypto"
-                    [ngClass]="activeAssetClasses.crypto ? 'bg-[#10A37F]' : 'bg-[#404040]'"
-                    class="relative w-11 h-6 rounded-full transition-colors duration-200"
-                  >
-                    <div
-                      [ngClass]="activeAssetClasses.crypto ? 'translate-x-6' : 'translate-x-1'"
-                      class="absolute top-1 left-0.5 w-4 h-4 bg-white rounded-full transition-transform duration-200"
-                    ></div>
-                  </button>
+                  <ui-toggle [(ngModel)]="activeAssetClasses.crypto"></ui-toggle>
                 </div>
 
                 <!-- Mutual Funds -->
@@ -393,16 +333,7 @@
                     <h4 class="text-sm font-bold text-white">Mutual Funds</h4>
                     <p class="text-[10px] text-[#707070]">Index & actively managed</p>
                   </div>
-                  <button
-                    (click)="activeAssetClasses.mutualFunds = !activeAssetClasses.mutualFunds"
-                    [ngClass]="activeAssetClasses.mutualFunds ? 'bg-[#10A37F]' : 'bg-[#404040]'"
-                    class="relative w-11 h-6 rounded-full transition-colors duration-200"
-                  >
-                    <div
-                      [ngClass]="activeAssetClasses.mutualFunds ? 'translate-x-6' : 'translate-x-1'"
-                      class="absolute top-1 left-0.5 w-4 h-4 bg-white rounded-full transition-transform duration-200"
-                    ></div>
-                  </button>
+                  <ui-toggle [(ngModel)]="activeAssetClasses.mutualFunds"></ui-toggle>
                 </div>
 
                 <!-- ETFs -->
@@ -411,16 +342,7 @@
                     <h4 class="text-sm font-bold text-white">ETFs</h4>
                     <p class="text-[10px] text-[#707070]">Exchange Traded Funds</p>
                   </div>
-                  <button
-                    (click)="activeAssetClasses.etfs = !activeAssetClasses.etfs"
-                    [ngClass]="activeAssetClasses.etfs ? 'bg-[#10A37F]' : 'bg-[#404040]'"
-                    class="relative w-11 h-6 rounded-full transition-colors duration-200"
-                  >
-                    <div
-                      [ngClass]="activeAssetClasses.etfs ? 'translate-x-6' : 'translate-x-1'"
-                      class="absolute top-1 left-0.5 w-4 h-4 bg-white rounded-full transition-transform duration-200"
-                    ></div>
-                  </button>
+                  <ui-toggle [(ngModel)]="activeAssetClasses.etfs"></ui-toggle>
                 </div>
 
                 <!-- Cash & Cash Equivalents -->
@@ -429,16 +351,7 @@
                     <h4 class="text-sm font-bold text-white">Cash & Deposits</h4>
                     <p class="text-[10px] text-[#707070]">Cash, Bank CDs, FDs</p>
                   </div>
-                  <button
-                    (click)="activeAssetClasses.cash = !activeAssetClasses.cash"
-                    [ngClass]="activeAssetClasses.cash ? 'bg-[#10A37F]' : 'bg-[#404040]'"
-                    class="relative w-11 h-6 rounded-full transition-colors duration-200"
-                  >
-                    <div
-                      [ngClass]="activeAssetClasses.cash ? 'translate-x-6' : 'translate-x-1'"
-                      class="absolute top-1 left-0.5 w-4 h-4 bg-white rounded-full transition-transform duration-200"
-                    ></div>
-                  </button>
+                  <ui-toggle [(ngModel)]="activeAssetClasses.cash"></ui-toggle>
                 </div>
 
                 <!-- Gold & Precious Metals -->
@@ -447,16 +360,7 @@
                     <h4 class="text-sm font-bold text-white">Gold & Bullion</h4>
                     <p class="text-[10px] text-[#707070]">Precious metals tracking</p>
                   </div>
-                  <button
-                    (click)="activeAssetClasses.gold = !activeAssetClasses.gold"
-                    [ngClass]="activeAssetClasses.gold ? 'bg-[#10A37F]' : 'bg-[#404040]'"
-                    class="relative w-11 h-6 rounded-full transition-colors duration-200"
-                  >
-                    <div
-                      [ngClass]="activeAssetClasses.gold ? 'translate-x-6' : 'translate-x-1'"
-                      class="absolute top-1 left-0.5 w-4 h-4 bg-white rounded-full transition-transform duration-200"
-                    ></div>
-                  </button>
+                  <ui-toggle [(ngModel)]="activeAssetClasses.gold"></ui-toggle>
                 </div>
 
                 <!-- Real Estate -->
@@ -465,27 +369,15 @@
                     <h4 class="text-sm font-bold text-white">Real Estate</h4>
                     <p class="text-[10px] text-[#707070]">Properties & Land</p>
                   </div>
-                  <button
-                    (click)="activeAssetClasses.realEstate = !activeAssetClasses.realEstate"
-                    [ngClass]="activeAssetClasses.realEstate ? 'bg-[#10A37F]' : 'bg-[#404040]'"
-                    class="relative w-11 h-6 rounded-full transition-colors duration-200"
-                  >
-                    <div
-                      [ngClass]="activeAssetClasses.realEstate ? 'translate-x-6' : 'translate-x-1'"
-                      class="absolute top-1 left-0.5 w-4 h-4 bg-white rounded-full transition-transform duration-200"
-                    ></div>
-                  </button>
+                  <ui-toggle [(ngModel)]="activeAssetClasses.realEstate"></ui-toggle>
                 </div>
               </div>
 
               <div class="mt-6 flex justify-end">
-                <button
-                  (click)="handleSavePortfolio()"
-                  class="px-6 py-3 bg-gradient-to-r from-[#10A37F] to-[#0D8968] text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-[#10A37F]/20 transition-all duration-200 flex items-center gap-2 text-sm"
-                >
+                <ui-button variant="primary" (click)="handleSavePortfolio()">
                   <lucide-icon name="check-circle-2" class="h-4 w-4"></lucide-icon>
                   Save Portfolio Preferences
-                </button>
+                </ui-button>
               </div>
             </div>
           </div>
@@ -519,16 +411,7 @@
                         <p class="text-[10px] text-[#808080]">Market notifications via Email</p>
                       </div>
                     </div>
-                    <button
-                      (click)="emailNotifications = !emailNotifications"
-                      [ngClass]="emailNotifications ? 'bg-[#10A37F]' : 'bg-[#404040]'"
-                      class="relative w-11 h-6 rounded-full transition-colors duration-200"
-                    >
-                      <div
-                        [ngClass]="emailNotifications ? 'translate-x-6' : 'translate-x-1'"
-                        class="absolute top-1 left-0.5 w-4 h-4 bg-white rounded-full transition-transform duration-200"
-                      ></div>
-                    </button>
+                    <ui-toggle [(ngModel)]="emailNotifications"></ui-toggle>
                   </div>
 
                   <!-- In-App channels -->
@@ -540,16 +423,7 @@
                         <p class="text-[10px] text-[#808080]">Realtime browser push notifications</p>
                       </div>
                     </div>
-                    <button
-                      (click)="pushNotifications = !pushNotifications"
-                      [ngClass]="pushNotifications ? 'bg-[#10A37F]' : 'bg-[#404040]'"
-                      class="relative w-11 h-6 rounded-full transition-colors duration-200"
-                    >
-                      <div
-                        [ngClass]="pushNotifications ? 'translate-x-6' : 'translate-x-1'"
-                        class="absolute top-1 left-0.5 w-4 h-4 bg-white rounded-full transition-transform duration-200"
-                      ></div>
-                    </button>
+                    <ui-toggle [(ngModel)]="pushNotifications"></ui-toggle>
                   </div>
                 </div>
 
@@ -564,16 +438,7 @@
                         <h4 class="text-sm font-semibold text-white">Weekly Performance Digest</h4>
                         <p class="text-[10px] text-[#808080]">Comprehensive weekend performance reports</p>
                       </div>
-                      <button
-                        (click)="weeklyReports = !weeklyReports"
-                        [ngClass]="weeklyReports ? 'bg-[#10A37F]' : 'bg-[#404040]'"
-                        class="relative w-11 h-6 rounded-full transition-colors duration-200"
-                      >
-                        <div
-                          [ngClass]="weeklyReports ? 'translate-x-6' : 'translate-x-1'"
-                          class="absolute top-1 left-0.5 w-4 h-4 bg-white rounded-full transition-transform duration-200"
-                        ></div>
-                      </button>
+                      <ui-toggle [(ngModel)]="weeklyReports"></ui-toggle>
                     </div>
 
                     <!-- Dividend Alert -->
@@ -582,16 +447,7 @@
                         <h4 class="text-sm font-semibold text-white">Dividend payouts & Yield</h4>
                         <p class="text-[10px] text-[#808080]">Alert when stock pays dividends</p>
                       </div>
-                      <button
-                        (click)="dividendAlerts = !dividendAlerts"
-                        [ngClass]="dividendAlerts ? 'bg-[#10A37F]' : 'bg-[#404040]'"
-                        class="relative w-11 h-6 rounded-full transition-colors duration-200"
-                      >
-                        <div
-                          [ngClass]="dividendAlerts ? 'translate-x-6' : 'translate-x-1'"
-                          class="absolute top-1 left-0.5 w-4 h-4 bg-white rounded-full transition-transform duration-200"
-                        ></div>
-                      </button>
+                      <ui-toggle [(ngModel)]="dividendAlerts"></ui-toggle>
                     </div>
 
                     <!-- Price Movement Toggles -->
@@ -600,16 +456,7 @@
                         <h4 class="text-sm font-semibold text-white">Daily Price Volatility Warning</h4>
                         <p class="text-[10px] text-[#808080]">Significant asset price swing detection</p>
                       </div>
-                      <button
-                        (click)="portfolioAlerts = !portfolioAlerts"
-                        [ngClass]="portfolioAlerts ? 'bg-[#10A37F]' : 'bg-[#404040]'"
-                        class="relative w-11 h-6 rounded-full transition-colors duration-200"
-                      >
-                        <div
-                          [ngClass]="portfolioAlerts ? 'translate-x-6' : 'translate-x-1'"
-                          class="absolute top-1 left-0.5 w-4 h-4 bg-white rounded-full transition-transform duration-200"
-                        ></div>
-                      </button>
+                      <ui-toggle [(ngModel)]="portfolioAlerts"></ui-toggle>
                     </div>
 
                     <!-- Rebalance Toggles -->
@@ -618,16 +465,7 @@
                         <h4 class="text-sm font-semibold text-white">Target Allocation Rebalancing</h4>
                         <p class="text-[10px] text-[#808080]">Alert when asset classes drift out of bounds</p>
                       </div>
-                      <button
-                        (click)="rebalanceAlerts = !rebalanceAlerts"
-                        [ngClass]="rebalanceAlerts ? 'bg-[#10A37F]' : 'bg-[#404040]'"
-                        class="relative w-11 h-6 rounded-full transition-colors duration-200"
-                      >
-                        <div
-                          [ngClass]="rebalanceAlerts ? 'translate-x-6' : 'translate-x-1'"
-                          class="absolute top-1 left-0.5 w-4 h-4 bg-white rounded-full transition-transform duration-200"
-                        ></div>
-                      </button>
+                      <ui-toggle [(ngModel)]="rebalanceAlerts"></ui-toggle>
                     </div>
                   </div>
                 </div>
@@ -667,13 +505,10 @@
               </div>
 
               <div class="mt-8 flex justify-end">
-                <button
-                  (click)="handleSaveAlerts()"
-                  class="px-6 py-3 bg-gradient-to-r from-[#10A37F] to-[#0D8968] text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-[#10A37F]/20 transition-all duration-200 flex items-center gap-2 text-sm"
-                >
+                <ui-button variant="primary" (click)="handleSaveAlerts()">
                   <lucide-icon name="check-circle-2" class="h-4 w-4"></lucide-icon>
                   Save Alert Settings
-                </button>
+                </ui-button>
               </div>
             </div>
           </div>
@@ -694,12 +529,9 @@
                   <div>
                     <h2 class="text-xl font-bold text-white flex items-center gap-2">
                       Two-Factor Authentication (2FA)
-                      <span
-                        [ngClass]="twoFactorEnabled ? 'bg-[#10A37F]/10 text-[#10A37F] border-[#10A37F]/30' : 'bg-white/5 text-[#808080] border-transparent'"
-                        class="text-xs px-3 py-0.5 rounded-full border font-bold"
-                      >
+                      <ui-badge [tone]="twoFactorEnabled ? 'accent' : 'neutral'">
                         {{ twoFactorEnabled ? 'Active' : 'Inactive' }}
-                      </span>
+                      </ui-badge>
                     </h2>
                     <p class="text-xs text-[#909090] mt-1 max-w-xl">
                       Add a secondary layer of credential checks to your account. When enabled, signing in requires your standard password and an Authenticator code.
@@ -709,16 +541,10 @@
               </div>
 
               <div class="mt-6 flex justify-start">
-                <button
-                  (click)="handleToggle2FA()"
-                  [ngClass]="twoFactorEnabled 
-                    ? 'bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20' 
-                    : 'bg-[#10A37F] text-white hover:bg-[#0D8968]'"
-                  class="px-5 py-3 rounded-xl font-bold transition-all duration-200 text-sm flex items-center gap-2"
-                >
+                <ui-button [variant]="twoFactorEnabled ? 'ghost' : 'primary'" (click)="handleToggle2FA()">
                   <lucide-icon [name]="twoFactorEnabled ? 'x-circle' : 'shield'" class="h-5 w-5"></lucide-icon>
                   {{ twoFactorEnabled ? 'Disable 2-Factor Authentication' : 'Activate 2-Factor Authentication' }}
-                </button>
+                </ui-button>
               </div>
             </div>
 
@@ -767,14 +593,15 @@
 
                 <!-- Confirm update -->
                 <div class="pt-3">
-                  <button
+                  <ui-button
+                    variant="primary"
+                    [disabled]="!oldPassword || !newPasswordValue"
+                    [loading]="isLoadingPasswordChange"
                     (click)="handleChangePassword()"
-                    [disabled]="isLoadingPasswordChange || !oldPassword || !newPasswordValue"
-                    class="px-6 py-3 bg-gradient-to-r from-[#10A37F] to-[#0D8968] text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-[#10A37F]/20 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center gap-2 text-sm"
                   >
                     <lucide-icon name="lock" class="h-5 w-5"></lucide-icon>
                     {{ isLoadingPasswordChange ? 'Processing credentials...' : 'Save New Password' }}
-                  </button>
+                  </ui-button>
                 </div>
               </div>
             </div>
@@ -801,19 +628,20 @@
                       <div>
                         <div class="flex items-center gap-2">
                           <p class="text-sm font-bold text-white">{{ session.device }}</p>
-                          <span *ngIf="session.isCurrent" class="text-[8px] font-mono px-2 py-0.5 bg-[#10A37F]/15 text-[#10A37F] border border-[#10A37F]/30 rounded-md uppercase font-semibold">Current Session</span>
+                          <ui-badge *ngIf="session.isCurrent" tone="accent">Current Session</ui-badge>
                         </div>
                         <p class="text-[10px] text-[#808080] mt-0.5">{{ session.location }} • {{ session.date }}</p>
                       </div>
                     </div>
                     
-                    <button
+                    <ui-button
                       *ngIf="!session.isCurrent"
+                      variant="ghost"
+                      size="sm"
                       (click)="handleRevokeSession(session.id)"
-                      class="px-3 py-1.5 border border-red-500/30 hover:border-red-500 text-red-400 hover:bg-red-500/10 rounded-lg text-xs font-bold transition-all duration-200"
                     >
                       Revoke Key
-                    </button>
+                    </ui-button>
                   </div>
                 }
               </div>
@@ -841,7 +669,7 @@
                 
                 <div class="px-4 py-2 bg-[#232323] border border-[#303030] rounded-xl self-start md:self-auto flex items-center gap-2">
                   <span class="text-xs text-[#909090] font-medium">Current Status:</span>
-                  <span class="text-xs text-[#10A37F] font-bold uppercase tracking-wider bg-[#10A37F]/10 px-2 py-0.5 rounded">Free Plan</span>
+                  <ui-badge tone="accent">Free Plan</ui-badge>
                 </div>
               </div>
 
@@ -879,17 +707,16 @@
                     </div>
                   </div>
 
-                  <button
-                    disabled
-                    class="w-full mt-8 py-3 bg-[#1C1C1C] border border-[#2D2D2D] text-[#707070] rounded-xl text-xs font-bold uppercase tracking-wider cursor-not-allowed"
-                  >
+                  <ui-button variant="secondary" [disabled]="true" [fullWidth]="true">
                     Active Plan
-                  </button>
+                  </ui-button>
                 </div>
 
                 <!-- Pro Plan -->
                 <div class="bg-[#232323] border border-[#10A37F]/50 rounded-2xl p-6 flex flex-col justify-between relative shadow-lg ring-1 ring-[#10A37F]/30">
-                  <div class="absolute top-0 right-6 -translate-y-1/2 bg-[#10A37F] text-white text-[8px] font-bold uppercase tracking-widest px-3 py-1 rounded-full">Popular</div>
+                  <div class="absolute top-0 right-6 -translate-y-1/2">
+                    <ui-badge tone="accent" styleVariant="solid">Popular</ui-badge>
+                  </div>
                   
                   <div class="space-y-4">
                     <div class="flex items-center justify-between border-b border-[#303030] pb-4">
@@ -925,12 +752,9 @@
                     </div>
                   </div>
 
-                  <button
-                    (click)="onNavigate('subscription')"
-                    class="w-full mt-8 py-3 bg-[#10A37F] text-white hover:bg-[#0D8968] rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-200 shadow-md hover:shadow-lg hover:shadow-[#10A37F]/20"
-                  >
+                  <ui-button variant="primary" [fullWidth]="true" (click)="onNavigate('subscription')">
                     Upgrade to Pro
-                  </button>
+                  </ui-button>
                 </div>
 
                 <!-- Premium Plan -->
@@ -969,12 +793,9 @@
                     </div>
                   </div>
 
-                  <button
-                    (click)="onNavigate('subscription')"
-                    class="w-full mt-8 py-3 bg-[#2D2D2D] hover:bg-[#383838] text-white border border-[#404040] rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-200"
-                  >
+                  <ui-button variant="secondary" [fullWidth]="true" (click)="onNavigate('subscription')">
                     Go Premium
-                  </button>
+                  </ui-button>
                 </div>
               </div>
             </div>
@@ -1020,13 +841,10 @@
                 </div>
                 
                 <div class="flex justify-end">
-                  <button
-                    (click)="handleSaveLivePriceUrl()"
-                    class="px-5 py-2.5 bg-gradient-to-r from-[#10A37F] to-[#0D8968] text-white rounded-xl text-xs font-semibold flex items-center gap-2 transition-all duration-200"
-                  >
+                  <ui-button variant="primary" (click)="handleSaveLivePriceUrl()">
                     <lucide-icon name="save" class="h-4 w-4"></lucide-icon>
                     Save URL Config
-                  </button>
+                  </ui-button>
                 </div>
               </div>
 
@@ -1037,20 +855,14 @@
                 </p>
                 
                 <div class="flex flex-wrap gap-4 pt-2">
-                  <button
-                    (click)="handleExportData('csv')"
-                    class="px-5 py-3 bg-[#2D2D2D] hover:bg-[#353535] border border-[#404040] text-white rounded-xl text-xs font-semibold flex items-center gap-2 transition-colors duration-200"
-                  >
+                  <ui-button variant="secondary" (click)="handleExportData('csv')">
                     <lucide-icon name="download" class="h-4 w-4 text-[#808080]"></lucide-icon>
                     Export as CSV Document (.csv)
-                  </button>
-                  <button
-                    (click)="handleExportData('json')"
-                    class="px-5 py-3 bg-[#2D2D2D] hover:bg-[#353535] border border-[#404040] text-white rounded-xl text-xs font-semibold flex items-center gap-2 transition-colors duration-200"
-                  >
+                  </ui-button>
+                  <ui-button variant="secondary" (click)="handleExportData('json')">
                     <lucide-icon name="download" class="h-4 w-4 text-[#808080]"></lucide-icon>
                     Export as JSON Database (.json)
-                  </button>
+                  </ui-button>
                 </div>
               </div>
             </div>
@@ -1076,12 +888,9 @@
                     <h4 class="text-sm font-bold text-white">Reset Portfolio Transactions</h4>
                     <p class="text-xs text-[#808080] max-w-xl">Delete all stock, crypto, ETF buy/sell transactions and clear tracking calculations. Keep account configuration details intact.</p>
                   </div>
-                  <button
-                    (click)="showResetModal = true"
-                    class="px-5 py-3 bg-red-600/10 hover:bg-red-600/20 text-red-400 border border-red-500/25 hover:border-red-500 rounded-xl text-xs font-bold transition-all duration-200 uppercase whitespace-nowrap"
-                  >
+                  <ui-button variant="danger" (click)="handleResetPortfolioClick()">
                     Reset All Data
-                  </button>
+                  </ui-button>
                 </div>
 
                 <!-- Delete account -->
@@ -1090,12 +899,9 @@
                     <h4 class="text-sm font-bold text-white">Permanently Delete Account</h4>
                     <p class="text-xs text-[#808080] max-w-xl">Remove user profile, authentication credentials, and database portfolio metrics. This action is final.</p>
                   </div>
-                  <button
-                    (click)="showDeleteModal = true"
-                    class="px-5 py-3 bg-red-600 text-white hover:bg-red-500 rounded-xl text-xs font-bold transition-all duration-200 uppercase whitespace-nowrap"
-                  >
+                  <ui-button variant="danger" (click)="handleDeleteAccountClick()">
                     Delete My Account
-                  </button>
+                  </ui-button>
                 </div>
               </div>
             </div>
@@ -1115,12 +921,13 @@
 >
   <div class="bg-[#1C1C1C] border border-[#303030] rounded-2xl w-full max-w-md overflow-hidden relative shadow-2xl animate-scale-up">
     <!-- Close icon -->
-    <button
+    <ui-button
+      variant="icon"
+      class="absolute top-4 right-4"
       (click)="show2FAModal = false"
-      class="absolute top-4 right-4 text-[#707070] hover:text-white transition-colors"
     >
       <lucide-icon name="x" class="h-5 w-5"></lucide-icon>
-    </button>
+    </ui-button>
 
     <div class="p-6 md:p-8 space-y-6">
       <div class="text-center space-y-1.5">
@@ -1166,119 +973,14 @@
 
       <!-- Controls -->
       <div class="flex gap-3">
-        <button
-          (click)="show2FAModal = false"
-          class="flex-1 py-3 bg-[#2D2D2D] hover:bg-[#353535] text-white border border-[#404040] rounded-xl text-xs font-semibold transition-colors duration-200"
-        >
+        <ui-button variant="secondary" [fullWidth]="true" (click)="show2FAModal = false">
           Cancel
-        </button>
-        <button
-          (click)="handleVerify2FA()"
-          class="flex-1 py-3 bg-[#10A37F] hover:bg-[#0D8968] text-white rounded-xl text-xs font-semibold transition-colors duration-200"
-        >
-          Verify & Enable
-        </button>
+        </ui-button>
+        <ui-button variant="primary" [fullWidth]="true" (click)="handleVerify2FA()">
+          Verify &amp; Enable
+        </ui-button>
       </div>
     </div>
   </div>
 </div>
 
-<!-- 2. RESET PORTFOLIO DATA MODAL -->
-<div
-  *ngIf="showResetModal"
-  class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-fade-in"
->
-  <div class="bg-[#1C1C1C] border border-[#EF4444]/30 rounded-2xl w-full max-w-md overflow-hidden relative shadow-2xl animate-scale-up">
-    <!-- Close icon -->
-    <button
-      (click)="showResetModal = false"
-      [disabled]="isResetting"
-      class="absolute top-4 right-4 text-[#707070] hover:text-white transition-colors"
-    >
-      <lucide-icon name="x" class="h-5 w-5"></lucide-icon>
-    </button>
-
-    <div class="p-6 md:p-8 space-y-6">
-      <div class="text-center space-y-2">
-        <div class="w-12 h-12 rounded-full bg-red-500/10 flex items-center justify-center mx-auto">
-          <lucide-icon name="alert-triangle" class="h-6 w-6 text-red-500"></lucide-icon>
-        </div>
-        <h3 class="text-lg font-bold text-white">Reset Portfolio Transactions</h3>
-        <p class="text-xs text-[#909090]">Are you absolutely sure you want to clear your data?</p>
-      </div>
-
-      <div class="p-4 bg-red-500/5 border border-red-500/15 rounded-xl text-center text-xs text-[#C0C0C0] leading-relaxed">
-        This action will permanently delete all stocks, mutual funds, crypto purchases, and records from your dashboard. <strong class="text-red-400">This action cannot be undone.</strong>
-      </div>
-
-      <!-- Controls -->
-      <div class="flex gap-3">
-        <button
-          (click)="showResetModal = false"
-          [disabled]="isResetting"
-          class="flex-1 py-3 bg-[#2D2D2D] hover:bg-[#353535] text-white border border-[#404040] rounded-xl text-xs font-semibold transition-colors duration-200 disabled:opacity-40"
-        >
-          Cancel
-        </button>
-        <button
-          (click)="handleResetPortfolio()"
-          [disabled]="isResetting"
-          class="flex-1 py-3 bg-red-600 hover:bg-red-500 text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition-colors duration-200 disabled:opacity-40"
-        >
-          <span *ngIf="isResetting" class="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
-          {{ isResetting ? 'Resetting...' : 'Reset Data' }}
-        </button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- 3. DELETE ACCOUNT MODAL -->
-<div
-  *ngIf="showDeleteModal"
-  class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-fade-in"
->
-  <div class="bg-[#1C1C1C] border border-[#EF4444]/30 rounded-2xl w-full max-w-md overflow-hidden relative shadow-2xl animate-scale-up">
-    <!-- Close icon -->
-    <button
-      (click)="showDeleteModal = false"
-      [disabled]="isDeleting"
-      class="absolute top-4 right-4 text-[#707070] hover:text-white transition-colors"
-    >
-      <lucide-icon name="x" class="h-5 w-5"></lucide-icon>
-    </button>
-
-    <div class="p-6 md:p-8 space-y-6">
-      <div class="text-center space-y-2">
-        <div class="w-12 h-12 rounded-full bg-red-500/10 flex items-center justify-center mx-auto">
-          <lucide-icon name="trash-2" class="h-6 w-6 text-red-500"></lucide-icon>
-        </div>
-        <h3 class="text-lg font-bold text-white">Permanently Delete Account</h3>
-        <p class="text-xs text-[#909090]">Are you sure you want to end your subscription?</p>
-      </div>
-
-      <div class="p-4 bg-red-500/5 border border-red-500/15 rounded-xl text-center text-xs text-[#C0C0C0] leading-relaxed">
-        You are deleting your profile. This will erase all login credentials, custom portfolios, asset history, and preferences. <strong class="text-red-400">All data will be lost forever.</strong>
-      </div>
-
-      <!-- Controls -->
-      <div class="flex gap-3">
-        <button
-          (click)="showDeleteModal = false"
-          [disabled]="isDeleting"
-          class="flex-1 py-3 bg-[#2D2D2D] hover:bg-[#353535] text-white border border-[#404040] rounded-xl text-xs font-semibold transition-colors duration-200 disabled:opacity-40"
-        >
-          Cancel
-        </button>
-        <button
-          (click)="handleDeleteAccountConfirm()"
-          [disabled]="isDeleting"
-          class="flex-1 py-3 bg-red-600 hover:bg-red-500 text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition-colors duration-200 disabled:opacity-40"
-        >
-          <span *ngIf="isDeleting" class="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
-          {{ isDeleting ? 'Deleting...' : 'Delete My Account' }}
-        </button>
-      </div>
-    </div>
-  </div>
-</div>

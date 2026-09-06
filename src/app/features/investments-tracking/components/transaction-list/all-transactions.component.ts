@@ -5,6 +5,8 @@ import { Subject } from 'rxjs';
 import { LucideIconsModule } from '@core/icons/lucide-icons.module';
 import { PrimeNgModule } from '@core/prime-ng.module';
 import { NotificationService } from '@services/notification.service';
+import { BadgeComponent } from '@shared/ui/badge/badge.component';
+import { EmptyStateComponent } from '@shared/ui/empty-state/empty-state.component';
 
 // Interfaces
 export interface Transaction {
@@ -18,7 +20,7 @@ export interface Transaction {
 @Component({
     selector: 'app-all-transactions',
     standalone: true,
-    imports: [CommonModule, FormsModule, LucideIconsModule, PrimeNgModule],
+    imports: [CommonModule, FormsModule, LucideIconsModule, PrimeNgModule, BadgeComponent, EmptyStateComponent],
     templateUrl: './all-transactions.component.html',
     styleUrls: ['./all-transactions.component.css']
 })

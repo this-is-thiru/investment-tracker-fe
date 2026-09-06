@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LucideIconsModule } from '@core/icons/lucide-icons.module';
 @Component({
@@ -8,7 +8,7 @@ import { LucideIconsModule } from '@core/icons/lucide-icons.module';
     templateUrl: './expansion-panel.component.html',
     styleUrls: ['./expansion-panel.component.scss']
 })
-export class ExpansionPanelComponent implements OnInit {
+export class ExpansionPanelComponent {
 
   // Panel title and optional subtitle
   @Input({ required: true }) title!: string;
@@ -22,12 +22,10 @@ export class ExpansionPanelComponent implements OnInit {
 
   // Default expansion state
   @Input() isExpanded: boolean = true;
-
-  ngOnInit(): void {
-    console.log(this.titleIcon);
-  }
+  @Output() isExpandedChange = new EventEmitter<boolean>();
 
   toggleExpansion(): void {
     this.isExpanded = !this.isExpanded;
+    this.isExpandedChange.emit(this.isExpanded);
   }
 }

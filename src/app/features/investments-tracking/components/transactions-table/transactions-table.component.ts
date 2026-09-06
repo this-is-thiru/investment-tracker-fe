@@ -8,6 +8,9 @@ import { ExpansionPanelComponent } from '@shared/components/expansion-panel/expa
 import { TooltipDirective } from '@shared/directives/tooltip/tooltip.directive';
 import { LucideIconsModule } from '@core/icons/lucide-icons.module';
 import { PrimeNgModule } from '@core/prime-ng.module';
+import { BadgeComponent } from '@shared/ui/badge/badge.component';
+import { ButtonComponent } from '@shared/ui/button/button.component';
+import { EmptyStateComponent } from '@shared/ui/empty-state/empty-state.component';
 import {
   PortfolioAnalyticsService,
   SummaryStats,
@@ -43,6 +46,9 @@ interface ColumnDef {
         ExpansionPanelComponent,
         PrimeNgModule,
         TooltipDirective,
+        BadgeComponent,
+        ButtonComponent,
+        EmptyStateComponent,
     ],
     templateUrl: './transactions-table.component.html',
     styleUrls: ['./transactions-table.component.css']

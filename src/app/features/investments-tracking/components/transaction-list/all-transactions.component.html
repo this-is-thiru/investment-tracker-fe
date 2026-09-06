@@ -411,11 +411,7 @@
                       {{ tx.quantity }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm">
-                      <span
-                        [ngClass]="activeTableTab === 'temporary' ? 'bg-[#FACC15]/20 text-[#FACC15]' : 'bg-[#22C55E]/20 text-[#22C55E]'"
-                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full">
-                        {{ tx.status }}
-                      </span>
+                      <ui-badge [tone]="activeTableTab === 'temporary' ? 'warning' : 'success'">{{ tx.status }}</ui-badge>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-[#666666]">
                       {{ tx.actionDate }}
@@ -424,9 +420,8 @@
                 </ng-template>
                 <ng-template pTemplate="emptymessage">
                   <tr>
-                    <td colspan="5" class="px-6 py-12 text-center text-[#666666] text-lg">
-                      <lucide-icon name="alert-circle" class="h-6 w-6 inline-block mr-2 align-middle"></lucide-icon>
-                      <span class="align-middle">No transactions found.</span>
+                    <td colspan="5" class="px-6 py-12 text-center">
+                      <ui-empty-state icon="alert-circle" title="No transactions found." />
                     </td>
                   </tr>
                 </ng-template>

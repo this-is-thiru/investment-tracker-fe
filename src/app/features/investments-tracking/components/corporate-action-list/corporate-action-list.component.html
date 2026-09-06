@@ -8,10 +8,9 @@
       </h3>
       <p class="text-xs text-[#B3B3B3]">Overview of registered corporate actions currently active in the tracker system.</p>
     </div>
-    <button type="button" (click)="refresh()" [disabled]="isLoading"
-      class="p-2 bg-[#2E2E2E] border border-[#3A3A3A] text-white hover:bg-[#353535] rounded-lg transition-colors flex items-center justify-center">
+    <ui-button variant="secondary" size="sm" (click)="refresh()" [disabled]="isLoading">
       <lucide-icon name="rotate-cw" [class.animate-spin]="isLoading" class="h-4 w-4"></lucide-icon>
-    </button>
+    </ui-button>
   </div>
 
   <!-- Loading State -->
@@ -39,11 +38,10 @@
         optionLabel="label" optionValue="value" placeholder="Action type" styleClass="text-sm" appendTo="body"></p-select>
 
       <!-- Reset -->
-      <button (click)="resetFilters()" [disabled]="!searchQuery && filterType === 'ALL'"
-        class="px-3 py-2 rounded-lg bg-[#2E2E2E] text-xs font-semibold text-[#B3B3B3] border border-[#3A3A3A] hover:text-white hover:border-[#3B82F6] disabled:opacity-40 transition-colors flex items-center gap-1.5">
+      <ui-button variant="secondary" size="sm" (click)="resetFilters()" [disabled]="!searchQuery && filterType === 'ALL'">
         <lucide-icon name="X" class="w-3.5 h-3.5"></lucide-icon>
         Reset
-      </button>
+      </ui-button>
     </div>
 
     <!-- Table -->
@@ -88,11 +86,10 @@
             <td class="px-4 py-3 text-gray-300 text-sm font-mono">{{ action.recordDate || '-' }}</td>
             <td class="px-4 py-3 text-center">
               <div class="flex items-center justify-center gap-2">
-                <button type="button" (click)="viewDetails(action.id || action.stockCode)"
-                  class="inline-flex items-center justify-center p-2 bg-[#2D2D2D] hover:bg-[#3B82F6]/10 text-gray-300 hover:text-[#3B82F6] border border-[#404040] hover:border-[#3B82F6]/40 rounded-lg transition-all"
+                <ui-button variant="icon" (click)="viewDetails(action.id || action.stockCode)"
                   appTooltip="View Action Details">
                   <lucide-icon name="eye" class="w-4 h-4"></lucide-icon>
-                </button>
+                </ui-button>
                 <button type="button" (click)="deleteAction(action)" [disabled]="!authService.isAdmin()"
                   [ngClass]="!authService.isAdmin() ? 'opacity-40 cursor-not-allowed text-[#555] hover:text-[#555] border-[#3A3A3A] hover:bg-transparent' : 'hover:bg-[#EF4444]/10 text-gray-300 hover:text-[#EF4444] hover:border-[#EF4444]/40'"
                   class="inline-flex items-center justify-center p-2 bg-[#2D2D2D] border border-[#404040] rounded-lg transition-all"
@@ -106,11 +103,7 @@
         <ng-template pTemplate="emptymessage">
           <tr>
             <td colspan="5" class="py-12 px-4 text-center">
-              <div class="flex flex-col items-center justify-center space-y-3 py-6">
-                <lucide-icon name="database" class="w-10 h-10 text-[#707070]"></lucide-icon>
-                <h4 class="text-sm font-semibold text-white">No corporate actions found</h4>
-                <p class="text-xs text-[#707070]">Click the "Add Action" tab to create one.</p>
-              </div>
+              <ui-empty-state icon="database" title="No corporate actions found" message='Click the "Add Action" tab to create one.' />
             </td>
           </tr>
         </ng-template>
@@ -120,24 +113,14 @@
 </section>
 
 <!-- ================= CORPORATE ACTION DETAILS MODAL ================= -->
-<!-- ================= CORPORATE ACTION DETAILS MODAL ================= -->
-@if (showDetailModal) {
-  <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-fade-in">
-    <div class="bg-[#1C1C1C] border border-[#3A3A3A] rounded-2xl w-full max-w-xl shadow-2xl animate-scale-up flex flex-col max-h-[85vh] relative overflow-hidden">
-      <!-- Header (Fixed) -->
-      <div class="p-6 pb-4 border-b border-[#3A3A3A] flex items-center justify-between shrink-0 bg-[#1C1C1C]">
-        <div>
-          <span class="text-[9px] text-[#3B82F6] font-bold uppercase tracking-widest">Action Tracking</span>
-          <h3 class="text-lg font-bold text-white mt-1">Corporate Action Details</h3>
-        </div>
-        <!-- Close icon in header -->
-        <button (click)="closeModal()" class="text-[#707070] hover:text-white transition-colors p-1.5 rounded-lg hover:bg-[#2A2A2A]">
-          <lucide-icon name="x" class="h-5 w-5"></lucide-icon>
-        </button>
-      </div>
+<ui-modal [open]="showDetailModal" size="md" [dismissible]="true" (closed)="closeModal()">
+  <div modalHeader class="flex-1">
+    <span class="text-[9px] text-[#3B82F6] font-bold uppercase tracking-widest">Action Tracking</span>
+    <h3 class="text-lg font-bold text-white mt-1">Corporate Action Details</h3>
+  </div>
 
       <!-- Content (Scrollable) -->
-      <div class="p-6 overflow-y-auto flex-1 min-h-0 space-y-5">
+      <div class="space-y-5">
         @if (isDetailLoading || !selectedAction) {
           <div class="flex flex-col items-center justify-center py-12 space-y-4">
             <lucide-icon name="rotate-cw" class="w-8 h-8 text-[#3B82F6] animate-spin"></lucide-icon>
@@ -146,7 +129,8 @@
         } @else {
           <div class="space-y-5">
             <!-- Grid 1: Basic Information -->
-            <div class="grid grid-cols-2 gap-4 bg-[#232323] p-4 rounded-xl border border-[#3A3A3A]">
+            <ui-card padding="md">
+            <div class="grid grid-cols-2 gap-4">
               <div>
                 <span class="text-[9px] text-[#808080] block font-bold uppercase tracking-wider mb-0.5">Stock Code</span>
                 <span class="font-mono text-sm font-semibold text-white">{{ selectedAction.stockCode }}</span>
@@ -166,6 +150,7 @@
                 <span class="text-sm text-gray-300">{{ selectedAction.assetType || 'EQUITY' }}</span>
               </div>
             </div>
+            </ui-card>
 
             <!-- Grid 2: Event Parameters -->
             <div class="grid grid-cols-3 gap-2 text-center bg-[#232323]/50 p-3 rounded-lg border border-[#3A3A3A]/60">
@@ -216,7 +201,8 @@
 
             <!-- Conditional Details: Demerger Spec -->
             @if (selectedAction.type === 'DEMERGER' && selectedAction.demergerDetail) {
-              <div class="border border-[#3A3A3A] bg-[#232323] p-4 rounded-xl space-y-4">
+              <ui-card padding="md">
+              <div class="space-y-4">
                 <h4 class="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-1 border-b border-[#3A3A3A] pb-2">
                   <lucide-icon name="trending-up" class="w-3.5 h-3.5 text-[#3B82F6]"></lucide-icon>
                   Demerger Specifications
@@ -256,6 +242,7 @@
                   </div>
                 }
               </div>
+              </ui-card>
             }
 
             <!-- Metadata Row -->
@@ -267,13 +254,8 @@
         }
       </div>
 
-      <!-- Footer (Fixed) -->
-      <div class="p-6 pt-4 border-t border-[#3A3A3A] flex justify-end shrink-0 bg-[#1C1C1C]">
-        <button (click)="closeModal()"
-          class="px-5 py-2 bg-[#2D2D2D] hover:bg-[#353535] text-white rounded-xl text-xs font-semibold transition-colors duration-200">
-          Close
-        </button>
-      </div>
-    </div>
+  <!-- Footer -->
+  <div modalFooter class="p-6 pt-4 border-t border-[#3A3A3A] flex justify-end">
+    <ui-button variant="secondary" (click)="closeModal()">Close</ui-button>
   </div>
-}
+</ui-modal>

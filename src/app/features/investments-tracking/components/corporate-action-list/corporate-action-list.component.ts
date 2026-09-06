@@ -7,6 +7,10 @@ import { NotificationService } from '@services/notification.service';
 import { LucideIconsModule } from '@core/icons/lucide-icons.module';
 import { PrimeNgModule } from '@core/prime-ng.module';
 import { TooltipDirective } from '@shared/directives/tooltip/tooltip.directive';
+import { ButtonComponent } from '@shared/ui/button/button.component';
+import { EmptyStateComponent } from '@shared/ui/empty-state/empty-state.component';
+import { ModalComponent } from '@shared/ui/modal/modal.component';
+import { CardComponent } from '@shared/ui/card/card.component';
 
 @Component({
   selector: 'app-corporate-action-list',
@@ -17,6 +21,10 @@ import { TooltipDirective } from '@shared/directives/tooltip/tooltip.directive';
     LucideIconsModule,
     PrimeNgModule,
     TooltipDirective,
+    ButtonComponent,
+    EmptyStateComponent,
+    ModalComponent,
+    CardComponent,
   ],
   templateUrl: './corporate-action-list.component.html',
 })

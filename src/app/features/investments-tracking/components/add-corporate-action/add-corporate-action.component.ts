@@ -6,6 +6,7 @@ import { NotificationService } from '@services/notification.service';
 import { LucideIconsModule } from '@core/icons/lucide-icons.module';
 import { PrimeNgModule } from '@core/prime-ng.module';
 import { TooltipDirective } from '@shared/directives/tooltip/tooltip.directive';
+import { ButtonComponent } from '@shared/ui/button/button.component';
 
 interface DemergerStock {
   stockCode: string;
@@ -21,6 +22,7 @@ interface DemergerStock {
     LucideIconsModule,
     PrimeNgModule,
     TooltipDirective,
+    ButtonComponent,
   ],
   templateUrl: './add-corporate-action.component.html',
 })

@@ -42,9 +42,9 @@
         <lucide-icon name="AlertTriangle" class="w-4 h-4"></lucide-icon>
         Using sample data — API request failed.
       </span>
-      <button (click)="refresh()" class="flex items-center gap-1 text-[#FACC15] hover:underline">
+      <ui-button variant="ghost" size="sm" (click)="refresh()">
         <lucide-icon name="RotateCw" class="w-3 h-3"></lucide-icon> Retry
-      </button>
+      </ui-button>
     </div>
     }
 
@@ -84,11 +84,10 @@
 
         <!-- Reset -->
         @if (hasActiveFilters()) {
-        <button (click)="resetFilters()"
-          class="px-2.5 py-1.5 rounded-lg text-[10px] font-medium text-[#808080] hover:text-white hover:bg-[#2E2E2E] transition-colors flex items-center gap-1 focus:outline-none">
+        <ui-button variant="secondary" size="sm" (click)="resetFilters()">
           <lucide-icon name="RotateCw" class="w-3 h-3"></lucide-icon>
           Reset
-        </button>
+        </ui-button>
         }
       </div>
     </section>
@@ -118,7 +117,7 @@
             <lucide-icon name="TrendingUp" class="w-3.5 h-3.5"
               [ngClass]="capitalGains.totalGain >= 0 ? 'text-[#22C55E]' : 'text-[#EF4444]'"></lucide-icon>
           </div>
-          <div class="text-xl font-bold" [ngClass]="capitalGains.totalGain >= 0 ? 'text-[#22C55E]' : 'text-[#EF4444]'">
+          <div class="text-xl font-bold" [ngClass]="capitalGains.totalGain >= 0 ? 'text-success' : 'text-danger'">
             ₹{{ capitalGains.totalGain | number:'1.2-2' }}
           </div>
           <div class="text-[9px] text-[#707070]">across {{ capitalGains.byFy.length }} FY(s)</div>
@@ -192,18 +191,13 @@
     <!-- EMPTY STATE (outside Panel C, before it)                         -->
     <!-- ============================================================== -->
     @if (!loading && !hasRows) {
-    <section class="border border-[#3A3A3A] rounded-xl bg-[#191919] p-12">
-      <div class="flex flex-col items-center justify-center text-center space-y-4 max-w-md mx-auto">
-        <div
-          class="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#2E2E2E] to-[#1F1F1F] border border-[#3A3A3A] flex items-center justify-center">
-          <lucide-icon name="FileSpreadsheet" class="w-8 h-8 text-[#10A37F]"></lucide-icon>
-        </div>
-        <h3 class="text-base font-semibold text-white">No transactions found</h3>
-        <p class="text-sm text-[#B3B3B3]">
-          Upload transactions on the Investment Tracking page to see your tax summary.
-        </p>
-      </div>
-    </section>
+    <ui-card padding="lg">
+      <ui-empty-state
+        icon="file-spreadsheet"
+        title="No transactions found"
+        message="Upload transactions on the Investment Tracking page to see your tax summary.">
+      </ui-empty-state>
+    </ui-card>
     }
 
     <!-- ============================================================== -->
@@ -232,15 +226,13 @@
 
           <!-- Export controls -->
           <div class="relative">
-            <button (click)="toggleExportMenu()"
-              class="px-3 py-1.5 rounded-lg bg-[#232323] text-xs font-semibold text-[#B3B3B3] border border-[#3A3A3A] hover:text-white hover:border-[#10A37F] transition-colors flex items-center gap-1.5 focus:outline-none">
+            <ui-button variant="secondary" size="sm" (click)="toggleExportMenu()">
               <lucide-icon name="Download" class="w-3.5 h-3.5"></lucide-icon>
               Export
               <lucide-icon name="ChevronDown" class="w-3 h-3"></lucide-icon>
-            </button>
+            </ui-button>
             @if (exportMenuOpen) {
-            <div
-              class="absolute right-0 mt-1 w-44 bg-[#232323] border border-[#3A3A3A] rounded-lg shadow-2xl z-30 p-1.5">
+            <ui-card padding="sm" class="absolute right-0 mt-1 w-44 z-30 block">
               <button (click)="exportCsv()"
                 class="w-full flex items-center gap-2 px-2 py-1.5 hover:bg-[#2A2A2A] rounded text-xs text-[#B3B3B3] hover:text-white focus:outline-none text-left">
                 <lucide-icon name="FileText" class="w-3.5 h-3.5"></lucide-icon>
@@ -251,7 +243,7 @@
                 <lucide-icon name="Upload" class="w-3.5 h-3.5"></lucide-icon>
                 Export Excel
               </button>
-            </div>
+            </ui-card>
             }
           </div>
         </div>
@@ -308,19 +300,16 @@
                   <td class="px-4 py-3 text-right text-[#B3B3B3] tabular-nums whitespace-nowrap">₹{{ r.sellValue |
                     number:'1.2-2' }}</td>
                   <td class="px-4 py-3 text-right font-semibold tabular-nums whitespace-nowrap"
-                    [ngClass]="r.gain >= 0 ? 'text-[#22C55E]' : 'text-[#EF4444]'">
+                    [ngClass]="r.gain >= 0 ? 'text-success' : 'text-danger'">
                     ₹{{ r.gain | number:'1.2-2' }}
                   </td>
                   <td class="px-4 py-3 whitespace-nowrap">
                     @if (r.period === 'ST') {
-                    <span
-                      class="px-2 py-0.5 rounded-full text-[9px] font-bold border bg-[#FACC15]/10 text-[#FACC15] border-[#FACC15]/20">ST</span>
+                    <ui-badge tone="warning">ST</ui-badge>
                     } @else if (r.period === 'LT') {
-                    <span
-                      class="px-2 py-0.5 rounded-full text-[9px] font-bold border bg-[#10A37F]/10 text-[#10A37F] border-[#10A37F]/20">LT</span>
+                    <ui-badge tone="accent">LT</ui-badge>
                     } @else {
-                    <span
-                      class="px-2 py-0.5 rounded-full text-[9px] font-bold border bg-[#10A37F]/10 text-[#10A37F] border-[#10A37F]/20">Mixed</span>
+                    <ui-badge tone="accent">Mixed</ui-badge>
                     }
                   </td>
                   <td class="px-4 py-3 text-right text-[#B3B3B3] tabular-nums whitespace-nowrap">{{ r.percentOfTotalGain
@@ -338,7 +327,7 @@
                   <td class="px-4 py-3 text-right font-semibold text-[#B3B3B3] tabular-nums whitespace-nowrap">₹{{
                     perStockTotals.sellValue | number:'1.2-2' }}</td>
                   <td class="px-4 py-3 text-right font-bold tabular-nums whitespace-nowrap"
-                    [ngClass]="perStockTotals.gain >= 0 ? 'text-[#22C55E]' : 'text-[#EF4444]'">
+                    [ngClass]="perStockTotals.gain >= 0 ? 'text-success' : 'text-danger'">
                     ₹{{ perStockTotals.gain | number:'1.2-2' }}
                   </td>
                   <td class="px-4 py-3" colspan="2"></td>
@@ -396,21 +385,19 @@
                 <tr>
                   <td class="px-4 py-3 font-medium text-white whitespace-nowrap">
                     <div class="flex items-center gap-2.5">
-                      <span
-                        [ngClass]="row.category === 'Short Term' ? 'text-[#FACC15] bg-[#FACC15]/5 border-[#FACC15]/10' : 'text-[#10A37F] bg-[#10A37F]/5 border-[#10A37F]/10'"
-                        class="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded border">
+                      <ui-badge [tone]="row.category === 'Short Term' ? 'warning' : 'accent'">
                         {{ row.category === 'Short Term' ? 'ST' : 'LT' }}
-                      </span>
+                      </ui-badge>
                       <span class="text-xs text-[#B3B3B3]">{{ row.label }}</span>
                     </div>
                   </td>
                   <td *ngFor="let periodVal of row.periods"
                     class="px-4 py-3 text-right font-mono tabular-nums whitespace-nowrap"
-                    [ngClass]="periodVal > 0 ? 'text-[#22C55E]' : periodVal < 0 ? 'text-[#EF4444]' : 'text-[#606060]'">
+                    [ngClass]="periodVal > 0 ? 'text-success' : periodVal < 0 ? 'text-danger' : 'text-[#606060]'">
                     ₹{{ periodVal | number:'1.2-2' }}
                   </td>
                   <td class="px-4 py-3 text-right font-bold font-mono tabular-nums whitespace-nowrap"
-                    [ngClass]="row.total > 0 ? 'text-[#22C55E]' : row.total < 0 ? 'text-[#EF4444]' : 'text-[#808080]'">
+                    [ngClass]="row.total > 0 ? 'text-success' : row.total < 0 ? 'text-danger' : 'text-text-secondary'">
                     ₹{{ row.total | number:'1.2-2' }}
                   </td>
                 </tr>
@@ -420,11 +407,11 @@
                   <td class="px-4 py-3 font-bold text-white uppercase text-[9px] tracking-wider">Total</td>
                   <td *ngFor="let colTotal of accrualRowTotals"
                     class="px-4 py-3 text-right font-bold font-mono tabular-nums whitespace-nowrap"
-                    [ngClass]="colTotal > 0 ? 'text-[#22C55E]' : colTotal < 0 ? 'text-[#EF4444]' : 'text-[#B3B3B3]'">
+                    [ngClass]="colTotal > 0 ? 'text-success' : colTotal < 0 ? 'text-danger' : 'text-[#B3B3B3]'">
                     ₹{{ colTotal | number:'1.2-2' }}
                   </td>
                   <td class="px-4 py-3 text-right font-black font-mono tabular-nums whitespace-nowrap"
-                    [ngClass]="accrualGrandTotal > 0 ? 'text-[#22C55E]' : accrualGrandTotal < 0 ? 'text-[#EF4444]' : 'text-white'">
+                    [ngClass]="accrualGrandTotal > 0 ? 'text-success' : accrualGrandTotal < 0 ? 'text-danger' : 'text-white'">
                     ₹{{ accrualGrandTotal | number:'1.2-2' }}
                   </td>
                 </tr>
@@ -452,44 +439,51 @@
         <!-- Summary Alert/Card -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
           <!-- Potential Savings -->
-          <div class="bg-[#1F1F1F] border border-[#3A3A3A] rounded-xl p-4 flex items-center gap-3">
-            <div class="p-3 rounded-lg bg-[#22C55E]/10 border border-[#22C55E]/20 text-[#22C55E]">
-              <lucide-icon name="Sparkles" class="w-6 h-6"></lucide-icon>
+          <ui-card padding="md">
+            <div class="flex items-center gap-3">
+              <div class="p-3 rounded-lg bg-[#22C55E]/10 border border-[#22C55E]/20 text-[#22C55E]">
+                <lucide-icon name="Sparkles" class="w-6 h-6"></lucide-icon>
+              </div>
+              <div>
+                <span class="text-[9px] text-[#B3B3B3] font-semibold uppercase tracking-wider">Potential Tax
+                  Savings</span>
+                <div class="text-xl font-bold text-success">₹{{ potentialTaxSavings | number:'1.2-2' }}</div>
+              </div>
             </div>
-            <div>
-              <span class="text-[9px] text-[#B3B3B3] font-semibold uppercase tracking-wider">Potential Tax
-                Savings</span>
-              <div class="text-xl font-bold text-[#22C55E]">₹{{ potentialTaxSavings | number:'1.2-2' }}</div>
-            </div>
-          </div>
+          </ui-card>
 
           <!-- Total Harvestable Loss -->
-          <div class="bg-[#1F1F1F] border border-[#3A3A3A] rounded-xl p-4 flex items-center gap-3">
-            <div class="p-3 rounded-lg bg-[#EF4444]/10 border border-[#EF4444]/20 text-[#EF4444]">
-              <lucide-icon name="TrendingDown" class="w-6 h-6"></lucide-icon>
+          <ui-card padding="md">
+            <div class="flex items-center gap-3">
+              <div class="p-3 rounded-lg bg-[#EF4444]/10 border border-[#EF4444]/20 text-[#EF4444]">
+                <lucide-icon name="TrendingDown" class="w-6 h-6"></lucide-icon>
+              </div>
+              <div>
+                <span class="text-[9px] text-[#B3B3B3] font-semibold uppercase tracking-wider">Total Harvestable
+                  Loss</span>
+                <div class="text-xl font-bold text-white">₹{{ totalHarvestableLoss | number:'1.2-2' }}</div>
+              </div>
             </div>
-            <div>
-              <span class="text-[9px] text-[#B3B3B3] font-semibold uppercase tracking-wider">Total Harvestable
-                Loss</span>
-              <div class="text-xl font-bold text-white">₹{{ totalHarvestableLoss | number:'1.2-2' }}</div>
-            </div>
-          </div>
+          </ui-card>
 
           <!-- Opportunities Count -->
-          <div class="bg-[#1F1F1F] border border-[#3A3A3A] rounded-xl p-4 flex items-center gap-3">
-            <div class="p-3 rounded-lg bg-[#3B82F6]/10 border border-[#3B82F6]/20 text-[#3B82F6]">
-              <lucide-icon name="AlertCircle" class="w-6 h-6"></lucide-icon>
+          <ui-card padding="md">
+            <div class="flex items-center gap-3">
+              <div class="p-3 rounded-lg bg-[#3B82F6]/10 border border-[#3B82F6]/20 text-[#3B82F6]">
+                <lucide-icon name="AlertCircle" class="w-6 h-6"></lucide-icon>
+              </div>
+              <div>
+                <span class="text-[9px] text-[#B3B3B3] font-semibold uppercase tracking-wider">Harvesting
+                  Candidates</span>
+                <div class="text-xl font-bold text-white">{{ harvestOpportunities.length }} holding(s)</div>
+              </div>
             </div>
-            <div>
-              <span class="text-[9px] text-[#B3B3B3] font-semibold uppercase tracking-wider">Harvesting
-                Candidates</span>
-              <div class="text-xl font-bold text-white">{{ harvestOpportunities.length }} holding(s)</div>
-            </div>
-          </div>
+          </ui-card>
         </div>
 
         <!-- Live Price Status Banner -->
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-4 py-3 bg-[#1F1F1F] border border-[#3A3A3A] rounded-xl text-xs">
+        <ui-card padding="sm" class="block text-xs">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div class="flex items-center gap-2.5">
             <div class="p-1.5 rounded-md" [ngClass]="{
               'bg-[#10A37F]/10 border border-[#10A37F]/20 text-[#10A37F]': livePriceStatus === 'success',
@@ -510,15 +504,13 @@
             </div>
           </div>
           @if (livePriceStatus === 'not_configured' || livePriceStatus === 'failed') {
-            <button
-              (click)="onNavigateSettings()"
-              class="text-xs text-[#10A37F] hover:underline cursor-pointer flex items-center gap-1 font-semibold self-start sm:self-auto border border-[#10A37F]/20 px-2.5 py-1 rounded-lg bg-[#10A37F]/5 hover:bg-[#10A37F]/10 transition-colors"
-            >
+            <ui-button variant="ghost" size="sm" class="self-start sm:self-auto" (click)="onNavigateSettings()">
               Configure Google Sheet URL
               <lucide-icon name="ArrowRight" class="w-3.5 h-3.5"></lucide-icon>
-            </button>
+            </ui-button>
           }
         </div>
+        </ui-card>
 
         <!-- Info alert -->
         <div
@@ -546,7 +538,7 @@
                   <th class="text-right whitespace-nowrap">Market Price</th>
                   <th class="text-right whitespace-nowrap">Unrealized Loss</th>
                   <th class="text-center whitespace-nowrap">Term</th>
-                  <th class="text-right whitespace-nowrap text-[#22C55E]">Est. Tax Saved</th>
+                  <th class="text-right whitespace-nowrap text-success">Est. Tax Saved</th>
                 </tr>
               </ng-template>
               <ng-template pTemplate="body" let-op>
@@ -558,19 +550,17 @@
                     number:'1.2-2' }}</td>
                   <td class="px-4 py-3 text-right text-[#B3B3B3] tabular-nums whitespace-nowrap">₹{{ op.currentPrice |
                     number:'1.2-2' }}</td>
-                  <td class="px-4 py-3 text-right font-semibold text-[#EF4444] tabular-nums whitespace-nowrap">
+                  <td class="px-4 py-3 text-right font-semibold text-danger tabular-nums whitespace-nowrap">
                     ₹{{ op.unrealizedLoss | number:'1.2-2' }}
                   </td>
                   <td class="px-4 py-3 text-center whitespace-nowrap">
                     @if (op.holdingPeriod === 'ST') {
-                    <span
-                      class="px-2 py-0.5 rounded-full text-[9px] font-bold border bg-[#FACC15]/10 text-[#FACC15] border-[#FACC15]/20">ST</span>
+                    <ui-badge tone="warning">ST</ui-badge>
                     } @else {
-                    <span
-                      class="px-2 py-0.5 rounded-full text-[9px] font-bold border bg-[#10A37F]/10 text-[#10A37F] border-[#10A37F]/20">LT</span>
+                    <ui-badge tone="accent">LT</ui-badge>
                     }
                   </td>
-                  <td class="px-4 py-3 text-right font-bold text-[#22C55E] tabular-nums whitespace-nowrap">
+                  <td class="px-4 py-3 text-right font-bold text-success tabular-nums whitespace-nowrap">
                     ₹{{ op.potentialSavings | number:'1.2-2' }}
                   </td>
                 </tr>

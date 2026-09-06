@@ -8,11 +8,25 @@ import { StorageService } from '@services/storage.service';
 import { PrimeNgModule } from '@core/prime-ng.module';
 import { TransactionService } from '@services/transaction.service';
 import { LivePriceService } from '@services/live-price.service';
+import { ButtonComponent } from '@shared/ui/button/button.component';
+import { BadgeComponent } from '@shared/ui/badge/badge.component';
+import { ToggleComponent } from '@shared/ui/toggle/toggle.component';
+import { RadioCardComponent } from '@shared/ui/radio-card/radio-card.component';
+import { ConfirmDialogService } from '@shared/ui/confirm-dialog/confirm-dialog.service';
 
 @Component({
     selector: 'app-settings',
     standalone: true,
-    imports: [CommonModule, FormsModule, LucideIconsModule, PrimeNgModule],
+    imports: [
+      CommonModule,
+      FormsModule,
+      LucideIconsModule,
+      PrimeNgModule,
+      ButtonComponent,
+      BadgeComponent,
+      ToggleComponent,
+      RadioCardComponent,
+    ],
     templateUrl: './settings.component.html',
     styleUrl: './settings.component.css'
 })
@@ -137,15 +151,14 @@ export class SettingsComponent {
   ];
 
   // 5. Data Management Modals State
-  showResetModal: boolean = false;
-  showDeleteModal: boolean = false;
   isResetting: boolean = false;
   isDeleting: boolean = false;
 
   constructor(
     private notificationService: NotificationService,
     private authService: AuthService,
-    private storageService: StorageService
+    private storageService: StorageService,
+    private confirmDialog: ConfirmDialogService
   ) {
     // Sync email from auth service
     const userEmail = this.authService.getUserEmail();
@@ -353,13 +366,32 @@ export class SettingsComponent {
     }
   }
 
+  async handleResetPortfolioClick(): Promise<void> {
+    const ok = await this.confirmDialog.confirm({
+      title: 'Reset Portfolio Transactions',
+      message: 'This action will permanently delete all stocks, mutual funds, crypto purchases, and records from your dashboard. This action cannot be undone.',
+      tone: 'danger',
+      confirmLabel: 'Reset Data',
+    });
+    if (ok) this.handleResetPortfolio();
+  }
+
+  async handleDeleteAccountClick(): Promise<void> {
+    const ok = await this.confirmDialog.confirm({
+      title: 'Permanently Delete Account',
+      message: 'You are deleting your profile. This will erase all login credentials, custom portfolios, asset history, and preferences. All data will be lost forever.',
+      tone: 'danger',
+      confirmLabel: 'Delete My Account',
+    });
+    if (ok) this.handleDeleteAccountConfirm();
+  }
+
   handleResetPortfolio(): void {
     if (this.isResetting) return;
     this.isResetting = true;
     this.transactionService.clearAllRecords(this.email).subscribe({
       next: () => {
         this.isResetting = false;
-        this.showResetModal = false;
         this.notificationService.addNotification('All portfolio transactions and statistics have been reset successfully.', '', 'success');
       },
       error: (err) => {
@@ -374,7 +406,6 @@ export class SettingsComponent {
     this.isDeleting = true;
     setTimeout(() => {
       this.isDeleting = false;
-      this.showDeleteModal = false;
       this.notificationService.addNotification('Your account has been deleted successfully. Logging you out.', '', 'success');
       setTimeout(() => {
         this.authService.logOut();

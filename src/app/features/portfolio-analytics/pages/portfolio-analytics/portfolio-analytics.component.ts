@@ -14,6 +14,10 @@ import {
 } from '@core/services/portfolio-analytics.service';
 import { ExpansionPanelComponent } from '@shared/components/expansion-panel/expansion-panel.component';
 import { TooltipDirective } from '@shared/directives/tooltip/tooltip.directive';
+import { BadgeComponent } from '@shared/ui/badge/badge.component';
+import { ButtonComponent } from '@shared/ui/button/button.component';
+import { CardComponent } from '@shared/ui/card/card.component';
+import { EmptyStateComponent } from '@shared/ui/empty-state/empty-state.component';
 
 type DatePreset = 'all' | '7d' | '30d' | '90d' | 'ytd' | 'custom';
 
@@ -58,6 +62,10 @@ const SCALES_AXIS_STYLE = {
     FooterComponent,
     ExpansionPanelComponent,
     TooltipDirective,
+    BadgeComponent,
+    ButtonComponent,
+    CardComponent,
+    EmptyStateComponent,
   ],
   templateUrl: './portfolio-analytics.component.html',
   styleUrls: ['./portfolio-analytics.component.css'],

@@ -1,147 +1,102 @@
-<div
-  class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 animate-fade-in"
->
-  <div
-    class="absolute inset-0 bg-black/80 backdrop-blur-sm"
-    (click)="onClose()"
-  ></div>
+<ui-modal [open]="true" title="Welcome back" size="sm" [dismissible]="true" (closed)="onClose()">
+  <p class="text-xs text-[#999999] text-center -mt-2 mb-4">Access your WealthLens account</p>
 
-  <div
-    class="relative bg-[#1E1E1E] border border-[#3A3A3A] rounded-xl w-full max-w-xs shadow-xl animate-scale-in"
-  >
-    <button
-      type="button"
-      (click)="onClose()"
-      aria-label="Close"
-      class="absolute top-3 right-3 text-[#999999] hover:text-white transition-colors p-1"
-    >
-      <lucide-icon name="x" class="h-4 w-4"></lucide-icon>
-    </button>
-
-    <div class="p-5">
-      <header class="text-center mb-5">
-        <h1 class="text-lg text-white mb-0.5 font-semibold">Welcome back</h1>
-        <p class="text-xs text-[#999999]">Access your WealthLens account</p>
-      </header>
-
-      <form (ngSubmit)="onLogin()" [formGroup]="loginForm" class="space-y-4">
-        <div>
-          <label for="login-email" class="block text-xs text-[#B3B3B3] mb-1.5">
-            Email
-          </label>
-          <input
-            id="login-email"
-            type="email"
-            formControlName="email"
-            placeholder="Email Address"
-            autocomplete="username"
-            class="w-full bg-[#2A2A2A] border border-[#3A3A3A] rounded-lg px-3 py-2 text-sm text-white placeholder-[#666666] focus:outline-none focus:border-[#10A37F] focus:ring-2 focus:ring-[#10A37F]/40 transition-all"
-            required
-          />
-          @if (loginForm.get('email')?.touched && loginForm.get('email')?.hasError('required')) {
-            <p
-              class="text-xs text-red-400 mt-1"
-            >
-              Email is required.
-            </p>
-          }
-          @if (loginForm.get('email')?.touched && loginForm.get('email')?.hasError('email')) {
-            <p
-              class="text-xs text-red-400 mt-1"
-            >
-              Please enter a valid email address.
-            </p>
-          }
-        </div>
-
-        <div>
-          <div class="flex items-center justify-between mb-1.5">
-            <label for="login-password" class="block text-xs text-[#B3B3B3]">
-              Password
-            </label>
-            <a
-              (click)="onForgotPassword()"
-              class="text-[10px] text-[#10A37F] hover:underline transition cursor-pointer"
-            >
-              Forgot password?
-            </a>
-          </div>
-
-          <div class="relative">
-            <input
-              id="login-password"
-              [type]="hideLoginP ? 'password' : 'text'"
-              formControlName="password"
-              placeholder="Enter your password"
-              autocomplete="current-password"
-              class="w-full bg-[#2A2A2A] border border-[#3A3A3A] rounded-lg px-3 py-2 text-sm text-white placeholder-[#666666] focus:outline-none focus:border-[#10A37F] focus:ring-2 focus:ring-[#10A37F]/40 transition-all"
-              required
-            />
-            <button
-              type="button"
-              (click)="hideLoginP = !hideLoginP"
-              class="absolute right-2 top-1/2 -translate-y-1/2 text-[#666666] hover:text-[#999999] transition"
-              aria-label="Toggle password visibility"
-            >
-              @if (hideLoginP) {
-                <lucide-icon
-                  name="eye"
-                  class="h-4 w-4"
-                ></lucide-icon>
-              } @else {
-                <lucide-icon
-                  name="eye-off"
-                  class="h-4 w-4"
-                ></lucide-icon>
-              }
-            </button>
-          </div>
-
-          @if (loginForm.get('password')?.touched && loginForm.get('password')?.hasError('required')) {
-            <p
-              class="text-xs text-red-400 mt-1"
-            >
-              Password is required.
-            </p>
-          }
-          @if (loginForm.get('password')?.touched && loginForm.get('password')?.hasError('minlength')) {
-            <p
-              class="text-xs text-red-400 mt-1"
-            >
-              Password must be at least 6 characters.
-            </p>
-          }
-          @if (loginForm.get('password')?.touched && loginForm.get('password')?.hasError('maxlength')) {
-            <p
-              class="text-xs text-red-400 mt-1"
-            >
-              Password cannot exceed 12 characters.
-            </p>
-          }
-        </div>
-
-        <button
-          type="submit"
-          [disabled]="loginForm.invalid || isLoading"
-          class="w-full rounded-lg bg-[#10A37F] px-4 py-2.5 text-sm font-semibold text-white transition-all hover:bg-[#0D8A6B] active:scale-[0.99] disabled:cursor-not-allowed disabled:bg-[#334A42]"
-        >
-          @if (!isLoading) {
-            Sign in
-          } @else {
-            Loading...
-          }
-        </button>
-
-        <p class="mt-4 text-center text-xs text-[#999999]">
-          Don’t have an account?
-          <a
-            (click)="router.navigate([{ outlets: { modal: ['sign-up'] } }])"
-            class="text-[#10A37F] font-semibold hover:text-[#1AA97D] hover:underline cursor-pointer transition"
-          >
-            Sign up
-          </a>
+  <form (ngSubmit)="onLogin()" [formGroup]="loginForm" class="space-y-4">
+    <div>
+      <label for="login-email" class="block text-xs text-[#B3B3B3] mb-1.5">
+        Email
+      </label>
+      <ui-input
+        id="login-email"
+        type="email"
+        formControlName="email"
+        placeholder="Email Address"
+        [error]="!!(loginForm.get('email')?.touched && loginForm.get('email')?.invalid)"
+      />
+      @if (loginForm.get('email')?.touched && loginForm.get('email')?.hasError('required')) {
+        <p class="text-xs text-red-400 mt-1">
+          Email is required.
         </p>
-      </form>
+      }
+      @if (loginForm.get('email')?.touched && loginForm.get('email')?.hasError('email')) {
+        <p class="text-xs text-red-400 mt-1">
+          Please enter a valid email address.
+        </p>
+      }
     </div>
-  </div>
-</div>
+
+    <div>
+      <div class="flex items-center justify-between mb-1.5">
+        <label for="login-password" class="block text-xs text-[#B3B3B3]">
+          Password
+        </label>
+        <a
+          (click)="onForgotPassword()"
+          class="text-[10px] text-[#10A37F] hover:underline transition cursor-pointer"
+        >
+          Forgot password?
+        </a>
+      </div>
+
+      <div class="relative">
+        <ui-input
+          id="login-password"
+          [type]="hideLoginP ? 'password' : 'text'"
+          formControlName="password"
+          placeholder="Enter your password"
+          [error]="!!(loginForm.get('password')?.touched && loginForm.get('password')?.invalid)"
+        />
+        <ui-button
+          variant="icon"
+          size="sm"
+          type="button"
+          (click)="hideLoginP = !hideLoginP"
+          class="absolute right-1 top-1/2 -translate-y-1/2"
+          aria-label="Toggle password visibility"
+        >
+          @if (hideLoginP) {
+            <lucide-icon name="eye" class="h-4 w-4"></lucide-icon>
+          } @else {
+            <lucide-icon name="eye-off" class="h-4 w-4"></lucide-icon>
+          }
+        </ui-button>
+      </div>
+
+      @if (loginForm.get('password')?.touched && loginForm.get('password')?.hasError('required')) {
+        <p class="text-xs text-red-400 mt-1">
+          Password is required.
+        </p>
+      }
+      @if (loginForm.get('password')?.touched && loginForm.get('password')?.hasError('minlength')) {
+        <p class="text-xs text-red-400 mt-1">
+          Password must be at least 6 characters.
+        </p>
+      }
+      @if (loginForm.get('password')?.touched && loginForm.get('password')?.hasError('maxlength')) {
+        <p class="text-xs text-red-400 mt-1">
+          Password cannot exceed 12 characters.
+        </p>
+      }
+    </div>
+
+    <ui-button
+      type="submit"
+      variant="primary"
+      [fullWidth]="true"
+      [disabled]="loginForm.invalid || isLoading"
+      [loading]="isLoading"
+    >
+      Sign in
+    </ui-button>
+
+    <p class="mt-4 text-center text-xs text-[#999999]">
+      Don't have an account?
+      <a
+        (click)="router.navigate([{ outlets: { modal: ['sign-up'] } }])"
+        class="text-[#10A37F] font-semibold hover:text-[#1AA97D] hover:underline cursor-pointer transition"
+      >
+        Sign up
+      </a>
+    </p>
+  </form>
+</ui-modal>

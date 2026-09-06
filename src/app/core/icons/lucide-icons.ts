@@ -44,7 +44,8 @@ import {
   CheckCheck,
   Calendar,
   FileSpreadsheet,
-  Filter
+  Filter,
+  Inbox
 } from 'lucide-angular';
 
 export const LUCIDE_ICONS = {
@@ -93,5 +94,6 @@ export const LUCIDE_ICONS = {
   CheckCheck,
   Calendar,
   FileSpreadsheet,
-  Filter
+  Filter,
+  Inbox
 };

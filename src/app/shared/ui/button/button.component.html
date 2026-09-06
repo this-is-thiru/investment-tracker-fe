@@ -1,0 +1,12 @@
+<button
+  [type]="type"
+  [disabled]="disabled || loading"
+  class="ui-button"
+  [class.ui-button--full]="fullWidth"
+  [ngClass]="'ui-button--' + variant + ' ui-button--' + size"
+>
+  @if (loading) {
+    <ui-spinner size="sm" [tone]="spinnerTone" />
+  }
+  <ng-content></ng-content>
+</button>

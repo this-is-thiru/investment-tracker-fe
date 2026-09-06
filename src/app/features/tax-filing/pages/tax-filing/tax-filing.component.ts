@@ -19,6 +19,10 @@ import { FooterComponent } from '@shared/components/footer/footer.component';
 import { ExpansionPanelComponent } from '@shared/components/expansion-panel/expansion-panel.component';
 import { TooltipDirective } from '@shared/directives/tooltip/tooltip.directive';
 import { NotificationService } from '@services/notification.service';
+import { BadgeComponent } from '@shared/ui/badge/badge.component';
+import { ButtonComponent } from '@shared/ui/button/button.component';
+import { CardComponent } from '@shared/ui/card/card.component';
+import { EmptyStateComponent } from '@shared/ui/empty-state/empty-state.component';
 
 interface FilterChip {
   kind: 'fy' | 'asset';
@@ -75,6 +79,10 @@ const LTCG_EQUITY_EXEMPTION = 100000;
     FooterComponent,
     ExpansionPanelComponent,
     TooltipDirective,
+    BadgeComponent,
+    ButtonComponent,
+    CardComponent,
+    EmptyStateComponent,
   ],
   templateUrl: './tax-filing.component.html',
   styleUrls: ['./tax-filing.component.css'],

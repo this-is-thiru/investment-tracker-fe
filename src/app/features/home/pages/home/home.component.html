@@ -45,9 +45,11 @@
           </p>
 
           <div class="flex flex-wrap gap-4 items-center justify-start flow-slide-right flow-delay-4">
-            <button
+            <ui-button
+              variant="primary"
+              size="lg"
+              class="group hover:scale-105 transition-transform duration-200"
               (click)="onNavigate('investments-tracking')"
-              class="group px-8 py-4 bg-gradient-to-r from-[#10A37F] to-[#0D8A6B] text-white rounded-lg shadow-lg hover:shadow-xl hover:shadow-[#10A37F]/30 transition-all duration-200 hover:scale-105 inline-flex items-center gap-2 relative overflow-hidden"
             >
               <div
                 class="absolute inset-0 bg-gradient-to-r from-[#0D8A6B] to-[#0B7A5E] translate-x-[-100%] group-hover:translate-x-0 transition-transform duration-300"
@@ -57,18 +59,20 @@
                 name="arrow-right"
                 class="h-5 w-5 relative z-10 group-hover:translate-x-1 transition-transform"
               ></lucide-icon>
-            </button>
+            </ui-button>
 
-            <button
+            <ui-button
+              variant="ghost"
+              size="lg"
+              class="group hover:scale-105 transition-transform duration-200"
               (click)="exploreDemo()"
-              class="group px-8 py-4 bg-transparent border border-[#3A3A3A] hover:border-[#10A37F] text-white rounded-lg transition-all duration-200 hover:scale-105 inline-flex items-center gap-2 relative overflow-hidden hover:bg-[#10A37F]/10 hover:shadow-xl hover:shadow-[#10A37F]/10"
             >
               <span class="relative z-10 font-semibold">Explore Demo Dashboard</span>
               <lucide-icon
                 name="play-circle"
                 class="h-5 w-5 relative z-10 text-[#10A37F] group-hover:scale-110 transition-transform"
               ></lucide-icon>
-            </button>
+            </ui-button>
           </div>
         </div>
 
@@ -338,9 +342,11 @@
           Join thousands of investors who trust WealthLens for their
           financial operations
         </p>
-        <button
+        <ui-button
+          variant="primary"
+          size="lg"
+          class="group hover:scale-105 transition-transform duration-200"
           (click)="onNavigate('investments-tracking')"
-          class="px-10 py-5 bg-gradient-to-r from-[#10A37F] to-[#1AA97D] text-white rounded-xl font-medium text-lg shadow-lg shadow-[#10A37F]/20 inline-flex items-center gap-3 relative overflow-hidden group transition-all duration-200 hover:scale-105 hover:shadow-2xl hover:shadow-[#10A37F]/40"
         >
           <div
             class="absolute inset-0 bg-gradient-to-r from-[#0D8A6B] to-[#0B7A5E] translate-x-[-100%] group-hover:translate-x-0 transition-transform duration-300"
@@ -350,7 +356,7 @@
             name="arrow-right"
             class="h-6 w-6 relative z-10 group-hover:translate-x-1 transition-transform"
           ></lucide-icon>
-        </button>
+        </ui-button>
       </div>
     </div>
   </section>

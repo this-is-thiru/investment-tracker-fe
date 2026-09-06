@@ -156,6 +156,11 @@
   white-space: nowrap;
 }
 
+:host ::ng-deep .p-selectbutton .p-togglebutton .p-togglebutton-content {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
 :host ::ng-deep .p-selectbutton .p-togglebutton:hover {
   color: #ffffff;
   background: #2E2E2E;
@@ -166,4 +171,10 @@
   background: #10A37F;
   color: #ffffff;
   font-weight: 600;
+}
+
+:host ::ng-deep .p-selectbutton .p-togglebutton.p-togglebutton-checked .p-togglebutton-content,
+:host ::ng-deep .p-selectbutton .p-togglebutton.p-highlight .p-togglebutton-content {
+  background: transparent !important;
+  box-shadow: none !important;
 }

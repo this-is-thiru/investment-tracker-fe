@@ -3,8 +3,9 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { FooterComponent } from '@shared/components/footer/footer.component';
 import { AuthService } from '@services/auth.service';
-import { Benefit } from '@models/benefit.model';
+import { Benefit } from '../../models/benefit.model';
 import { LucideIconsModule } from '@core/icons/lucide-icons.module';
+import { ButtonComponent } from '@shared/ui/button/button.component';
 
 @Component({
     selector: 'app-home',
@@ -13,6 +14,7 @@ import { LucideIconsModule } from '@core/icons/lucide-icons.module';
         CommonModule,
         FooterComponent,
         LucideIconsModule,
+        ButtonComponent,
     ],
     templateUrl: './home.component.html',
     styleUrls: ['./home.component.css']

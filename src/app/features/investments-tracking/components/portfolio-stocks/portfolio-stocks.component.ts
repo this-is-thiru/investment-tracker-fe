@@ -14,6 +14,9 @@ import { TooltipDirective } from '@shared/directives/tooltip/tooltip.directive';
 import { LucideIconsModule } from '@core/icons/lucide-icons.module';
 import { PrimeNgModule } from '@core/prime-ng.module';
 import { NotificationService } from '@services/notification.service';
+import { ButtonComponent } from '@shared/ui/button/button.component';
+import { BadgeComponent } from '@shared/ui/badge/badge.component';
+import { EmptyStateComponent } from '@shared/ui/empty-state/empty-state.component';
 
 export interface PortfolioStockRow {
   stockCode: string;
@@ -43,6 +46,9 @@ export interface PortfolioStockRow {
     ExpansionPanelComponent,
     PrimeNgModule,
     TooltipDirective,
+    ButtonComponent,
+    BadgeComponent,
+    EmptyStateComponent,
   ],
   templateUrl: './portfolio-stocks.component.html',
 })

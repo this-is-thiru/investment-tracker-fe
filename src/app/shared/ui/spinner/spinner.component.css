@@ -1,0 +1,19 @@
+.ui-spinner {
+  display: inline-block;
+  border-radius: 9999px;
+  border-style: solid;
+  border-color: currentColor transparent currentColor currentColor;
+  animation: ui-spinner-spin 0.7s linear infinite;
+}
+
+.ui-spinner--sm { width: 0.875rem; height: 0.875rem; border-width: 2px; }
+.ui-spinner--md { width: 1.25rem; height: 1.25rem; border-width: 2px; }
+.ui-spinner--lg { width: 2rem; height: 2rem; border-width: 3px; }
+
+.ui-spinner--accent { color: var(--color-accent); }
+.ui-spinner--muted { color: var(--color-text-secondary); }
+.ui-spinner--white { color: #FFFFFF; }
+
+@keyframes ui-spinner-spin {
+  to { transform: rotate(360deg); }
+}

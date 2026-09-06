@@ -17,6 +17,9 @@ import { AuthService } from '@services/auth.service';
 import { LucideIconsModule } from '@core/icons/lucide-icons.module';
 import { PrimeNgModule } from '@core/prime-ng.module';
 import { TooltipDirective } from '@shared/directives/tooltip/tooltip.directive';
+import { BadgeComponent } from '@shared/ui/badge/badge.component';
+import { ButtonComponent } from '@shared/ui/button/button.component';
+import { EmptyStateComponent } from '@shared/ui/empty-state/empty-state.component';
 
 @Component({
   selector: 'app-temp-transactions-table',
@@ -28,6 +31,9 @@ import { TooltipDirective } from '@shared/directives/tooltip/tooltip.directive';
     LucideIconsModule,
     PrimeNgModule,
     TooltipDirective,
+    BadgeComponent,
+    ButtonComponent,
+    EmptyStateComponent,
   ],
   templateUrl: './temp-transactions-table.component.html',
 })

@@ -6,12 +6,16 @@
 @theme {
   --color-background: #191919;
   --color-surface: #232323;
+  --color-surface-alt: #1C1C1C;
   --color-surface-hover: #2E2E2E;
+  --color-surface-input: #2A2A2A;
   --color-border: #3A3A3A;
   --color-divider: #2A2A2A;
+  --color-overlay: rgba(0, 0, 0, 0.8);
 
   --color-text-primary: #FFFFFF;
   --color-text-secondary: #B3B3B3;
+  --color-text-muted: #808080;
   --color-text-disabled: #666666;
 
   --color-accent: #10A37F;
@@ -19,6 +23,8 @@
 
   --color-blue-accent: #3B82F6;
   --color-blue-accent-hover: #2563EB;
+
+  --color-purple-accent: #8B5CF6;
 
   --color-success: #22C55E;
   --color-warning: #FACC15;
@@ -82,36 +88,6 @@
   transition: border-color var(--transition-duration-slow) ease, transform var(--transition-duration-fast) ease;
 }
 
-/* --- Custom Variables (from :root and @theme inline) --- */
-
-/* Custom theme colors */
-$background: #191919;
-$surface: #232323;
-$surface-hover: #2E2E2E;
-$border: #3A3A3A;
-$divider: #2A2A2A;
-
-$text-primary: #FFFFFF;
-$text-secondary: #B3B3B3;
-$text-disabled: #666666;
-
-$accent: #10A37F;
-$accent-hover: #1AA97D;
-$blue-accent: #3B82F6;
-$blue-accent-hover: #2563EB;
-
-$success: #22C55E;
-$warning: #FACC15;
-$danger: #EF4444;
-$purple-accent: #8B5CF6; /* Extracted from hero-icon-hover-purple */
-
-/* Standard variables / Aliases */
-$foreground: $text-primary;
-$ring: $accent;
-$radius: 0.625rem;
-$font-weight-medium: 500;
-$font-weight-normal: 400;
-
 :host {
     display: block;
     width: 100%;
@@ -119,8 +95,8 @@ $font-weight-normal: 400;
 
 /* Base Styles */
 body {
-    background-color: $background;
-    color: $foreground;
+    background-color: var(--color-background);
+    color: var(--color-text-primary);
 }
 
 html {
@@ -206,6 +182,16 @@ html {
     100% { opacity: 1; transform: translateY(0); }
 }
 
+@keyframes modalFadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+@keyframes modalScaleIn {
+    0% { opacity: 0; transform: scale(0.94) translateY(8px); }
+    100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
 /* --- Animation Utility Classes --- */
 
 .animate-float-up { animation: floatUp 3s ease-in-out infinite; }
@@ -243,6 +229,16 @@ html {
     animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
+/* Modal entrance animations (used by ui-modal and legacy custom modals) */
+.animate-fade-in {
+    animation: modalFadeIn 0.15s ease-out forwards;
+}
+
+.animate-scale-in,
+.animate-scale-up {
+    animation: modalScaleIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
 /* Flow Animation Delays */
 @for $i from 1 through 10 {
     .flow-delay-#{$i} { animation-delay: #{$i * 0.1}s; }
@@ -272,26 +268,26 @@ html {
 
 .hero-icon-hover-green:hover {
     transform: scale(1.15);
-    box-shadow: 0 8px 24px rgba($accent, 0.3),
-                0 0 0 4px rgba($accent, 0.1);
-    border-color: rgba($accent, 0.4);
-    background-color: rgba($accent, 0.15);
+    box-shadow: 0 8px 24px rgba(16, 163, 127, 0.3),
+                0 0 0 4px rgba(16, 163, 127, 0.1);
+    border-color: rgba(16, 163, 127, 0.4);
+    background-color: rgba(16, 163, 127, 0.15);
 }
 
 .hero-icon-hover-blue:hover {
     transform: scale(1.15);
-    box-shadow: 0 8px 24px rgba($blue-accent, 0.3),
-                0 0 0 4px rgba($blue-accent, 0.1);
-    border-color: rgba($blue-accent, 0.4);
-    background-color: rgba($blue-accent, 0.15);
+    box-shadow: 0 8px 24px rgba(59, 130, 246, 0.3),
+                0 0 0 4px rgba(59, 130, 246, 0.1);
+    border-color: rgba(59, 130, 246, 0.4);
+    background-color: rgba(59, 130, 246, 0.15);
 }
 
 .hero-icon-hover-purple:hover {
     transform: scale(1.15);
-    box-shadow: 0 8px 24px rgba($purple-accent, 0.3),
-                0 0 0 4px rgba($purple-accent, 0.1);
-    border-color: rgba($purple-accent, 0.4);
-    background-color: rgba($purple-accent, 0.15);
+    box-shadow: 0 8px 24px rgba(139, 92, 246, 0.3),
+                0 0 0 4px rgba(139, 92, 246, 0.1);
+    border-color: rgba(139, 92, 246, 0.4);
+    background-color: rgba(139, 92, 246, 0.15);
 }
 
 .icon-scale-inner {
@@ -334,7 +330,7 @@ html {
 }
 
 .benefit-icon-wrapper:hover .benefit-title {
-    color: $accent;
+    color: var(--color-accent);
 }
 
 /* --- PrimeNG Select (Dropdown) Global Styling for Premium Dark Theme --- */
@@ -410,44 +406,6 @@ html {
 .p-select-option.p-select-option-selected:hover,
 .p-select-option.p-highlight:hover {
   background-color: #1AA97D !important;
-}
-
-.p-dropdown {
-  background-color: #232323 !important;
-  border: 1px solid #3A3A3A !important;
-  border-radius: 0.75rem !important;
-  color: #FFFFFF !important;
-}
-
-.p-dropdown-trigger {
-  color: #B3B3B3 !important;
-  padding-right: 1rem !important;
-  padding-left: 0.5rem !important;
-}
-
-.p-dropdown-panel {
-  background-color: #232323 !important;
-  border: 1px solid #3A3A3A !important;
-  border-radius: 0.75rem !important;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.7) !important;
-}
-
-.p-dropdown-items {
-  background-color: #232323 !important;
-}
-
-.p-dropdown-item {
-  color: #B3B3B3 !important;
-}
-
-.p-dropdown-item:hover {
-  background-color: #2E2E2E !important;
-  color: #FFFFFF !important;
-}
-
-.p-dropdown-item.p-highlight {
-  background-color: #10A37F !important;
-  color: #FFFFFF !important;
 }
 
 /* --- PrimeNG DataTable Global Styling --- */
@@ -569,4 +527,49 @@ html {
   background-color: #10a37f !important;
   color: #ffffff !important;
 }
+
+/* --- PrimeNG SelectButton (built from ToggleButton internals) --- */
+.p-selectbutton {
+  display: inline-flex !important;
+  gap: 0.25rem !important;
+  padding: 0.25rem !important;
+  border-radius: var(--radius-lg) !important;
+  background: var(--color-surface-alt) !important;
+  border: 1px solid var(--color-border) !important;
+}
+
+.p-selectbutton .p-togglebutton {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  color: var(--color-text-secondary) !important;
+  border-radius: var(--radius-md) !important;
+  padding: 0.375rem 0.875rem !important;
+  font-size: 0.75rem !important;
+  font-weight: 600 !important;
+  transition: background-color 0.15s ease, color 0.15s ease !important;
+}
+
+.p-selectbutton .p-togglebutton .p-togglebutton-content {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.p-selectbutton .p-togglebutton:not(.p-togglebutton-checked):hover {
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: #ffffff !important;
+}
+
+.p-selectbutton .p-togglebutton.p-togglebutton-checked,
+.p-selectbutton .p-togglebutton.p-highlight {
+  background: #10a37f !important;
+  color: #ffffff !important;
+}
+
+.p-selectbutton .p-togglebutton.p-togglebutton-checked .p-togglebutton-content,
+.p-selectbutton .p-togglebutton.p-highlight .p-togglebutton-content {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
 
