@@ -29,7 +29,6 @@ export class AuthService {
     if (token && this.storageService.isTokenValid(token)) {
       const email =
         savedEmail || this.storageService.getUserEmailFromToken(token);
-      console.log(token, email);
       if (email) this.userEmail.set(email);
       this.isLoggedIn.set(true);
     } else {
@@ -70,7 +69,6 @@ export class AuthService {
       .post<string>(`${this.BASE_URL.getBaseUrl()}/auth/register`, user)
       .pipe(
         map((res) => {
-          console.log('Registered successfully');
           return res;
         }),
         catchError((error) => {

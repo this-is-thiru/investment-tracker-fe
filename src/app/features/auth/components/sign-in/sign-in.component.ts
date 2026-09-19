@@ -69,7 +69,6 @@ export class SignInComponent implements OnInit {
       }))
       .subscribe({
         next: (res) => {
-          console.log('Login success:', res);
           this.notificationService.addNotification('Login Success', 'Signed in successfully', 'success');
           this.router.navigate([{ outlets: { primary: ['home'], modal: null } }]);
         },

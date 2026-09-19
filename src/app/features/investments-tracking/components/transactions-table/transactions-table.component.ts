@@ -277,7 +277,6 @@ export class TransactionsTableComponent implements OnInit {
   loadHoldingsFromApi(): void {
     this.transactionService.getAllHoldings(this.userEmail).subscribe({
       next: (res) => {
-        console.log('Holdings API response:', res);
         const data = Array.isArray(res) ? res : (res?.data || res?.content || []);
         let totalAllInvested = 0;
         this.holdings = data.map((d: any) => {

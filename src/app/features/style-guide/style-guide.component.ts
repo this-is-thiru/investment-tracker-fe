@@ -110,6 +110,5 @@ export class StyleGuideComponent {
       tone: 'danger',
       confirmLabel: 'Delete',
     });
-    console.log('confirm result', ok);
   }
 }

@@ -285,7 +285,6 @@ export class TransactionService {
       return of(this.mockPortfolioData());
     }
     const url = `${this.BASE_URL.getBaseUrl()}/transactions/user/${email}`;
-    console.log('Token being sent:', localStorage.getItem('jwtToken'));
     return this.http.post<TransactionsResponse[]>(url, { filters });
   }
 
@@ -295,7 +294,6 @@ export class TransactionService {
       return of(this.mockTempData());
     }
     const url = `${this.BASE_URL.getBaseUrl()}/temporary-transactions/user/${email}/all`;
-    console.log('Token being sent:', localStorage.getItem('jwtToken'));
     return this.http.get<TransactionsResponse[]>(url);
   }
 
