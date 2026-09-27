@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { Router } from '@angular/router';
 import { StorageService } from './storage.service';
 
 export interface Notification {
@@ -10,6 +11,8 @@ export interface Notification {
   type: 'success' | 'error' | 'info' | 'warning';
   timestamp: Date;
   read: boolean;
+  /** Page the notification is about; clicking it navigates there */
+  link?: string;
 }
 
 @Injectable({
@@ -17,6 +20,7 @@ export interface Notification {
 })
 export class NotificationService {
   private storageService = inject(StorageService);
+  private router = inject(Router);
 
   private _notifications = new BehaviorSubject<Notification[]>([]);
   public notifications$ = this._notifications.asObservable();
@@ -69,7 +73,11 @@ export class NotificationService {
     }
   }
 
-  addNotification(title: string, message: string, type: Notification['type']): void {
+  /**
+   * @param link page to open when the notification is clicked. Defaults to the
+   * page it was raised on; pass `null` for notifications that aren't about a page.
+   */
+  addNotification(title: string, message: string, type: Notification['type'], link?: string | null): void {
     const newNotification: Notification = {
       id: `notif-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`,
       title,
@@ -77,6 +85,7 @@ export class NotificationService {
       type,
       timestamp: new Date(),
       read: false,
+      link: link === undefined ? this.currentPage() : link ?? undefined,
     };
     
     // Add to history
@@ -88,6 +97,15 @@ export class NotificationService {
     // Add to active toasts
     const currentToasts = this._toasts.getValue();
     this._toasts.next([...currentToasts, newNotification]);
+  }
+
+  // Current page without the modal outlet; home isn't worth linking back to
+  private currentPage(): string | undefined {
+    const tree = this.router.parseUrl(this.router.url);
+    delete tree.root.children['modal'];
+    tree.queryParams = {};
+    const url = this.router.serializeUrl(tree);
+    return url === '/' || url === '/home' ? undefined : url;
   }
 
   removeToast(id: string): void {

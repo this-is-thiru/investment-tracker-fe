@@ -1,4 +1,5 @@
-import { Component, Output, EventEmitter, inject } from '@angular/core';
+import { Component, Output, EventEmitter, ChangeDetectorRef, inject } from '@angular/core';
+import { finalize } from 'rxjs/operators';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CorporateActionService } from '../../services/corporate-action.service';
@@ -30,6 +31,7 @@ export class AddCorporateActionComponent {
   @Output() actionAdded = new EventEmitter<void>();
 
   private corporateActionService = inject(CorporateActionService);
+  private cdr = inject(ChangeDetectorRef);
   private notificationService = inject(NotificationService);
 
   isLoading = false;
@@ -195,7 +197,7 @@ export class AddCorporateActionComponent {
     }
 
     this.isLoading = true;
-    this.corporateActionService.addCorporateAction(payload).subscribe({
+    this.corporateActionService.addCorporateAction(payload).pipe(finalize(() => this.cdr.markForCheck())).subscribe({
       next: () => {
         this.isLoading = false;
         this.notificationService.addNotification(

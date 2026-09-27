@@ -1,5 +1,8 @@
 import { Routes } from '@angular/router';
 import { authGuard } from '@core/guards/auth.guard';
+import { blockDemoGuard } from '@core/guards/demo.guard';
+import { redirectSignedInGuard } from '@core/guards/home.guard';
+import { environment } from '@env/environment';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
@@ -10,16 +13,18 @@ export const routes: Routes = [
     children: [
       {
         path: 'home',
-        loadComponent: () => import('./features/home/pages/home/home.component').then(m => m.HomeComponent)
+        loadComponent: () => import('./features/home/pages/home/home.component').then(m => m.HomeComponent),
+        canActivate: [redirectSignedInGuard]
       },
-      {
+      // Developer-only component showcase; left out of production builds
+      ...(environment.production ? [] : [{
         path: 'style-guide',
         loadComponent: () => import('./features/style-guide/style-guide.component').then(m => m.StyleGuideComponent)
-      },
+      }]),
       {
         path: 'investments-tracking',
         loadComponent: () => import('./features/investments-tracking/pages/investments/investments.component').then(m => m.InvestmentsComponent),
-        canActivate: [authGuard]
+        canActivate: [authGuard, blockDemoGuard]
       },
       {
         path: 'tax-filing',
@@ -50,7 +55,7 @@ export const routes: Routes = [
       {
         path: 'settings',
         loadComponent: () => import('./shared/components/settings/settings.component').then(m => m.SettingsComponent),
-        canActivate: [authGuard]
+        canActivate: [authGuard, blockDemoGuard]
       },
       {
         path: 'notifications',

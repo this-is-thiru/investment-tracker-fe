@@ -1,5 +1,5 @@
 <ui-modal [open]="true" title="Create your account" size="sm" [dismissible]="true" (closed)="onClose()">
-  <p class="text-xs text-[#999999] text-center -mt-2 mb-4">Sign up to start tracking your investments</p>
+  <p class="text-xs text-text-secondary text-center -mt-2 mb-4">Sign up to start tracking your investments</p>
 
   <form
     (ngSubmit)="onRegistration()"
@@ -10,7 +10,7 @@
     <div>
       <label
         for="register-email"
-        class="block text-xs text-[#B3B3B3] mb-1.5"
+        class="block text-xs text-text-secondary mb-1.5"
       >
         Email
       </label>
@@ -37,7 +37,7 @@
     <div>
       <label
         for="register-password"
-        class="block text-xs text-[#B3B3B3] mb-1.5"
+        class="block text-xs text-text-secondary mb-1.5"
       >
         Password
       </label>
@@ -80,7 +80,7 @@
     <div>
       <label
         for="register-confirm-password"
-        class="block text-xs text-[#B3B3B3] mb-1.5"
+        class="block text-xs text-text-secondary mb-1.5"
       >
         Confirm Password
       </label>
@@ -121,11 +121,11 @@
     </ui-button>
 
     <!-- Switch to Sign In Link -->
-    <p class="mt-4 text-center text-xs text-[#999999]">
+    <p class="mt-4 text-center text-xs text-text-secondary">
       Already have an account?
       <a
-        (click)="router.navigate([{ outlets: { modal: ['sign-in'] } }])"
-        class="text-[#10A37F] font-semibold hover:text-[#1AA97D] hover:underline cursor-pointer transition"
+        (click)="router.navigate([{ outlets: { modal: ['sign-in'] } }], { queryParamsHandling: 'preserve' })"
+        class="text-accent font-semibold hover:text-accent-hover hover:underline cursor-pointer transition"
       >
         Sign in
       </a>

@@ -1,4 +1,5 @@
-import { Component, OnInit, EventEmitter, Output } from '@angular/core';
+import { Component, OnInit, EventEmitter, Output, ChangeDetectorRef, inject } from '@angular/core';
+import { finalize } from 'rxjs/operators';
 import {
   FormBuilder,
   FormGroup,
@@ -28,6 +29,8 @@ export class ChangePasswordComponent implements OnInit {
 
   changePasswordForm!: FormGroup;
   isLoading = false;
+
+  private cdr = inject(ChangeDetectorRef);
 
   constructor(
     private fb: FormBuilder,
@@ -71,7 +74,7 @@ export class ChangePasswordComponent implements OnInit {
 
     this.isLoading = true;
 
-    this.authService.changePassword(email, oldPassword, newPassword).subscribe({
+    this.authService.changePassword(email, oldPassword, newPassword).pipe(finalize(() => this.cdr.markForCheck())).subscribe({
       next: () => {
         this.isLoading = false;
         this.notificationService.addNotification('Password Updated', 'Password changed successfully!', 'success');

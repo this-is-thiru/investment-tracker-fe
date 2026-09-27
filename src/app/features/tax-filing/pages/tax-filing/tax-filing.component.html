@@ -1,27 +1,27 @@
-<div class="w-full min-h-screen flex flex-col bg-[#191919]">
+<div class="w-full min-h-screen flex flex-col bg-background">
 
   <!-- ============================================================== -->
   <!-- HEADER STRIP                                                     -->
   <!-- ============================================================== -->
-  <section class="relative bg-[#191919] overflow-hidden border-b border-[#2A2A2A]">
+  <section class="relative bg-background overflow-hidden border-b border-divider">
     <div class="absolute inset-0 opacity-30 pointer-events-none">
-      <div class="relative bg-gradient-to-br from-[#0F0F0F] via-[#121212] to-[#191919] w-full h-full"></div>
+      <div class="relative bg-gradient-to-br from-[#0F0F0F] via-[#121212] to-background w-full h-full"></div>
     </div>
 
     <div class="w-full max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-8 2xl:px-12 py-10 md:py-14 relative z-10">
       <div
-        class="inline-flex items-center gap-2 bg-[#10A37F]/10 border border-[#10A37F]/20 rounded-full px-3 py-1.5 mb-4">
-        <lucide-icon name="FileText" class="w-4 h-4 text-[#10A37F]"></lucide-icon>
-        <span class="text-xs text-[#10A37F] font-semibold uppercase tracking-wider">Tax Filing</span>
+        class="inline-flex items-center gap-2 bg-accent/10 border border-accent/20 rounded-full px-3 py-1.5 mb-4">
+        <lucide-icon name="FileText" class="w-4 h-4 text-accent"></lucide-icon>
+        <span class="text-xs text-accent font-semibold uppercase tracking-wider">Tax Filing</span>
       </div>
 
       <h1 class="text-3xl md:text-4xl text-white mb-2 font-semibold">
         Capital gains &amp; tax
-        <span class="text-transparent bg-clip-text bg-gradient-to-r from-[#10A37F] to-[#0D8968]">summary</span>
+        <span class="text-transparent bg-clip-text bg-gradient-to-r from-accent to-accent-hover">summary</span>
       </h1>
-      <p class="text-sm text-[#B3B3B3] max-w-2xl flex items-center flex-wrap gap-1">
+      <p class="text-sm text-text-secondary max-w-2xl flex items-center flex-wrap gap-1">
         FIFO-based
-        <lucide-icon name="info" class="inline-block w-4 h-4 text-[#B3B3B3] hover:text-white cursor-pointer transition-colors"
+        <lucide-icon name="info" class="inline-block w-4 h-4 text-text-secondary hover:text-white cursor-pointer transition-colors"
           appTooltip="First-In, First-Out: An accounting method where the assets bought first are assumed to be sold first when calculating capital gains."
           appTooltipVariant="info" appTooltipPosition="top"></lucide-icon>
         realized gains across all your BUY/SELL transactions, grouped by financial year and asset type.
@@ -37,7 +37,7 @@
     <!-- MOCK-DATA BANNER -->
     @if (usingMockTemp || usingMockPort) {
     <div
-      class="flex items-center justify-between gap-3 px-4 py-2 bg-[#FACC15]/10 border border-[#FACC15]/30 rounded-lg text-xs text-[#FACC15]">
+      class="flex items-center justify-between gap-3 px-4 py-2 bg-warning/10 border border-warning/30 rounded-lg text-xs text-warning">
       <span class="flex items-center gap-2">
         <lucide-icon name="AlertTriangle" class="w-4 h-4"></lucide-icon>
         Using sample data — API request failed.
@@ -50,10 +50,10 @@
 
     <!-- ============================================================== -->
     <section
-      class="flex flex-wrap items-center gap-3 rounded-xl bg-[#1A1A1A]/60 backdrop-blur-sm px-4 py-3 border border-[#2A2A2A]">
-      <div class="flex items-center gap-2 text-[#808080]">
-        <lucide-icon name="Filter" class="w-4 h-4 text-[#10A37F]"></lucide-icon>
-        <span class="text-xs font-medium text-[#A0A0A0] hidden sm:inline">Filter</span>
+      class="flex flex-wrap items-center gap-3 rounded-xl bg-surface-alt/60 backdrop-blur-sm px-4 py-3 border border-divider">
+      <div class="flex items-center gap-2 text-text-muted">
+        <lucide-icon name="Filter" class="w-4 h-4 text-accent"></lucide-icon>
+        <span class="text-xs font-medium text-text-secondary hidden sm:inline">Filter</span>
       </div>
 
       <div class="ml-auto flex flex-wrap items-center gap-3">
@@ -71,7 +71,7 @@
         <div class="flex flex-wrap gap-1.5">
           @for (chip of activeFilterChips; track chip.label) {
           <span
-            class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-[#10A37F]/10 text-[#10A37F] border border-[#10A37F]/20 text-[10px] font-medium">
+            class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-accent/10 text-accent border border-accent/20 text-2xs font-medium">
             {{ chip.label }}
             <button (click)="removeFilterChip(chip)" class="hover:text-white focus:outline-none"
               aria-label="Remove filter">
@@ -96,11 +96,11 @@
     <!-- PANEL A — TAX SUMMARY                                            -->
     <!-- ============================================================== -->
     <section>
-      <!-- <div class="px-4 pt-4 pb-3 border-b border-[#2A2A2A]">
+      <!-- <div class="px-4 pt-4 pb-3 border-b border-divider">
         <div class="flex items-center gap-2">
-          <lucide-icon name="BarChart3" class="w-4 h-4 text-[#10A37F]"></lucide-icon>
+          <lucide-icon name="BarChart3" class="w-4 h-4 text-accent"></lucide-icon>
           <h3 class="text-sm font-bold text-white uppercase tracking-wider">Summary</h3>
-          <span class="text-[9px] text-[#707070]">(currently visible transactions)</span>
+          <span class="text-2xs text-text-muted">(currently visible transactions)</span>
         </div>
       </div> -->
 
@@ -109,79 +109,79 @@
 
         <!-- Total Realized P&L -->
         <div
-          class="bg-[#1F1F1F] border border-[#3A3A3A] rounded-lg p-3 flex flex-col gap-1 hover:border-[#525252] transition-colors"
-          [ngClass]="capitalGains.totalGain >= 0 ? 'border-l-4 border-l-[#22C55E]' : 'border-l-4 border-l-[#EF4444]'">
+          class="bg-surface-alt border border-border rounded-lg p-3 flex flex-col gap-1 hover:border-border-hover transition-colors"
+          [ngClass]="capitalGains.totalGain >= 0 ? 'border-l-4 border-l-success' : 'border-l-4 border-l-danger'">
           <div class="flex items-center justify-between">
-            <span class="text-[9px] text-[#B3B3B3] font-semibold uppercase tracking-wider">Total Realized
+            <span class="text-2xs text-text-secondary font-semibold uppercase tracking-wider">Total Realized
               P&amp;L</span>
             <lucide-icon name="TrendingUp" class="w-3.5 h-3.5"
-              [ngClass]="capitalGains.totalGain >= 0 ? 'text-[#22C55E]' : 'text-[#EF4444]'"></lucide-icon>
+              [ngClass]="capitalGains.totalGain >= 0 ? 'text-success' : 'text-danger'"></lucide-icon>
           </div>
           <div class="text-xl font-bold" [ngClass]="capitalGains.totalGain >= 0 ? 'text-success' : 'text-danger'">
             ₹{{ capitalGains.totalGain | number:'1.2-2' }}
           </div>
-          <div class="text-[9px] text-[#707070]">across {{ capitalGains.byFy.length }} FY(s)</div>
+          <div class="text-2xs text-text-muted">across {{ capitalGains.byFy.length }} FY(s)</div>
         </div>
 
         <!-- STCG -->
         <div
-          class="bg-[#1F1F1F] border border-[#3A3A3A] rounded-lg p-3 flex flex-col gap-1 hover:border-[#525252] transition-colors"
-          [ngClass]="capitalGains.stcg >= 0 ? 'border-l-4 border-l-[#FACC15]' : 'border-l-4 border-l-[#EF4444]'">
+          class="bg-surface-alt border border-border rounded-lg p-3 flex flex-col gap-1 hover:border-border-hover transition-colors"
+          [ngClass]="capitalGains.stcg >= 0 ? 'border-l-4 border-l-warning' : 'border-l-4 border-l-danger'">
           <div class="flex items-center justify-between">
-            <span class="text-[9px] text-[#B3B3B3] font-semibold uppercase tracking-wider flex items-center gap-1">
+            <span class="text-2xs text-text-secondary font-semibold uppercase tracking-wider flex items-center gap-1">
               STCG
-              <lucide-icon name="info" class="w-3.5 h-3.5 text-[#B3B3B3] hover:text-white cursor-pointer transition-colors"
+              <lucide-icon name="info" class="w-3.5 h-3.5 text-text-secondary hover:text-white cursor-pointer transition-colors"
                 appTooltip="Short-Term Capital Gains: Gains made on assets held for less than 1 year (3 years for debt). Taxed at 20% for equities/equity mutual funds in India."
                 appTooltipVariant="warning" appTooltipPosition="top"></lucide-icon>
             </span>
-            <lucide-icon name="Clock" class="w-3.5 h-3.5 text-[#FACC15]"></lucide-icon>
+            <lucide-icon name="Clock" class="w-3.5 h-3.5 text-warning"></lucide-icon>
           </div>
-          <div class="text-xl font-bold text-[#FACC15]">
+          <div class="text-xl font-bold text-warning">
             ₹{{ capitalGains.stcg | number:'1.2-2' }}
           </div>
-          <div class="text-[9px] text-[#707070]">short-term capital gains</div>
+          <div class="text-2xs text-text-muted">short-term capital gains</div>
         </div>
 
         <!-- LTCG -->
         <div
-          class="bg-[#1F1F1F] border border-[#3A3A3A] rounded-lg p-3 flex flex-col gap-1 hover:border-[#525252] transition-colors"
-          [ngClass]="capitalGains.ltcg >= 0 ? 'border-l-4 border-l-[#10A37F]' : 'border-l-4 border-l-[#EF4444]'">
+          class="bg-surface-alt border border-border rounded-lg p-3 flex flex-col gap-1 hover:border-border-hover transition-colors"
+          [ngClass]="capitalGains.ltcg >= 0 ? 'border-l-4 border-l-accent' : 'border-l-4 border-l-danger'">
           <div class="flex items-center justify-between">
-            <span class="text-[9px] text-[#B3B3B3] font-semibold uppercase tracking-wider flex items-center gap-1">
+            <span class="text-2xs text-text-secondary font-semibold uppercase tracking-wider flex items-center gap-1">
               LTCG
-              <lucide-icon name="info" class="w-3.5 h-3.5 text-[#B3B3B3] hover:text-white cursor-pointer transition-colors"
+              <lucide-icon name="info" class="w-3.5 h-3.5 text-text-secondary hover:text-white cursor-pointer transition-colors"
                 appTooltip="Long-Term Capital Gains: Gains made on assets held for 1 year or longer (3 years for debt). Exempt up to ₹1.25L for equities/equity mutual funds, then taxed at 12.5% in India."
                 appTooltipVariant="success" appTooltipPosition="top"></lucide-icon>
             </span>
-            <lucide-icon name="Calendar" class="w-3.5 h-3.5 text-[#10A37F]"></lucide-icon>
+            <lucide-icon name="Calendar" class="w-3.5 h-3.5 text-accent"></lucide-icon>
           </div>
-          <div class="text-xl font-bold text-[#10A37F]">
+          <div class="text-xl font-bold text-accent">
             ₹{{ capitalGains.ltcg | number:'1.2-2' }}
           </div>
-          <div class="text-[9px] text-[#707070]">long-term capital gains</div>
+          <div class="text-2xs text-text-muted">long-term capital gains</div>
         </div>
 
         <!-- Estimated Tax -->
         <div
-          class="bg-[#1F1F1F] border border-[#3A3A3A] border-l-4 border-l-[#10A37F] rounded-lg p-3 flex flex-col gap-1 hover:border-[#525252] transition-colors">
+          class="bg-surface-alt border border-border border-l-4 border-l-accent rounded-lg p-3 flex flex-col gap-1 hover:border-border-hover transition-colors">
           <div class="flex items-center justify-between">
-            <span class="text-[9px] text-[#B3B3B3] font-semibold uppercase tracking-wider">Estimated Tax</span>
-            <lucide-icon name="Info" class="w-3.5 h-3.5 text-[#10A37F] cursor-pointer"
+            <span class="text-2xs text-text-secondary font-semibold uppercase tracking-wider">Estimated Tax</span>
+            <lucide-icon name="Info" class="w-3.5 h-3.5 text-accent cursor-pointer"
               [appTooltip]="taxTooltip" appTooltipVariant="success" appTooltipPosition="top"></lucide-icon>
           </div>
-          <div class="text-xl font-bold text-[#10A37F]">
+          <div class="text-xl font-bold text-accent">
             ₹{{ estimatedTax | number:'1.2-2' }}
           </div>
-          <div class="text-[9px] text-[#707070]">rough estimate — see tooltip</div>
+          <div class="text-2xs text-text-muted">rough estimate — see tooltip</div>
         </div>
       </div>
       } @else {
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
         <div *ngFor="let i of [1, 2, 3, 4]"
-          class="bg-[#1F1F1F] border border-[#3A3A3A] rounded-lg p-3 flex flex-col gap-2">
-          <p-skeleton width="50%" height="12px" styleClass="bg-[#2E2E2E]"></p-skeleton>
-          <p-skeleton width="70%" height="24px" styleClass="bg-[#2E2E2E]"></p-skeleton>
-          <p-skeleton width="40%" height="10px" styleClass="bg-[#2E2E2E]"></p-skeleton>
+          class="bg-surface-alt border border-border rounded-lg p-3 flex flex-col gap-2">
+          <p-skeleton width="50%" height="12px" styleClass="bg-surface-hover"></p-skeleton>
+          <p-skeleton width="70%" height="24px" styleClass="bg-surface-hover"></p-skeleton>
+          <p-skeleton width="40%" height="10px" styleClass="bg-surface-hover"></p-skeleton>
         </div>
       </div>
       }
@@ -205,23 +205,23 @@
     <!-- ============================================================== -->
     <app-expansion-panel [title]="'Capital Gains Reports'" [subtitle]="'FY-wise totals and per-stock realized P&L'"
       [titleIcon]="'FileSpreadsheet'"
-      [iconBgClass]="'bg-gradient-to-br from-[#10A37F] to-[#0D8968] p-2 rounded-lg text-white'" [isExpanded]="true">
+      [iconBgClass]="'bg-gradient-to-br from-accent to-accent-hover p-2 rounded-lg text-white'" [isExpanded]="true">
 
       @if (loading) {
       <div class="space-y-4">
-        <p-skeleton width="100%" height="180px" styleClass="bg-[#2E2E2E]" borderRadius="12px"></p-skeleton>
-        <p-skeleton width="100%" height="220px" styleClass="bg-[#2E2E2E]" borderRadius="12px"></p-skeleton>
+        <p-skeleton width="100%" height="180px" styleClass="bg-surface-hover" borderRadius="12px"></p-skeleton>
+        <p-skeleton width="100%" height="220px" styleClass="bg-surface-hover" borderRadius="12px"></p-skeleton>
       </div>
       } @else if (hasRows) {
 
       <!-- PER-STOCK TAX REPORT TABLE -->
-      <section class="border border-[#3A3A3A] rounded-xl bg-[#191919] overflow-hidden">
+      <section class="border border-border rounded-xl bg-background overflow-hidden">
         <div
-          class="px-4 py-3 border-b border-[#2A2A2A] flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+          class="px-4 py-3 border-b border-divider flex flex-col md:flex-row md:items-center md:justify-between gap-3">
           <div class="flex items-center gap-2">
-            <lucide-icon name="FileSpreadsheet" class="w-4 h-4 text-[#10A37F]"></lucide-icon>
+            <lucide-icon name="FileSpreadsheet" class="w-4 h-4 text-accent"></lucide-icon>
             <h3 class="text-sm font-bold text-white uppercase tracking-wider">Per-stock Tax Report</h3>
-            <span class="text-[9px] text-[#707070]">{{ perStockRows.length }} stocks</span>
+            <span class="text-2xs text-text-muted">{{ perStockRows.length }} stocks</span>
           </div>
 
           <!-- Export controls -->
@@ -234,12 +234,12 @@
             @if (exportMenuOpen) {
             <ui-card padding="sm" class="absolute right-0 mt-1 w-44 z-30 block">
               <button (click)="exportCsv()"
-                class="w-full flex items-center gap-2 px-2 py-1.5 hover:bg-[#2A2A2A] rounded text-xs text-[#B3B3B3] hover:text-white focus:outline-none text-left">
+                class="w-full flex items-center gap-2 px-2 py-1.5 hover:bg-surface-input rounded text-xs text-text-secondary hover:text-white focus:outline-none text-left">
                 <lucide-icon name="FileText" class="w-3.5 h-3.5"></lucide-icon>
                 Export CSV
               </button>
               <button (click)="exportExcel()"
-                class="w-full flex items-center gap-2 px-2 py-1.5 hover:bg-[#2A2A2A] rounded text-xs text-[#B3B3B3] hover:text-white focus:outline-none text-left">
+                class="w-full flex items-center gap-2 px-2 py-1.5 hover:bg-surface-input rounded text-xs text-text-secondary hover:text-white focus:outline-none text-left">
                 <lucide-icon name="Upload" class="w-3.5 h-3.5"></lucide-icon>
                 Export Excel
               </button>
@@ -293,11 +293,11 @@
                       r.stockName }}
                     </div>
                   </td>
-                  <td class="px-4 py-3 text-right text-[#B3B3B3] tabular-nums whitespace-nowrap">{{ r.sellQty |
+                  <td class="px-4 py-3 text-right text-text-secondary tabular-nums whitespace-nowrap">{{ r.sellQty |
                     number:'1.0-4' }}</td>
-                  <td class="px-4 py-3 text-right text-[#B3B3B3] tabular-nums whitespace-nowrap">₹{{ r.costBasis |
+                  <td class="px-4 py-3 text-right text-text-secondary tabular-nums whitespace-nowrap">₹{{ r.costBasis |
                     number:'1.2-2' }}</td>
-                  <td class="px-4 py-3 text-right text-[#B3B3B3] tabular-nums whitespace-nowrap">₹{{ r.sellValue |
+                  <td class="px-4 py-3 text-right text-text-secondary tabular-nums whitespace-nowrap">₹{{ r.sellValue |
                     number:'1.2-2' }}</td>
                   <td class="px-4 py-3 text-right font-semibold tabular-nums whitespace-nowrap"
                     [ngClass]="r.gain >= 0 ? 'text-success' : 'text-danger'">
@@ -312,19 +312,19 @@
                     <ui-badge tone="accent">Mixed</ui-badge>
                     }
                   </td>
-                  <td class="px-4 py-3 text-right text-[#B3B3B3] tabular-nums whitespace-nowrap">{{ r.percentOfTotalGain
+                  <td class="px-4 py-3 text-right text-text-secondary tabular-nums whitespace-nowrap">{{ r.percentOfTotalGain
                     | number:'1.2-2' }}%</td>
                 </tr>
               </ng-template>
 
               <ng-template pTemplate="footer">
-                <tr class="border-t border-[#3A3A3A] bg-[#1A1A1A]">
-                  <td class="px-4 py-3 font-bold text-white uppercase text-[9px] tracking-wider" colspan="2">Total</td>
-                  <td class="px-4 py-3 text-right font-semibold text-[#B3B3B3] tabular-nums whitespace-nowrap">{{
+                <tr class="border-t border-border bg-surface-alt">
+                  <td class="px-4 py-3 font-bold text-white uppercase text-2xs tracking-wider" colspan="2">Total</td>
+                  <td class="px-4 py-3 text-right font-semibold text-text-secondary tabular-nums whitespace-nowrap">{{
                     perStockTotals.sellQty | number:'1.0-4' }}</td>
-                  <td class="px-4 py-3 text-right font-semibold text-[#B3B3B3] tabular-nums whitespace-nowrap">₹{{
+                  <td class="px-4 py-3 text-right font-semibold text-text-secondary tabular-nums whitespace-nowrap">₹{{
                     perStockTotals.costBasis | number:'1.2-2' }}</td>
-                  <td class="px-4 py-3 text-right font-semibold text-[#B3B3B3] tabular-nums whitespace-nowrap">₹{{
+                  <td class="px-4 py-3 text-right font-semibold text-text-secondary tabular-nums whitespace-nowrap">₹{{
                     perStockTotals.sellValue | number:'1.2-2' }}</td>
                   <td class="px-4 py-3 text-right font-bold tabular-nums whitespace-nowrap"
                     [ngClass]="perStockTotals.gain >= 0 ? 'text-success' : 'text-danger'">
@@ -338,9 +338,9 @@
                 <tr>
                   <td colspan="8" class="py-12 px-4 text-center">
                     <div class="flex flex-col items-center justify-center space-y-2 py-6">
-                      <lucide-icon name="FileSpreadsheet" class="w-10 h-10 text-[#707070]"></lucide-icon>
+                      <lucide-icon name="FileSpreadsheet" class="w-10 h-10 text-text-muted"></lucide-icon>
                       <h4 class="text-sm font-semibold text-white">No realized P&amp;L for this filter</h4>
-                      <p class="text-xs text-[#B3B3B3]">No SELLs matched the current FY or asset type filter.</p>
+                      <p class="text-xs text-text-secondary">No SELLs matched the current FY or asset type filter.</p>
                     </div>
                   </td>
                 </tr>
@@ -351,17 +351,17 @@
       </section>
 
       <!-- ACCRUAL/RECEIPT (TABLE F) REPORT TABLE -->
-      <section class="border border-[#3A3A3A] rounded-xl bg-[#191919] overflow-hidden mt-6">
+      <section class="border border-border rounded-xl bg-background overflow-hidden mt-6">
         <div
-          class="px-4 py-3 border-b border-[#2A2A2A] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          class="px-4 py-3 border-b border-divider flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div class="flex items-center gap-2">
-            <lucide-icon name="Calendar" class="w-4 h-4 text-[#10A37F]"></lucide-icon>
+            <lucide-icon name="Calendar" class="w-4 h-4 text-accent"></lucide-icon>
             <h3 class="text-sm font-bold text-white uppercase tracking-wider">Accrual/Receipt of Capital Gains (Table F)
             </h3>
-            <span class="text-[9px] text-[#707070]" *ngIf="accrualTargetFy">FY {{ accrualTargetFy }}</span>
+            <span class="text-2xs text-text-muted" *ngIf="accrualTargetFy">FY {{ accrualTargetFy }}</span>
           </div>
           <div *ngIf="selectedFy === ALL"
-            class="text-xs text-[#FACC15] bg-[#FACC15]/10 border border-[#FACC15]/20 rounded-md px-2 py-1 flex items-center gap-1.5 self-start sm:self-auto">
+            class="text-xs text-warning bg-warning/10 border border-warning/20 rounded-md px-2 py-1 flex items-center gap-1.5 self-start sm:self-auto">
             <lucide-icon name="Info" class="w-3.5 h-3.5"></lucide-icon>
             <span>Showing latest FY {{ accrualTargetFy }} by default</span>
           </div>
@@ -388,12 +388,12 @@
                       <ui-badge [tone]="row.category === 'Short Term' ? 'warning' : 'accent'">
                         {{ row.category === 'Short Term' ? 'ST' : 'LT' }}
                       </ui-badge>
-                      <span class="text-xs text-[#B3B3B3]">{{ row.label }}</span>
+                      <span class="text-xs text-text-secondary">{{ row.label }}</span>
                     </div>
                   </td>
                   <td *ngFor="let periodVal of row.periods"
                     class="px-4 py-3 text-right font-mono tabular-nums whitespace-nowrap"
-                    [ngClass]="periodVal > 0 ? 'text-success' : periodVal < 0 ? 'text-danger' : 'text-[#606060]'">
+                    [ngClass]="periodVal > 0 ? 'text-success' : periodVal < 0 ? 'text-danger' : 'text-text-disabled'">
                     ₹{{ periodVal | number:'1.2-2' }}
                   </td>
                   <td class="px-4 py-3 text-right font-bold font-mono tabular-nums whitespace-nowrap"
@@ -403,11 +403,11 @@
                 </tr>
               </ng-template>
               <ng-template pTemplate="footer">
-                <tr class="border-t border-[#3A3A3A] bg-[#1A1A1A]">
-                  <td class="px-4 py-3 font-bold text-white uppercase text-[9px] tracking-wider">Total</td>
+                <tr class="border-t border-border bg-surface-alt">
+                  <td class="px-4 py-3 font-bold text-white uppercase text-2xs tracking-wider">Total</td>
                   <td *ngFor="let colTotal of accrualRowTotals"
                     class="px-4 py-3 text-right font-bold font-mono tabular-nums whitespace-nowrap"
-                    [ngClass]="colTotal > 0 ? 'text-success' : colTotal < 0 ? 'text-danger' : 'text-[#B3B3B3]'">
+                    [ngClass]="colTotal > 0 ? 'text-success' : colTotal < 0 ? 'text-danger' : 'text-text-secondary'">
                     ₹{{ colTotal | number:'1.2-2' }}
                   </td>
                   <td class="px-4 py-3 text-right font-black font-mono tabular-nums whitespace-nowrap"
@@ -428,11 +428,11 @@
     <!-- ============================================================== -->
     <app-expansion-panel [title]="'Tax Loss Harvesting Optimizer'"
       subtitle="Offset realized capital gains by selling underperforming assets" [titleIcon]="'TrendingDown'"
-      [iconBgClass]="'bg-gradient-to-br from-[#FACC15] to-[#D8B4FE] p-2 rounded-lg text-black'" [isExpanded]="false"
+      [iconBgClass]="'bg-gradient-to-br from-warning to-[#D8B4FE] p-2 rounded-lg text-black'" [isExpanded]="false"
       class="mt-6">
 
       @if (loading) {
-      <p-skeleton width="100%" height="150px" styleClass="bg-[#2E2E2E]" borderRadius="12px"></p-skeleton>
+      <p-skeleton width="100%" height="150px" styleClass="bg-surface-hover" borderRadius="12px"></p-skeleton>
       } @else {
       <div class="space-y-6 mt-2">
 
@@ -441,11 +441,11 @@
           <!-- Potential Savings -->
           <ui-card padding="md">
             <div class="flex items-center gap-3">
-              <div class="p-3 rounded-lg bg-[#22C55E]/10 border border-[#22C55E]/20 text-[#22C55E]">
+              <div class="p-3 rounded-lg bg-success/10 border border-success/20 text-success">
                 <lucide-icon name="Sparkles" class="w-6 h-6"></lucide-icon>
               </div>
               <div>
-                <span class="text-[9px] text-[#B3B3B3] font-semibold uppercase tracking-wider">Potential Tax
+                <span class="text-2xs text-text-secondary font-semibold uppercase tracking-wider">Potential Tax
                   Savings</span>
                 <div class="text-xl font-bold text-success">₹{{ potentialTaxSavings | number:'1.2-2' }}</div>
               </div>
@@ -455,11 +455,11 @@
           <!-- Total Harvestable Loss -->
           <ui-card padding="md">
             <div class="flex items-center gap-3">
-              <div class="p-3 rounded-lg bg-[#EF4444]/10 border border-[#EF4444]/20 text-[#EF4444]">
+              <div class="p-3 rounded-lg bg-danger/10 border border-danger/20 text-danger">
                 <lucide-icon name="TrendingDown" class="w-6 h-6"></lucide-icon>
               </div>
               <div>
-                <span class="text-[9px] text-[#B3B3B3] font-semibold uppercase tracking-wider">Total Harvestable
+                <span class="text-2xs text-text-secondary font-semibold uppercase tracking-wider">Total Harvestable
                   Loss</span>
                 <div class="text-xl font-bold text-white">₹{{ totalHarvestableLoss | number:'1.2-2' }}</div>
               </div>
@@ -469,11 +469,11 @@
           <!-- Opportunities Count -->
           <ui-card padding="md">
             <div class="flex items-center gap-3">
-              <div class="p-3 rounded-lg bg-[#3B82F6]/10 border border-[#3B82F6]/20 text-[#3B82F6]">
+              <div class="p-3 rounded-lg bg-blue-accent/10 border border-blue-accent/20 text-blue-accent">
                 <lucide-icon name="AlertCircle" class="w-6 h-6"></lucide-icon>
               </div>
               <div>
-                <span class="text-[9px] text-[#B3B3B3] font-semibold uppercase tracking-wider">Harvesting
+                <span class="text-2xs text-text-secondary font-semibold uppercase tracking-wider">Harvesting
                   Candidates</span>
                 <div class="text-xl font-bold text-white">{{ harvestOpportunities.length }} holding(s)</div>
               </div>
@@ -486,20 +486,20 @@
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div class="flex items-center gap-2.5">
             <div class="p-1.5 rounded-md" [ngClass]="{
-              'bg-[#10A37F]/10 border border-[#10A37F]/20 text-[#10A37F]': livePriceStatus === 'success',
-              'bg-[#FACC15]/10 border border-[#FACC15]/20 text-[#FACC15]': livePriceStatus === 'not_configured',
-              'bg-[#EF4444]/10 border border-[#EF4444]/20 text-[#EF4444]': livePriceStatus === 'failed'
+              'bg-accent/10 border border-accent/20 text-accent': livePriceStatus === 'success',
+              'bg-warning/10 border border-warning/20 text-warning': livePriceStatus === 'not_configured',
+              'bg-danger/10 border border-danger/20 text-danger': livePriceStatus === 'failed'
             }">
               <lucide-icon name="Globe" class="w-4 h-4"></lucide-icon>
             </div>
             <div>
-              <span class="text-[#B3B3B3] font-semibold">Live Stock Pricing: </span>
+              <span class="text-text-secondary font-semibold">Live Stock Pricing: </span>
               @if (livePriceStatus === 'success') {
-                <span class="text-[#10A37F] font-bold">Connected</span> ({{ loadedSymbolsCount }} symbols loaded from Google Sheet)
+                <span class="text-accent font-bold">Connected</span> ({{ loadedSymbolsCount }} symbols loaded from Google Sheet)
               } @else if (livePriceStatus === 'failed') {
-                <span class="text-[#EF4444] font-bold">Connection Failed</span> (Using Mock Price Fallback)
+                <span class="text-danger font-bold">Connection Failed</span> (Using Mock Price Fallback)
               } @else {
-                <span class="text-[#FACC15] font-bold">Not Configured</span> (Using Mock Price Fallback)
+                <span class="text-warning font-bold">Not Configured</span> (Using Mock Price Fallback)
               }
             </div>
           </div>
@@ -514,8 +514,8 @@
 
         <!-- Info alert -->
         <div
-          class="flex gap-2.5 px-4 py-3 bg-[#3B82F6]/10 border border-[#3B82F6]/20 rounded-xl text-xs text-[#B3B3B3] leading-relaxed">
-          <lucide-icon name="Info" class="w-4 h-4 text-[#3B82F6] shrink-0 mt-0.5"></lucide-icon>
+          class="flex gap-2.5 px-4 py-3 bg-blue-accent/10 border border-blue-accent/20 rounded-xl text-xs text-text-secondary leading-relaxed">
+          <lucide-icon name="Info" class="w-4 h-4 text-blue-accent shrink-0 mt-0.5"></lucide-icon>
           <div>
             <span class="text-white font-semibold">What is Tax Loss Harvesting?</span> You can sell assets currently
             sitting at an unrealized loss before the end of the financial year to offset your realized capital gains. In
@@ -526,7 +526,7 @@
 
         <!-- Opportunities Table -->
         @if (harvestOpportunities.length > 0) {
-        <div class="border border-[#3A3A3A] rounded-xl overflow-hidden bg-[#191919]">
+        <div class="border border-border rounded-xl overflow-hidden bg-background">
           <div class="table-scroll-container">
             <p-table [value]="harvestOpportunities" styleClass="p-datatable-sm w-full"
               [tableStyle]="{ 'min-width': '60rem' }">
@@ -544,11 +544,11 @@
               <ng-template pTemplate="body" let-op>
                 <tr>
                   <td class="px-4 py-3 font-semibold text-white whitespace-nowrap">{{ op.stockName }}</td>
-                  <td class="px-4 py-3 text-right text-[#B3B3B3] tabular-nums whitespace-nowrap">{{ op.netHeld |
+                  <td class="px-4 py-3 text-right text-text-secondary tabular-nums whitespace-nowrap">{{ op.netHeld |
                     number:'1.0-4' }}</td>
-                  <td class="px-4 py-3 text-right text-[#B3B3B3] tabular-nums whitespace-nowrap">₹{{ op.avgPrice |
+                  <td class="px-4 py-3 text-right text-text-secondary tabular-nums whitespace-nowrap">₹{{ op.avgPrice |
                     number:'1.2-2' }}</td>
-                  <td class="px-4 py-3 text-right text-[#B3B3B3] tabular-nums whitespace-nowrap">₹{{ op.currentPrice |
+                  <td class="px-4 py-3 text-right text-text-secondary tabular-nums whitespace-nowrap">₹{{ op.currentPrice |
                     number:'1.2-2' }}</td>
                   <td class="px-4 py-3 text-right font-semibold text-danger tabular-nums whitespace-nowrap">
                     ₹{{ op.unrealizedLoss | number:'1.2-2' }}
@@ -569,8 +569,8 @@
           </div>
         </div>
         } @else {
-        <div class="text-center py-8 border border-dashed border-[#3A3A3A] rounded-xl text-sm text-[#808080]">
-          <lucide-icon name="CheckCircle2" class="w-8 h-8 mx-auto text-[#22C55E] mb-2"></lucide-icon>
+        <div class="text-center py-8 border border-dashed border-border rounded-xl text-sm text-text-muted">
+          <lucide-icon name="CheckCircle2" class="w-8 h-8 mx-auto text-success mb-2"></lucide-icon>
           <span>No tax-loss harvesting candidates found. All active positions are in profit!</span>
         </div>
         }
@@ -582,9 +582,9 @@
     <!-- PANEL D — TAX FAQ / NOTES                                        -->
     <!-- ============================================================== -->
     <app-expansion-panel [title]="'Tax FAQ / Notes'" subtitle="How taxes are estimated and what's included"
-      [titleIcon]="'Info'" [iconBgClass]="'bg-gradient-to-br from-[#10A37F] to-[#0D8968] p-2 rounded-lg text-white'"
+      [titleIcon]="'Info'" [iconBgClass]="'bg-gradient-to-br from-accent to-accent-hover p-2 rounded-lg text-white'"
       [isExpanded]="true">
-      <div class="space-y-3 text-sm text-[#B3B3B3] leading-relaxed">
+      <div class="space-y-3 text-sm text-text-secondary leading-relaxed">
         <p><span class="text-white font-semibold">Methodology:</span> Capital gains are computed using FIFO
           (First-In-First-Out) matching of BUY/SELL transactions per stock.</p>
         <p><span class="text-white font-semibold">STCG vs LTCG:</span> Equity held &lt; 12 months is short-term; ≥ 12

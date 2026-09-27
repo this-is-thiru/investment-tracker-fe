@@ -85,7 +85,7 @@ export class SignUpComponent {
           'Account created successfully! You can now sign in.',
           'success'
         );
-        this.router.navigate([{ outlets: { modal: ['sign-in'] } }]);
+        this.router.navigate([{ outlets: { modal: ['sign-in'] } }], { queryParamsHandling: 'preserve' });
       },
       error: (err) => {
         console.error('Registration error:', err);

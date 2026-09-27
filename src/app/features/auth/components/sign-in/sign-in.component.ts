@@ -70,7 +70,12 @@ export class SignInComponent implements OnInit {
       .subscribe({
         next: (res) => {
           this.notificationService.addNotification('Login Success', 'Signed in successfully', 'success');
-          this.router.navigate([{ outlets: { primary: ['home'], modal: null } }]);
+          const returnUrl = this.getReturnUrl();
+          if (returnUrl) {
+            this.router.navigateByUrl(returnUrl);
+          } else {
+            this.router.navigate([{ outlets: { primary: ['home'], modal: null } }]);
+          }
         },
         error: (err) => {
           console.error('Login error:', err);
@@ -96,12 +101,22 @@ export class SignInComponent implements OnInit {
 
   onClose(): void {
     // Close only the modal outlet, not the entire route
-    this.router.navigate([{ outlets: { modal: null } }], { relativeTo: this.router.routerState.root });
+    this.router.navigate([{ outlets: { modal: null } }], {
+      relativeTo: this.router.routerState.root,
+      queryParams: { returnUrl: null },
+      queryParamsHandling: 'merge',
+    });
   }
 
   onForgotPassword(): void {
     // Navigate to the forgot password modal
     this.router.navigate([{ outlets: { modal: ['forgot-password'] } }]);
+  }
+
+  // Only allow in-app paths, never protocol-relative or absolute URLs
+  private getReturnUrl(): string | null {
+    const returnUrl = this.router.routerState.snapshot.root.queryParamMap.get('returnUrl');
+    return returnUrl && returnUrl.startsWith('/') && !returnUrl.startsWith('//') ? returnUrl : null;
   }
 
   // handleGoogleSignIn() {

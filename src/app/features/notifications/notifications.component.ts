@@ -1,183 +1,148 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, inject } from '@angular/core';
+import { AsyncPipe, NgClass } from '@angular/common';
+import { Router } from '@angular/router';
 import { NotificationService, Notification } from '@services/notification.service';
 import { LucideIconsModule } from '@core/icons/lucide-icons.module';
 import { TooltipDirective } from '@shared/directives/tooltip/tooltip.directive';
-import { Observable, map } from 'rxjs';
+import { FooterComponent } from '@shared/components/footer/footer.component';
+import { ButtonComponent } from '@shared/ui/button/button.component';
+import { EmptyStateComponent } from '@shared/ui/empty-state/empty-state.component';
+import { ConfirmDialogService } from '@shared/ui/confirm-dialog/confirm-dialog.service';
+
+type NotificationType = Notification['type'];
+
+const TYPE_STYLES: Record<NotificationType, { icon: string; text: string; bg: string; border: string }> = {
+  success: { icon: 'check-circle-2', text: 'text-accent', bg: 'bg-accent/10', border: 'border-accent/30' },
+  error: { icon: 'x-circle', text: 'text-danger', bg: 'bg-danger/10', border: 'border-danger/30' },
+  warning: { icon: 'alert-triangle', text: 'text-warning', bg: 'bg-warning/10', border: 'border-warning/30' },
+  info: { icon: 'info', text: 'text-blue-accent', bg: 'bg-blue-accent/10', border: 'border-blue-accent/30' },
+};
 
 @Component({
-    selector: 'app-notifications-page',
-    standalone: true,
-    imports: [CommonModule, LucideIconsModule, TooltipDirective],
-    template: `
-    <div class="min-h-screen bg-[#191919] py-8">
-      <div class="w-full max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-8 2xl:px-12">
-        <!-- Header -->
-        <div class="mb-8 flow-slide-up flow-delay-1">
-          <h1 class="text-2xl md:text-3xl text-white mb-2">Notifications</h1>
-          <p class="text-[#B3B3B3]">View and manage all your notification history</p>
-        </div>
+  selector: 'app-notifications-page',
+  standalone: true,
+  imports: [AsyncPipe, NgClass, LucideIconsModule, TooltipDirective, FooterComponent, ButtonComponent, EmptyStateComponent],
+  template: `
+    <div class="w-full min-h-screen flex flex-col bg-background">
 
-        <!-- Actions Bar -->
-        <div *ngIf="(notifications$ | async)?.length" class="flex flex-wrap items-center gap-3 mb-6 flow-slide-up flow-delay-2">
-          <button
-            (click)="markAllAsRead()"
-            class="flex items-center gap-2 px-4 py-2 bg-[#232323] hover:bg-[#2A2A2A] text-[#B3B3B3] hover:text-white border border-[#3A3A3A] rounded-lg transition-all text-sm"
-          >
-            <lucide-icon name="check-check" class="h-4 w-4"></lucide-icon>
-            Mark all as read
-          </button>
-          <button
-            (click)="clearAllNotifications()"
-            class="flex items-center gap-2 px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 hover:text-red-300 border border-red-500/20 hover:border-red-500/30 rounded-lg transition-all text-sm"
-          >
-            <lucide-icon name="trash-2" class="h-4 w-4"></lucide-icon>
-            Clear all
-          </button>
-          <div class="ml-auto text-sm text-[#B3B3B3]">
-            {{ unreadCount$ | async }} unread
+      <!-- HEADER STRIP -->
+      <section class="relative bg-background overflow-hidden border-b border-divider">
+        <div class="absolute inset-0 opacity-30 pointer-events-none">
+          <div class="relative bg-gradient-to-br from-[#0F0F0F] via-[#121212] to-background w-full h-full"></div>
+        </div>
+        <div class="w-full max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-8 2xl:px-12 py-10 md:py-14 relative z-10">
+          <div class="inline-flex items-center gap-2 bg-accent/10 border border-accent/20 rounded-full px-3 py-1.5 mb-4">
+            <lucide-icon name="bell" class="w-4 h-4 text-accent"></lucide-icon>
+            <span class="text-xs text-accent font-semibold uppercase tracking-wider">Notifications</span>
           </div>
+          <h1 class="text-3xl md:text-4xl text-white mb-2 font-semibold">
+            Your
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-accent to-accent-hover">activity</span>
+          </h1>
+          <p class="text-sm text-text-secondary max-w-2xl">
+            Results of uploads, corporate actions and account changes. Click one to open the page it's about.
+          </p>
         </div>
+      </section>
 
-        <!-- Notifications List -->
-        <div class="space-y-3 flow-slide-up flow-delay-3">
-          <ng-container *ngIf="(notifications$ | async) as notifications; else noNotifications">
-            <div *ngIf="notifications.length === 0" class="text-center py-16">
-              <div class="w-16 h-16 bg-[#232323] rounded-full flex items-center justify-center mx-auto mb-4">
-                <lucide-icon name="info" class="h-8 w-8 text-[#666666]"></lucide-icon>
-              </div>
-              <h3 class="text-lg text-white mb-2">No notifications yet</h3>
-              <p class="text-[#B3B3B3]">You'll see notifications here when actions are completed</p>
+      <!-- MAIN BODY -->
+      <main class="w-full max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-8 2xl:px-12 py-8 flex-1">
+        @if (notifications$ | async; as notifications) {
+          @if (notifications.length === 0) {
+            <ui-empty-state icon="bell" title="No notifications yet"
+              message="You'll see results here when you upload transactions or change settings." />
+          } @else {
+            <!-- Actions bar -->
+            <div class="flex flex-wrap items-center gap-3 mb-6">
+              <ui-button variant="secondary" size="sm" (click)="markAllAsRead()">
+                <lucide-icon name="check-check" class="h-4 w-4"></lucide-icon>
+                Mark all as read
+              </ui-button>
+              <ui-button variant="danger" size="sm" (click)="clearAll()">
+                <lucide-icon name="trash-2" class="h-4 w-4"></lucide-icon>
+                Clear all
+              </ui-button>
+              <span class="ml-auto text-sm text-text-secondary">{{ unreadCount$ | async }} unread</span>
             </div>
 
-            <div
-              *ngFor="let notification of notifications; let i = index"
-              class="relative bg-[#232323] border rounded-xl p-4 transition-all hover:bg-[#2A2A2A] group"
-              [ngClass]="[!notification.read ? getTypeColor(notification.type) : 'border-[#3A3A3A]']"
-              [style.animation]="'slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards ' + (i * 0.05) + 's'"
-              style="opacity: 0"
-            >
-              <div class="flex items-start gap-4">
-                <!-- Icon -->
-                <div class="p-2 rounded-lg" [ngClass]="getIconBg(notification.type)">
-                  <lucide-icon [name]="getIcon(notification.type)" class="h-5 w-5" [ngClass]="getIconColor(notification.type)"></lucide-icon>
-                </div>
+            <!-- List -->
+            <div class="space-y-3">
+              @for (notification of notifications; track notification.id) {
+                <div
+                  class="relative border rounded-xl p-4 transition-colors group"
+                  [ngClass]="notification.read ? 'bg-surface border-border hover:bg-surface-hover' : styles(notification.type).bg + ' ' + styles(notification.type).border"
+                  [class.cursor-pointer]="!!notification.link"
+                  [attr.role]="notification.link ? 'button' : null"
+                  [attr.tabindex]="notification.link ? 0 : null"
+                  (click)="open(notification)"
+                  (keydown.enter)="open(notification)"
+                  (keydown.space)="open(notification); $event.preventDefault()"
+                >
+                  <div class="flex items-start gap-4">
+                    <div class="p-2 rounded-lg shrink-0" [ngClass]="styles(notification.type).bg">
+                      <lucide-icon [name]="styles(notification.type).icon" class="h-5 w-5" [ngClass]="styles(notification.type).text"></lucide-icon>
+                    </div>
 
-                <!-- Content -->
-                <div class="flex-1 min-w-0">
-                  <div class="flex items-start justify-between gap-3 mb-1">
-                    <h4 class="text-white font-medium">{{ notification.title }}</h4>
-                    <span *ngIf="!notification.read" class="w-2 h-2 bg-[#10A37F] rounded-full shrink-0 mt-2"></span>
-                  </div>
-                  <p class="text-[#B3B3B3] text-sm mb-2 break-words">{{ notification.message }}</p>
-                  <div class="flex items-center gap-3">
-                    <span class="text-xs text-[#666666]">{{ formatTimestamp(notification.timestamp) }}</span>
-                    <span class="text-xs px-2 py-0.5 rounded capitalize" [ngClass]="getTypeBadgeClass(notification.type)">
-                      {{ notification.type }}
-                    </span>
-                  </div>
-                </div>
+                    <div class="flex-1 min-w-0">
+                      <div class="flex items-center gap-2 mb-1">
+                        <h2 class="text-sm text-white font-medium">{{ notification.title }}</h2>
+                        @if (!notification.read) {
+                          <span class="w-2 h-2 bg-accent rounded-full shrink-0" aria-label="Unread"></span>
+                        }
+                      </div>
+                      @if (notification.message) {
+                        <p class="text-text-secondary text-sm mb-2 break-words">{{ notification.message }}</p>
+                      }
+                      <div class="flex items-center gap-3">
+                        <span class="text-xs text-text-muted">{{ formatTimestamp(notification.timestamp) }}</span>
+                        <span class="text-xs px-2 py-0.5 rounded capitalize" [ngClass]="styles(notification.type).bg + ' ' + styles(notification.type).text">
+                          {{ notification.type }}
+                        </span>
+                      </div>
+                    </div>
 
-                <!-- Actions -->
-                <div class="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <button
-                    *ngIf="!notification.read"
-                    (click)="markAsRead(notification.id)"
-                    class="p-2 text-[#B3B3B3] hover:text-[#10A37F] hover:bg-[#10A37F]/10 rounded-lg transition-all"
-                    appTooltip="Mark as read"
-                  >
-                    <lucide-icon name="check-check" class="h-4 w-4"></lucide-icon>
-                  </button>
-                  <button
-                    (click)="clearNotification(notification.id)"
-                    class="p-2 text-[#B3B3B3] hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all"
-                    appTooltip="Delete notification"
-                    appTooltipVariant="danger"
-                  >
-                    <lucide-icon name="trash-2" class="h-4 w-4"></lucide-icon>
-                  </button>
+                    <!-- Actions: always visible on touch screens, on hover/focus on larger ones -->
+                    <div class="flex items-center gap-1 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100 transition-opacity">
+                      @if (!notification.read) {
+                        <ui-button variant="icon" size="sm" appTooltip="Mark as read" ariaLabel="Mark as read"
+                          (click)="markAsRead(notification.id); $event.stopPropagation()">
+                          <lucide-icon name="check-check" class="h-4 w-4"></lucide-icon>
+                        </ui-button>
+                      }
+                      <ui-button variant="icon" size="sm" appTooltip="Delete notification" appTooltipVariant="danger" ariaLabel="Delete notification"
+                        (click)="clearNotification(notification.id); $event.stopPropagation()">
+                        <lucide-icon name="trash-2" class="h-4 w-4"></lucide-icon>
+                      </ui-button>
+                      @if (notification.link) {
+                        <lucide-icon name="ArrowRight" class="h-4 w-4 text-text-muted ml-1"></lucide-icon>
+                      }
+                    </div>
+                  </div>
                 </div>
-              </div>
+              }
             </div>
-          </ng-container>
+          }
+        }
+      </main>
 
-          <ng-template #noNotifications>
-             <!-- Handled by notifications.length === 0 above -->
-          </ng-template>
-        </div>
-      </div>
+      <app-footer></app-footer>
     </div>
   `,
-    styles: [`
-    :host {
-      display: block;
-    }
-  `]
 })
-export class NotificationsComponent implements OnInit {
-  notifications$: Observable<Notification[]>;
-  unreadCount$: Observable<number>;
+export class NotificationsComponent {
+  private notificationService = inject(NotificationService);
+  private router = inject(Router);
+  private confirmDialog = inject(ConfirmDialogService);
 
-  constructor(private notificationService: NotificationService) {
-    this.notifications$ = this.notificationService.notifications$;
-    this.unreadCount$ = this.notificationService.unreadCount$;
-  }
+  notifications$ = this.notificationService.notifications$;
+  unreadCount$ = this.notificationService.unreadCount$;
 
-  ngOnInit(): void {}
-
-  getIcon(type: string): string {
-    switch (type) {
-      case 'success': return 'check-circle-2';
-      case 'error': return 'x-circle';
-      case 'warning': return 'alert-triangle';
-      case 'info':
-      default: return 'info';
-    }
-  }
-
-  getIconColor(type: string): string {
-    switch (type) {
-      case 'success': return 'text-[#10A37F]';
-      case 'error': return 'text-red-500';
-      case 'warning': return 'text-yellow-500';
-      case 'info':
-      default: return 'text-blue-500';
-    }
-  }
-
-  getIconBg(type: string): string {
-    switch (type) {
-      case 'success': return 'bg-[#10A37F]/10';
-      case 'error': return 'bg-red-500/10';
-      case 'warning': return 'bg-yellow-500/10';
-      case 'info':
-      default: return 'bg-blue-500/10';
-    }
-  }
-
-  getTypeColor(type: string): string {
-    switch (type) {
-      case 'success': return 'bg-[#10A37F]/10 border-[#10A37F]/20';
-      case 'error': return 'bg-red-500/10 border-red-500/20';
-      case 'warning': return 'bg-yellow-500/10 border-yellow-500/20';
-      case 'info': return 'bg-blue-500/10 border-blue-500/20';
-      default: return 'bg-[#232323] border-[#3A3A3A]';
-    }
-  }
-
-  getTypeBadgeClass(type: string): string {
-    switch (type) {
-      case 'success': return 'bg-[#10A37F]/10 text-[#10A37F]';
-      case 'error': return 'bg-red-500/10 text-red-400';
-      case 'warning': return 'bg-yellow-500/10 text-yellow-400';
-      case 'info':
-      default: return 'bg-blue-500/10 text-blue-400';
-    }
+  styles(type: NotificationType) {
+    return TYPE_STYLES[type] ?? TYPE_STYLES.info;
   }
 
   formatTimestamp(date: Date): string {
-    const now = new Date();
-    const diff = now.getTime() - new Date(date).getTime();
+    const diff = Date.now() - new Date(date).getTime();
     const minutes = Math.floor(diff / 60000);
     const hours = Math.floor(diff / 3600000);
     const days = Math.floor(diff / 86400000);
@@ -186,12 +151,19 @@ export class NotificationsComponent implements OnInit {
     if (minutes < 60) return `${minutes}m ago`;
     if (hours < 24) return `${hours}h ago`;
     if (days < 7) return `${days}d ago`;
-    
+
     return new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
   }
 
   markAsRead(id: string): void {
     this.notificationService.markAsRead(id);
+  }
+
+  open(notification: Notification): void {
+    this.notificationService.markAsRead(notification.id);
+    if (notification.link) {
+      this.router.navigateByUrl(notification.link);
+    }
   }
 
   markAllAsRead(): void {
@@ -202,7 +174,15 @@ export class NotificationsComponent implements OnInit {
     this.notificationService.clearNotification(id);
   }
 
-  clearAllNotifications(): void {
-    this.notificationService.clearAllNotifications();
+  async clearAll(): Promise<void> {
+    const ok = await this.confirmDialog.confirm({
+      title: 'Clear all notifications',
+      message: 'This removes your whole notification history. This cannot be undone.',
+      tone: 'danger',
+      confirmLabel: 'Clear all',
+    });
+    if (ok) {
+      this.notificationService.clearAllNotifications();
+    }
   }
 }

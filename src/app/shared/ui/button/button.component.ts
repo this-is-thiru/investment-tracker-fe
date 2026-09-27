@@ -27,6 +27,8 @@ export class ButtonComponent {
   @Input() disabled = false;
   @Input() loading = false;
   @Input() fullWidth = false;
+  /** Accessible name for icon-only buttons */
+  @Input() ariaLabel: string | null = null;
 
   // The inner <button>'s `width: 100%` resolves against this host's own
   // box, so the host must become block-level (not its default

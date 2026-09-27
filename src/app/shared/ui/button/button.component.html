@@ -1,6 +1,7 @@
 <button
   [type]="type"
   [disabled]="disabled || loading"
+  [attr.aria-label]="ariaLabel"
   class="ui-button"
   [class.ui-button--full]="fullWidth"
   [ngClass]="'ui-button--' + variant + ' ui-button--' + size"

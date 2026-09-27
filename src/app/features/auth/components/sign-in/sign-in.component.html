@@ -1,9 +1,9 @@
 <ui-modal [open]="true" title="Welcome back" size="sm" [dismissible]="true" (closed)="onClose()">
-  <p class="text-xs text-[#999999] text-center -mt-2 mb-4">Access your WealthLens account</p>
+  <p class="text-xs text-text-secondary text-center -mt-2 mb-4">Access your WealthLens account</p>
 
   <form (ngSubmit)="onLogin()" [formGroup]="loginForm" class="space-y-4">
     <div>
-      <label for="login-email" class="block text-xs text-[#B3B3B3] mb-1.5">
+      <label for="login-email" class="block text-xs text-text-secondary mb-1.5">
         Email
       </label>
       <ui-input
@@ -27,12 +27,12 @@
 
     <div>
       <div class="flex items-center justify-between mb-1.5">
-        <label for="login-password" class="block text-xs text-[#B3B3B3]">
+        <label for="login-password" class="block text-xs text-text-secondary">
           Password
         </label>
         <a
           (click)="onForgotPassword()"
-          class="text-[10px] text-[#10A37F] hover:underline transition cursor-pointer"
+          class="text-2xs text-accent hover:underline transition cursor-pointer"
         >
           Forgot password?
         </a>
@@ -89,11 +89,11 @@
       Sign in
     </ui-button>
 
-    <p class="mt-4 text-center text-xs text-[#999999]">
+    <p class="mt-4 text-center text-xs text-text-secondary">
       Don't have an account?
       <a
         (click)="router.navigate([{ outlets: { modal: ['sign-up'] } }])"
-        class="text-[#10A37F] font-semibold hover:text-[#1AA97D] hover:underline cursor-pointer transition"
+        class="text-accent font-semibold hover:text-accent-hover hover:underline cursor-pointer transition"
       >
         Sign up
       </a>

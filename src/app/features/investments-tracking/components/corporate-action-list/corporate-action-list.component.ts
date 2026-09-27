@@ -1,4 +1,5 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, inject } from '@angular/core';
+import { finalize } from 'rxjs/operators';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CorporateActionService } from '../../services/corporate-action.service';
@@ -10,7 +11,7 @@ import { TooltipDirective } from '@shared/directives/tooltip/tooltip.directive';
 import { ButtonComponent } from '@shared/ui/button/button.component';
 import { EmptyStateComponent } from '@shared/ui/empty-state/empty-state.component';
 import { ModalComponent } from '@shared/ui/modal/modal.component';
-import { CardComponent } from '@shared/ui/card/card.component';
+import { ConfirmDialogService } from '@shared/ui/confirm-dialog/confirm-dialog.service';
 
 @Component({
   selector: 'app-corporate-action-list',
@@ -24,13 +25,14 @@ import { CardComponent } from '@shared/ui/card/card.component';
     ButtonComponent,
     EmptyStateComponent,
     ModalComponent,
-    CardComponent,
   ],
   templateUrl: './corporate-action-list.component.html',
 })
 export class CorporateActionListComponent implements OnInit {
   private corporateActionService = inject(CorporateActionService);
+  private cdr = inject(ChangeDetectorRef);
   private notificationService = inject(NotificationService);
+  private confirmDialog = inject(ConfirmDialogService);
   public authService = inject(AuthService);
 
   actions: any[] = [];
@@ -41,6 +43,8 @@ export class CorporateActionListComponent implements OnInit {
   selectedAction: any = null;
   showDetailModal = false;
   isDetailLoading = false;
+  /** True when the detail call failed and only the list summary is shown */
+  detailIsPartial = false;
 
   searchQuery = '';
   filterType = 'ALL';
@@ -55,6 +59,19 @@ export class CorporateActionListComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadActions();
+  }
+
+  typeLabel(type: string): string {
+    return this.typeOptions.find(o => o.value === type)?.label ?? (type || 'Corporate action');
+  }
+
+  // Dates arrive as strings from the API; show them readably but never throw on odd formats
+  formatDate(value: string | null | undefined): string {
+    if (!value) return '—';
+    const d = new Date(value);
+    return isNaN(d.getTime())
+      ? value
+      : d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
   }
 
   applyFilters(): void {
@@ -79,7 +96,7 @@ export class CorporateActionListComponent implements OnInit {
 
   loadActions(): void {
     this.isLoading = true;
-    this.corporateActionService.getAllCorporateActions().subscribe({
+    this.corporateActionService.getAllCorporateActions().pipe(finalize(() => this.cdr.markForCheck())).subscribe({
       next: (data) => {
         this.actions = data || [];
         this.applyFilters();
@@ -137,7 +154,9 @@ export class CorporateActionListComponent implements OnInit {
     this.showDetailModal = true;
     this.selectedAction = null;
 
-    this.corporateActionService.getCorporateActionById(id).subscribe({
+    this.detailIsPartial = false;
+
+    this.corporateActionService.getCorporateActionById(id).pipe(finalize(() => this.cdr.markForCheck())).subscribe({
       next: (data) => {
         this.selectedAction = data;
         this.isDetailLoading = false;
@@ -145,32 +164,12 @@ export class CorporateActionListComponent implements OnInit {
       error: (err) => {
         console.error(`Failed to load corporate action with ID ${id}`, err);
         this.isDetailLoading = false;
-        
-        // Find in local list for fallback display
+
+        // Show what the list already knows; never invent ratios or companies
         const localAction = this.actions.find(a => a.id === id || a.stockCode === id);
         if (localAction) {
-          // Construct fallback detail object
-          this.selectedAction = {
-            ...localAction,
-            description: localAction.description || 'Performed corporate action on ' + localAction.stockName,
-            priority: localAction.priority || 0,
-          };
-          if (localAction.type === 'DEMERGER') {
-            this.selectedAction.demergerDetail = {
-              demergerRatio: '1:1',
-              demergerPriceRatio: '98.09:1.91',
-              mainStockCode: localAction.stockCode,
-              mainStockName: localAction.stockName,
-              demergerStocks: [
-                {
-                  stockCode: 'DUMMY_DEMERGER',
-                  stockName: 'Demerged Resulting Stock Ltd'
-                }
-              ]
-            };
-          } else {
-            this.selectedAction.ratio = '1:1';
-          }
+          this.selectedAction = { ...localAction };
+          this.detailIsPartial = true;
         } else {
           this.showDetailModal = false;
           this.notificationService.addNotification(
@@ -183,7 +182,7 @@ export class CorporateActionListComponent implements OnInit {
     });
   }
 
-  deleteAction(action: any): void {
+  async deleteAction(action: any): Promise<void> {
     if (!action || (!action.id && !action.stockCode)) {
       this.notificationService.addNotification(
         'Error',
@@ -193,7 +192,13 @@ export class CorporateActionListComponent implements OnInit {
       return;
     }
 
-    if (!confirm(`Are you sure you want to delete corporate action for ${action.stockName}?`)) {
+    const ok = await this.confirmDialog.confirm({
+      title: 'Delete corporate action',
+      message: `Delete the ${action.type || 'corporate'} action for ${action.stockName || action.stockCode}? This cannot be undone.`,
+      tone: 'danger',
+      confirmLabel: 'Delete',
+    });
+    if (!ok) {
       return;
     }
 
@@ -210,7 +215,7 @@ export class CorporateActionListComponent implements OnInit {
 
     const actionId = action.id || action.stockCode;
 
-    this.corporateActionService.deleteCorporateAction(actionId, payload).subscribe({
+    this.corporateActionService.deleteCorporateAction(actionId, payload).pipe(finalize(() => this.cdr.markForCheck())).subscribe({
       next: () => {
         this.notificationService.addNotification(
           'Corporate Action Deleted',

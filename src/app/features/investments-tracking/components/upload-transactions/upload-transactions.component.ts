@@ -66,6 +66,7 @@ export class UploadTransactionsComponent implements OnDestroy {
   }
 
   @Input() quarter: string = 'Q1';
+  @Input() expanded = true;
   file: File | null = null;
   fileError: string | null = null;
 

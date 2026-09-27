@@ -1,21 +1,21 @@
-<div class="min-h-screen bg-[#191919] text-white">
+<div class="min-h-screen bg-background text-white">
 
   <!-- ============================================================== -->
   <!-- HEADER STRIP                                                     -->
   <!-- ============================================================== -->
-  <section class="relative bg-[#191919] overflow-hidden border-b border-[#2A2A2A]">
+  <section class="relative bg-background overflow-hidden border-b border-divider">
     <div class="absolute inset-0 opacity-30 pointer-events-none">
-      <div class="relative bg-gradient-to-br from-[#0F0F0F] via-[#121212] to-[#191919] w-full h-full"></div>
+      <div class="relative bg-gradient-to-br from-[#0F0F0F] via-[#121212] to-background w-full h-full"></div>
     </div>
 
     <div class="w-full max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-8 2xl:px-12 py-8 md:py-10 relative z-10">
       <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
-        <div class="inline-flex items-center gap-2 bg-[#8B5CF6]/10 border border-[#8B5CF6]/20 rounded-full px-3 py-1.5">
-          <lucide-icon name="BarChart3" class="w-4 h-4 text-[#8B5CF6]"></lucide-icon>
-          <span class="text-xs text-[#8B5CF6] font-semibold uppercase tracking-wider">Portfolio Analytics</span>
+        <div class="inline-flex items-center gap-2 bg-purple-accent/10 border border-purple-accent/20 rounded-full px-3 py-1.5">
+          <lucide-icon name="BarChart3" class="w-4 h-4 text-purple-accent"></lucide-icon>
+          <span class="text-xs text-purple-accent font-semibold uppercase tracking-wider">Portfolio Analytics</span>
         </div>
         
-        <div class="flex items-center gap-2 text-xs text-[#707070]">
+        <div class="flex items-center gap-2 text-xs text-text-muted">
           <lucide-icon name="Database" class="w-3.5 h-3.5"></lucide-icon>
           <span>{{ filteredRows.length }} rows visible · {{ portfolioTransactions.length }} total</span>
         </div>
@@ -23,9 +23,9 @@
 
       <h1 class="text-3xl md:text-4xl text-white mb-2 font-semibold">
         Portfolio performance &amp;
-        <span class="text-transparent bg-clip-text bg-gradient-to-r from-[#8B5CF6] to-[#7C3AED]">insights</span>
+        <span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-accent to-[#7C3AED]">insights</span>
       </h1>
-      <p class="text-sm text-[#B3B3B3] max-w-2xl">
+      <p class="text-sm text-text-secondary max-w-2xl">
         Realized capital gains, tax estimations, asset allocation, and concentration risk metrics.
       </p>
     </div>
@@ -37,7 +37,7 @@
     <!-- MOCK-DATA BANNER                                       -->
     <!-- ====================================================== -->
     @if (usingMock) {
-      <div class="flex items-center justify-between gap-3 px-4 py-2 bg-[#FACC15]/10 border border-[#FACC15]/30 rounded-lg text-xs text-[#FACC15]">
+      <div class="flex items-center justify-between gap-3 px-4 py-2 bg-warning/10 border border-warning/30 rounded-lg text-xs text-warning">
         <span class="flex items-center gap-2">
           <lucide-icon name="AlertTriangle" class="w-4 h-4"></lucide-icon>
           Using sample data — API request failed.
@@ -51,27 +51,27 @@
     @if (loading) {
       <div class="space-y-6">
         <!-- Control Bar Skeleton -->
-        <div class="flex items-center justify-between p-4 bg-[#232323]/40 border border-[#3A3A3A] rounded-xl">
-          <p-skeleton width="150px" height="32px" borderRadius="8px" styleClass="bg-[#2E2E2E]"></p-skeleton>
-          <p-skeleton width="200px" height="32px" borderRadius="8px" styleClass="bg-[#2E2E2E]"></p-skeleton>
+        <div class="flex items-center justify-between p-4 bg-surface/40 border border-border rounded-xl">
+          <p-skeleton width="150px" height="32px" borderRadius="8px" styleClass="bg-surface-hover"></p-skeleton>
+          <p-skeleton width="200px" height="32px" borderRadius="8px" styleClass="bg-surface-hover"></p-skeleton>
         </div>
         <!-- Cards Skeleton -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div *ngFor="let i of [1, 2, 3, 4]" class="bg-[#232323]/60 border border-[#3A3A3A] rounded-xl p-5 space-y-3">
-            <p-skeleton width="60%" height="16px" styleClass="bg-[#2E2E2E]"></p-skeleton>
-            <p-skeleton width="40%" height="32px" styleClass="bg-[#2E2E2E]"></p-skeleton>
-            <p-skeleton width="80%" height="12px" styleClass="bg-[#2E2E2E]"></p-skeleton>
+          <div *ngFor="let i of [1, 2, 3, 4]" class="bg-surface/60 border border-border rounded-xl p-5 space-y-3">
+            <p-skeleton width="60%" height="16px" styleClass="bg-surface-hover"></p-skeleton>
+            <p-skeleton width="40%" height="32px" styleClass="bg-surface-hover"></p-skeleton>
+            <p-skeleton width="80%" height="12px" styleClass="bg-surface-hover"></p-skeleton>
           </div>
         </div>
         <!-- Main Content Skeleton -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div class="lg:col-span-2 bg-[#232323]/60 border border-[#3A3A3A] rounded-xl p-6 space-y-4">
-            <p-skeleton width="30%" height="24px" styleClass="bg-[#2E2E2E]"></p-skeleton>
-            <p-skeleton width="100%" height="280px" styleClass="bg-[#2E2E2E]"></p-skeleton>
+          <div class="lg:col-span-2 bg-surface/60 border border-border rounded-xl p-6 space-y-4">
+            <p-skeleton width="30%" height="24px" styleClass="bg-surface-hover"></p-skeleton>
+            <p-skeleton width="100%" height="280px" styleClass="bg-surface-hover"></p-skeleton>
           </div>
-          <div class="bg-[#232323]/60 border border-[#3A3A3A] rounded-xl p-6 space-y-4">
-            <p-skeleton width="50%" height="24px" styleClass="bg-[#2E2E2E]"></p-skeleton>
-            <p-skeleton width="100%" height="280px" styleClass="bg-[#2E2E2E]"></p-skeleton>
+          <div class="bg-surface/60 border border-border rounded-xl p-6 space-y-4">
+            <p-skeleton width="50%" height="24px" styleClass="bg-surface-hover"></p-skeleton>
+            <p-skeleton width="100%" height="280px" styleClass="bg-surface-hover"></p-skeleton>
           </div>
         </div>
       </div>
@@ -82,13 +82,13 @@
       <!-- ====================================================== -->
       <section class="space-y-4">
         <!-- Top row: Dates and Source Toggle -->
-        <div class="flex flex-wrap items-center justify-between gap-4 rounded-xl bg-[#1A1A1A]/60 backdrop-blur-sm px-4 py-3.5 border border-[#2A2A2A]">
+        <div class="flex flex-wrap items-center justify-between gap-4 rounded-xl bg-surface-alt/60 backdrop-blur-sm px-4 py-3.5 border border-divider">
           
           <!-- Date filters -->
           <div class="flex flex-wrap items-center gap-2">
-            <div class="flex items-center gap-2 text-[#808080]">
-              <lucide-icon name="Calendar" class="w-4 h-4 text-[#10A37F]"></lucide-icon>
-              <span class="text-xs font-semibold text-[#A0A0A0] uppercase tracking-wider mr-1">Period</span>
+            <div class="flex items-center gap-2 text-text-muted">
+              <lucide-icon name="Calendar" class="w-4 h-4 text-accent"></lucide-icon>
+              <span class="text-xs font-semibold text-text-secondary uppercase tracking-wider mr-1">Period</span>
             </div>
             <p-select [options]="datePresetOptions"
               [ngModel]="selectedPreset"
@@ -103,19 +103,19 @@
                 <input type="date"
                   [ngModel]="from"
                   (ngModelChange)="from = $event; onDateFromChange()"
-                  class="px-2.5 py-1.5 text-xs rounded-lg bg-[#252525] border border-[#3A3A3A] text-white focus:ring-1 focus:ring-[#10A37F] focus:outline-none" />
-                <span class="text-[#505050] text-xs">→</span>
+                  class="px-2.5 py-1.5 text-xs rounded-lg bg-surface-hover border border-border text-white focus:ring-1 focus:ring-accent focus:outline-none" />
+                <span class="text-text-muted text-xs">→</span>
                 <input type="date"
                   [ngModel]="to"
                   (ngModelChange)="to = $event; onDateToChange()"
-                  class="px-2.5 py-1.5 text-xs rounded-lg bg-[#252525] border border-[#3A3A3A] text-white focus:ring-1 focus:ring-[#10A37F] focus:outline-none" />
+                  class="px-2.5 py-1.5 text-xs rounded-lg bg-surface-hover border border-border text-white focus:ring-1 focus:ring-accent focus:outline-none" />
               </div>
             }
 
             @if (activeChips.length > 0) {
               <div class="flex flex-wrap gap-1.5">
                 @for (chip of activeChips; track chip.label) {
-                  <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[#10A37F]/10 text-[#10A37F] border border-[#10A37F]/20 text-[9px] font-semibold">
+                  <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-accent/10 text-accent border border-accent/20 text-2xs font-semibold">
                     {{ chip.label }}
                     <button (click)="removeFilterChip(chip)" class="hover:text-white focus:outline-none" aria-label="Remove filter">
                       <lucide-icon name="X" class="w-2.5 h-2.5"></lucide-icon>
@@ -135,26 +135,13 @@
         </div>
 
         <!-- Tabs Navigation -->
-        <div class="flex items-center gap-1 border-b border-[#2A2A2A] pb-0.5 overflow-x-auto">
-          <button (click)="setActiveTab('overview')"
-            [ngClass]="activeTab === 'overview' ? 'border-[#10A37F] text-[#10A37F]' : 'border-transparent text-gray-400 hover:text-white hover:border-gray-700'"
-            class="px-6 py-2.5 border-b-2 text-xs font-semibold uppercase tracking-wider transition-all duration-150 flex items-center gap-2 focus:outline-none whitespace-nowrap cursor-pointer">
-            <lucide-icon name="BarChart3" class="w-3.5 h-3.5"></lucide-icon>
-            Overview &amp; Charts
-          </button>
-          <button (click)="setActiveTab('tax')"
-            [ngClass]="activeTab === 'tax' ? 'border-[#10A37F] text-[#10A37F]' : 'border-transparent text-gray-400 hover:text-white hover:border-gray-700'"
-            class="px-6 py-2.5 border-b-2 text-xs font-semibold uppercase tracking-wider transition-all duration-150 flex items-center gap-2 focus:outline-none whitespace-nowrap cursor-pointer">
-            <lucide-icon name="FileText" class="w-3.5 h-3.5"></lucide-icon>
-            Tax &amp; Capital Gains
-          </button>
-          <button (click)="setActiveTab('holdings')"
-            [ngClass]="activeTab === 'holdings' ? 'border-[#10A37F] text-[#10A37F]' : 'border-transparent text-gray-400 hover:text-white hover:border-gray-700'"
-            class="px-6 py-2.5 border-b-2 text-xs font-semibold uppercase tracking-wider transition-all duration-150 flex items-center gap-2 focus:outline-none whitespace-nowrap cursor-pointer">
-            <lucide-icon name="Briefcase" class="w-3.5 h-3.5"></lucide-icon>
-            Current Holdings
-          </button>
-        </div>
+        <ui-tabs variant="underline" ariaLabel="Portfolio analytics views"
+          [items]="[
+            { label: 'Overview & Charts', value: 'overview', icon: 'BarChart3' },
+            { label: 'Tax & Capital Gains', value: 'tax', icon: 'FileText' },
+            { label: 'Current Holdings', value: 'holdings', icon: 'Briefcase' }
+          ]"
+          [value]="activeTab" (valueChange)="setActiveTab($any($event))" />
       </section>
 
       <!-- ====================================================== -->
@@ -184,23 +171,23 @@
             <!-- 5 KPI cards -->
             <section class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
               <!-- Total Invested -->
-              <div class="kpi-card rounded-xl bg-[#1F1F1F] border border-[#2A2A2A] p-4 flex flex-col gap-2 hover:border-[#3A3A3A] transition-all duration-200">
+              <div class="kpi-card rounded-xl bg-surface-alt border border-divider p-4 flex flex-col gap-2 hover:border-border transition-all duration-200">
                 <div class="flex items-center justify-between">
-                  <span class="text-[10px] text-[#808080] font-medium tracking-wide uppercase">Invested</span>
-                  <div class="w-7 h-7 rounded-lg bg-[#22C55E]/10 flex items-center justify-center">
-                    <lucide-icon name="TrendingUp" class="w-3.5 h-3.5 text-[#22C55E]"></lucide-icon>
+                  <span class="text-2xs text-text-muted font-medium tracking-wide uppercase">Invested</span>
+                  <div class="w-7 h-7 rounded-lg bg-success/10 flex items-center justify-center">
+                    <lucide-icon name="TrendingUp" class="w-3.5 h-3.5 text-success"></lucide-icon>
                   </div>
                 </div>
                 <div class="text-xl font-bold text-white tracking-tight">₹{{ totalInvested | number:'1.2-2' }}</div>
-                <div class="text-[9px] text-[#606060]">sum of BUYs</div>
+                <div class="text-2xs text-text-muted">sum of BUYs</div>
               </div>
 
               <!-- Realized P&L -->
-              <div class="kpi-card rounded-xl bg-[#1F1F1F] border border-[#2A2A2A] p-4 flex flex-col gap-2 hover:border-[#3A3A3A] transition-all duration-200">
+              <div class="kpi-card rounded-xl bg-surface-alt border border-divider p-4 flex flex-col gap-2 hover:border-border transition-all duration-200">
                 <div class="flex items-center justify-between">
-                  <span class="text-[10px] text-[#808080] font-medium tracking-wide uppercase">Realized P&amp;L</span>
+                  <span class="text-2xs text-text-muted font-medium tracking-wide uppercase">Realized P&amp;L</span>
                   <div class="w-7 h-7 rounded-lg flex items-center justify-center"
-                    [ngClass]="realizedPnl >= 0 ? 'bg-[#22C55E]/10' : 'bg-[#EF4444]/10'">
+                    [ngClass]="realizedPnl >= 0 ? 'bg-success/10' : 'bg-danger/10'">
                     <lucide-icon name="TrendingUp" class="w-3.5 h-3.5"
                       [ngClass]="realizedPnl >= 0 ? 'text-success' : 'text-danger'"></lucide-icon>
                   </div>
@@ -209,47 +196,47 @@
                   [ngClass]="realizedPnl >= 0 ? 'text-success' : 'text-danger'">
                   ₹{{ realizedPnl | number:'1.2-2' }}
                 </div>
-                <div class="text-[9px] text-[#606060]">FIFO gains on SELLs</div>
+                <div class="text-2xs text-text-muted">FIFO gains on SELLs</div>
               </div>
 
               <!-- # Holdings -->
-              <div class="kpi-card rounded-xl bg-[#1F1F1F] border border-[#2A2A2A] p-4 flex flex-col gap-2 hover:border-[#3A3A3A] transition-all duration-200">
+              <div class="kpi-card rounded-xl bg-surface-alt border border-divider p-4 flex flex-col gap-2 hover:border-border transition-all duration-200">
                 <div class="flex items-center justify-between">
-                  <span class="text-[10px] text-[#808080] font-medium tracking-wide uppercase">Holdings</span>
-                  <div class="w-7 h-7 rounded-lg bg-[#3B82F6]/10 flex items-center justify-center">
-                    <lucide-icon name="Briefcase" class="w-3.5 h-3.5 text-[#3B82F6]"></lucide-icon>
+                  <span class="text-2xs text-text-muted font-medium tracking-wide uppercase">Holdings</span>
+                  <div class="w-7 h-7 rounded-lg bg-blue-accent/10 flex items-center justify-center">
+                    <lucide-icon name="Briefcase" class="w-3.5 h-3.5 text-blue-accent"></lucide-icon>
                   </div>
                 </div>
                 <div class="text-2xl font-bold text-white tracking-tight">{{ holdingsCount }}</div>
-                <div class="text-[9px] text-[#606060]">distinct stocks</div>
+                <div class="text-2xs text-text-muted">distinct stocks</div>
               </div>
 
               <!-- Total Charges -->
-              <div class="kpi-card rounded-xl bg-[#1F1F1F] border border-[#2A2A2A] p-4 flex flex-col gap-2 hover:border-[#3A3A3A] transition-all duration-200">
+              <div class="kpi-card rounded-xl bg-surface-alt border border-divider p-4 flex flex-col gap-2 hover:border-border transition-all duration-200">
                 <div class="flex items-center justify-between">
-                  <span class="text-[10px] text-[#808080] font-medium tracking-wide uppercase">Charges</span>
-                  <div class="w-7 h-7 rounded-lg bg-[#FACC15]/10 flex items-center justify-center">
-                    <lucide-icon name="CreditCard" class="w-3.5 h-3.5 text-[#FACC15]"></lucide-icon>
+                  <span class="text-2xs text-text-muted font-medium tracking-wide uppercase">Charges</span>
+                  <div class="w-7 h-7 rounded-lg bg-warning/10 flex items-center justify-center">
+                    <lucide-icon name="CreditCard" class="w-3.5 h-3.5 text-warning"></lucide-icon>
                   </div>
                 </div>
                 <div class="text-xl font-bold text-white tracking-tight">₹{{ totalCharges | number:'1.2-2' }}</div>
-                <div class="text-[9px] text-[#606060]">broker + misc</div>
+                <div class="text-2xs text-text-muted">broker + misc</div>
               </div>
 
               <!-- Biggest Position -->
-              <div class="kpi-card rounded-xl bg-[#1F1F1F] border border-[#2A2A2A] p-4 flex flex-col gap-2 hover:border-[#3A3A3A] transition-all duration-200">
+              <div class="kpi-card rounded-xl bg-surface-alt border border-divider p-4 flex flex-col gap-2 hover:border-border transition-all duration-200">
                 <div class="flex items-center justify-between">
-                  <span class="text-[10px] text-[#808080] font-medium tracking-wide uppercase">Biggest position</span>
-                  <div class="w-7 h-7 rounded-lg bg-[#10A37F]/10 flex items-center justify-center">
-                    <lucide-icon name="Crown" class="w-3.5 h-3.5 text-[#10A37F]"></lucide-icon>
+                  <span class="text-2xs text-text-muted font-medium tracking-wide uppercase">Biggest position</span>
+                  <div class="w-7 h-7 rounded-lg bg-accent/10 flex items-center justify-center">
+                    <lucide-icon name="Crown" class="w-3.5 h-3.5 text-accent"></lucide-icon>
                   </div>
                 </div>
                 @if (biggestPosition) {
                   <div class="text-sm font-bold text-white truncate cursor-default" [appTooltip]="biggestPosition.name">{{ biggestPosition.name }}</div>
-                  <div class="text-[9px] text-[#606060]">{{ biggestPosition.pct | number:'1.1-1' }}% of invested</div>
+                  <div class="text-2xs text-text-muted">{{ biggestPosition.pct | number:'1.1-1' }}% of invested</div>
                 } @else {
-                  <div class="text-sm font-bold text-[#505050]">N/A</div>
-                  <div class="text-[9px] text-[#606060]">no positions yet</div>
+                  <div class="text-sm font-bold text-text-muted">N/A</div>
+                  <div class="text-2xs text-text-muted">no positions yet</div>
                 }
               </div>
             </section>
@@ -257,23 +244,23 @@
             <!-- HHI and Charges Leakage rows -->
             <section class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <!-- HHI Card -->
-              <div class="border border-[#3A3A3A] rounded-xl bg-[#1F1F1F] p-5 flex flex-col justify-between gap-4">
+              <div class="border border-border rounded-xl bg-surface-alt p-5 flex flex-col justify-between gap-4">
                 <div class="flex items-center justify-between">
                   <div class="flex items-center gap-2">
                     <lucide-icon name="Zap" class="w-4 h-4 animate-pulse" [style.color]="hhiColor"></lucide-icon>
                     <span class="text-xs font-bold text-white uppercase tracking-wider">Portfolio Concentration (HHI)</span>
                   </div>
                   <span [style.background-color]="hhiColor + '15'" [style.color]="hhiColor" [style.border-color]="hhiColor + '30'"
-                    class="px-2.5 py-0.5 rounded-full text-[9px] font-semibold border uppercase tracking-wider">
+                    class="px-2.5 py-0.5 rounded-full text-2xs font-semibold border uppercase tracking-wider">
                     {{ hhiLabel }}
                   </span>
                 </div>
                 <div class="flex items-end justify-between">
                   <div>
                     <div class="text-2xl font-extrabold text-white tracking-tight">{{ hhiScore }}</div>
-                    <div class="text-[9px] text-[#808080] mt-1">Herfindahl-Hirschman Index</div>
+                    <div class="text-2xs text-text-muted mt-1">Herfindahl-Hirschman Index</div>
                   </div>
-                  <div class="text-[9px] text-[#B3B3B3] text-right max-w-[220px]">
+                  <div class="text-2xs text-text-secondary text-right max-w-[220px]">
                     @if (hhiScore < 1500) {
                       Low concentration risk. Excellent diversification across assets.
                     } @else if (hhiScore <= 2500) {
@@ -283,29 +270,29 @@
                     }
                   </div>
                 </div>
-                <div class="w-full h-1.5 bg-[#252525] rounded overflow-hidden">
+                <div class="w-full h-1.5 bg-surface-hover rounded overflow-hidden">
                   <div class="h-full rounded transition-all duration-500" [style.background-color]="hhiColor" [style.width.%]="hhiPercentWidth"></div>
                 </div>
               </div>
 
               <!-- Charges Impact Card -->
-              <div class="border border-[#3A3A3A] rounded-xl bg-[#1F1F1F] p-5 flex flex-col justify-between gap-4">
+              <div class="border border-border rounded-xl bg-surface-alt p-5 flex flex-col justify-between gap-4">
                 <div class="flex items-center justify-between">
                   <div class="flex items-center gap-2">
                     <lucide-icon name="CreditCard" class="w-4 h-4" [style.color]="chargesImpactColor"></lucide-icon>
                     <span class="text-xs font-bold text-white uppercase tracking-wider">Charges Leakage Impact</span>
                   </div>
                   <span [style.background-color]="chargesImpactColor + '15'" [style.color]="chargesImpactColor" [style.border-color]="chargesImpactColor + '30'"
-                    class="px-2.5 py-0.5 rounded-full text-[9px] font-semibold border uppercase tracking-wider">
+                    class="px-2.5 py-0.5 rounded-full text-2xs font-semibold border uppercase tracking-wider">
                     {{ chargesImpactLabel }}
                   </span>
                 </div>
                 <div class="flex items-end justify-between">
                   <div>
                     <div class="text-2xl font-extrabold text-white tracking-tight">{{ chargesLeakage | number:'1.2-2' }}%</div>
-                    <div class="text-[9px] text-[#808080] mt-1">Leakage of total invested capital</div>
+                    <div class="text-2xs text-text-muted mt-1">Leakage of total invested capital</div>
                   </div>
-                  <div class="text-[9px] text-[#B3B3B3] text-right max-w-[220px]">
+                  <div class="text-2xs text-text-secondary text-right max-w-[220px]">
                     @if (chargesLeakage < 0.2) {
                       Favorable. Minimal transaction fee leakage.
                     } @else if (chargesLeakage <= 0.8) {
@@ -315,7 +302,7 @@
                     }
                   </div>
                 </div>
-                <div class="w-full h-1.5 bg-[#252525] rounded overflow-hidden">
+                <div class="w-full h-1.5 bg-surface-hover rounded overflow-hidden">
                   <div class="h-full rounded transition-all duration-500" [style.background-color]="chargesImpactColor" [style.width.%]="chargesLeakagePercent"></div>
                 </div>
               </div>
@@ -326,18 +313,18 @@
               [title]="'Allocation & Activity Charts'"
               [subtitle]="'Asset allocation, broker, activity, and exchange breakdowns'"
               [titleIcon]="'BarChart3'"
-              [iconBgClass]="'bg-[#252525] p-2 rounded-lg text-white border border-[#3A3A3A]'"
+              [iconBgClass]="'bg-surface-hover p-2 rounded-lg text-white border border-border'"
               [isExpanded]="true">
 
               <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-3">
                 <!-- Asset Allocation (doughnut) -->
-                <div class="border border-[#2A2A2A] rounded-xl bg-[#1A1A1A]/40 p-4">
+                <div class="border border-divider rounded-xl bg-surface-alt/40 p-4">
                   <div class="flex items-center justify-between mb-3">
                     <div class="flex items-center gap-2">
-                      <lucide-icon name="Database" class="w-4 h-4 text-[#10A37F]"></lucide-icon>
+                      <lucide-icon name="Database" class="w-4 h-4 text-accent"></lucide-icon>
                       <h3 class="text-xs font-bold text-white uppercase tracking-wider">Asset Allocation</h3>
                     </div>
-                    <span class="text-[9px] text-[#707070]">cost basis by asset type</span>
+                    <span class="text-2xs text-text-muted">cost basis by asset type</span>
                   </div>
                   <div class="h-64">
                     <p-chart type="doughnut" [data]="assetAllocData" [options]="circularChartOptions"></p-chart>
@@ -345,13 +332,13 @@
                 </div>
 
                 <!-- Broker Breakdown (bar) -->
-                <div class="border border-[#2A2A2A] rounded-xl bg-[#1A1A1A]/40 p-4">
+                <div class="border border-divider rounded-xl bg-surface-alt/40 p-4">
                   <div class="flex items-center justify-between mb-3">
                     <div class="flex items-center gap-2">
-                      <lucide-icon name="Briefcase" class="w-4 h-4 text-[#3B82F6]"></lucide-icon>
+                      <lucide-icon name="Briefcase" class="w-4 h-4 text-blue-accent"></lucide-icon>
                       <h3 class="text-xs font-bold text-white uppercase tracking-wider">Broker Breakdown</h3>
                     </div>
-                    <span class="text-[9px] text-[#707070]">buy vs sell value per broker</span>
+                    <span class="text-2xs text-text-muted">buy vs sell value per broker</span>
                   </div>
                   <div class="h-64">
                     <p-chart type="bar" [data]="brokerData" [options]="axisChartOptions"></p-chart>
@@ -359,13 +346,13 @@
                 </div>
 
                 <!-- Transaction Activity (line) -->
-                <div class="border border-[#2A2A2A] rounded-xl bg-[#1A1A1A]/40 p-4">
+                <div class="border border-divider rounded-xl bg-surface-alt/40 p-4">
                   <div class="flex items-center justify-between mb-3">
                     <div class="flex items-center gap-2">
-                      <lucide-icon name="TrendingUp" class="w-4 h-4 text-[#22C55E]"></lucide-icon>
+                      <lucide-icon name="TrendingUp" class="w-4 h-4 text-success"></lucide-icon>
                       <h3 class="text-xs font-bold text-white uppercase tracking-wider">Transaction Activity</h3>
                     </div>
-                    <span class="text-[9px] text-[#707070]">monthly buy vs sell value</span>
+                    <span class="text-2xs text-text-muted">monthly buy vs sell value</span>
                   </div>
                   <div class="h-64">
                     <p-chart type="line" [data]="activityData" [options]="axisChartOptions"></p-chart>
@@ -373,13 +360,13 @@
                 </div>
 
                 <!-- Exchange Breakdown (pie) -->
-                <div class="border border-[#2A2A2A] rounded-xl bg-[#1A1A1A]/40 p-4">
+                <div class="border border-divider rounded-xl bg-surface-alt/40 p-4">
                   <div class="flex items-center justify-between mb-3">
                     <div class="flex items-center gap-2">
-                      <lucide-icon name="Globe" class="w-4 h-4 text-[#FACC15]"></lucide-icon>
+                      <lucide-icon name="Globe" class="w-4 h-4 text-warning"></lucide-icon>
                       <h3 class="text-xs font-bold text-white uppercase tracking-wider">Exchange Breakdown</h3>
                     </div>
-                    <span class="text-[9px] text-[#707070]">total value per exchange</span>
+                    <span class="text-2xs text-text-muted">total value per exchange</span>
                   </div>
                   <div class="h-64">
                     <p-chart type="pie" [data]="exchangeData" [options]="circularChartOptions"></p-chart>
@@ -393,19 +380,19 @@
               [title]="'Top Movers'"
               [subtitle]="'Realized P&L from SELLs (top 5 winners and losers)'"
               [titleIcon]="'Sparkles'"
-              [iconBgClass]="'bg-[#252525] p-2 rounded-lg text-white border border-[#3A3A3A]'"
+              [iconBgClass]="'bg-surface-hover p-2 rounded-lg text-white border border-border'"
               [isExpanded]="true">
 
               <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-3">
                 <!-- Winners -->
-                <div class="border border-[#2A2A2A] rounded-xl bg-[#1A1A1A]/40 overflow-hidden">
-                  <div class="flex items-center gap-3 p-4 border-b border-[#2A2A2A] bg-[#22C55E]/5">
-                    <div class="bg-[#22C55E]/20 p-2 rounded-lg">
-                      <lucide-icon name="TrendingUp" class="w-5 h-5 text-[#22C55E]"></lucide-icon>
+                <div class="border border-divider rounded-xl bg-surface-alt/40 overflow-hidden">
+                  <div class="flex items-center gap-3 p-4 border-b border-divider bg-success/5">
+                    <div class="bg-success/20 p-2 rounded-lg">
+                      <lucide-icon name="TrendingUp" class="w-5 h-5 text-success"></lucide-icon>
                     </div>
                     <div>
                       <h4 class="text-sm font-semibold text-white">Top Winners</h4>
-                      <p class="text-xs text-[#B3B3B3]">Profitable sales by realized gain</p>
+                      <p class="text-xs text-text-secondary">Profitable sales by realized gain</p>
                     </div>
                   </div>
                   <p-table [value]="winners" [tableStyle]="{ 'min-width': '20rem' }"
@@ -421,12 +408,12 @@
                       <tr>
                         <td class="px-4 py-2.5">
                           <div class="font-semibold text-white truncate max-w-[200px] cursor-default" [appTooltip]="m.stockCode">{{ m.stockName }}</div>
-                          <span class="text-[8px] text-[#707070] uppercase font-mono tracking-wider">{{ m.stockCode }}</span>
+                          <span class="text-2xs text-text-muted uppercase font-mono tracking-wider">{{ m.stockCode }}</span>
                         </td>
                         <td class="px-4 py-2.5 text-right font-bold tabular-nums text-success">
                           ₹{{ m.gain | number:'1.2-2' }}
                         </td>
-                        <td class="px-4 py-2.5 text-right text-[#B3B3B3] font-semibold tabular-nums">{{ sellCountFor(m.stockCode) }}</td>
+                        <td class="px-4 py-2.5 text-right text-text-secondary font-semibold tabular-nums">{{ sellCountFor(m.stockCode) }}</td>
                       </tr>
                     </ng-template>
                     <ng-template pTemplate="emptymessage">
@@ -440,14 +427,14 @@
                 </div>
 
                 <!-- Losers -->
-                <div class="border border-[#2A2A2A] rounded-xl bg-[#1A1A1A]/40 overflow-hidden">
-                  <div class="flex items-center gap-3 p-4 border-b border-[#2A2A2A] bg-[#EF4444]/5">
-                    <div class="bg-[#EF4444]/20 p-2 rounded-lg">
-                      <lucide-icon name="TrendingUp" class="w-5 h-5 text-[#EF4444] rotate-180"></lucide-icon>
+                <div class="border border-divider rounded-xl bg-surface-alt/40 overflow-hidden">
+                  <div class="flex items-center gap-3 p-4 border-b border-divider bg-danger/5">
+                    <div class="bg-danger/20 p-2 rounded-lg">
+                      <lucide-icon name="TrendingUp" class="w-5 h-5 text-danger rotate-180"></lucide-icon>
                     </div>
                     <div>
                       <h4 class="text-sm font-semibold text-white">Top Losers</h4>
-                      <p class="text-xs text-[#B3B3B3]">Unprofitable sales by realized loss</p>
+                      <p class="text-xs text-text-secondary">Unprofitable sales by realized loss</p>
                     </div>
                   </div>
                   <p-table [value]="losers" [tableStyle]="{ 'min-width': '20rem' }"
@@ -463,12 +450,12 @@
                       <tr>
                         <td class="px-4 py-2.5">
                           <div class="font-semibold text-white truncate max-w-[200px] cursor-default" [appTooltip]="m.stockCode">{{ m.stockName }}</div>
-                          <span class="text-[8px] text-[#707070] uppercase font-mono tracking-wider">{{ m.stockCode }}</span>
+                          <span class="text-2xs text-text-muted uppercase font-mono tracking-wider">{{ m.stockCode }}</span>
                         </td>
                         <td class="px-4 py-2.5 text-right font-bold tabular-nums text-danger">
                           ₹{{ m.gain | number:'1.2-2' }}
                         </td>
-                        <td class="px-4 py-2.5 text-right text-[#B3B3B3] font-semibold tabular-nums">{{ sellCountFor(m.stockCode) }}</td>
+                        <td class="px-4 py-2.5 text-right text-text-secondary font-semibold tabular-nums">{{ sellCountFor(m.stockCode) }}</td>
                       </tr>
                     </ng-template>
                     <ng-template pTemplate="emptymessage">
@@ -494,61 +481,61 @@
             <!-- Tax KPI Cards -->
             <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <!-- Net Gain -->
-              <div class="kpi-card rounded-xl bg-[#1F1F1F] border border-[#2A2A2A] p-5 flex flex-col justify-between hover:border-[#3A3A3A] transition-all">
-                <div class="flex items-center justify-between text-xs text-[#808080] font-bold uppercase tracking-wider">
+              <div class="kpi-card rounded-xl bg-surface-alt border border-divider p-5 flex flex-col justify-between hover:border-border transition-all">
+                <div class="flex items-center justify-between text-xs text-text-muted font-bold uppercase tracking-wider">
                   <span class="flex items-center gap-1">
                     Net Realized Gain
-                    <lucide-icon name="info" class="w-3.5 h-3.5 text-[#B3B3B3] hover:text-white cursor-pointer transition-colors" appTooltip="First-In, First-Out (FIFO) Net Realized Gain: Total gains minus losses realized on all assets sold during the period." appTooltipVariant="info" appTooltipPosition="top"></lucide-icon>
+                    <lucide-icon name="info" class="w-3.5 h-3.5 text-text-secondary hover:text-white cursor-pointer transition-colors" appTooltip="First-In, First-Out (FIFO) Net Realized Gain: Total gains minus losses realized on all assets sold during the period." appTooltipVariant="info" appTooltipPosition="top"></lucide-icon>
                   </span>
-                  <lucide-icon name="TrendingUp" class="w-4 h-4 text-[#8B5CF6]"></lucide-icon>
+                  <lucide-icon name="TrendingUp" class="w-4 h-4 text-purple-accent"></lucide-icon>
                 </div>
                 <div class="text-2xl font-extrabold tracking-tight my-2" [ngClass]="realizedPnl >= 0 ? 'text-success' : 'text-danger'">
                   ₹{{ realizedPnl | number:'1.2-2' }}
                 </div>
-                <div class="text-[9px] text-[#606060]">Total FIFO P&amp;L from all sold assets</div>
+                <div class="text-2xs text-text-muted">Total FIFO P&amp;L from all sold assets</div>
               </div>
 
               <!-- STCG -->
-              <div class="kpi-card rounded-xl bg-[#1F1F1F] border border-[#2A2A2A] p-5 flex flex-col justify-between hover:border-[#3A3A3A] transition-all">
-                <div class="flex items-center justify-between text-xs text-[#808080] font-bold uppercase tracking-wider">
+              <div class="kpi-card rounded-xl bg-surface-alt border border-divider p-5 flex flex-col justify-between hover:border-border transition-all">
+                <div class="flex items-center justify-between text-xs text-text-muted font-bold uppercase tracking-wider">
                   <span class="flex items-center gap-1">
                     Short-Term (STCG)
-                    <lucide-icon name="info" class="w-3.5 h-3.5 text-[#B3B3B3] hover:text-white cursor-pointer transition-colors" appTooltip="Short-Term Capital Gains: Gains made on assets held for less than 1 year (3 years for debt). Taxed at 20% for equities/equity mutual funds in India." appTooltipVariant="warning" appTooltipPosition="top"></lucide-icon>
+                    <lucide-icon name="info" class="w-3.5 h-3.5 text-text-secondary hover:text-white cursor-pointer transition-colors" appTooltip="Short-Term Capital Gains: Gains made on assets held for less than 1 year (3 years for debt). Taxed at 20% for equities/equity mutual funds in India." appTooltipVariant="warning" appTooltipPosition="top"></lucide-icon>
                   </span>
                   <ui-badge tone="info">ST</ui-badge>
                 </div>
-                <div class="text-2xl font-extrabold tracking-tight my-2 text-[#3B82F6]">
+                <div class="text-2xl font-extrabold tracking-tight my-2 text-blue-accent">
                   ₹{{ taxGainsSummary?.stcg | number:'1.2-2' }}
                 </div>
-                <div class="text-[9px] text-[#606060]">Held &lt;12m (equity) or &lt;36m (debt)</div>
+                <div class="text-2xs text-text-muted">Held &lt;12m (equity) or &lt;36m (debt)</div>
               </div>
 
               <!-- LTCG -->
-              <div class="kpi-card rounded-xl bg-[#1F1F1F] border border-[#2A2A2A] p-5 flex flex-col justify-between hover:border-[#3A3A3A] transition-all">
-                <div class="flex items-center justify-between text-xs text-[#808080] font-bold uppercase tracking-wider">
+              <div class="kpi-card rounded-xl bg-surface-alt border border-divider p-5 flex flex-col justify-between hover:border-border transition-all">
+                <div class="flex items-center justify-between text-xs text-text-muted font-bold uppercase tracking-wider">
                   <span class="flex items-center gap-1">
                     Long-Term (LTCG)
-                    <lucide-icon name="info" class="w-3.5 h-3.5 text-[#B3B3B3] hover:text-white cursor-pointer transition-colors" appTooltip="Long-Term Capital Gains: Gains made on assets held for 1 year or longer (3 years for debt). Exempt up to ₹1.25L for equities/equity mutual funds, then taxed at 12.5% in India." appTooltipVariant="success" appTooltipPosition="top"></lucide-icon>
+                    <lucide-icon name="info" class="w-3.5 h-3.5 text-text-secondary hover:text-white cursor-pointer transition-colors" appTooltip="Long-Term Capital Gains: Gains made on assets held for 1 year or longer (3 years for debt). Exempt up to ₹1.25L for equities/equity mutual funds, then taxed at 12.5% in India." appTooltipVariant="success" appTooltipPosition="top"></lucide-icon>
                   </span>
                   <ui-badge tone="accent">LT</ui-badge>
                 </div>
-                <div class="text-2xl font-extrabold tracking-tight my-2 text-[#10A37F]">
+                <div class="text-2xl font-extrabold tracking-tight my-2 text-accent">
                   ₹{{ taxGainsSummary?.ltcg | number:'1.2-2' }}
                 </div>
-                <div class="text-[9px] text-[#606060]">Held &ge;12m (equity) or &ge;36m (debt)</div>
+                <div class="text-2xs text-text-muted">Held &ge;12m (equity) or &ge;36m (debt)</div>
               </div>
 
               <!-- Tax Estimate -->
-              <div class="kpi-card rounded-xl bg-[#1F1F1F] border border-[#2A2A2A] p-5 flex flex-col justify-between hover:border-[#3A3A3A] transition-all relative overflow-hidden group">
-                <div class="absolute top-0 right-0 w-24 h-24 bg-[#EF4444]/5 rounded-bl-full pointer-events-none transition-all group-hover:scale-110"></div>
-                <div class="flex items-center justify-between text-xs text-[#808080] font-bold uppercase tracking-wider relative z-10">
+              <div class="kpi-card rounded-xl bg-surface-alt border border-divider p-5 flex flex-col justify-between hover:border-border transition-all relative overflow-hidden group">
+                <div class="absolute top-0 right-0 w-24 h-24 bg-danger/5 rounded-bl-full pointer-events-none transition-all group-hover:scale-110"></div>
+                <div class="flex items-center justify-between text-xs text-text-muted font-bold uppercase tracking-wider relative z-10">
                   <span>Est. Tax Liability</span>
-                  <lucide-icon name="Info" class="w-4 h-4 text-[#EF4444]"></lucide-icon>
+                  <lucide-icon name="Info" class="w-4 h-4 text-danger"></lucide-icon>
                 </div>
                 <div class="text-2xl font-extrabold tracking-tight my-2 text-danger relative z-10">
                   ₹{{ totalTaxEstimate | number:'1.2-2' }}
                 </div>
-                <div class="text-[8px] text-[#808080] relative z-10 leading-relaxed font-medium">
+                <div class="text-2xs text-text-muted relative z-10 leading-relaxed font-medium">
                   20% on STCG + 12.5% on LTCG (excl. ₹1.25L exempt)
                 </div>
               </div>
@@ -558,10 +545,10 @@
             <section class="grid grid-cols-1 lg:grid-cols-2 gap-4">
               
               <!-- By Financial Year -->
-              <div class="border border-[#3A3A3A] rounded-xl bg-[#1F1F1F] p-4 flex flex-col justify-between">
+              <div class="border border-border rounded-xl bg-surface-alt p-4 flex flex-col justify-between">
                 <div>
                   <div class="flex items-center gap-2 mb-3">
-                    <lucide-icon name="Calendar" class="w-4 h-4 text-[#8B5CF6]"></lucide-icon>
+                    <lucide-icon name="Calendar" class="w-4 h-4 text-purple-accent"></lucide-icon>
                     <h3 class="text-xs font-bold text-white uppercase tracking-wider">Gains by Indian Financial Year</h3>
                   </div>
                   <div class="overflow-x-auto">
@@ -579,8 +566,8 @@
                         <tr>
                           <td class="px-4 py-2.5 font-bold text-white font-mono">{{ f.financialYear }}</td>
                           <td class="px-4 py-2.5 text-right font-semibold text-gray-300 tabular-nums">{{ f.count }}</td>
-                          <td class="px-4 py-2.5 text-right font-semibold text-[#3B82F6] tabular-nums">₹{{ f.stcg | number:'1.2-2' }}</td>
-                          <td class="px-4 py-2.5 text-right font-semibold text-[#10A37F] tabular-nums">₹{{ f.ltcg | number:'1.2-2' }}</td>
+                          <td class="px-4 py-2.5 text-right font-semibold text-blue-accent tabular-nums">₹{{ f.stcg | number:'1.2-2' }}</td>
+                          <td class="px-4 py-2.5 text-right font-semibold text-accent tabular-nums">₹{{ f.ltcg | number:'1.2-2' }}</td>
                           <td class="px-4 py-2.5 text-right font-extrabold tabular-nums" [ngClass]="f.gain >= 0 ? 'text-success' : 'text-danger'">
                             ₹{{ f.gain | number:'1.2-2' }}
                           </td>
@@ -588,7 +575,7 @@
                       </ng-template>
                       <ng-template pTemplate="emptymessage">
                         <tr>
-                          <td colspan="5" class="py-6 text-center text-xs text-[#808080]">No sales logged across years.</td>
+                          <td colspan="5" class="py-6 text-center text-xs text-text-muted">No sales logged across years.</td>
                         </tr>
                       </ng-template>
                     </p-table>
@@ -597,10 +584,10 @@
               </div>
 
               <!-- By Asset Type -->
-              <div class="border border-[#3A3A3A] rounded-xl bg-[#1F1F1F] p-4 flex flex-col justify-between">
+              <div class="border border-border rounded-xl bg-surface-alt p-4 flex flex-col justify-between">
                 <div>
                   <div class="flex items-center gap-2 mb-3">
-                    <lucide-icon name="Database" class="w-4 h-4 text-[#10A37F]"></lucide-icon>
+                    <lucide-icon name="Database" class="w-4 h-4 text-accent"></lucide-icon>
                     <h3 class="text-xs font-bold text-white uppercase tracking-wider">Gains by Asset Type</h3>
                   </div>
                   <div class="overflow-x-auto">
@@ -618,8 +605,8 @@
                         <tr>
                           <td class="px-4 py-2.5 font-bold text-white">{{ a.assetType }}</td>
                           <td class="px-4 py-2.5 text-right font-semibold text-gray-300 tabular-nums">{{ a.count }}</td>
-                          <td class="px-4 py-2.5 text-right font-semibold text-[#3B82F6] tabular-nums">₹{{ a.stcg | number:'1.2-2' }}</td>
-                          <td class="px-4 py-2.5 text-right font-semibold text-[#10A37F] tabular-nums">₹{{ a.ltcg | number:'1.2-2' }}</td>
+                          <td class="px-4 py-2.5 text-right font-semibold text-blue-accent tabular-nums">₹{{ a.stcg | number:'1.2-2' }}</td>
+                          <td class="px-4 py-2.5 text-right font-semibold text-accent tabular-nums">₹{{ a.ltcg | number:'1.2-2' }}</td>
                           <td class="px-4 py-2.5 text-right font-extrabold tabular-nums" [ngClass]="a.gain >= 0 ? 'text-success' : 'text-danger'">
                             ₹{{ a.gain | number:'1.2-2' }}
                           </td>
@@ -627,7 +614,7 @@
                       </ng-template>
                       <ng-template pTemplate="emptymessage">
                         <tr>
-                          <td colspan="5" class="py-6 text-center text-xs text-[#808080]">No sales logged for asset types.</td>
+                          <td colspan="5" class="py-6 text-center text-xs text-text-muted">No sales logged for asset types.</td>
                         </tr>
                       </ng-template>
                     </p-table>
@@ -641,10 +628,10 @@
               [title]="'FIFO Realized Gains Matching Log'"
               [subtitle]="'Detailed matching of BUY lots and SELL executions (FIFO lot consumed basis)'"
               [titleIcon]="'FileText'"
-              [iconBgClass]="'bg-[#252525] p-2 rounded-lg text-white border border-[#3A3A3A]'"
+              [iconBgClass]="'bg-surface-hover p-2 rounded-lg text-white border border-border'"
               [isExpanded]="true">
               
-              <div class="mt-3 overflow-x-auto rounded-xl border border-[#2A2A2A]">
+              <div class="mt-3 overflow-x-auto rounded-xl border border-divider">
                 <p-table [value]="fifoGainsList"
                   [paginator]="true" [rows]="10" [rowsPerPageOptions]="[5, 10, 25, 50]"
                   paginatorDropdownAppendTo="body"
@@ -666,7 +653,7 @@
                     <tr>
                       <td class="px-4 py-3">
                         <div class="font-semibold text-white truncate max-w-[200px] cursor-default" [appTooltip]="g.stockName">{{ g.stockName }}</div>
-                        <span class="text-[8px] text-[#707070] font-mono uppercase">{{ g.stockCode }} · {{ g.assetType }}</span>
+                        <span class="text-2xs text-text-muted font-mono uppercase">{{ g.stockCode }} · {{ g.assetType }}</span>
                       </td>
                       <td class="px-4 py-3 text-xs text-gray-300 font-mono">{{ g.sellDate }}</td>
                       <td class="px-4 py-3 text-xs text-gray-400 font-mono">
@@ -707,7 +694,7 @@
               [title]="'Official Holdings (Direct from API)'"
               [subtitle]="'Aggregated stocks directly from backend database'"
               [titleIcon]="'Briefcase'"
-              [iconBgClass]="'bg-[#252525] p-2 rounded-lg text-white border border-[#3A3A3A]'"
+              [iconBgClass]="'bg-surface-hover p-2 rounded-lg text-white border border-border'"
               [isExpanded]="true">
 
               <section class="space-y-4 mt-3">
@@ -716,11 +703,11 @@
                   <!-- Search input -->
                   <div class="relative flex-1 min-w-[200px]">
                     <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                      <lucide-icon name="Search" class="w-4 h-4 text-[#666]"></lucide-icon>
+                      <lucide-icon name="Search" class="w-4 h-4 text-text-disabled"></lucide-icon>
                     </span>
                     <input type="text" [(ngModel)]="searchQuery" (ngModelChange)="applyHoldingsFilters()"
                       placeholder="Search stock, code, asset type..."
-                      class="w-full pl-9 pr-3 py-2 text-sm rounded-lg bg-[#2E2E2E] border border-[#3A3A3A] text-white placeholder-[#666] focus:ring-1 focus:ring-[#10A37F] focus:outline-none" />
+                      class="w-full pl-9 pr-3 py-2 text-sm rounded-lg bg-surface-hover border border-border text-white placeholder-text-disabled focus:ring-1 focus:ring-accent focus:outline-none" />
                   </div>
 
                   <!-- Asset type filter -->
@@ -735,7 +722,7 @@
                 </div>
 
                 <!-- Holdings Table -->
-                <div class="table-scroll-container rounded-xl border border-[#2A2A2A]">
+                <div class="table-scroll-container rounded-xl border border-divider">
                   <p-table [value]="filteredHoldings"
                     [paginator]="true" [rows]="rowsPerPage" [rowsPerPageOptions]="[5, 10, 20, 50]"
                     paginatorDropdownAppendTo="body"
@@ -780,23 +767,23 @@
                       <tr>
                         <td class="px-4 py-3">
                           <div class="font-semibold text-white truncate max-w-[200px] cursor-default" [appTooltip]="h.stockName">{{ h.stockName }}</div>
-                          <span class="text-[8px] text-[#707070] font-mono uppercase">{{ h.stockCode }}</span>
+                          <span class="text-2xs text-text-muted font-mono uppercase">{{ h.stockCode }}</span>
                         </td>
                         <td class="px-4 py-3 text-right font-semibold text-gray-300 tabular-nums whitespace-nowrap">{{ h.totalBought | number:'1.0-4' }}</td>
                         <td class="px-4 py-3 text-right text-gray-400 tabular-nums whitespace-nowrap">{{ h.totalSold | number:'1.0-4' }}</td>
-                        <td class="px-4 py-3 text-right font-bold tabular-nums whitespace-nowrap text-[#22C55E]">
+                        <td class="px-4 py-3 text-right font-bold tabular-nums whitespace-nowrap text-success">
                           {{ h.netHeld | number:'1.0-4' }}
                         </td>
                         <td class="px-4 py-3 text-right text-gray-300 tabular-nums whitespace-nowrap">₹{{ h.avgPrice | number:'1.2-2' }}</td>
                         <td class="px-4 py-3 text-right font-bold text-white tabular-nums whitespace-nowrap">₹{{ h.totalInvested | number:'1.2-2' }}</td>
-                        <td class="px-4 py-3 text-[#707070] text-xs font-mono whitespace-nowrap">{{ h.firstDate }}</td>
-                        <td class="px-4 py-3 text-[#707070] text-xs font-mono whitespace-nowrap">{{ h.lastDate }}</td>
+                        <td class="px-4 py-3 text-text-muted text-xs font-mono whitespace-nowrap">{{ h.firstDate }}</td>
+                        <td class="px-4 py-3 text-text-muted text-xs font-mono whitespace-nowrap">{{ h.lastDate }}</td>
                         <td class="px-4 py-3">
                           <div class="flex items-center justify-end gap-2">
-                            <div class="w-16 h-1.5 bg-[#252525] rounded overflow-hidden">
-                              <div class="h-full bg-gradient-to-r from-[#8B5CF6] to-[#A78BFA] rounded" [style.width.%]="h.sharePercent"></div>
+                            <div class="w-16 h-1.5 bg-surface-hover rounded overflow-hidden">
+                              <div class="h-full bg-gradient-to-r from-purple-accent to-[#A78BFA] rounded" [style.width.%]="h.sharePercent"></div>
                             </div>
-                            <span class="text-[9px] text-gray-400 font-bold font-mono w-9 text-right">{{ h.sharePercent | number:'1.1-1' }}%</span>
+                            <span class="text-2xs text-gray-400 font-bold font-mono w-9 text-right">{{ h.sharePercent | number:'1.1-1' }}%</span>
                           </div>
                         </td>
                       </tr>

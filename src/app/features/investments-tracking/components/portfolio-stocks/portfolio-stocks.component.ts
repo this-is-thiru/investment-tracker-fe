@@ -1,6 +1,8 @@
 import {
   Component,
   Input,
+  Output,
+  EventEmitter,
   OnInit,
   ChangeDetectorRef,
   inject,
@@ -54,6 +56,7 @@ export interface PortfolioStockRow {
 })
 export class PortfolioStocksComponent implements OnInit {
   @Input() userEmail = '';
+  @Output() holdingsLoaded = new EventEmitter<number>();
 
   private transactionService = inject(TransactionService);
   private notificationService = inject(NotificationService);
@@ -199,6 +202,7 @@ export class PortfolioStocksComponent implements OnInit {
           new Set(this.holdings.map((h) => h.brokerName).filter(Boolean) as string[])
         ).sort();
         this.applyFilters();
+        this.holdingsLoaded.emit(this.holdings.length);
 
         this.loading = false;
         this.cdr.detectChanges();

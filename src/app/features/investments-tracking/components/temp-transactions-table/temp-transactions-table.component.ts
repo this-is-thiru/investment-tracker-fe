@@ -40,6 +40,8 @@ import { EmptyStateComponent } from '@shared/ui/empty-state/empty-state.componen
 export class TempTransactionsTableComponent implements OnInit {
   @Input() userEmail = '';
   @Output() actionApplied = new EventEmitter<void>();
+  /** Number of temporary rows still waiting for review, emitted after each load */
+  @Output() countChange = new EventEmitter<number>();
 
   private transactionService = inject(TransactionService);
   private corporateActionService = inject(CorporateActionService);
@@ -155,6 +157,7 @@ export class TempTransactionsTableComponent implements OnInit {
           rowId: t.rowId || `temp-${i}-${t.stockCode || 'unknown'}-${t.transactionDate || ''}`,
         }));
         this.loading = false;
+        this.countChange.emit(this.transactions.length);
         this.cdr.detectChanges();
       },
       error: () => {

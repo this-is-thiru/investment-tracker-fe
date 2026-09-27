@@ -1,5 +1,5 @@
 <header
-  class="sticky top-0 z-50 w-full bg-[#191919]/95 backdrop-blur-sm border-b border-[#3A3A3A] flow-slide-up flow-delay-1"
+  class="sticky top-0 z-50 w-full bg-background/95 backdrop-blur-sm border-b border-border flow-slide-up flow-delay-1"
 >
   <div class="w-full max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-8 2xl:px-12">
     <div class="flex items-center justify-between h-16">
@@ -7,11 +7,12 @@
       <div class="hidden md:flex items-center gap-6">
         <!-- Logo -->
         <button
-          [routerLink]="['/home']"
-          class="flex items-center gap-2 transition-transform hover:scale-[1.02]"
+          [routerLink]="isAuthenticated() ? null : ['/home']"
+          class="flex items-center gap-2 transition-transform"
+          [ngClass]="isAuthenticated() ? 'cursor-default' : 'hover:scale-[1.02]'"
         >
           <div
-            class="bg-gradient-to-br from-[#10A37F] to-[#1AA97D] p-2 rounded-lg transition-transform duration-300 hover:rotate-[5deg]"
+            class="bg-gradient-to-br from-accent to-accent-hover p-2 rounded-lg transition-transform duration-300 hover:rotate-[5deg]"
           >
             <lucide-icon
               name="trending-up"
@@ -25,12 +26,12 @@
 
         <!-- Desktop Nav -->
         <nav class="flex items-center gap-1">
-          @for (item of navItems; track item.route) {
+          @for (item of visibleNavItems(); track item.route) {
             <a
               [routerLink]="['/', item.route]"
-              routerLinkActive="bg-gradient-to-r from-[#10A37F]/20 to-[#1AA97D]/20 text-white"
+              routerLinkActive="bg-gradient-to-r from-accent/20 to-accent-hover/20 text-white"
               [routerLinkActiveOptions]="{ exact: true }"
-              class="px-3 py-2 rounded-lg text-[12px] font-medium transition-all text-[#B3B3B3] hover:text-white hover:bg-[#232323] hover:-translate-y-0.5 active:scale-95"
+              class="px-3 py-2 rounded-lg text-[12px] font-medium transition-all text-text-secondary hover:text-white hover:bg-surface hover:-translate-y-0.5 active:scale-95"
             >
               {{ item.label }}
             </a>
@@ -40,11 +41,12 @@
 
       <!-- Mobile Logo -->
       <button
-        [routerLink]="['/home']"
-        class="md:hidden flex items-center gap-2 transition-transform hover:scale-[1.02]"
+        [routerLink]="isAuthenticated() ? null : ['/home']"
+        class="md:hidden flex items-center gap-2 transition-transform"
+        [ngClass]="isAuthenticated() ? 'cursor-default' : 'hover:scale-[1.02]'"
       >
         <div
-          class="bg-gradient-to-br from-[#10A37F] to-[#1AA97D] p-2 rounded-lg"
+          class="bg-gradient-to-br from-accent to-accent-hover p-2 rounded-lg"
         >
           <lucide-icon
             name="trending-up"
@@ -66,7 +68,7 @@
             <lucide-icon name="bell" class="h-5 w-5"></lucide-icon>
             @if (((unreadCount$ | async) || 0) > 0) {
               <span
-                class="absolute top-1.5 right-1.5 w-2 h-2 bg-[#10A37F] rounded-full animate-pulse"
+                class="absolute top-1.5 right-1.5 w-2 h-2 bg-accent rounded-full animate-pulse"
               ></span>
             }
           </ui-button>
@@ -74,60 +76,9 @@
           <!-- Notification Dropdown -->
           @if (isNotificationDropdownOpen) {
             <div
-              class="fixed top-16 right-2 left-2 w-80 max-w-[calc(100vw-2rem)] bg-[#232323] border border-[#3A3A3A] rounded-xl shadow-2xl overflow-hidden z-50 mobile-notification-dropdown"
+              class="fixed top-16 right-2 left-2 w-80 max-w-[calc(100vw-2rem)] bg-surface border border-border rounded-xl shadow-2xl overflow-hidden z-50 mobile-notification-dropdown"
             >
-              <div
-                class="p-4 border-b border-[#3A3A3A] flex items-center justify-between"
-              >
-                <h3 class="font-semibold text-white">Notifications</h3>
-                @if (((unreadCount$ | async) || 0) > 0) {
-                  <button (click)="markAllAsRead($event)" class="text-xs text-[#10A37F] hover:text-[#0D8A6B]">
-                    Mark all as read
-                  </button>
-                }
-              </div>
-
-              <div class="max-h-96 overflow-y-auto">
-                @if ((notifications$ | async)?.length === 0) {
-                  <div class="text-center py-8 text-[#B3B3B3] text-sm">
-                    No new notifications
-                  </div>
-                }
-                @for (notification of (notifications$ | async); track notification.id) {
-                  <button
-                    (click)="onNotificationClick(notification)"
-                    class="w-full p-4 text-left hover:bg-[#2A2A2A] border-b border-[#3A3A3A] transition-colors"
-                    [ngClass]="{ 'bg-[#10A37F]/5': !notification.read }"
-                  >
-                    <div class="flex items-start gap-3">
-                      <div
-                        class="w-2 h-2 rounded-full mt-2 shrink-0"
-                        [ngClass]="{
-                          'bg-[#10A37F]': !notification.read,
-                          'bg-transparent': notification.read,
-                        }"
-                      ></div>
-                      <div class="flex-1 min-w-0">
-                        <p class="text-sm font-medium text-white">
-                          {{ notification.title }}
-                        </p>
-                        <p class="text-xs text-[#B3B3B3] line-clamp-2">
-                          {{ notification.message }}
-                        </p>
-                        <p class="text-[9px] text-[#666666] mt-1">
-                          {{ formatTimestamp(notification.timestamp) }}
-                        </p>
-                      </div>
-                    </div>
-                  </button>
-                }
-              </div>
-
-              <div class="p-3 border-t border-[#3A3A3A] text-center">
-                <button (click)="viewAllNotifications()" class="text-sm text-[#10A37F] hover:text-[#0D8A6B]">
-                  View all notifications
-                </button>
-              </div>
+              <ng-container [ngTemplateOutlet]="notificationPanel"></ng-container>
             </div>
           }
         </div>
@@ -145,33 +96,53 @@
           <!-- Mobile Menu -->
           @if (isMobileMenuOpen) {
             <div
-              class="absolute top-12 right-0 w-64 bg-[#232323] border border-[#3A3A3A] rounded-xl shadow-2xl overflow-hidden z-50 mobile-menu-dropdown"
+              class="absolute top-12 right-0 w-64 bg-surface border border-border rounded-xl shadow-2xl overflow-hidden z-50 mobile-menu-dropdown"
             >
+              @if (isAuthenticated()) {
+                <ng-container [ngTemplateOutlet]="accountSummary"></ng-container>
+                <div class="h-px bg-border mx-2"></div>
+              }
               <div class="p-2">
                 <p
-                  class="px-3 py-2 text-xs text-[#666666] uppercase tracking-wider"
+                  class="px-3 py-2 text-xs text-text-muted uppercase tracking-wider"
                 >
                   Features
                 </p>
 
-                @for (item of navItems; track item.route) {
+                @for (item of visibleNavItems(); track item.route) {
                   <a
                     [routerLink]="['/', item.route]"
-                    routerLinkActive="bg-gradient-to-r from-[#10A37F]/20 to-[#1AA97D]/20 text-white"
+                    routerLinkActive="bg-gradient-to-r from-accent/20 to-accent-hover/20 text-white"
                     [routerLinkActiveOptions]="{ exact: true }"
                     (click)="isMobileMenuOpen = false"
-                    class="block w-full px-3 py-2.5 rounded-lg text-sm font-medium transition-all text-[#B3B3B3] hover:text-white hover:bg-[#2A2A2A]"
+                    class="block w-full px-3 py-2.5 rounded-lg text-sm font-medium transition-all text-text-secondary hover:text-white hover:bg-surface-input"
                   >
                     {{ item.label }}
                   </a>
                 }
               </div>
 
-              <div class="h-px bg-[#3A3A3A] mx-2"></div>
+              <div class="h-px bg-border mx-2"></div>
+
+              <!-- Settings (not available in demo) -->
+              @if (!isDemo()) {
+                <div class="p-2">
+                  <button
+                    type="button"
+                    (click)="onNavigate('settings'); closeAllMenus()"
+                    class="w-full px-3 py-2.5 rounded-lg text-sm font-medium transition-all text-text-secondary hover:text-white hover:bg-surface-input flex items-center gap-2"
+                  >
+                    <lucide-icon name="settings-icon" class="h-4 w-4"></lucide-icon>
+                    Settings
+                  </button>
+                </div>
+
+                <div class="h-px bg-border mx-2"></div>
+              }
 
               <div class="p-3 space-y-2">
                 @if (!isAuthenticated()) {
-                  <ui-button variant="ghost" [fullWidth]="true" (click)="onNavigate('sign-in'); closeAllMenus()">
+                  <ui-button variant="ghost" [fullWidth]="true" (click)="openSignIn(); closeAllMenus()">
                     Sign in
                   </ui-button>
                   <ui-button
@@ -208,7 +179,7 @@
             <lucide-icon name="bell" class="h-5 w-5"></lucide-icon>
             @if (((unreadCount$ | async) || 0) > 0) {
               <span
-                class="absolute top-1.5 right-1.5 w-2 h-2 bg-[#10A37F] rounded-full animate-pulse"
+                class="absolute top-1.5 right-1.5 w-2 h-2 bg-accent rounded-full animate-pulse"
               ></span>
             }
           </ui-button>
@@ -216,60 +187,9 @@
           <!-- Notification Dropdown -->
           @if (isNotificationDropdownOpen) {
             <div
-              class="absolute top-12 right-0 w-80 bg-[#232323] border border-[#3A3A3A] rounded-xl shadow-2xl overflow-hidden z-50 desktop-notification-dropdown"
+              class="absolute top-12 right-0 w-80 bg-surface border border-border rounded-xl shadow-2xl overflow-hidden z-50 desktop-notification-dropdown"
             >
-              <div
-                class="p-4 border-b border-[#3A3A3A] flex items-center justify-between"
-              >
-                <h3 class="font-semibold text-white">Notifications</h3>
-                @if (((unreadCount$ | async) || 0) > 0) {
-                  <button (click)="markAllAsRead($event)" class="text-xs text-[#10A37F] hover:text-[#0D8A6B]">
-                    Mark all as read
-                  </button>
-                }
-              </div>
-
-              <div class="max-h-96 overflow-y-auto">
-                @if ((notifications$ | async)?.length === 0) {
-                  <div class="text-center py-8 text-[#B3B3B3] text-sm">
-                    No new notifications
-                  </div>
-                }
-                @for (notification of (notifications$ | async); track notification.id) {
-                  <button
-                    (click)="onNotificationClick(notification)"
-                    class="w-full p-4 text-left hover:bg-[#2A2A2A] border-b border-[#3A3A3A] transition-colors"
-                    [ngClass]="{ 'bg-[#10A37F]/5': !notification.read }"
-                  >
-                    <div class="flex items-start gap-3">
-                      <div
-                        class="w-2 h-2 rounded-full mt-2 shrink-0"
-                        [ngClass]="{
-                          'bg-[#10A37F]': !notification.read,
-                          'bg-transparent': notification.read,
-                        }"
-                      ></div>
-                      <div class="flex-1 min-w-0">
-                        <p class="text-sm font-medium text-white">
-                          {{ notification.title }}
-                        </p>
-                        <p class="text-xs text-[#B3B3B3] line-clamp-2">
-                          {{ notification.message }}
-                        </p>
-                        <p class="text-[9px] text-[#666666] mt-1">
-                          {{ formatTimestamp(notification.timestamp) }}
-                        </p>
-                      </div>
-                    </div>
-                  </button>
-                }
-              </div>
-
-              <div class="p-3 border-t border-[#3A3A3A] text-center">
-                <button (click)="viewAllNotifications()" class="text-sm text-[#10A37F] hover:text-[#0D8A6B]">
-                  View all notifications
-                </button>
-              </div>
+              <ng-container [ngTemplateOutlet]="notificationPanel"></ng-container>
             </div>
           }
         </div>
@@ -294,28 +214,32 @@
           <!-- Dropdown -->
           @if (isProfileDropdownOpen) {
             <div
-              class="absolute top-12 right-0 w-56 bg-[#232323] border border-[#3A3A3A] rounded-xl shadow-2xl overflow-hidden z-50 profile-dropdown"
+              class="absolute top-12 right-0 w-64 bg-surface border border-border rounded-xl shadow-2xl overflow-hidden z-50 profile-dropdown"
             >
-              <!-- Divider -->
-              <div class="h-px bg-[#3A3A3A] mx-2"></div>
+              @if (isAuthenticated()) {
+                <ng-container [ngTemplateOutlet]="accountSummary"></ng-container>
+                <div class="h-px bg-border mx-2"></div>
+              }
 
-              <!-- Settings -->
-              <div class="p-2">
-                <button
-                  (click)="onNavigate('settings'); closeAllMenus()"
-                  class="w-full px-4 py-2.5 text-sm text-[#B3B3B3] hover:text-white hover:bg-[#2A2A2A] rounded-lg transition-all flex items-center gap-2"
-                >
-                  <lucide-icon name="settings-icon" class="h-4 w-4"></lucide-icon>
-                  Settings
-                </button>
-              </div>
+              <!-- Settings (not available in demo) -->
+              @if (!isDemo()) {
+                <div class="p-2">
+                  <button
+                    (click)="onNavigate('settings'); closeAllMenus()"
+                    class="w-full px-4 py-2.5 text-sm text-text-secondary hover:text-white hover:bg-surface-input rounded-lg transition-all flex items-center gap-2"
+                  >
+                    <lucide-icon name="settings-icon" class="h-4 w-4"></lucide-icon>
+                    Settings
+                  </button>
+                </div>
 
-              <!-- Divider -->
-              <div class="h-px bg-[#3A3A3A] mx-2"></div>
+                <!-- Divider -->
+                <div class="h-px bg-border mx-2"></div>
+              }
 
               <div class="p-3 space-y-2">
                 @if (!isAuthenticated()) {
-                  <ui-button variant="ghost" [fullWidth]="true" (click)="onNavigate('sign-in'); closeAllMenus()">
+                  <ui-button variant="ghost" [fullWidth]="true" (click)="openSignIn(); closeAllMenus()">
                     Sign in
                   </ui-button>
                   <ui-button
@@ -339,7 +263,95 @@
       </div>
     </div>
   </div>
+
+  <!-- Demo mode banner -->
+  @if (isDemo()) {
+    <div class="border-t border-warning/20 bg-warning/10">
+      <div class="w-full max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-8 2xl:px-12 py-2 flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+        <p class="flex items-center gap-2 text-xs sm:text-sm text-warning">
+          <lucide-icon name="AlertTriangle" class="h-4 w-4 shrink-0"></lucide-icon>
+          <span><span class="font-semibold">Demo mode</span> — you're viewing sample data. Sign up to track your own portfolio.</span>
+        </p>
+        <div class="flex items-center gap-2">
+          <ui-button variant="primary" size="sm" (click)="signUpFromDemo()">Sign up</ui-button>
+          <ui-button variant="ghost" size="sm" (click)="signOut()">Exit demo</ui-button>
+        </div>
+      </div>
+    </div>
+  }
 </header>
+
+<!-- Who is signed in, shown at the top of the profile menus -->
+<ng-template #accountSummary>
+  <div class="px-4 py-3 flex items-center gap-3">
+    <div class="w-9 h-9 rounded-full bg-accent/10 flex items-center justify-center shrink-0">
+      <lucide-icon name="user" class="h-4 w-4 text-accent"></lucide-icon>
+    </div>
+    <div class="min-w-0">
+      <p class="text-xs text-text-muted">{{ isDemo() ? 'Demo account' : 'Signed in as' }}</p>
+      <p class="text-sm text-white font-medium truncate" [appTooltip]="userEmail() || ''">{{ userEmail() }}</p>
+    </div>
+  </div>
+</ng-template>
+
+<!-- Notification list, shared by the mobile and desktop dropdowns -->
+<ng-template #notificationPanel>
+        <div
+          class="p-4 border-b border-border flex items-center justify-between"
+        >
+          <h3 class="font-semibold text-white">Notifications</h3>
+          @if (((unreadCount$ | async) || 0) > 0) {
+            <button (click)="markAllAsRead($event)" class="text-xs text-accent hover:text-accent-hover">
+              Mark all as read
+            </button>
+          }
+        </div>
+
+        <div class="max-h-96 overflow-y-auto">
+          @if ((notifications$ | async)?.length === 0) {
+            <div class="text-center py-8 text-text-secondary text-sm">
+              No new notifications
+            </div>
+          }
+          @for (notification of (notifications$ | async); track notification.id) {
+            <button
+              (click)="onNotificationClick(notification)"
+              class="w-full p-4 text-left hover:bg-surface-input border-b border-border transition-colors"
+              [ngClass]="{ 'bg-accent/5': !notification.read }"
+            >
+              <div class="flex items-start gap-3">
+                <div
+                  class="w-2 h-2 rounded-full mt-2 shrink-0"
+                  [ngClass]="{
+                    'bg-accent': !notification.read,
+                    'bg-transparent': notification.read,
+                  }"
+                ></div>
+                <div class="flex-1 min-w-0">
+                  <p class="text-sm font-medium text-white">
+                    {{ notification.title }}
+                  </p>
+                  <p class="text-xs text-text-secondary line-clamp-2">
+                    {{ notification.message }}
+                  </p>
+                  <p class="text-2xs text-text-muted mt-1">
+                    {{ formatTimestamp(notification.timestamp) }}
+                  </p>
+                </div>
+                @if (notification.link) {
+                  <lucide-icon name="ArrowRight" class="h-4 w-4 text-text-muted mt-1 shrink-0"></lucide-icon>
+                }
+              </div>
+            </button>
+          }
+        </div>
+
+        <div class="p-3 border-t border-border text-center">
+          <button (click)="viewAllNotifications()" class="text-sm text-accent hover:text-accent-hover">
+            View all notifications
+          </button>
+        </div>
+</ng-template>
 
 <!-- Main content -->
 <router-outlet></router-outlet>

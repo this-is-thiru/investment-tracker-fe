@@ -1,12 +1,22 @@
-<div class="ui-tabs">
-  @for (item of items; track item.value) {
+<div [class]="'ui-tabs ui-tabs--' + variant" role="tablist" [attr.aria-label]="ariaLabel">
+  @for (item of items; track item.value; let i = $index) {
     <button
       type="button"
+      role="tab"
       class="ui-tabs__item"
       [class.ui-tabs__item--active]="item.value === value"
+      [attr.aria-selected]="item.value === value"
+      [attr.tabindex]="item.value === value ? 0 : -1"
       (click)="select(item)"
+      (keydown)="onKeydown($event, i)"
     >
+      @if (item.icon) {
+        <lucide-icon [name]="item.icon" class="h-3.5 w-3.5 shrink-0"></lucide-icon>
+      }
       {{ item.label }}
+      @if (item.badge) {
+        <span class="ui-tabs__badge" [attr.aria-label]="item.badge + ' pending'">{{ item.badge }}</span>
+      }
     </button>
   }
 </div>

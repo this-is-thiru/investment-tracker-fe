@@ -1,3 +1,4 @@
+import { TabsComponent } from '@shared/ui/tabs/tabs.component';
 import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -66,6 +67,7 @@ const SCALES_AXIS_STYLE = {
     ButtonComponent,
     CardComponent,
     EmptyStateComponent,
+    TabsComponent,
   ],
   templateUrl: './portfolio-analytics.component.html',
   styleUrls: ['./portfolio-analytics.component.css'],
@@ -227,42 +229,43 @@ export class PortfolioAnalyticsComponent implements OnInit {
     this.transactionService.getAllHoldings(this.userEmail).subscribe({
       next: (res) => {
         const data = Array.isArray(res) ? res : res?.data || res?.content || [];
-        this.apiHoldings = data.map((d: any) => {
-          const totalBought = d.totalQuantity || 0;
-          const netHeld = d.quantity || 0;
-          const totalSold = totalBought - netHeld;
-          const totalInvested = d.totalValue || 0;
-          return {
-            stockCode: d.stockCode,
-            stockName: d.stockName,
-            assetType: d.assetType,
-            totalBought,
-            totalSold,
-            netHeld,
-            totalInvested,
-            totalSoldValue: 0,
-            netInvested: totalInvested,
-            txnCount:
-              (d.buyTransactionIds?.length || 0) +
-              (d.sellTransactionIds?.length || 0) ||
-              Object.keys(d.transactionQuantities || {}).length,
-            avgPrice: d.price || 0,
-            totalCharges: (d.brokerCharges || 0) + (d.miscCharges || 0),
-            sharePercent: 0,
-            firstDate: '',
-            lastDate: '',
-          };
-        });
+        this.apiHoldings = data.map((d: any) => this.toHoldingRow(d));
         this.holdingsLoaded = true;
         this.afterLoad();
       },
       error: () => {
-        this.apiHoldings = this.mockApiHoldingsData();
+        this.apiHoldings = this.mockApiHoldingsData().map((d) => this.toHoldingRow(d));
         this.usingMock = true;
         this.holdingsLoaded = true;
         this.afterLoad();
       },
     });
+  }
+
+  private toHoldingRow(d: any): HoldingRow {
+    const totalBought = d.totalQuantity || 0;
+    const netHeld = d.quantity || 0;
+    const totalInvested = d.totalValue || 0;
+    return {
+      stockCode: d.stockCode,
+      stockName: d.stockName,
+      assetType: d.assetType,
+      totalBought,
+      totalSold: totalBought - netHeld,
+      netHeld,
+      totalInvested,
+      totalSoldValue: 0,
+      netInvested: totalInvested,
+      txnCount:
+        (d.buyTransactionIds?.length || 0) +
+        (d.sellTransactionIds?.length || 0) ||
+        Object.keys(d.transactionQuantities || {}).length,
+      avgPrice: d.price || 0,
+      totalCharges: (d.brokerCharges || 0) + (d.miscCharges || 0),
+      sharePercent: 0,
+      firstDate: '',
+      lastDate: '',
+    };
   }
 
   private afterLoad(): void {
@@ -274,16 +277,25 @@ export class PortfolioAnalyticsComponent implements OnInit {
   }
 
   private enrichApiHoldings(): void {
-    if (!this.apiHoldings.length || !this.portfolioTransactions.length) return;
+    if (!this.apiHoldings.length) return;
+
+    // Share of invested + largest-first order don't depend on transactions
+    const totalAllInvested = this.apiHoldings.reduce((sum, h) => sum + (h.totalInvested || 0), 0);
+    if (totalAllInvested > 0) {
+      for (const h of this.apiHoldings) {
+        h.sharePercent = (h.totalInvested / totalAllInvested) * 100;
+      }
+    }
+    this.apiHoldings.sort((a, b) => b.totalInvested - a.totalInvested);
+
+    if (!this.portfolioTransactions.length) return;
     const txnMap = new Map<string, TransactionsResponse[]>();
     for (const t of this.portfolioTransactions) {
       const key = t.stockCode || t.stockName || 'unknown';
       if (!txnMap.has(key)) txnMap.set(key, []);
       txnMap.get(key)!.push(t);
     }
-    let totalAllInvested = 0;
     for (const h of this.apiHoldings) {
-      totalAllInvested += h.totalInvested || 0;
       const key = h.stockCode || h.stockName || 'unknown';
       const stockTxns = txnMap.get(key) || [];
       let firstDate = '';
@@ -297,12 +309,6 @@ export class PortfolioAnalyticsComponent implements OnInit {
       h.firstDate = firstDate || 'N/A';
       h.lastDate = lastDate || 'N/A';
     }
-    if (totalAllInvested > 0) {
-      for (const h of this.apiHoldings) {
-        h.sharePercent = (h.totalInvested / totalAllInvested) * 100;
-      }
-    }
-    this.apiHoldings.sort((a, b) => b.totalInvested - a.totalInvested);
   }
 
   // ============================================================

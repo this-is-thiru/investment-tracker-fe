@@ -86,7 +86,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
     if (this.auth.isUserAuthenticated()) {
       this.router.navigate([`/${route}`]);
     } else {
-      this.router.navigate([{ outlets: { modal: ['sign-in'] } }]);
+      this.router.navigate([{ outlets: { modal: ['sign-in'] } }], { queryParams: { returnUrl: `/${route}` } });
     }
   }
 
@@ -102,16 +102,6 @@ export class HomeComponent implements OnInit, AfterViewInit {
       boxShadow: isHovered
         ? `0 12px 32px ${benefit.color}40, 0 0 0 3px ${benefit.color}10`
         : 'none',
-    };
-  }
-
-  // Hero Icon particle styles calculation (matching the original inline styles)
-  getParticleStyle(i: number) {
-    return {
-      left: `${20 + i * 15}%`,
-      top: `${30 + (i % 3) * 20}%`,
-      'animation-delay': `${i * 0.3}s`,
-      'animation-duration': `${3 + i * 0.5}s`
     };
   }
 }

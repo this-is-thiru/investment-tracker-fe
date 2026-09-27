@@ -1,9 +1,9 @@
 <section
-  class="border border-[#333333] w-full rounded-xl bg-[#191919] overflow-hidden animate-fade-in-up"
+  class="border border-divider w-full rounded-xl bg-background overflow-hidden animate-fade-in-up"
 >
   <!-- Header -->
   <div
-    class="flex items-center justify-between p-4 bg-gradient-to-r from-[#232323] to-[#1E1E1E] border-b border-[#333333] cursor-pointer"
+    class="flex items-center justify-between p-4 bg-gradient-to-r from-surface to-surface-alt border-b border-divider cursor-pointer"
     (click)="toggleExpansion()"
   >
     <div class="flex items-center gap-3">
@@ -23,7 +23,7 @@
           {{ title }}
         </h3>
         @if (subtitle) {
-          <p class="text-sm text-[#AAAAAA] mt-0.5">
+          <p class="text-sm text-text-secondary mt-0.5">
             {{ subtitle }}
           </p>
         }
@@ -33,7 +33,7 @@
     <!-- Expand/Collapse Button -->
     <button
       type="button"
-      class="flex items-center gap-2 px-3 py-1 bg-[#282828] text-white rounded-lg transition-all border border-[#404040] hover:border-[#505050]"
+      class="flex items-center gap-2 px-3 py-1 bg-surface text-white rounded-lg transition-all border border-border-hover hover:border-text-disabled"
       (click)="$event.stopPropagation(); toggleExpansion()"
     >
       <span class="text-sm">{{ isExpanded ? 'Collapse' : 'Expand' }}</span>

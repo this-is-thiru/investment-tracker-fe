@@ -1,4 +1,4 @@
-import { Injectable, inject, signal } from '@angular/core';
+import { Injectable, computed, inject, signal } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
@@ -13,6 +13,8 @@ import { BaseurlService } from './baseurl.service';
   providedIn: 'root',
 })
 export class AuthService {
+  static readonly DEMO_EMAIL = 'demo@wealthlens.com';
+
   private http = inject(HttpClient);
   private router = inject(Router);
   private storageService = inject(StorageService);
@@ -21,6 +23,7 @@ export class AuthService {
   private logoutTimer: any;
   isLoggedIn = signal(this.isUserAuthenticated());
   userEmail = signal<string | null>(this.storageService.getItem('userEmail')); // ✅ add signal for email
+  isDemo = computed(() => this.isLoggedIn() && this.userEmail() === AuthService.DEMO_EMAIL);
 
   constructor() {
     const token = this.storageService.getItem('jwtToken');

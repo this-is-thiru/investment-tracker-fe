@@ -1,986 +1,118 @@
-<div class="min-h-screen bg-[#151515] py-8 px-4 sm:px-6 lg:px-8 2xl:px-12 font-sans">
-  <div class="w-full max-w-[1760px] mx-auto">
-    <!-- Page Header -->
-    <div class="mb-8 animate-fade-in">
-      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+<div class="w-full min-h-screen flex flex-col bg-background">
+
+  <!-- ============================================================== -->
+  <!-- HEADER STRIP                                                     -->
+  <!-- ============================================================== -->
+  <section class="relative bg-background overflow-hidden border-b border-divider">
+    <div class="absolute inset-0 opacity-30 pointer-events-none">
+      <div class="relative bg-gradient-to-br from-[#0F0F0F] via-[#121212] to-background w-full h-full"></div>
+    </div>
+
+    <div class="w-full max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-8 2xl:px-12 py-10 md:py-14 relative z-10">
+      <div class="inline-flex items-center gap-2 bg-accent/10 border border-accent/20 rounded-full px-3 py-1.5 mb-4">
+        <lucide-icon name="Settings" class="w-4 h-4 text-accent"></lucide-icon>
+        <span class="text-xs text-accent font-semibold uppercase tracking-wider">Settings</span>
+      </div>
+
+      <h1 class="text-3xl md:text-4xl text-white mb-2 font-semibold">
+        Account
+        <span class="text-transparent bg-clip-text bg-gradient-to-r from-accent to-accent-hover">settings</span>
+      </h1>
+      <p class="text-sm text-text-secondary max-w-2xl">
+        Manage your password, live price source, and portfolio data.
+      </p>
+    </div>
+  </section>
+
+  <!-- ============================================================== -->
+  <!-- MAIN BODY                                                        -->
+  <!-- ============================================================== -->
+  <main class="w-full max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-8 2xl:px-12 py-8 flex-1 space-y-6">
+
+    <!-- ACCOUNT -->
+    <app-expansion-panel [title]="'Account'" [subtitle]="'The account you are signed in with'"
+      [titleIcon]="'User'"
+      [iconBgClass]="'bg-gradient-to-br from-accent to-accent-hover p-2 rounded-lg text-white'" [isExpanded]="true">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div class="flex items-center gap-3 min-w-0">
+          <div class="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center shrink-0">
+            <lucide-icon name="Mail" class="w-5 h-5 text-accent"></lucide-icon>
+          </div>
+          <div class="min-w-0">
+            <p class="text-xs text-text-muted">Email</p>
+            <p class="text-sm text-white font-medium break-all">{{ email || '—' }}</p>
+          </div>
+        </div>
+        <ui-button variant="secondary" (click)="signOut()">
+          <lucide-icon name="LogOut" class="w-4 h-4"></lucide-icon>
+          Sign out
+        </ui-button>
+      </div>
+    </app-expansion-panel>
+
+    <!-- PASSWORD -->
+    <app-expansion-panel [title]="'Change Password'" [subtitle]="'Update the password you use to sign in'"
+      [titleIcon]="'Lock'"
+      [iconBgClass]="'bg-gradient-to-br from-accent to-accent-hover p-2 rounded-lg text-white'" [isExpanded]="true">
+      <form (ngSubmit)="changePassword()">
+        <div class="flex flex-col md:flex-row md:items-end gap-4">
+          <div class="flex-1 min-w-0 space-y-1.5">
+            <label for="current-password" class="block text-sm font-medium text-text-secondary">Current password</label>
+            <ui-input [id]="'current-password'" type="password" name="oldPassword" [(ngModel)]="oldPassword" />
+          </div>
+          <div class="flex-1 min-w-0 space-y-1.5">
+            <label for="new-password" class="block text-sm font-medium text-text-secondary">New password</label>
+            <ui-input [id]="'new-password'" type="password" name="newPassword" [(ngModel)]="newPassword" />
+          </div>
+          <div class="shrink-0">
+            <ui-button type="submit" variant="primary" [disabled]="!oldPassword || !newPassword" [loading]="isChangingPassword">
+              Update password
+            </ui-button>
+          </div>
+        </div>
+      </form>
+    </app-expansion-panel>
+
+    <!-- LIVE PRICES -->
+    <app-expansion-panel [title]="'Live Prices'" [subtitle]="'Google Sheet used for current prices in Tax Filing'"
+      [titleIcon]="'TrendingUp'"
+      [iconBgClass]="'bg-gradient-to-br from-accent to-accent-hover p-2 rounded-lg text-white'" [isExpanded]="true">
+      <form (ngSubmit)="saveLivePriceUrl()" class="space-y-2">
+        <label for="sheet-url" class="block text-sm font-medium text-text-secondary">Published Google Sheet CSV URL</label>
+        <div class="flex flex-col sm:flex-row sm:items-center gap-3">
+          <div class="flex-1 min-w-0">
+            <ui-input [id]="'sheet-url'" name="googleSheetCsvUrl" [(ngModel)]="googleSheetCsvUrl"
+              placeholder="https://docs.google.com/spreadsheets/d/e/.../pub?output=csv" />
+          </div>
+          <div class="shrink-0">
+            <ui-button type="submit" variant="primary">Save URL</ui-button>
+          </div>
+        </div>
+        <p class="text-xs text-text-muted">
+          In Google Sheets, use File → Share → Publish to web and choose CSV.
+        </p>
+      </form>
+    </app-expansion-panel>
+
+    <!-- DANGER ZONE -->
+    <app-expansion-panel [title]="'Danger Zone'" [subtitle]="'Actions that cannot be undone'"
+      [titleIcon]="'AlertTriangle'"
+      [iconBgClass]="'bg-danger p-2 rounded-lg text-white'" [isExpanded]="true">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl border border-danger/30 bg-danger/5">
         <div>
-          <h1 class="text-3xl font-extrabold text-white tracking-tight flex items-center gap-3">
-            <lucide-icon name="settings" class="h-8 w-8 text-[#10A37F] animate-spin-slow"></lucide-icon>
-            System Settings
-          </h1>
-          <p class="text-[#A0A0A0] mt-1 text-sm md:text-base">
-            Configure your global investment tracking preferences, performance calculations, and security parameters.
+          <h3 class="text-sm font-semibold text-white">Reset portfolio data</h3>
+          <p class="text-xs text-text-muted mt-0.5 max-w-xl">
+            Deletes all your transactions and holdings. Your account stays.
           </p>
         </div>
-        <div class="flex items-center gap-2 bg-[#202020] border border-[#303030] rounded-xl px-4 py-2 self-start md:self-auto">
-          <div class="h-2 w-2 rounded-full bg-[#10A37F] animate-pulse"></div>
-          <span class="text-xs text-[#A0A0A0] font-mono uppercase tracking-wider">Sync Active</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Main Workspace Layout -->
-    <div class="flex flex-col lg:flex-row gap-8">
-      
-      <!-- Navigation Sidebar -->
-      <div class="lg:w-72 shrink-0 animate-slide-right">
-        <!-- Mobile/Tablet Horizontal Tab Scroll -->
-        <div class="lg:hidden bg-[#1C1C1C] border border-[#2D2D2D] rounded-2xl p-3 overflow-x-auto scrollbar-hide flex gap-2 mb-6">
-          @for (tab of tabs; track tab.id) {
-            <button
-              (click)="setActiveTab(tab.id)"
-              [ngClass]="{
-                'bg-gradient-to-r from-[#10A37F]/25 to-[#1AA97D]/10 text-white border-[#10A37F]/40': activeTab === tab.id,
-                'text-[#909090] border-transparent hover:text-white hover:bg-[#252525]': activeTab !== tab.id
-              }"
-              class="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 border whitespace-nowrap"
-            >
-              <lucide-icon [name]="tab.icon" class="h-5 w-5"></lucide-icon>
-              <span>{{ tab.label }}</span>
-            </button>
-          }
-        </div>
-
-        <!-- Desktop Vertical Sidebar -->
-        <div class="hidden lg:block bg-[#1C1C1C] border border-[#2D2D2D] rounded-2xl p-3 space-y-1.5 shadow-xl">
-          <div class="px-3 py-2 text-xs font-semibold text-[#606060] uppercase tracking-widest border-b border-[#2D2D2D] mb-3">
-            Settings Menu
-          </div>
-          @for (tab of tabs; track tab.id) {
-            <button
-              (click)="setActiveTab(tab.id)"
-              [ngClass]="{
-                'bg-gradient-to-r from-[#10A37F]/20 to-[#10A37F]/5 text-white border-l-4 border-l-[#10A37F] border-[#2D2D2D] pl-3': activeTab === tab.id,
-                'text-[#A0A0A0] hover:text-white hover:bg-[#252525] border-transparent border-l-4 border-l-transparent pl-3': activeTab !== tab.id
-              }"
-              class="w-full flex items-center gap-3.5 py-3.5 pr-4 rounded-xl transition-all duration-200 text-left border font-medium text-sm"
-            >
-              <lucide-icon [name]="tab.icon" class="h-5 w-5" [ngClass]="activeTab === tab.id ? 'text-[#10A37F]' : 'text-[#707070]'"></lucide-icon>
-              <span>{{ tab.label }}</span>
-            </button>
-          }
-        </div>
-      </div>
-
-      <!-- Active Settings Panel Content -->
-      <div class="flex-1 min-w-0 animate-slide-left">
-        
-        <!-- ================= PROFILE & REGIONAL TAB ================= -->
-        @if (activeTab === 'profile') {
-          <div class="space-y-6">
-            <!-- Account Details Card -->
-            <div class="bg-[#1C1C1C] border border-[#2D2D2D] rounded-2xl p-6 md:p-8 shadow-xl relative overflow-hidden">
-              <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#10A37F] to-[#1AA97D]"></div>
-              
-              <div class="flex items-start gap-4 mb-6">
-                <div class="p-3 bg-[#10A37F]/10 rounded-xl">
-                  <lucide-icon name="user" class="h-6 w-6 text-[#10A37F]"></lucide-icon>
-                </div>
-                <div>
-                  <h2 class="text-xl font-bold text-white">Account Details</h2>
-                  <p class="text-xs text-[#909090] mt-0.5">Manage your personal identification details and contacts</p>
-                </div>
-              </div>
-
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Full Name -->
-                <div class="space-y-2">
-                  <label class="block text-sm font-semibold text-[#A0A0A0]">Full Name</label>
-                  <div class="relative">
-                    <lucide-icon name="user" class="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-[#606060]"></lucide-icon>
-                    <input
-                      type="text"
-                      [(ngModel)]="fullName"
-                      class="w-full pl-12 pr-4 py-3 bg-[#232323] border border-[#303030] rounded-xl text-white placeholder-[#505050] focus:outline-none focus:border-[#10A37F] focus:ring-1 focus:ring-[#10A37F] transition-all duration-200 text-sm font-medium"
-                      placeholder="e.g. John Doe"
-                    />
-                  </div>
-                </div>
-
-                <!-- Phone -->
-                <div class="space-y-2">
-                  <label class="block text-sm font-semibold text-[#A0A0A0]">Phone Number</label>
-                  <div class="relative">
-                    <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-[#606060] font-mono">📱</span>
-                    <input
-                      type="tel"
-                      [(ngModel)]="phone"
-                      class="w-full pl-12 pr-4 py-3 bg-[#232323] border border-[#303030] rounded-xl text-white placeholder-[#505050] focus:outline-none focus:border-[#10A37F] focus:ring-1 focus:ring-[#10A37F] transition-all duration-200 text-sm font-medium"
-                      placeholder="e.g. +1 (555) 000-0000"
-                    />
-                  </div>
-                </div>
-
-                <!-- Email Address (read-only synced via Auth) -->
-                <div class="md:col-span-2 space-y-2">
-                  <label class="block text-sm font-semibold text-[#A0A0A0]">Email Address</label>
-                  <div class="relative">
-                    <lucide-icon name="mail" class="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-[#505050]"></lucide-icon>
-                    <input
-                      type="email"
-                      [(ngModel)]="email"
-                      disabled
-                      class="w-full pl-12 pr-4 py-3 bg-[#1C1C1C] border border-[#2D2D2D] rounded-xl text-[#707070] cursor-not-allowed text-sm font-medium"
-                    />
-                  </div>
-                  <p class="text-xs text-[#606060]">Your email address is connected to your primary account authentication profile.</p>
-                </div>
-              </div>
-
-              <div class="mt-6 flex justify-end">
-                <ui-button variant="primary" (click)="handleSaveProfile()">
-                  <lucide-icon name="check-circle-2" class="h-4 w-4"></lucide-icon>
-                  Save Account Changes
-                </ui-button>
-              </div>
-            </div>
-
-            <!-- Regional Preferences Card -->
-            <div class="bg-[#1C1C1C] border border-[#2D2D2D] rounded-2xl p-6 md:p-8 shadow-xl relative overflow-hidden">
-              <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#3b82f6] to-[#10A37F]"></div>
-              
-              <div class="flex items-start gap-4 mb-6">
-                <div class="p-3 bg-blue-500/10 rounded-xl">
-                  <lucide-icon name="globe" class="h-6 w-6 text-blue-400"></lucide-icon>
-                </div>
-                <div>
-                  <h2 class="text-xl font-bold text-white">Regional Settings</h2>
-                  <p class="text-xs text-[#909090] mt-0.5">Customize localization, base currency, and calendar formatting</p>
-                </div>
-              </div>
-
-              <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <!-- Base Currency -->
-                <div class="space-y-2">
-                  <label class="block text-sm font-semibold text-[#A0A0A0]">Base Currency</label>
-                  <p-select
-                    [(ngModel)]="currency"
-                    [options]="currencyOptions"
-                    optionLabel="label"
-                    optionValue="value"
-                    placeholder="Select Currency"
-                    styleClass="w-full bg-[#232323] border border-[#303030] rounded-xl text-white text-sm"
-                    appendTo="body"
-                  >
-                  </p-select>
-                </div>
-
-                <!-- Language -->
-                <div class="space-y-2">
-                  <label class="block text-sm font-semibold text-[#A0A0A0]">System Language</label>
-                  <p-select
-                    [(ngModel)]="language"
-                    [options]="languageOptions"
-                    optionLabel="label"
-                    optionValue="value"
-                    placeholder="Select Language"
-                    styleClass="w-full bg-[#232323] border border-[#303030] rounded-xl text-white text-sm"
-                    appendTo="body"
-                  >
-                  </p-select>
-                </div>
-
-                <!-- Date Format -->
-                <div class="space-y-2">
-                  <label class="block text-sm font-semibold text-[#A0A0A0]">Date Display Format</label>
-                  <p-select
-                    [(ngModel)]="dateFormat"
-                    [options]="dateFormatOptions"
-                    optionLabel="label"
-                    optionValue="value"
-                    placeholder="Select Date Format"
-                    styleClass="w-full bg-[#232323] border border-[#303030] rounded-xl text-white text-sm"
-                    appendTo="body"
-                  >
-                  </p-select>
-                </div>
-              </div>
-
-              <div class="mt-6 flex justify-end">
-                <ui-button variant="primary" (click)="handleSaveProfile()">
-                  <lucide-icon name="check-circle-2" class="h-4 w-4"></lucide-icon>
-                  Save Regional Preferences
-                </ui-button>
-              </div>
-            </div>
-          </div>
-        }
-
-        <!-- ================= PORTFOLIO & PREFERENCES TAB ================= -->
-        @if (activeTab === 'portfolio') {
-          <div class="space-y-6">
-            <!-- Return Calculations Methodology Card -->
-            <div class="bg-[#1C1C1C] border border-[#2D2D2D] rounded-2xl p-6 md:p-8 shadow-xl relative overflow-hidden">
-              <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#10A37F] to-[#3b82f6]"></div>
-              
-              <div class="flex items-start gap-4 mb-6">
-                <div class="p-3 bg-[#10A37F]/10 rounded-xl">
-                  <lucide-icon name="trending-up" class="h-6 w-6 text-[#10A37F]"></lucide-icon>
-                </div>
-                <div>
-                  <h2 class="text-xl font-bold text-white">Performance Calculations</h2>
-                  <p class="text-xs text-[#909090] mt-0.5">Determine how system return rates and growth percentages are calculated</p>
-                </div>
-              </div>
-
-              <div class="space-y-4">
-                <label class="block text-sm font-semibold text-[#A0A0A0]">Calculation Methodology</label>
-                
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <!-- TWR Card -->
-                  <ui-radio-card [selected]="returnCalculation === 'TWR'" (click)="returnCalculation = 'TWR'">
-                    <div class="flex flex-col">
-                      <span class="text-sm font-bold text-white mb-1">TWR (Time-Weighted)</span>
-                      <p class="text-xs text-[#909090] leading-relaxed">
-                        Measures the compound growth rate of the portfolio. Recommended for tracking portfolio manager performance because it eliminates cash inflow/outflow distortions.
-                      </p>
-                      <ui-badge tone="accent" class="mt-3 self-start">Recommended</ui-badge>
-                    </div>
-                  </ui-radio-card>
-
-                  <!-- IRR/MWR Card -->
-                  <ui-radio-card [selected]="returnCalculation === 'IRR'" (click)="returnCalculation = 'IRR'">
-                    <div class="flex flex-col">
-                      <span class="text-sm font-bold text-white mb-1">IRR (Money-Weighted)</span>
-                      <p class="text-xs text-[#909090] leading-relaxed">
-                        Computes the internal rate of return. Accounts for the timing and size of cash transactions. Best for reflecting your personal dollar-earned returns.
-                      </p>
-                    </div>
-                  </ui-radio-card>
-
-                  <!-- Simple Return Card -->
-                  <ui-radio-card [selected]="returnCalculation === 'SIMPLE'" (click)="returnCalculation = 'SIMPLE'">
-                    <div class="flex flex-col">
-                      <span class="text-sm font-bold text-white mb-1">Simple Return</span>
-                      <p class="text-xs text-[#909090] leading-relaxed">
-                        Basic gain percentage calculation: (Current Value - Total Invested) / Total Invested. Simple to understand, but does not account for holding duration.
-                      </p>
-                    </div>
-                  </ui-radio-card>
-                </div>
-              </div>
-
-              <!-- Benchmarking and Fiscal Settings -->
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8 pt-6 border-t border-[#2D2D2D]">
-                <div class="space-y-2">
-                  <label class="block text-sm font-semibold text-[#A0A0A0]">Primary Performance Benchmark</label>
-                  <p-select
-                    [(ngModel)]="defaultBenchmark"
-                    [options]="benchmarkOptions"
-                    optionLabel="label"
-                    optionValue="value"
-                    placeholder="Select Benchmark"
-                    styleClass="w-full bg-[#232323] border border-[#303030] rounded-xl text-white text-sm"
-                    appendTo="body"
-                  >
-                  </p-select>
-                  <p class="text-xs text-[#606060]">This asset will serve as the baseline comparator in portfolio performance charts.</p>
-                </div>
-
-                <div class="space-y-2">
-                  <label class="block text-sm font-semibold text-[#A0A0A0]">Fiscal / Tax Year Calendar</label>
-                  <p-select
-                    [(ngModel)]="fiscalYearStart"
-                    [options]="fiscalYearStartOptions"
-                    optionLabel="label"
-                    optionValue="value"
-                    placeholder="Select Calendar"
-                    styleClass="w-full bg-[#232323] border border-[#303030] rounded-xl text-white text-sm"
-                    appendTo="body"
-                  >
-                  </p-select>
-                  <p class="text-xs text-[#606060]">Calculations like year-to-date (YTD) returns and tax reporting will align to this date.</p>
-                </div>
-              </div>
-            </div>
-
-            <!-- Asset Class Customization Card -->
-            <div class="bg-[#1C1C1C] border border-[#2D2D2D] rounded-2xl p-6 md:p-8 shadow-xl relative overflow-hidden">
-              <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#10A37F] to-[#1AA97D]"></div>
-              
-              <div class="flex items-start gap-4 mb-6">
-                <div class="p-3 bg-[#10A37F]/10 rounded-xl">
-                  <lucide-icon name="palette" class="h-6 w-6 text-[#10A37F]"></lucide-icon>
-                </div>
-                <div>
-                  <h2 class="text-xl font-bold text-white">Preferred Asset Classes</h2>
-                  <p class="text-xs text-[#909090] mt-0.5">Toggle display visibility and dashboards for specific investment sectors</p>
-                </div>
-              </div>
-
-              <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                <!-- Stocks & ETFs -->
-                <div class="flex items-center justify-between p-4 bg-[#232323] border border-[#303030] rounded-xl">
-                  <div>
-                    <h4 class="text-sm font-bold text-white">Stocks & ETFs</h4>
-                    <p class="text-[10px] text-[#707070]">Equity trading</p>
-                  </div>
-                  <ui-toggle [(ngModel)]="activeAssetClasses.stocks"></ui-toggle>
-                </div>
-
-                <!-- Crypto -->
-                <div class="flex items-center justify-between p-4 bg-[#232323] border border-[#303030] rounded-xl">
-                  <div>
-                    <h4 class="text-sm font-bold text-white">Cryptocurrency</h4>
-                    <p class="text-[10px] text-[#707070]">Bitcoin & Altcoins</p>
-                  </div>
-                  <ui-toggle [(ngModel)]="activeAssetClasses.crypto"></ui-toggle>
-                </div>
-
-                <!-- Mutual Funds -->
-                <div class="flex items-center justify-between p-4 bg-[#232323] border border-[#303030] rounded-xl">
-                  <div>
-                    <h4 class="text-sm font-bold text-white">Mutual Funds</h4>
-                    <p class="text-[10px] text-[#707070]">Index & actively managed</p>
-                  </div>
-                  <ui-toggle [(ngModel)]="activeAssetClasses.mutualFunds"></ui-toggle>
-                </div>
-
-                <!-- ETFs -->
-                <div class="flex items-center justify-between p-4 bg-[#232323] border border-[#303030] rounded-xl">
-                  <div>
-                    <h4 class="text-sm font-bold text-white">ETFs</h4>
-                    <p class="text-[10px] text-[#707070]">Exchange Traded Funds</p>
-                  </div>
-                  <ui-toggle [(ngModel)]="activeAssetClasses.etfs"></ui-toggle>
-                </div>
-
-                <!-- Cash & Cash Equivalents -->
-                <div class="flex items-center justify-between p-4 bg-[#232323] border border-[#303030] rounded-xl">
-                  <div>
-                    <h4 class="text-sm font-bold text-white">Cash & Deposits</h4>
-                    <p class="text-[10px] text-[#707070]">Cash, Bank CDs, FDs</p>
-                  </div>
-                  <ui-toggle [(ngModel)]="activeAssetClasses.cash"></ui-toggle>
-                </div>
-
-                <!-- Gold & Precious Metals -->
-                <div class="flex items-center justify-between p-4 bg-[#232323] border border-[#303030] rounded-xl">
-                  <div>
-                    <h4 class="text-sm font-bold text-white">Gold & Bullion</h4>
-                    <p class="text-[10px] text-[#707070]">Precious metals tracking</p>
-                  </div>
-                  <ui-toggle [(ngModel)]="activeAssetClasses.gold"></ui-toggle>
-                </div>
-
-                <!-- Real Estate -->
-                <div class="flex items-center justify-between p-4 bg-[#232323] border border-[#303030] rounded-xl">
-                  <div>
-                    <h4 class="text-sm font-bold text-white">Real Estate</h4>
-                    <p class="text-[10px] text-[#707070]">Properties & Land</p>
-                  </div>
-                  <ui-toggle [(ngModel)]="activeAssetClasses.realEstate"></ui-toggle>
-                </div>
-              </div>
-
-              <div class="mt-6 flex justify-end">
-                <ui-button variant="primary" (click)="handleSavePortfolio()">
-                  <lucide-icon name="check-circle-2" class="h-4 w-4"></lucide-icon>
-                  Save Portfolio Preferences
-                </ui-button>
-              </div>
-            </div>
-          </div>
-        }
-
-        <!-- ================= ALERTS & NOTIFICATIONS TAB ================= -->
-        @if (activeTab === 'alerts') {
-          <div class="space-y-6 animate-fade-in">
-            <div class="bg-[#1C1C1C] border border-[#2D2D2D] rounded-2xl p-6 md:p-8 shadow-xl relative overflow-hidden">
-              <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-teal-500 to-[#10A37F]"></div>
-              
-              <div class="flex items-start gap-4 mb-6">
-                <div class="p-3 bg-[#10A37F]/10 rounded-xl">
-                  <lucide-icon name="bell" class="h-6 w-6 text-[#10A37F]"></lucide-icon>
-                </div>
-                <div>
-                  <h2 class="text-xl font-bold text-white">Smart Alerts & Digests</h2>
-                  <p class="text-xs text-[#909090] mt-0.5">Control how and when you are notified of changes in portfolio valuation</p>
-                </div>
-              </div>
-
-              <div class="space-y-6">
-                <!-- Notifications delivery channels -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <!-- Email channels -->
-                  <div class="flex items-center justify-between p-4 bg-[#232323] border border-[#303030] rounded-xl">
-                    <div class="flex items-center gap-3">
-                      <span class="text-xl">📧</span>
-                      <div>
-                        <h4 class="text-sm font-bold text-white">Email Digest</h4>
-                        <p class="text-[10px] text-[#808080]">Market notifications via Email</p>
-                      </div>
-                    </div>
-                    <ui-toggle [(ngModel)]="emailNotifications"></ui-toggle>
-                  </div>
-
-                  <!-- In-App channels -->
-                  <div class="flex items-center justify-between p-4 bg-[#232323] border border-[#303030] rounded-xl">
-                    <div class="flex items-center gap-3">
-                      <span class="text-xl">🔔</span>
-                      <div>
-                        <h4 class="text-sm font-bold text-white">In-App Push Alerts</h4>
-                        <p class="text-[10px] text-[#808080]">Realtime browser push notifications</p>
-                      </div>
-                    </div>
-                    <ui-toggle [(ngModel)]="pushNotifications"></ui-toggle>
-                  </div>
-                </div>
-
-                <!-- Custom triggers section -->
-                <div class="border-t border-[#2D2D2D] pt-6 space-y-4">
-                  <h3 class="text-sm font-bold text-white tracking-wide uppercase text-[#A0A0A0]">Subscription Alerts</h3>
-                  
-                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <!-- Weekly Report -->
-                    <div class="flex items-center justify-between p-4 bg-[#232323] border border-[#303030] rounded-xl">
-                      <div>
-                        <h4 class="text-sm font-semibold text-white">Weekly Performance Digest</h4>
-                        <p class="text-[10px] text-[#808080]">Comprehensive weekend performance reports</p>
-                      </div>
-                      <ui-toggle [(ngModel)]="weeklyReports"></ui-toggle>
-                    </div>
-
-                    <!-- Dividend Alert -->
-                    <div class="flex items-center justify-between p-4 bg-[#232323] border border-[#303030] rounded-xl">
-                      <div>
-                        <h4 class="text-sm font-semibold text-white">Dividend payouts & Yield</h4>
-                        <p class="text-[10px] text-[#808080]">Alert when stock pays dividends</p>
-                      </div>
-                      <ui-toggle [(ngModel)]="dividendAlerts"></ui-toggle>
-                    </div>
-
-                    <!-- Price Movement Toggles -->
-                    <div class="flex items-center justify-between p-4 bg-[#232323] border border-[#303030] rounded-xl">
-                      <div>
-                        <h4 class="text-sm font-semibold text-white">Daily Price Volatility Warning</h4>
-                        <p class="text-[10px] text-[#808080]">Significant asset price swing detection</p>
-                      </div>
-                      <ui-toggle [(ngModel)]="portfolioAlerts"></ui-toggle>
-                    </div>
-
-                    <!-- Rebalance Toggles -->
-                    <div class="flex items-center justify-between p-4 bg-[#232323] border border-[#303030] rounded-xl">
-                      <div>
-                        <h4 class="text-sm font-semibold text-white">Target Allocation Rebalancing</h4>
-                        <p class="text-[10px] text-[#808080]">Alert when asset classes drift out of bounds</p>
-                      </div>
-                      <ui-toggle [(ngModel)]="rebalanceAlerts"></ui-toggle>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Custom Threshold Selectors -->
-                <div class="border-t border-[#2D2D2D] pt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div class="space-y-2">
-                    <label class="block text-xs font-bold text-[#A0A0A0] uppercase tracking-wide">Volatility Alert Sensitivity</label>
-                    <p-select
-                      [(ngModel)]="priceAlertThreshold"
-                      [options]="priceAlertThresholdOptions"
-                      optionLabel="label"
-                      optionValue="value"
-                      [disabled]="!portfolioAlerts"
-                      placeholder="Select Volatility"
-                      styleClass="w-full bg-[#232323] border border-[#303030] rounded-xl text-white text-sm"
-                      appendTo="body"
-                    >
-                    </p-select>
-                  </div>
-
-                  <div class="space-y-2">
-                    <label class="block text-xs font-bold text-[#A0A0A0] uppercase tracking-wide">Rebalance Drift Sensitivity</label>
-                    <p-select
-                      [(ngModel)]="rebalanceThreshold"
-                      [options]="rebalanceThresholdOptions"
-                      optionLabel="label"
-                      optionValue="value"
-                      [disabled]="!rebalanceAlerts"
-                      placeholder="Select Rebalance"
-                      styleClass="w-full bg-[#232323] border border-[#303030] rounded-xl text-white text-sm"
-                      appendTo="body"
-                    >
-                    </p-select>
-                  </div>
-                </div>
-              </div>
-
-              <div class="mt-8 flex justify-end">
-                <ui-button variant="primary" (click)="handleSaveAlerts()">
-                  <lucide-icon name="check-circle-2" class="h-4 w-4"></lucide-icon>
-                  Save Alert Settings
-                </ui-button>
-              </div>
-            </div>
-          </div>
-        }
-
-        <!-- ================= SECURITY & ACCESS TAB ================= -->
-        @if (activeTab === 'security') {
-          <div class="space-y-6">
-            <!-- 2FA Verification Card -->
-            <div class="bg-[#1C1C1C] border border-[#2D2D2D] rounded-2xl p-6 md:p-8 shadow-xl relative overflow-hidden">
-              <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 to-[#10A37F]"></div>
-              
-              <div class="flex items-start justify-between gap-4">
-                <div class="flex gap-4">
-                  <div class="p-3 bg-[#10A37F]/10 rounded-xl self-start">
-                    <lucide-icon name="shield" class="h-6 w-6 text-[#10A37F]"></lucide-icon>
-                  </div>
-                  <div>
-                    <h2 class="text-xl font-bold text-white flex items-center gap-2">
-                      Two-Factor Authentication (2FA)
-                      <ui-badge [tone]="twoFactorEnabled ? 'accent' : 'neutral'">
-                        {{ twoFactorEnabled ? 'Active' : 'Inactive' }}
-                      </ui-badge>
-                    </h2>
-                    <p class="text-xs text-[#909090] mt-1 max-w-xl">
-                      Add a secondary layer of credential checks to your account. When enabled, signing in requires your standard password and an Authenticator code.
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div class="mt-6 flex justify-start">
-                <ui-button [variant]="twoFactorEnabled ? 'ghost' : 'primary'" (click)="handleToggle2FA()">
-                  <lucide-icon [name]="twoFactorEnabled ? 'x-circle' : 'shield'" class="h-5 w-5"></lucide-icon>
-                  {{ twoFactorEnabled ? 'Disable 2-Factor Authentication' : 'Activate 2-Factor Authentication' }}
-                </ui-button>
-              </div>
-            </div>
-
-            <!-- Password Form Card -->
-            <div class="bg-[#1C1C1C] border border-[#2D2D2D] rounded-2xl p-6 md:p-8 shadow-xl relative overflow-hidden">
-              <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-red-500 to-[#10A37F]"></div>
-              
-              <div class="flex items-start gap-4 mb-6">
-                <div class="p-3 bg-[#10A37F]/10 rounded-xl">
-                  <lucide-icon name="lock" class="h-6 w-6 text-[#10A37F]"></lucide-icon>
-                </div>
-                <div>
-                  <h2 class="text-xl font-bold text-white">Update Password</h2>
-                  <p class="text-xs text-[#909090] mt-0.5">Change your profile access passcode credentials</p>
-                </div>
-              </div>
-
-              <div class="grid grid-cols-1 gap-5 max-w-2xl">
-                <!-- Current password -->
-                <div class="space-y-2">
-                  <label class="block text-sm font-semibold text-[#A0A0A0]">Current Password</label>
-                  <div class="relative">
-                    <lucide-icon name="lock" class="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-[#606060]"></lucide-icon>
-                    <input
-                      type="password"
-                      [(ngModel)]="oldPassword"
-                      class="w-full pl-12 pr-4 py-3 bg-[#232323] border border-[#303030] rounded-xl text-white placeholder-[#505050] focus:outline-none focus:border-[#10A37F] transition-all duration-200 text-sm font-medium"
-                      placeholder="••••••••••••"
-                    />
-                  </div>
-                </div>
-
-                <!-- New password -->
-                <div class="space-y-2">
-                  <label class="block text-sm font-semibold text-[#A0A0A0]">New Password</label>
-                  <div class="relative">
-                    <lucide-icon name="shield" class="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-[#606060]"></lucide-icon>
-                    <input
-                      type="password"
-                      [(ngModel)]="newPasswordValue"
-                      class="w-full pl-12 pr-4 py-3 bg-[#232323] border border-[#303030] rounded-xl text-white placeholder-[#505050] focus:outline-none focus:border-[#10A37F] transition-all duration-200 text-sm font-medium"
-                      placeholder="Must be at least 8 characters"
-                    />
-                  </div>
-                </div>
-
-                <!-- Confirm update -->
-                <div class="pt-3">
-                  <ui-button
-                    variant="primary"
-                    [disabled]="!oldPassword || !newPasswordValue"
-                    [loading]="isLoadingPasswordChange"
-                    (click)="handleChangePassword()"
-                  >
-                    <lucide-icon name="lock" class="h-5 w-5"></lucide-icon>
-                    {{ isLoadingPasswordChange ? 'Processing credentials...' : 'Save New Password' }}
-                  </ui-button>
-                </div>
-              </div>
-            </div>
-
-            <!-- Active Sessions Card -->
-            <div class="bg-[#1C1C1C] border border-[#2D2D2D] rounded-2xl p-6 md:p-8 shadow-xl relative overflow-hidden">
-              <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-orange-400 to-[#10A37F]"></div>
-              
-              <div class="flex items-start gap-4 mb-6">
-                <div class="p-3 bg-orange-400/10 rounded-xl">
-                  <lucide-icon name="database" class="h-6 w-6 text-orange-400"></lucide-icon>
-                </div>
-                <div>
-                  <h2 class="text-xl font-bold text-white">Active Account Sessions</h2>
-                  <p class="text-xs text-[#909090] mt-0.5">Manage and revoke active login tokens on browser environments</p>
-                </div>
-              </div>
-
-              <div class="space-y-3">
-                @for (session of activeSessions; track session.id) {
-                  <div class="flex items-center justify-between p-4 bg-[#232323] border border-[#303030] rounded-xl hover:border-[#404040] transition-colors duration-200">
-                    <div class="flex items-center gap-3.5">
-                      <span class="text-2xl">{{ session.device.includes('iPhone') ? '📱' : '💻' }}</span>
-                      <div>
-                        <div class="flex items-center gap-2">
-                          <p class="text-sm font-bold text-white">{{ session.device }}</p>
-                          <ui-badge *ngIf="session.isCurrent" tone="accent">Current Session</ui-badge>
-                        </div>
-                        <p class="text-[10px] text-[#808080] mt-0.5">{{ session.location }} • {{ session.date }}</p>
-                      </div>
-                    </div>
-                    
-                    <ui-button
-                      *ngIf="!session.isCurrent"
-                      variant="ghost"
-                      size="sm"
-                      (click)="handleRevokeSession(session.id)"
-                    >
-                      Revoke Key
-                    </ui-button>
-                  </div>
-                }
-              </div>
-            </div>
-          </div>
-        }
-
-        <!-- ================= PLANS & BILLING TAB ================= -->
-        @if (activeTab === 'billing') {
-          <div class="space-y-6">
-            <!-- Premium Plan Grid -->
-            <div class="bg-[#1C1C1C] border border-[#2D2D2D] rounded-2xl p-6 md:p-8 shadow-xl relative overflow-hidden">
-              <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-yellow-500 to-[#10A37F]"></div>
-              
-              <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-                <div class="flex items-start gap-4">
-                  <div class="p-3 bg-[#10A37F]/10 rounded-xl">
-                    <lucide-icon name="crown" class="h-6 w-6 text-[#10A37F]"></lucide-icon>
-                  </div>
-                  <div>
-                    <h2 class="text-xl font-bold text-white">Subscription & Licensing</h2>
-                    <p class="text-xs text-[#909090] mt-0.5">Upgrade or adjust your system capabilities and analytical tools</p>
-                  </div>
-                </div>
-                
-                <div class="px-4 py-2 bg-[#232323] border border-[#303030] rounded-xl self-start md:self-auto flex items-center gap-2">
-                  <span class="text-xs text-[#909090] font-medium">Current Status:</span>
-                  <ui-badge tone="accent">Free Plan</ui-badge>
-                </div>
-              </div>
-
-              <!-- Interactive Plans Cards -->
-              <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <!-- Free Plan -->
-                <div class="bg-[#232323] border border-[#303030] rounded-2xl p-6 flex flex-col justify-between relative shadow-lg">
-                  <div class="space-y-4">
-                    <div class="flex items-center justify-between border-b border-[#303030] pb-4">
-                      <div>
-                        <h3 class="text-base font-bold text-white">Free Basic</h3>
-                        <p class="text-xs text-[#808080]">Essential tracker metrics</p>
-                      </div>
-                      <span class="text-xl">🌱</span>
-                    </div>
-                    
-                    <div class="py-2">
-                      <span class="text-3xl font-extrabold text-white">₹0</span>
-                      <span class="text-xs text-[#808080] ml-1">/ month</span>
-                    </div>
-
-                    <div class="space-y-2 pt-2">
-                      <div class="flex items-center gap-2 text-xs text-[#A0A0A0]">
-                        <lucide-icon name="check-check" class="h-4 w-4 text-[#10A37F]"></lucide-icon>
-                        <span>Up to 50 transactions</span>
-                      </div>
-                      <div class="flex items-center gap-2 text-xs text-[#A0A0A0]">
-                        <lucide-icon name="check-check" class="h-4 w-4 text-[#10A37F]"></lucide-icon>
-                        <span>TWR performance metric</span>
-                      </div>
-                      <div class="flex items-center gap-2 text-xs text-[#A0A0A0]">
-                        <lucide-icon name="check-check" class="h-4 w-4 text-[#10A37F]"></lucide-icon>
-                        <span>Standard CSV import tool</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <ui-button variant="secondary" [disabled]="true" [fullWidth]="true">
-                    Active Plan
-                  </ui-button>
-                </div>
-
-                <!-- Pro Plan -->
-                <div class="bg-[#232323] border border-[#10A37F]/50 rounded-2xl p-6 flex flex-col justify-between relative shadow-lg ring-1 ring-[#10A37F]/30">
-                  <div class="absolute top-0 right-6 -translate-y-1/2">
-                    <ui-badge tone="accent" styleVariant="solid">Popular</ui-badge>
-                  </div>
-                  
-                  <div class="space-y-4">
-                    <div class="flex items-center justify-between border-b border-[#303030] pb-4">
-                      <div>
-                        <h3 class="text-base font-bold text-white">Pro Trader</h3>
-                        <p class="text-xs text-[#808080]">Advanced analytics & tracking</p>
-                      </div>
-                      <span class="text-xl text-[#10A37F]">🚀</span>
-                    </div>
-                    
-                    <div class="py-2">
-                      <span class="text-3xl font-extrabold text-white">₹499</span>
-                      <span class="text-xs text-[#808080] ml-1">/ month</span>
-                    </div>
-
-                    <div class="space-y-2 pt-2">
-                      <div class="flex items-center gap-2 text-xs text-[#A0A0A0]">
-                        <lucide-icon name="check-check" class="h-4 w-4 text-[#10A37F]"></lucide-icon>
-                        <span>Unlimited transactions</span>
-                      </div>
-                      <div class="flex items-center gap-2 text-xs text-[#A0A0A0]">
-                        <lucide-icon name="check-check" class="h-4 w-4 text-[#10A37F]"></lucide-icon>
-                        <span>TWR + IRR calculation choice</span>
-                      </div>
-                      <div class="flex items-center gap-2 text-xs text-[#A0A0A0]">
-                        <lucide-icon name="check-check" class="h-4 w-4 text-[#10A37F]"></lucide-icon>
-                        <span>Custom threshold alerts</span>
-                      </div>
-                      <div class="flex items-center gap-2 text-xs text-[#A0A0A0]">
-                        <lucide-icon name="check-check" class="h-4 w-4 text-[#10A37F]"></lucide-icon>
-                        <span>Daily & weekly PDF updates</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <ui-button variant="primary" [fullWidth]="true" (click)="onNavigate('subscription')">
-                    Upgrade to Pro
-                  </ui-button>
-                </div>
-
-                <!-- Premium Plan -->
-                <div class="bg-[#232323] border border-[#303030] rounded-2xl p-6 flex flex-col justify-between relative shadow-lg">
-                  <div class="space-y-4">
-                    <div class="flex items-center justify-between border-b border-[#303030] pb-4">
-                      <div>
-                        <h3 class="text-base font-bold text-white">Elite Capital</h3>
-                        <p class="text-xs text-[#808080]">Realtime syncs & advice</p>
-                      </div>
-                      <span class="text-xl">🏆</span>
-                    </div>
-                    
-                    <div class="py-2">
-                      <span class="text-3xl font-extrabold text-white">₹999</span>
-                      <span class="text-xs text-[#808080] ml-1">/ month</span>
-                    </div>
-
-                    <div class="space-y-2 pt-2">
-                      <div class="flex items-center gap-2 text-xs text-[#A0A0A0]">
-                        <lucide-icon name="check-check" class="h-4 w-4 text-[#10A37F]"></lucide-icon>
-                        <span>Everything in Pro Plan</span>
-                      </div>
-                      <div class="flex items-center gap-2 text-xs text-[#A0A0A0]">
-                        <lucide-icon name="check-check" class="h-4 w-4 text-[#10A37F]"></lucide-icon>
-                        <span>API broker wallet integration</span>
-                      </div>
-                      <div class="flex items-center gap-2 text-xs text-[#A0A0A0]">
-                        <lucide-icon name="check-check" class="h-4 w-4 text-[#10A37F]"></lucide-icon>
-                        <span>Rebalancing advisory reports</span>
-                      </div>
-                      <div class="flex items-center gap-2 text-xs text-[#A0A0A0]">
-                        <lucide-icon name="check-check" class="h-4 w-4 text-[#10A37F]"></lucide-icon>
-                        <span>Priority 24/7 account support</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <ui-button variant="secondary" [fullWidth]="true" (click)="onNavigate('subscription')">
-                    Go Premium
-                  </ui-button>
-                </div>
-              </div>
-            </div>
-          </div>
-        }
-
-        <!-- ================= DATA & DANGER ZONE TAB ================= -->
-        @if (activeTab === 'data') {
-          <div class="space-y-6">
-            <!-- Data management -->
-            <div class="bg-[#1C1C1C] border border-[#2D2D2D] rounded-2xl p-6 md:p-8 shadow-xl relative overflow-hidden">
-              <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-[#10A37F]"></div>
-              
-              <div class="flex items-start gap-4 mb-6">
-                <div class="p-3 bg-blue-500/10 rounded-xl">
-                  <lucide-icon name="database" class="h-6 w-6 text-blue-400"></lucide-icon>
-                </div>
-                <div>
-                  <h2 class="text-xl font-bold text-white">Data Management</h2>
-                  <p class="text-xs text-[#909090] mt-0.5">Export or backup your transaction history files and external integrations</p>
-                </div>
-              </div>
-
-              <!-- Google Sheets Live Price Config -->
-              <div class="p-6 bg-[#232323] border border-[#303030] rounded-xl space-y-4 max-w-3xl mb-6">
-                <h3 class="text-sm font-bold text-white flex items-center gap-2">
-                  <lucide-icon name="trending-up" class="h-4 w-4 text-[#10A37F]"></lucide-icon>
-                  Google Sheets Live Stock Data
-                </h3>
-                <p class="text-xs text-[#808080] leading-relaxed">
-                  Enter your published Google Sheet CSV URL to fetch live/near-real-time stock market prices in the application.
-                  Make sure your sheet is published as a CSV format via <strong>File &gt; Share &gt; Publish to web</strong>.
-                </p>
-                
-                <div class="space-y-2">
-                  <label class="block text-xs font-semibold text-[#A0A0A0]">Published Google Sheet CSV URL</label>
-                  <input
-                    type="text"
-                    [(ngModel)]="googleSheetCsvUrl"
-                    class="w-full px-4 py-3 bg-[#1C1C1C] border border-[#303030] rounded-xl text-white placeholder-[#505050] focus:outline-none focus:border-[#10A37F] focus:ring-1 focus:ring-[#10A37F] transition-all duration-200 text-sm font-mono"
-                    placeholder="e.g. https://docs.google.com/spreadsheets/d/e/.../pub?output=csv"
-                  />
-                </div>
-                
-                <div class="flex justify-end">
-                  <ui-button variant="primary" (click)="handleSaveLivePriceUrl()">
-                    <lucide-icon name="save" class="h-4 w-4"></lucide-icon>
-                    Save URL Config
-                  </ui-button>
-                </div>
-              </div>
-
-              <div class="p-6 bg-[#232323] border border-[#303030] rounded-xl space-y-4 max-w-3xl">
-                <h3 class="text-sm font-bold text-white">Backup Portfolios</h3>
-                <p class="text-xs text-[#808080] leading-relaxed">
-                  Generate and download your complete system transaction profile, asset configurations, buy/sell values, and settings. Recommended before performing mass edits or imports.
-                </p>
-                
-                <div class="flex flex-wrap gap-4 pt-2">
-                  <ui-button variant="secondary" (click)="handleExportData('csv')">
-                    <lucide-icon name="download" class="h-4 w-4 text-[#808080]"></lucide-icon>
-                    Export as CSV Document (.csv)
-                  </ui-button>
-                  <ui-button variant="secondary" (click)="handleExportData('json')">
-                    <lucide-icon name="download" class="h-4 w-4 text-[#808080]"></lucide-icon>
-                    Export as JSON Database (.json)
-                  </ui-button>
-                </div>
-              </div>
-            </div>
-
-            <!-- Danger Zone -->
-            <div class="bg-[#1C1C1C] border border-[#EF4444]/45 rounded-2xl p-6 md:p-8 shadow-xl relative overflow-hidden ring-1 ring-red-500/10">
-              <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-red-600 to-[#EF4444]"></div>
-              
-              <div class="flex items-start gap-4 mb-6">
-                <div class="p-3 bg-red-500/10 rounded-xl">
-                  <lucide-icon name="trash-2" class="h-6 w-6 text-red-500"></lucide-icon>
-                </div>
-                <div>
-                  <h2 class="text-xl font-bold text-red-500">Danger Zone</h2>
-                  <p class="text-xs text-[#909090] mt-0.5">Destructive actions which cannot be reversed</p>
-                </div>
-              </div>
-
-              <div class="space-y-4">
-                <!-- Reset portfolio -->
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between p-5 bg-red-500/5 border border-red-500/15 rounded-xl gap-4">
-                  <div class="space-y-0.5">
-                    <h4 class="text-sm font-bold text-white">Reset Portfolio Transactions</h4>
-                    <p class="text-xs text-[#808080] max-w-xl">Delete all stock, crypto, ETF buy/sell transactions and clear tracking calculations. Keep account configuration details intact.</p>
-                  </div>
-                  <ui-button variant="danger" (click)="handleResetPortfolioClick()">
-                    Reset All Data
-                  </ui-button>
-                </div>
-
-                <!-- Delete account -->
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between p-5 bg-red-500/5 border border-red-500/15 rounded-xl gap-4">
-                  <div class="space-y-0.5">
-                    <h4 class="text-sm font-bold text-white">Permanently Delete Account</h4>
-                    <p class="text-xs text-[#808080] max-w-xl">Remove user profile, authentication credentials, and database portfolio metrics. This action is final.</p>
-                  </div>
-                  <ui-button variant="danger" (click)="handleDeleteAccountClick()">
-                    Delete My Account
-                  </ui-button>
-                </div>
-              </div>
-            </div>
-          </div>
-        }
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ================= MODALS OVERLAYS ================= -->
-
-<!-- 1. 2FA QR SETUP MODAL -->
-<div
-  *ngIf="show2FAModal"
-  class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-fade-in"
->
-  <div class="bg-[#1C1C1C] border border-[#303030] rounded-2xl w-full max-w-md overflow-hidden relative shadow-2xl animate-scale-up">
-    <!-- Close icon -->
-    <ui-button
-      variant="icon"
-      class="absolute top-4 right-4"
-      (click)="show2FAModal = false"
-    >
-      <lucide-icon name="x" class="h-5 w-5"></lucide-icon>
-    </ui-button>
-
-    <div class="p-6 md:p-8 space-y-6">
-      <div class="text-center space-y-1.5">
-        <h3 class="text-lg font-bold text-white flex items-center justify-center gap-2">
-          <lucide-icon name="shield" class="h-5 w-5 text-[#10A37F]"></lucide-icon>
-          Setup Authenticator 2FA
-        </h3>
-        <p class="text-xs text-[#909090]">Activate code verification checks on your account</p>
-      </div>
-
-      <!-- QR Area -->
-      <div class="bg-white p-4 rounded-2xl mx-auto w-44 h-44 flex items-center justify-center relative shadow-inner">
-        <!-- SVG simulated QR code -->
-        <svg class="w-full h-full text-black" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-          <rect x="1" y="1" width="6" height="6" />
-          <rect x="1" y="17" width="6" height="6" />
-          <rect x="17" y="1" width="6" height="6" />
-          <rect x="3" y="3" width="2" height="2" fill="currentColor" />
-          <rect x="3" y="19" width="2" height="2" fill="currentColor" />
-          <rect x="19" y="3" width="2" height="2" fill="currentColor" />
-          <path d="M10 2h4M10 5h2M2 10h4M12 10h2M17 10h4M2 14h2M10 14h2M19 14h3M5 12h2M14 12h3M12 17v4M17 17h2M17 21h4" stroke-dasharray="1 1.5"/>
-        </svg>
-      </div>
-
-      <!-- Setup Code details -->
-      <div class="space-y-4">
-        <div class="p-3 bg-[#232323] border border-[#303030] rounded-xl text-center">
-          <p class="text-[9px] text-[#707070] uppercase font-bold tracking-wider">MFA Secret Key</p>
-          <p class="text-sm font-mono font-bold text-white tracking-widest mt-1 select-all">{{ twoFactorSecret }}</p>
-        </div>
-
-        <div class="space-y-2">
-          <label class="block text-xs font-bold text-[#A0A0A0] uppercase tracking-wide text-center">Verification Code</label>
-          <input
-            type="text"
-            maxLength="6"
-            [(ngModel)]="twoFactorCode"
-            placeholder="000 000"
-            class="w-full tracking-[0.4em] font-mono text-lg font-bold py-3 text-center bg-[#232323] border border-[#303030] rounded-xl text-white focus:outline-none focus:border-[#10A37F] focus:ring-1 focus:ring-[#10A37F]"
-          />
-        </div>
-      </div>
-
-      <!-- Controls -->
-      <div class="flex gap-3">
-        <ui-button variant="secondary" [fullWidth]="true" (click)="show2FAModal = false">
-          Cancel
-        </ui-button>
-        <ui-button variant="primary" [fullWidth]="true" (click)="handleVerify2FA()">
-          Verify &amp; Enable
+        <ui-button variant="danger" [loading]="isResetting" (click)="resetPortfolio()">
+          <lucide-icon name="Trash2" class="w-4 h-4"></lucide-icon>
+          Reset data
         </ui-button>
       </div>
-    </div>
-  </div>
-</div>
+    </app-expansion-panel>
 
+  </main>
+
+  <app-footer></app-footer>
+</div>

@@ -1,4 +1,4 @@
-import { Component, HostListener, inject } from '@angular/core';
+import { Component, HostListener, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { LucideIconsModule } from '@core/icons/lucide-icons.module';
@@ -28,6 +28,8 @@ export class HeaderComponent {
 
   // --- Auth state (signal) ---
   isAuthenticated = this.authService.isLoggedIn;
+  isDemo = this.authService.isDemo;
+  userEmail = this.authService.userEmail;
 
 
   // --- Nav Items ---
@@ -36,6 +38,13 @@ export class HeaderComponent {
     { id: 'tax-filing', label: 'Tax Filing', route: 'tax-filing' },
     { id: 'portfolio-analytics', label: 'Portfolio Analytics', route: 'portfolio-analytics' },
   ];
+
+  // Demo account only sees Tax Filing and Portfolio Analytics
+  visibleNavItems = computed(() =>
+    this.authService.isDemo()
+      ? this.navItems.filter(item => item.route !== 'investments-tracking')
+      : this.navItems
+  );
 
   // --- Notifications ---
   notifications$ = this.notificationService.notifications$.pipe(
@@ -48,8 +57,12 @@ export class HeaderComponent {
     if (this.authService.isUserAuthenticated()) {
       this.router.navigate([`/${route}`]);
     } else {
-      this.router.navigate([{ outlets: { modal: ['sign-in'] } }]);
+      this.router.navigate([{ outlets: { modal: ['sign-in'] } }], { queryParams: { returnUrl: `/${route}` } });
     }
+  }
+
+  openSignIn(): void {
+    this.router.navigate([{ outlets: { modal: ['sign-in'] } }]);
   }
 
   // --- Toggles ---
@@ -66,6 +79,12 @@ export class HeaderComponent {
   toggleMobileMenu(): void {
     this.isMobileMenuOpen = !this.isMobileMenuOpen;
     this.isNotificationDropdownOpen = false;
+  }
+
+  // Leave the demo account and open the sign-up modal on the home page
+  signUpFromDemo(): void {
+    this.authService.logOut();
+    this.router.navigate([{ outlets: { primary: ['home'], modal: ['sign-up'] } }]);
   }
 
   signOut(): void {
@@ -95,6 +114,9 @@ export class HeaderComponent {
   onNotificationClick(notification: Notification): void {
     this.notificationService.markAsRead(notification.id);
     this.isNotificationDropdownOpen = false;
+    if (notification.link) {
+      this.router.navigateByUrl(notification.link);
+    }
   }
 
   formatTimestamp(date: Date): string {

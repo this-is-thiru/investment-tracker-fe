@@ -1,4 +1,4 @@
-import { Component, EventEmitter, HostListener, Input, Output } from '@angular/core';
+import { Component, ElementRef, EventEmitter, HostListener, Input, OnDestroy, OnInit, Output, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LucideIconsModule } from '@core/icons/lucide-icons.module';
 
@@ -27,12 +27,25 @@ export type ModalSize = 'sm' | 'md' | 'lg';
   templateUrl: './modal.component.html',
   styleUrl: './modal.component.css',
 })
-export class ModalComponent {
+export class ModalComponent implements OnInit, OnDestroy {
+  private host = inject<ElementRef<HTMLElement>>(ElementRef);
+
   @Input() open = false;
   @Input() title = '';
   @Input() size: ModalSize = 'md';
   @Input() dismissible = true;
   @Output() closed = new EventEmitter<void>();
+
+  // Render at the top of the page: a `position: fixed` overlay inside an
+  // ancestor with a transform/filter (e.g. entrance animations) would be
+  // positioned relative to that ancestor instead of the viewport.
+  ngOnInit(): void {
+    document.body.appendChild(this.host.nativeElement);
+  }
+
+  ngOnDestroy(): void {
+    this.host.nativeElement.remove();
+  }
 
   @HostListener('document:keydown.escape')
   handleEscape(): void {

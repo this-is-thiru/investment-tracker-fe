@@ -3,9 +3,7 @@ import { TransactionsResponse } from '@models/transactions-response.model';
 
 // =============================================================================
 // Public types — exported so spec, downstream pages, and other chunks can
-// import them. The first three (`SummaryStats`, `HoldingRow`, `InsightItem`)
-// are verbatim copies of the interfaces that previously lived inside
-// `transactions-table.component.ts`; the rest are new.
+// import them.
 // =============================================================================
 
 /**
@@ -209,7 +207,7 @@ export class PortfolioAnalyticsService {
   }
 
   // ---------------------------------------------------------------------------
-  // computeStats — verbatim from transactions-table.component.ts
+  // computeStats
   // ---------------------------------------------------------------------------
 
   computeStats(rows: TransactionsResponse[]): SummaryStats {
@@ -251,7 +249,7 @@ export class PortfolioAnalyticsService {
   }
 
   // ---------------------------------------------------------------------------
-  // computeHoldings — verbatim from transactions-table.component.ts
+  // computeHoldings
   // ---------------------------------------------------------------------------
 
   computeHoldings(rows: TransactionsResponse[]): HoldingRow[] {
@@ -309,7 +307,7 @@ export class PortfolioAnalyticsService {
   }
 
   // ---------------------------------------------------------------------------
-  // computeInsights — verbatim from transactions-table.component.ts
+  // computeInsights
   // ---------------------------------------------------------------------------
 
   computeInsights(rows: TransactionsResponse[], stats: SummaryStats): InsightItem[] {

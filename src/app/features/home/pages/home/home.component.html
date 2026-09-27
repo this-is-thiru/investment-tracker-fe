@@ -2,10 +2,10 @@
   [ngClass]="{ 'flow-page-enter': isLoaded, 'opacity-0': !isLoaded }"
   class="w-full"
 >
-  <section class="relative bg-[#191919] overflow-hidden">
+  <section class="relative bg-background overflow-hidden">
     <div class="absolute inset-0 opacity-30">
       <div
-        class="relative bg-gradient-to-br from-[#0F0F0F] via-[#121212] to-[#191919] border border-[#2A2A2A] rounded-2xl p-12 overflow-hidden w-full h-96"
+        class="relative bg-gradient-to-br from-[#0F0F0F] via-[#121212] to-background border border-divider rounded-2xl p-12 overflow-hidden w-full h-96"
       ></div>
     </div>
 
@@ -15,14 +15,14 @@
       <div class="grid grid-cols-1 lg:grid-cols-5 gap-12 items-center">
         <div class="lg:col-span-3">
           <div
-            class="inline-flex items-center gap-2 bg-[#10A37F]/10 border border-[#10A37F]/20 rounded-full px-4 py-2 mb-6 flow-slide-right flow-delay-1"
+            class="inline-flex items-center gap-2 bg-accent/10 border border-accent/20 rounded-full px-4 py-2 mb-6 flow-slide-right flow-delay-1"
           >
             <lucide-icon
               name="sparkles"
-              class="h-4 w-4 text-[#10A37F]"
+              class="h-4 w-4 text-accent"
             ></lucide-icon>
-            <span class="text-sm text-[#10A37F]">
-              Trusted by 10,000+ investors
+            <span class="text-sm text-accent">
+              Track · Analyze · File taxes
             </span>
           </div>
 
@@ -31,14 +31,14 @@
           >
             Manage your investments with
             <span
-              class="text-transparent bg-clip-text bg-gradient-to-r from-[#10A37F] to-[#1AA97D] animate-gradient"
+              class="text-transparent bg-clip-text bg-gradient-to-r from-accent to-accent-hover"
             >
               confidence
             </span>
           </h1>
 
           <p
-            class="text-lg text-[#B3B3B3] mb-10 leading-relaxed flow-slide-right flow-delay-3"
+            class="text-lg text-text-secondary mb-10 leading-relaxed flow-slide-right flow-delay-3"
           >
             WealthLens helps you track portfolios, manage tax filings,
             and analyze performance—all in one simple platform.
@@ -70,66 +70,50 @@
               <span class="relative z-10 font-semibold">Explore Demo Dashboard</span>
               <lucide-icon
                 name="play-circle"
-                class="h-5 w-5 relative z-10 text-[#10A37F] group-hover:scale-110 transition-transform"
+                class="h-5 w-5 relative z-10 text-accent group-hover:scale-110 transition-transform"
               ></lucide-icon>
             </ui-button>
           </div>
         </div>
 
         <div class="lg:col-span-2 flow-slide-left flow-delay-5">
-          <div class="relative h-full flex items-center justify-center">
+          <div class="relative h-full flex items-center justify-center" aria-hidden="true">
             <div
-              class="relative bg-gradient-to-br from-[#232323] to-[#1A1A1A] border border-[#3A3A3A] rounded-3xl p-12 w-full h-96 overflow-hidden hover:border-[rgba(16,163,127,0.3)] transition-all duration-300"
+              class="relative bg-gradient-to-br from-surface to-surface-alt border border-border rounded-3xl p-12 w-full h-96 overflow-hidden hover:border-[rgba(16,163,127,0.3)] transition-all duration-300"
             >
-              <div class="absolute inset-0 opacity-20 animate-blob-1">
+              <div class="absolute inset-0 opacity-20">
                 <div
                   class="absolute inset-0 bg-gradient-radial from-[rgba(16,163,127,0.3)] to-transparent"
                 ></div>
               </div>
 
               <div
-                class="absolute bottom-[12%] left-[10%] w-16 h-16 bg-[#3B82F6]/10 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-[#3B82F6]/20 animate-float-rotate hero-icon-hover hero-icon-hover-blue"
-                (click)="onNavigate('investments-tracking')"
+                class="absolute bottom-[12%] left-[10%] w-16 h-16 bg-blue-accent/10 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-blue-accent/20 animate-float-rotate"
               >
                 <lucide-icon
                 name="file-text"
-                  class="h-8 w-8 text-[#3B82F6] icon-scale-inner"
+                  class="h-8 w-8 text-blue-accent"
                 ></lucide-icon>
               </div>
 
               <div
-                class="absolute top-[45%] left-[45%] w-20 h-20 -translate-x-1/2 -translate-y-1/2 bg-[#8B5CF6]/10 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-[#8B5CF6]/20 animate-float-rotate hero-icon-hover hero-icon-hover-purple"
-                (click)="onNavigate('investments-tracking')"
+                class="absolute top-[45%] left-[45%] w-20 h-20 -translate-x-1/2 -translate-y-1/2 bg-purple-accent/10 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-purple-accent/20 animate-float-rotate"
               >
                 <lucide-icon
                 name="bar-chart-3"
-                  class="h-10 w-10 text-[#8B5CF6] icon-scale-inner"
+                  class="h-10 w-10 text-purple-accent"
                 ></lucide-icon>
               </div>
 
               <div
-                class="absolute top-[12%] right-[10%] w-16 h-16 bg-[#10A37F]/10 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-[#10A37F]/20 animate-float-rotate hero-icon-hover hero-icon-hover-green"
-                (click)="onNavigate('investments-tracking')"
+                class="absolute top-[12%] right-[10%] w-16 h-16 bg-accent/10 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-accent/20 animate-float-rotate"
               >
                 <lucide-icon
                 name="trending-up"
-                  class="h-8 w-8 text-[#10A37F] icon-scale-inner"
+                  class="h-8 w-8 text-accent"
                 ></lucide-icon>
               </div>
 
-              <div
-                class="absolute top-1/4 left-1/4 w-24 h-0.5 bg-gradient-to-r from-transparent via-[#10A37F]/40 to-transparent animate-pulse-opacity"
-              ></div>
-              <div
-                class="absolute bottom-1/4 right-1/4 w-32 h-0.5 bg-gradient-to-r from-transparent via-[#3B82F6]/40 to-transparent animate-pulse-opacity stagger-3"
-              ></div>
-
-              @for (i of [0, 1, 2, 3, 4, 5]; track i) {
-                <div
-                  class="absolute w-1 h-1 bg-[#10A37F] rounded-full animate-particle"
-                  [ngStyle]="getParticleStyle(i)"
-                ></div>
-              }
             </div>
           </div>
         </div>
@@ -142,7 +126,7 @@
       <h2 class="text-3xl md:text-4xl font-semibold text-white mb-4">
         Everything You Need in One Place
       </h2>
-      <p class="text-lg text-[#B3B3B3] max-w-2xl mx-auto">
+      <p class="text-lg text-text-secondary max-w-2xl mx-auto">
         Powerful tools designed to simplify your financial operations and
         maximize returns
       </p>
@@ -153,30 +137,30 @@
         (click)="onNavigate('investments-tracking')"
         (mouseenter)="hoveredCard = 'investment'"
         (mouseleave)="hoveredCard = null"
-        class="group premium-card p-8 hover:border-[#10A37F]/50 hover:-translate-y-2 text-left relative overflow-hidden hover:shadow-xl hover:shadow-[#10A37F]/20 scroll-reveal"
+        class="group premium-card p-8 hover:border-accent/50 hover:-translate-y-2 text-left relative overflow-hidden hover:shadow-xl hover:shadow-accent/20 scroll-reveal"
         style="transition-delay: 0.1s"
       >
         <div
-          class="absolute inset-0 bg-gradient-to-br from-[#10A37F]/5 to-transparent transition-opacity duration-300"
+          class="absolute inset-0 bg-gradient-to-br from-accent/5 to-transparent transition-opacity duration-300"
           [style.opacity]="hoveredCard === 'investment' ? 1 : 0"
         ></div>
         <div
-          class="bg-gradient-to-br from-[#10A37F]/20 to-[#1AA97D]/20 w-14 h-14 rounded-xl flex items-center justify-center mb-6 relative z-10 hover-icon-wiggle"
+          class="bg-gradient-to-br from-accent/20 to-accent-hover/20 w-14 h-14 rounded-xl flex items-center justify-center mb-6 relative z-10 hover-icon-wiggle"
         >
           <lucide-icon
             name="trending-up"
-            class="h-7 w-7 text-[#10A37F]"
+            class="h-7 w-7 text-accent"
           ></lucide-icon>
         </div>
         <h3 class="text-xl font-semibold text-white mb-3 relative z-10">
           Investment Tracking
         </h3>
-        <p class="text-[#B3B3B3] mb-6 leading-relaxed relative z-10">
+        <p class="text-text-secondary mb-6 leading-relaxed relative z-10">
           Upload transactions, process corporate actions, and manage your
           portfolio with intelligent automation.
         </p>
         <div
-          class="flex items-center gap-2 text-[#10A37F] font-medium relative z-10 group-hover:gap-3 transition-all"
+          class="flex items-center gap-2 text-accent font-medium relative z-10 group-hover:gap-3 transition-all"
         >
           Explore
           <lucide-icon name="arrow-right" class="h-4 w-4"></lucide-icon>
@@ -187,30 +171,30 @@
         (click)="onNavigate('tax-filing')"
         (mouseenter)="hoveredCard = 'tax'"
         (mouseleave)="hoveredCard = null"
-        class="group premium-card p-8 hover:border-[#3B82F6]/50 hover:-translate-y-2 text-left relative overflow-hidden hover:shadow-xl hover:shadow-[#3B82F6]/20 scroll-reveal"
+        class="group premium-card p-8 hover:border-blue-accent/50 hover:-translate-y-2 text-left relative overflow-hidden hover:shadow-xl hover:shadow-blue-accent/20 scroll-reveal"
         style="transition-delay: 0.2s"
       >
         <div
-          class="absolute inset-0 bg-gradient-to-br from-[#3B82F6]/5 to-transparent transition-opacity duration-300"
+          class="absolute inset-0 bg-gradient-to-br from-blue-accent/5 to-transparent transition-opacity duration-300"
           [style.opacity]="hoveredCard === 'tax' ? 1 : 0"
         ></div>
         <div
-          class="bg-gradient-to-br from-[#3B82F6]/20 to-[#2563EB]/20 w-14 h-14 rounded-xl flex items-center justify-center mb-6 relative z-10 hover-icon-wiggle"
+          class="bg-gradient-to-br from-blue-accent/20 to-blue-accent-hover/20 w-14 h-14 rounded-xl flex items-center justify-center mb-6 relative z-10 hover-icon-wiggle"
         >
           <lucide-icon
             name="file-text"
-            class="h-7 w-7 text-[#3B82F6]"
+            class="h-7 w-7 text-blue-accent"
           ></lucide-icon>
         </div>
         <h3 class="text-xl font-semibold text-white mb-3 relative z-10">
           Tax Filing Assistance
         </h3>
-        <p class="text-[#B3B3B3] mb-6 leading-relaxed relative z-10">
+        <p class="text-text-secondary mb-6 leading-relaxed relative z-10">
           Automated tax calculations, deduction tracking, and comprehensive
           reports for effortless tax season.
         </p>
         <div
-          class="flex items-center gap-2 text-[#3B82F6] font-medium relative z-10 group-hover:gap-3 transition-all"
+          class="flex items-center gap-2 text-blue-accent font-medium relative z-10 group-hover:gap-3 transition-all"
         >
           Explore
           <lucide-icon name="arrow-right" class="h-4 w-4"></lucide-icon>
@@ -221,30 +205,30 @@
         (click)="onNavigate('portfolio-analytics')"
         (mouseenter)="hoveredCard = 'analytics'"
         (mouseleave)="hoveredCard = null"
-        class="group premium-card p-8 hover:border-[#8B5CF6]/50 hover:-translate-y-2 text-left relative overflow-hidden hover:shadow-xl hover:shadow-[#8B5CF6]/20 scroll-reveal"
+        class="group premium-card p-8 hover:border-purple-accent/50 hover:-translate-y-2 text-left relative overflow-hidden hover:shadow-xl hover:shadow-purple-accent/20 scroll-reveal"
         style="transition-delay: 0.3s"
       >
         <div
-          class="absolute inset-0 bg-gradient-to-br from-[#8B5CF6]/5 to-transparent transition-opacity duration-300"
+          class="absolute inset-0 bg-gradient-to-br from-purple-accent/5 to-transparent transition-opacity duration-300"
           [style.opacity]="hoveredCard === 'analytics' ? 1 : 0"
         ></div>
         <div
-          class="bg-gradient-to-br from-[#8B5CF6]/20 to-[#7C3AED]/20 w-14 h-14 rounded-xl flex items-center justify-center mb-6 relative z-10 hover-icon-wiggle"
+          class="bg-gradient-to-br from-purple-accent/20 to-[#7C3AED]/20 w-14 h-14 rounded-xl flex items-center justify-center mb-6 relative z-10 hover-icon-wiggle"
         >
           <lucide-icon
             name="bar-chart-3"
-            class="h-7 w-7 text-[#8B5CF6]"
+            class="h-7 w-7 text-purple-accent"
           ></lucide-icon>
         </div>
         <h3 class="text-xl font-semibold text-white mb-3 relative z-10">
           Portfolio Analytics
         </h3>
-        <p class="text-[#B3B3B3] mb-6 leading-relaxed relative z-10">
+        <p class="text-text-secondary mb-6 leading-relaxed relative z-10">
           Real-time insights, performance metrics, and AI-powered
           recommendations for smarter investing.
         </p>
         <div
-          class="flex items-center gap-2 text-[#8B5CF6] font-medium relative z-10 group-hover:gap-3 transition-all"
+          class="flex items-center gap-2 text-purple-accent font-medium relative z-10 group-hover:gap-3 transition-all"
         >
           Explore
           <lucide-icon name="arrow-right" class="h-4 w-4"></lucide-icon>
@@ -253,13 +237,13 @@
     </div>
   </section>
 
-  <section class="bg-[#232323]/50">
+  <section class="bg-surface/50">
     <div class="w-full max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-8 2xl:px-12 py-20">
       <div class="text-center mb-16 scroll-reveal">
         <h2 class="text-3xl md:text-4xl font-semibold text-white mb-4">
           Why Choose WealthLens?
         </h2>
-        <p class="text-lg text-[#B3B3B3] max-w-2xl mx-auto">
+        <p class="text-lg text-text-secondary max-w-2xl mx-auto">
           Built for modern investors who demand efficiency and precision
         </p>
       </div>
@@ -308,12 +292,12 @@
               }
             </div>
             <h3
-              class="text-lg font-semibold text-white mb-2 group-hover:text-[#10A37F] transition-colors duration-500 ease-out"
+              class="text-lg font-semibold text-white mb-2 group-hover:text-accent transition-colors duration-500 ease-out"
             >
               {{ benefit.title }}
             </h3>
             <p
-              class="text-[#B3B3B3] text-sm group-hover:text-[#D4D4D4] transition-colors duration-500 ease-out"
+              class="text-text-secondary text-sm group-hover:text-text-primary transition-colors duration-500 ease-out"
             >
               {{ benefit.desc }}
             </p>
@@ -325,20 +309,20 @@
 
   <section class="w-full max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-8 2xl:px-12 py-20">
     <div
-      class="bg-gradient-to-r from-[#10A37F]/10 to-[#1AA97D]/10 border border-[#10A37F]/20 rounded-3xl p-12 md:p-16 text-center relative overflow-hidden scroll-reveal"
+      class="bg-gradient-to-r from-accent/10 to-accent-hover/10 border border-accent/20 rounded-3xl p-12 md:p-16 text-center relative overflow-hidden scroll-reveal"
     >
       <div
-        class="absolute top-0 left-0 w-64 h-64 bg-[#10A37F]/10 rounded-full blur-3xl animate-blob-1"
+        class="absolute top-0 left-0 w-64 h-64 bg-accent/10 rounded-full blur-3xl"
       ></div>
       <div
-        class="absolute bottom-0 right-0 w-64 h-64 bg-[#3B82F6]/10 rounded-full blur-3xl animate-blob-2"
+        class="absolute bottom-0 right-0 w-64 h-64 bg-blue-accent/10 rounded-full blur-3xl"
       ></div>
 
       <div class="relative z-10">
         <h2 class="text-3xl md:text-5xl font-semibold text-white mb-6">
           Ready to Transform Your Finances?
         </h2>
-        <p class="text-xl text-[#B3B3B3] mb-10 max-w-2xl mx-auto">
+        <p class="text-xl text-text-secondary mb-10 max-w-2xl mx-auto">
           Join thousands of investors who trust WealthLens for their
           financial operations
         </p>
