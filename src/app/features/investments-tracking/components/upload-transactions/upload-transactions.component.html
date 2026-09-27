@@ -20,7 +20,7 @@
           (dragover)="handleDragOver($event)"
           (drop)="handleDrop($event)"
           (click)="fileInput.click()"
-          class="border-2 border-dashed border-border rounded-xl p-12 text-center hover:border-accent/50 hover:bg-accent/5 transition-all cursor-pointer group"
+          class="border-2 border-dashed border-border rounded-xl p-6 sm:p-12 text-center hover:border-accent/50 hover:bg-accent/5 transition-all cursor-pointer group"
         >
           <div class="bg-accent/10 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
             <lucide-icon
@@ -250,11 +250,11 @@
         </div>
 
         <!-- Big Actions Footer -->
-        <div class="flex justify-end gap-3 pt-4 border-t border-divider">
-          <ui-button variant="secondary" (click)="clearFile()" [disabled]="isUploading">
+        <div class="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 pt-4 border-t border-divider">
+          <ui-button variant="secondary" (click)="clearFile()" [disabled]="isUploading" class="w-full sm:w-auto">
             Cancel
           </ui-button>
-          <ui-button variant="primary" [loading]="isUploading" [disabled]="isUploading || previewRows.length === 0" (click)="startUpload()">
+          <ui-button variant="primary" [loading]="isUploading" [disabled]="isUploading || previewRows.length === 0" (click)="startUpload()" class="w-full sm:w-auto">
             @if (!isUploading) {
               <lucide-icon name="upload" class="h-4 w-4"></lucide-icon>
             }

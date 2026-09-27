@@ -7,40 +7,57 @@
   class="animate-fade-in-up stagger-2"
 >
   <div class="space-y-4">
-    <div class="flex flex-wrap gap-2 items-center">
+    <div class="flex flex-col lg:flex-row lg:items-center gap-2.5">
       <!-- Search Input -->
-      <div class="relative flex-1 min-w-[200px]">
+      <div class="relative w-full lg:flex-1 lg:min-w-[200px]">
         <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
           <lucide-icon name="Search" class="w-4 h-4 text-text-disabled"></lucide-icon>
         </span>
         <input type="text" [(ngModel)]="searchQuery" (ngModelChange)="applyFilters()"
           placeholder="Search stock, code, asset type..."
-          class="w-full pl-9 pr-3 py-2 text-sm rounded-lg bg-surface-hover border border-border text-white placeholder-text-disabled focus:ring-1 focus:ring-purple-accent focus:outline-none" />
+          class="w-full pl-9 pr-8 py-2 text-sm rounded-lg bg-surface-hover border border-border text-white placeholder-text-disabled focus:ring-1 focus:ring-purple-accent focus:outline-none" />
+        @if (searchQuery) {
+          <button type="button" (click)="searchQuery = ''; applyFilters()"
+            class="absolute inset-y-0 right-0 flex items-center pr-2.5 text-text-disabled hover:text-white transition-colors"
+            title="Clear search">
+            <lucide-icon name="X" class="w-3.5 h-3.5"></lucide-icon>
+          </button>
+        }
       </div>
 
-      <!-- Asset Type Dropdown -->
-      <p-select [options]="availableAssetTypes" [(ngModel)]="filterAssetType" (ngModelChange)="applyFilters()"
-        placeholder="Asset type" styleClass="text-sm" appendTo="body"></p-select>
+      <!-- Filters & Actions: clean stacked on mobile, single row on tablet & desktop -->
+      <div class="flex flex-col sm:flex-row sm:flex-wrap lg:flex-nowrap items-stretch sm:items-center gap-2 w-full lg:w-auto">
+        <!-- 3 Filter Dropdowns -->
+        <div class="grid grid-cols-2 sm:flex sm:items-center gap-2 w-full sm:w-auto">
+          <!-- Asset Type Dropdown -->
+          <p-select [options]="availableAssetTypes" [(ngModel)]="filterAssetType" (ngModelChange)="applyFilters()"
+            placeholder="Asset type" styleClass="text-sm w-full sm:w-36 lg:w-40" appendTo="body" [showClear]="true"></p-select>
 
-      <!-- Broker Dropdown -->
-      <p-select [options]="availableBrokers" [(ngModel)]="filterBroker" (ngModelChange)="applyFilters()"
-        placeholder="Broker" styleClass="text-sm" appendTo="body"></p-select>
+          <!-- Broker Dropdown -->
+          <p-select [options]="availableBrokers" [(ngModel)]="filterBroker" (ngModelChange)="applyFilters()"
+            placeholder="Broker" styleClass="text-sm w-full sm:w-36 lg:w-40" appendTo="body" [showClear]="true"></p-select>
 
-      <!-- Transaction Type Dropdown -->
-      <p-select [options]="availableTypes" [(ngModel)]="filterType" (ngModelChange)="applyFilters()"
-        placeholder="Type" styleClass="text-sm" appendTo="body"></p-select>
+          <!-- Transaction Type Dropdown -->
+          <p-select [options]="availableTypes" [(ngModel)]="filterType" (ngModelChange)="applyFilters()"
+            placeholder="Type" styleClass="text-sm w-full col-span-2 sm:col-span-1 sm:w-32 lg:w-36" appendTo="body" [showClear]="true"></p-select>
+        </div>
 
-      <!-- Reset -->
-      <ui-button variant="secondary" size="sm" (click)="resetFilters()" [disabled]="!searchQuery && !filterAssetType && !filterBroker && !filterType">
-        <lucide-icon name="X" class="w-3.5 h-3.5"></lucide-icon>
-        Reset
-      </ui-button>
+        <!-- Action Buttons -->
+        <div class="flex items-center gap-2 w-full sm:w-auto shrink-0">
+          <ui-button variant="secondary" size="sm" (click)="resetFilters()"
+            [disabled]="!searchQuery && !filterAssetType && !filterBroker && !filterType"
+            [fullWidth]="true" class="flex-1 sm:flex-initial">
+            <lucide-icon name="X" class="w-3.5 h-3.5"></lucide-icon>
+            Reset
+          </ui-button>
 
-      <!-- Refresh -->
-      <ui-button variant="secondary" size="sm" (click)="refresh()" [disabled]="loading">
-        <lucide-icon name="RotateCw" [class.animate-spin]="loading" class="w-3.5 h-3.5"></lucide-icon>
-        Refresh
-      </ui-button>
+          <ui-button variant="secondary" size="sm" (click)="refresh()" [disabled]="loading"
+            [fullWidth]="true" class="flex-1 sm:flex-initial">
+            <lucide-icon name="RotateCw" [class.animate-spin]="loading" class="w-3.5 h-3.5"></lucide-icon>
+            Refresh
+          </ui-button>
+        </div>
+      </div>
     </div>
 
     @if (loading) {

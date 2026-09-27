@@ -57,13 +57,14 @@
       </button>
 
       <!-- Mobile Controls -->
-      <div class="md:hidden flex items-center gap-3">
+      <div class="md:hidden flex items-center gap-2">
         <!-- Notifications -->
         <div class="relative">
           <ui-button
             variant="icon"
             class="notification-toggle"
             (click)="toggleNotificationDropdown()"
+            ariaLabel="Notifications"
           >
             <lucide-icon name="bell" class="h-5 w-5"></lucide-icon>
             @if (((unreadCount$ | async) || 0) > 0) {
@@ -75,28 +76,31 @@
 
           <!-- Notification Dropdown -->
           @if (isNotificationDropdownOpen) {
+            <div class="fixed inset-0 bg-black/60 backdrop-blur-xs z-40 md:hidden" (click)="closeAllMenus()"></div>
             <div
-              class="fixed top-16 right-2 left-2 w-80 max-w-[calc(100vw-2rem)] bg-surface border border-border rounded-xl shadow-2xl overflow-hidden z-50 mobile-notification-dropdown"
+              class="fixed top-16 right-3 left-3 sm:left-auto sm:right-0 sm:w-80 max-w-[calc(100vw-1.5rem)] bg-surface border border-border rounded-xl shadow-2xl overflow-hidden z-50 mobile-notification-dropdown animate-fade-in"
             >
               <ng-container [ngTemplateOutlet]="notificationPanel"></ng-container>
             </div>
           }
         </div>
 
-        <!-- Profile / Mobile Menu -->
+        <!-- Mobile Menu Toggle (Hamburger) -->
         <div class="relative">
           <ui-button
             variant="icon"
             class="mobile-menu-toggle"
             (click)="toggleMobileMenu()"
+            ariaLabel="Navigation Menu"
           >
-            <lucide-icon name="user" class="h-5 w-5"></lucide-icon>
+            <lucide-icon [name]="isMobileMenuOpen ? 'X' : 'Menu'" class="h-5 w-5"></lucide-icon>
           </ui-button>
 
           <!-- Mobile Menu -->
           @if (isMobileMenuOpen) {
+            <div class="fixed inset-0 bg-black/60 backdrop-blur-xs z-40 md:hidden" (click)="closeAllMenus()"></div>
             <div
-              class="absolute top-12 right-0 w-64 bg-surface border border-border rounded-xl shadow-2xl overflow-hidden z-50 mobile-menu-dropdown"
+              class="fixed top-16 right-3 left-3 sm:left-auto sm:right-0 sm:w-72 max-w-[calc(100vw-1.5rem)] bg-surface border border-border rounded-2xl shadow-2xl overflow-hidden z-50 mobile-menu-dropdown animate-fade-in"
             >
               @if (isAuthenticated()) {
                 <ng-container [ngTemplateOutlet]="accountSummary"></ng-container>
@@ -104,7 +108,7 @@
               }
               <div class="p-2">
                 <p
-                  class="px-3 py-2 text-xs text-text-muted uppercase tracking-wider"
+                  class="px-3 py-2 text-xs text-text-muted uppercase tracking-wider font-semibold"
                 >
                   Features
                 </p>
@@ -112,12 +116,13 @@
                 @for (item of visibleNavItems(); track item.route) {
                   <a
                     [routerLink]="['/', item.route]"
-                    routerLinkActive="bg-gradient-to-r from-accent/20 to-accent-hover/20 text-white"
+                    routerLinkActive="bg-gradient-to-r from-accent/20 to-accent-hover/20 text-white font-semibold"
                     [routerLinkActiveOptions]="{ exact: true }"
-                    (click)="isMobileMenuOpen = false"
-                    class="block w-full px-3 py-2.5 rounded-lg text-sm font-medium transition-all text-text-secondary hover:text-white hover:bg-surface-input"
+                    (click)="closeAllMenus()"
+                    class="flex items-center gap-2.5 w-full px-3 py-2.5 rounded-lg text-sm font-medium transition-all text-text-secondary hover:text-white hover:bg-surface-input"
                   >
-                    {{ item.label }}
+                    <lucide-icon [name]="getNavItemIcon(item.id)" class="h-4 w-4 text-accent"></lucide-icon>
+                    <span>{{ item.label }}</span>
                   </a>
                 }
               </div>
@@ -130,9 +135,9 @@
                   <button
                     type="button"
                     (click)="onNavigate('settings'); closeAllMenus()"
-                    class="w-full px-3 py-2.5 rounded-lg text-sm font-medium transition-all text-text-secondary hover:text-white hover:bg-surface-input flex items-center gap-2"
+                    class="w-full px-3 py-2.5 rounded-lg text-sm font-medium transition-all text-text-secondary hover:text-white hover:bg-surface-input flex items-center gap-2.5"
                   >
-                    <lucide-icon name="settings-icon" class="h-4 w-4"></lucide-icon>
+                    <lucide-icon name="settings-icon" class="h-4 w-4 text-accent"></lucide-icon>
                     Settings
                   </button>
                 </div>
@@ -267,12 +272,12 @@
   <!-- Demo mode banner -->
   @if (isDemo()) {
     <div class="border-t border-warning/20 bg-warning/10">
-      <div class="w-full max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-8 2xl:px-12 py-2 flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+      <div class="w-full max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-8 2xl:px-12 py-2 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
         <p class="flex items-center gap-2 text-xs sm:text-sm text-warning">
           <lucide-icon name="AlertTriangle" class="h-4 w-4 shrink-0"></lucide-icon>
-          <span><span class="font-semibold">Demo mode</span> — you're viewing sample data. Sign up to track your own portfolio.</span>
+          <span><span class="font-semibold">Demo mode</span><span class="hidden sm:inline"> — you're viewing sample data. Sign up to track your own portfolio.</span><span class="sm:hidden"> — viewing sample data.</span></span>
         </p>
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-2 shrink-0">
           <ui-button variant="primary" size="sm" (click)="signUpFromDemo()">Sign up</ui-button>
           <ui-button variant="ghost" size="sm" (click)="signOut()">Exit demo</ui-button>
         </div>

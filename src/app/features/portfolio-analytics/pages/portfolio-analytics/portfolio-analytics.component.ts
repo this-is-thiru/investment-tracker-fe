@@ -1,3 +1,4 @@
+import { SampleDataNoticeComponent } from '@shared/ui/sample-data-notice/sample-data-notice.component';
 import { TabsComponent } from '@shared/ui/tabs/tabs.component';
 import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
@@ -49,7 +50,11 @@ const TOOLTIP_STYLE = {
 const LEGEND_LABEL_STYLE = { color: '#B3B3B3' };
 const SCALES_AXIS_STYLE = {
   grid: { color: '#2A2A2A' },
-  ticks: { color: '#B3B3B3' },
+  ticks: {
+    color: '#B3B3B3',
+    maxTicksLimit: 6,
+    autoSkip: true,
+  },
 };
 
 @Component({
@@ -67,6 +72,7 @@ const SCALES_AXIS_STYLE = {
     ButtonComponent,
     CardComponent,
     EmptyStateComponent,
+    SampleDataNoticeComponent,
     TabsComponent,
   ],
   templateUrl: './portfolio-analytics.component.html',
@@ -134,18 +140,21 @@ export class PortfolioAnalyticsComponent implements OnInit {
       tooltip: { ...TOOLTIP_STYLE },
     },
   };
-  /** Doughnut/pie: legend on right + cutout 60%. */
-  readonly circularChartOptions: any = {
-    ...this.chartOptions,
-    cutout: '60%',
-    plugins: {
-      ...this.chartOptions.plugins,
-      legend: {
-        ...this.chartOptions.plugins.legend,
-        position: 'right',
+  /** Doughnut/pie: legend on right for desktop, bottom for mobile + cutout 60%. */
+  get circularChartOptions(): any {
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 640;
+    return {
+      ...this.chartOptions,
+      cutout: '60%',
+      plugins: {
+        ...this.chartOptions.plugins,
+        legend: {
+          ...this.chartOptions.plugins.legend,
+          position: isMobile ? 'bottom' : 'right',
+        },
       },
-    },
-  };
+    };
+  }
   /** Bar/line: configure axes (Chart.js ignores `scales` for non-axis charts). */
   readonly axisChartOptions: any = {
     ...this.chartOptions,

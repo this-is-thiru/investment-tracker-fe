@@ -46,6 +46,15 @@ export class HeaderComponent {
       : this.navItems
   );
 
+  getNavItemIcon(id: string): string {
+    switch (id) {
+      case 'investment-tracking': return 'Briefcase';
+      case 'tax-filing': return 'FileText';
+      case 'portfolio-analytics': return 'BarChart3';
+      default: return 'TrendingUp';
+    }
+  }
+
   // --- Notifications ---
   notifications$ = this.notificationService.notifications$.pipe(
     map(list => list.slice(0, 5))

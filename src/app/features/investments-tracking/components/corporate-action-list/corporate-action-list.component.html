@@ -1,4 +1,4 @@
-<section class="border border-border rounded-xl bg-surface p-6 space-y-6 animate-fade-in">
+<section class="border border-border rounded-xl bg-surface p-4 sm:p-6 space-y-4 sm:space-y-6 animate-fade-in">
   <!-- Header -->
   <div class="flex items-center justify-between border-b border-border pb-4">
     <div>
@@ -22,9 +22,9 @@
     </div>
   } @else {
     <!-- Filter Bar -->
-    <div class="flex flex-wrap gap-2 items-center mb-4 animate-fade-in">
+    <div class="flex flex-col sm:flex-row sm:flex-wrap gap-2 sm:items-center mb-4 animate-fade-in">
       <!-- Search Input -->
-      <div class="relative flex-1 min-w-[200px]">
+      <div class="relative w-full sm:flex-1 sm:min-w-[200px]">
         <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
           <lucide-icon name="Search" class="w-4 h-4 text-text-disabled"></lucide-icon>
         </span>
@@ -33,15 +33,16 @@
           class="w-full pl-9 pr-3 py-2 text-sm rounded-lg bg-surface-hover border border-border text-white placeholder-text-disabled focus:ring-1 focus:ring-blue-accent focus:outline-none" />
       </div>
 
-      <!-- Action Type Dropdown -->
-      <p-select [options]="typeOptions" [(ngModel)]="filterType" (ngModelChange)="applyFilters()"
-        optionLabel="label" optionValue="value" placeholder="Action type" styleClass="text-sm" appendTo="body"></p-select>
+      <!-- Action Type Dropdown & Reset -->
+      <div class="flex items-center gap-2 w-full sm:w-auto">
+        <p-select [options]="typeOptions" [(ngModel)]="filterType" (ngModelChange)="applyFilters()"
+          optionLabel="label" optionValue="value" placeholder="Action type" styleClass="text-sm flex-1 sm:flex-initial" appendTo="body"></p-select>
 
-      <!-- Reset -->
-      <ui-button variant="secondary" size="sm" (click)="resetFilters()" [disabled]="!searchQuery && filterType === 'ALL'">
-        <lucide-icon name="X" class="w-3.5 h-3.5"></lucide-icon>
-        Reset
-      </ui-button>
+        <ui-button variant="secondary" size="sm" (click)="resetFilters()" [disabled]="!searchQuery && filterType === 'ALL'">
+          <lucide-icon name="X" class="w-3.5 h-3.5"></lucide-icon>
+          Reset
+        </ui-button>
+      </div>
     </div>
 
     <!-- Table -->

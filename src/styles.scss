@@ -112,10 +112,14 @@
 body {
     background-color: var(--color-background);
     color: var(--color-text-primary);
+    overflow-x: hidden;
+    width: 100%;
 }
 
 html {
     font-size: 15px; /* Slightly reduced base font size (was 16px) */
+    overflow-x: hidden;
+    width: 100%;
 }
 
 /* --- Custom Keyframe Animations --- */
@@ -551,6 +555,15 @@ html {
   border-radius: var(--radius-lg) !important;
   background: var(--color-surface-alt) !important;
   border: 1px solid var(--color-border) !important;
+  max-width: 100% !important;
+  overflow-x: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  scrollbar-width: none !important;
+  flex-wrap: nowrap !important;
+}
+
+.p-selectbutton::-webkit-scrollbar {
+  display: none !important;
 }
 
 .p-selectbutton .p-togglebutton {
@@ -563,6 +576,8 @@ html {
   font-size: 0.75rem !important;
   font-weight: 600 !important;
   transition: background-color 0.15s ease, color 0.15s ease !important;
+  flex-shrink: 0 !important;
+  white-space: nowrap !important;
 }
 
 .p-selectbutton .p-togglebutton .p-togglebutton-content {
@@ -585,6 +600,18 @@ html {
 .p-selectbutton .p-togglebutton.p-highlight .p-togglebutton-content {
   background: transparent !important;
   box-shadow: none !important;
+}
+
+.scrollbar-none {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none !important;
+}
+
+.overflow-x-auto {
+  -webkit-overflow-scrolling: touch;
 }
 
 

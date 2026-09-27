@@ -1,3 +1,4 @@
+import { SampleDataNoticeComponent } from '@shared/ui/sample-data-notice/sample-data-notice.component';
 import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { Router } from '@angular/router';
@@ -83,6 +84,7 @@ const LTCG_EQUITY_EXEMPTION = 100000;
     ButtonComponent,
     CardComponent,
     EmptyStateComponent,
+    SampleDataNoticeComponent,
   ],
   templateUrl: './tax-filing.component.html',
   styleUrls: ['./tax-filing.component.css'],

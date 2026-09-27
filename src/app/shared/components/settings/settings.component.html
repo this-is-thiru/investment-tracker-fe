@@ -43,7 +43,7 @@
             <p class="text-sm text-white font-medium break-all">{{ email || '—' }}</p>
           </div>
         </div>
-        <ui-button variant="secondary" (click)="signOut()">
+        <ui-button variant="secondary" (click)="signOut()" class="w-full sm:w-auto">
           <lucide-icon name="LogOut" class="w-4 h-4"></lucide-icon>
           Sign out
         </ui-button>
@@ -64,8 +64,8 @@
             <label for="new-password" class="block text-sm font-medium text-text-secondary">New password</label>
             <ui-input [id]="'new-password'" type="password" name="newPassword" [(ngModel)]="newPassword" />
           </div>
-          <div class="shrink-0">
-            <ui-button type="submit" variant="primary" [disabled]="!oldPassword || !newPassword" [loading]="isChangingPassword">
+          <div class="shrink-0 w-full md:w-auto">
+            <ui-button type="submit" variant="primary" [disabled]="!oldPassword || !newPassword" [loading]="isChangingPassword" class="w-full md:w-auto" [fullWidth]="true">
               Update password
             </ui-button>
           </div>
@@ -84,8 +84,8 @@
             <ui-input [id]="'sheet-url'" name="googleSheetCsvUrl" [(ngModel)]="googleSheetCsvUrl"
               placeholder="https://docs.google.com/spreadsheets/d/e/.../pub?output=csv" />
           </div>
-          <div class="shrink-0">
-            <ui-button type="submit" variant="primary">Save URL</ui-button>
+          <div class="shrink-0 w-full sm:w-auto">
+            <ui-button type="submit" variant="primary" class="w-full sm:w-auto" [fullWidth]="true">Save URL</ui-button>
           </div>
         </div>
         <p class="text-xs text-text-muted">
@@ -105,7 +105,7 @@
             Deletes all your transactions and holdings. Your account stays.
           </p>
         </div>
-        <ui-button variant="danger" [loading]="isResetting" (click)="resetPortfolio()">
+        <ui-button variant="danger" [loading]="isResetting" (click)="resetPortfolio()" class="w-full sm:w-auto">
           <lucide-icon name="Trash2" class="w-4 h-4"></lucide-icon>
           Reset data
         </ui-button>

@@ -3,27 +3,27 @@
 >
   <!-- Header -->
   <div
-    class="flex items-center justify-between p-4 bg-gradient-to-r from-surface to-surface-alt border-b border-divider cursor-pointer"
+    class="flex items-center justify-between p-3.5 sm:p-4 bg-gradient-to-r from-surface to-surface-alt border-b border-divider cursor-pointer gap-2"
     (click)="toggleExpansion()"
   >
-    <div class="flex items-center gap-3">
+    <div class="flex items-center gap-2.5 sm:gap-3 min-w-0 flex-1">
       <!-- Icon -->
-      <div [class]="iconBgClass" class="p-2 rounded-lg text-white flex items-center justify-center">
+      <div [class]="iconBgClass" class="p-2 rounded-lg text-white flex items-center justify-center shrink-0">
         @if(titleIcon){
           <lucide-icon
             [name]="titleIcon"
-            class="h-5 w-5 text-white"
+            class="h-4 w-4 sm:h-5 sm:w-5 text-white"
           ></lucide-icon>
         }
       </div>
 
       <!-- Title + Subtitle -->
-      <div>
-        <h3 class="text-lg font-semibold text-white leading-tight">
+      <div class="min-w-0 flex-1">
+        <h3 class="text-sm sm:text-lg font-semibold text-white leading-tight truncate sm:whitespace-normal">
           {{ title }}
         </h3>
         @if (subtitle) {
-          <p class="text-sm text-text-secondary mt-0.5">
+          <p class="text-xs sm:text-sm text-text-secondary mt-0.5 line-clamp-1 sm:line-clamp-none">
             {{ subtitle }}
           </p>
         }
@@ -33,10 +33,10 @@
     <!-- Expand/Collapse Button -->
     <button
       type="button"
-      class="flex items-center gap-2 px-3 py-1 bg-surface text-white rounded-lg transition-all border border-border-hover hover:border-text-disabled"
+      class="shrink-0 flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1 bg-surface text-white rounded-lg transition-all border border-border-hover hover:border-text-disabled"
       (click)="$event.stopPropagation(); toggleExpansion()"
     >
-      <span class="text-sm">{{ isExpanded ? 'Collapse' : 'Expand' }}</span>
+      <span class="hidden sm:inline text-sm">{{ isExpanded ? 'Collapse' : 'Expand' }}</span>
       <lucide-icon
         name="chevron-down"
         class="h-4 w-4 transition-transform duration-300"
@@ -51,7 +51,7 @@
     [style.maxHeight]="isExpanded ? '3000px' : '0'"
     [style.opacity]="isExpanded ? 1 : 0"
   >
-    <div class="p-6">
+    <div class="p-4 sm:p-6">
       <ng-content></ng-content>
     </div>
   </div>

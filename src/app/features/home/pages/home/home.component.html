@@ -44,11 +44,11 @@
             and analyze performance—all in one simple platform.
           </p>
 
-          <div class="flex flex-wrap gap-4 items-center justify-start flow-slide-right flow-delay-4">
+          <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 items-stretch sm:items-center justify-start flow-slide-right flow-delay-4 w-full sm:w-auto">
             <ui-button
               variant="primary"
               size="lg"
-              class="group hover:scale-105 transition-transform duration-200"
+              class="w-full sm:w-auto group hover:scale-[1.02] sm:hover:scale-105 transition-transform duration-200"
               (click)="onNavigate('investments-tracking')"
             >
               <div
@@ -64,7 +64,7 @@
             <ui-button
               variant="ghost"
               size="lg"
-              class="group hover:scale-105 transition-transform duration-200"
+              class="w-full sm:w-auto group hover:scale-[1.02] sm:hover:scale-105 transition-transform duration-200"
               (click)="exploreDemo()"
             >
               <span class="relative z-10 font-semibold">Explore Demo Dashboard</span>
@@ -79,7 +79,7 @@
         <div class="lg:col-span-2 flow-slide-left flow-delay-5">
           <div class="relative h-full flex items-center justify-center" aria-hidden="true">
             <div
-              class="relative bg-gradient-to-br from-surface to-surface-alt border border-border rounded-3xl p-12 w-full h-96 overflow-hidden hover:border-[rgba(16,163,127,0.3)] transition-all duration-300"
+              class="relative bg-gradient-to-br from-surface to-surface-alt border border-border rounded-3xl p-6 sm:p-12 w-full h-64 sm:h-96 overflow-hidden hover:border-[rgba(16,163,127,0.3)] transition-all duration-300"
             >
               <div class="absolute inset-0 opacity-20">
                 <div
@@ -137,7 +137,7 @@
         (click)="onNavigate('investments-tracking')"
         (mouseenter)="hoveredCard = 'investment'"
         (mouseleave)="hoveredCard = null"
-        class="group premium-card p-8 hover:border-accent/50 hover:-translate-y-2 text-left relative overflow-hidden hover:shadow-xl hover:shadow-accent/20 scroll-reveal"
+        class="group premium-card p-5 sm:p-8 hover:border-accent/50 hover:-translate-y-2 text-left relative overflow-hidden hover:shadow-xl hover:shadow-accent/20 scroll-reveal"
         style="transition-delay: 0.1s"
       >
         <div
@@ -171,7 +171,7 @@
         (click)="onNavigate('tax-filing')"
         (mouseenter)="hoveredCard = 'tax'"
         (mouseleave)="hoveredCard = null"
-        class="group premium-card p-8 hover:border-blue-accent/50 hover:-translate-y-2 text-left relative overflow-hidden hover:shadow-xl hover:shadow-blue-accent/20 scroll-reveal"
+        class="group premium-card p-5 sm:p-8 hover:border-blue-accent/50 hover:-translate-y-2 text-left relative overflow-hidden hover:shadow-xl hover:shadow-blue-accent/20 scroll-reveal"
         style="transition-delay: 0.2s"
       >
         <div
@@ -205,7 +205,7 @@
         (click)="onNavigate('portfolio-analytics')"
         (mouseenter)="hoveredCard = 'analytics'"
         (mouseleave)="hoveredCard = null"
-        class="group premium-card p-8 hover:border-purple-accent/50 hover:-translate-y-2 text-left relative overflow-hidden hover:shadow-xl hover:shadow-purple-accent/20 scroll-reveal"
+        class="group premium-card p-5 sm:p-8 hover:border-purple-accent/50 hover:-translate-y-2 text-left relative overflow-hidden hover:shadow-xl hover:shadow-purple-accent/20 scroll-reveal"
         style="transition-delay: 0.3s"
       >
         <div
@@ -309,7 +309,7 @@
 
   <section class="w-full max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-8 2xl:px-12 py-20">
     <div
-      class="bg-gradient-to-r from-accent/10 to-accent-hover/10 border border-accent/20 rounded-3xl p-12 md:p-16 text-center relative overflow-hidden scroll-reveal"
+      class="bg-gradient-to-r from-accent/10 to-accent-hover/10 border border-accent/20 rounded-3xl p-6 sm:p-12 md:p-16 text-center relative overflow-hidden scroll-reveal"
     >
       <div
         class="absolute top-0 left-0 w-64 h-64 bg-accent/10 rounded-full blur-3xl"
@@ -319,17 +319,17 @@
       ></div>
 
       <div class="relative z-10">
-        <h2 class="text-3xl md:text-5xl font-semibold text-white mb-6">
+        <h2 class="text-2xl sm:text-3xl md:text-5xl font-semibold text-white mb-4 sm:mb-6">
           Ready to Transform Your Finances?
         </h2>
-        <p class="text-xl text-text-secondary mb-10 max-w-2xl mx-auto">
+        <p class="text-base sm:text-xl text-text-secondary mb-8 sm:mb-10 max-w-2xl mx-auto">
           Join thousands of investors who trust WealthLens for their
           financial operations
         </p>
         <ui-button
           variant="primary"
           size="lg"
-          class="group hover:scale-105 transition-transform duration-200"
+          class="w-full sm:w-auto group hover:scale-[1.02] sm:hover:scale-105 transition-transform duration-200"
           (click)="onNavigate('investments-tracking')"
         >
           <div
@@ -338,7 +338,7 @@
           <span class="relative z-10">Start Free Today</span>
           <lucide-icon
             name="arrow-right"
-            class="h-6 w-6 relative z-10 group-hover:translate-x-1 transition-transform"
+            class="h-5 w-5 sm:h-6 sm:w-6 relative z-10 group-hover:translate-x-1 transition-transform"
           ></lucide-icon>
         </ui-button>
       </div>

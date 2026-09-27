@@ -1,4 +1,4 @@
-<section class="border border-border rounded-xl bg-surface p-6 space-y-6 animate-fade-in">
+<section class="border border-border rounded-xl bg-surface p-4 sm:p-6 space-y-4 sm:space-y-6 animate-fade-in">
   <!-- Header -->
   <div class="flex items-center justify-between border-b border-border pb-4">
     <div>
@@ -187,8 +187,8 @@
     }
 
     <!-- Submit Button -->
-    <div class="flex justify-end pt-4 border-t border-border/40">
-      <ui-button variant="primary" [loading]="isLoading" [disabled]="isLoading" (click)="submitForm()">
+    <div class="flex flex-col sm:flex-row sm:justify-end pt-4 border-t border-border/40">
+      <ui-button variant="primary" [loading]="isLoading" [disabled]="isLoading" (click)="submitForm()" class="w-full sm:w-auto">
         @if (!isLoading) {
           <lucide-icon name="check-circle-2" class="h-4 w-4"></lucide-icon>
         }
