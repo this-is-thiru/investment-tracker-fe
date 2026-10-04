@@ -36,6 +36,11 @@ export const routes: Routes = [
         loadChildren: () => import('./features/portfolio-analytics/portfolio-analytics.routes').then(m => m.PORTFOLIO_ANALYTICS_ROUTES),
         canActivate: [authGuard]
       },
+      {
+        path: 'broker-charges',
+        loadChildren: () => import('./features/broker-charges/broker-charges.routes').then(m => m.BROKER_CHARGES_ROUTES),
+        canActivate: [authGuard]
+      },
       // 👇 Secondary outlet for modals
       {
         path: 'sign-in',

@@ -37,6 +37,7 @@ export class HeaderComponent {
     { id: 'investment-tracking', label: 'Investment Tracking', route: 'investments-tracking' },
     { id: 'tax-filing', label: 'Tax Filing', route: 'tax-filing' },
     { id: 'portfolio-analytics', label: 'Portfolio Analytics', route: 'portfolio-analytics' },
+    { id: 'broker-charges', label: 'Broker Charges', route: 'broker-charges' },
   ];
 
   // Demo account only sees Tax Filing and Portfolio Analytics
@@ -51,6 +52,7 @@ export class HeaderComponent {
       case 'investment-tracking': return 'Briefcase';
       case 'tax-filing': return 'FileText';
       case 'portfolio-analytics': return 'BarChart3';
+      case 'broker-charges': return 'CreditCard';
       default: return 'TrendingUp';
     }
   }

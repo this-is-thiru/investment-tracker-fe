@@ -1,0 +1,935 @@
+
+<div class="w-full min-h-screen flex flex-col bg-background text-white">
+
+  <!-- ============================================================== -->
+  <!-- HEADER STRIP (WealthLens Unified Pattern)                        -->
+  <!-- ============================================================== -->
+  <section class="relative bg-background overflow-hidden border-b border-divider">
+    <div class="absolute inset-0 opacity-30 pointer-events-none">
+      <div class="relative bg-gradient-to-br from-[#0F0F0F] via-[#121212] to-background w-full h-full"></div>
+    </div>
+
+    <div class="w-full max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-8 2xl:px-12 py-10 md:py-14 relative z-10">
+      <div class="inline-flex items-center gap-2 bg-accent/10 border border-accent/20 rounded-full px-3 py-1.5 mb-4">
+        <lucide-icon name="CreditCard" class="w-4 h-4 text-accent"></lucide-icon>
+        <span class="text-xs text-accent font-semibold uppercase tracking-wider">Trading Friction &amp; Taxes</span>
+      </div>
+
+      <h1 class="text-3xl md:text-4xl text-white mb-2 font-semibold">
+        Broker charges &amp;
+        <span class="text-transparent bg-clip-text bg-gradient-to-r from-accent to-accent-hover">contract notes</span>
+      </h1>
+      <p class="text-sm text-text-secondary max-w-2xl">
+        Automated trade fee calculation, official contract notes, capital gains tax deductibility, and Demat AMC tracking.
+      </p>
+    </div>
+  </section>
+
+  <!-- ============================================================== -->
+  <!-- MAIN BODY                                                        -->
+  <!-- ============================================================== -->
+  <main class="w-full max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-8 2xl:px-12 py-8 flex-1 space-y-8">
+
+    <!-- Toast Notification Popup -->
+    @if (toastMessage()) {
+      <div class="fixed top-20 right-6 z-50 flex items-center gap-3 px-4 py-3 rounded-xl border shadow-modal animate-fade-in bg-surface"
+           [ngClass]="{
+             'border-accent text-accent': toastType() === 'success',
+             'border-blue-accent text-blue-accent': toastType() === 'info',
+             'border-warning text-warning': toastType() === 'warning'
+           }">
+        <lucide-icon [name]="toastType() === 'success' ? 'CheckCircle2' : 'Info'" class="h-5 w-5"></lucide-icon>
+        <span class="text-sm font-medium text-white">{{ toastMessage() }}</span>
+      </div>
+    }
+
+    <!-- ============================================================== -->
+    <!-- SUMMARY KPI RIBBON (Consistent WealthLens Pattern)              -->
+    <!-- ============================================================== -->
+    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+      <!-- Total Charges Incurred -->
+      <div class="bg-surface-alt border border-border border-l-4 border-l-warning rounded-lg p-3.5 flex flex-col gap-1 hover:border-border-hover transition-colors">
+        <div class="flex items-center justify-between">
+          <span class="text-2xs text-text-secondary font-semibold uppercase tracking-wider">Total Charges Incurred</span>
+          <lucide-icon name="CreditCard" class="w-3.5 h-3.5 text-warning"></lucide-icon>
+        </div>
+        <div class="text-xl font-bold text-white font-mono">
+          ₹{{ ledgerTotalFees() | number:'1.2-2' }}
+        </div>
+        <div class="text-2xs text-text-muted">across all recorded trade notes</div>
+      </div>
+
+      <!-- Capital Gains Deductible -->
+      <div class="bg-surface-alt border border-border border-l-4 border-l-success rounded-lg p-3.5 flex flex-col gap-1 hover:border-border-hover transition-colors">
+        <div class="flex items-center justify-between">
+          <span class="text-2xs text-text-secondary font-semibold uppercase tracking-wider">Capital Gains Deductible</span>
+          <lucide-icon name="TrendingUp" class="w-3.5 h-3.5 text-success"></lucide-icon>
+        </div>
+        <div class="text-xl font-bold text-success font-mono">
+          ₹{{ ledgerDeductibleFees() | number:'1.2-2' }}
+        </div>
+        <div class="text-2xs text-text-muted">reduces taxable capital gains</div>
+      </div>
+
+      <!-- Statutory Levies (STT & Stamp) -->
+      <div class="bg-surface-alt border border-border border-l-4 border-l-danger rounded-lg p-3.5 flex flex-col gap-1 hover:border-border-hover transition-colors">
+        <div class="flex items-center justify-between">
+          <span class="text-2xs text-text-secondary font-semibold uppercase tracking-wider">Statutory Taxes (STT/Stamp)</span>
+          <lucide-icon name="AlertTriangle" class="w-3.5 h-3.5 text-danger"></lucide-icon>
+        </div>
+        <div class="text-xl font-bold text-danger font-mono">
+          ₹{{ ledgerNonDeductibleFees() | number:'1.2-2' }}
+        </div>
+        <div class="text-2xs text-text-muted">strictly non-deductible for tax</div>
+      </div>
+
+      <!-- Linked Demat Accounts -->
+      <div class="bg-surface-alt border border-border border-l-4 border-l-blue-accent rounded-lg p-3.5 flex flex-col gap-1 hover:border-border-hover transition-colors">
+        <div class="flex items-center justify-between">
+          <span class="text-2xs text-text-secondary font-semibold uppercase tracking-wider">Demat Accounts Linked</span>
+          <lucide-icon name="Briefcase" class="w-3.5 h-3.5 text-blue-accent"></lucide-icon>
+        </div>
+        <div class="text-xl font-bold text-white font-mono">
+          {{ dematAccounts().length }} Account(s)
+        </div>
+        <div class="text-2xs text-text-muted">AMC &amp; DP fee tracking</div>
+      </div>
+    </section>
+
+    <!-- ============================================================== -->
+    <!-- VIEW SELECTOR BAR (Investor Suite vs Admin Console)             -->
+    <!-- ============================================================== -->
+    <section class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-xl bg-surface-alt/60 backdrop-blur-sm px-4 py-3 border border-divider">
+      <div class="flex items-center gap-2">
+        <lucide-icon name="Sliders" class="w-4 h-4 text-accent"></lucide-icon>
+        <span class="text-xs font-semibold text-text-secondary uppercase tracking-wider">Workspace Mode</span>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <button type="button" (click)="viewMode.set('investor')"
+                [ngClass]="viewMode() === 'investor' ? 'bg-accent text-white font-semibold shadow' : 'bg-surface text-text-secondary hover:text-white'"
+                class="px-4 py-2 rounded-lg text-xs font-medium transition-all flex items-center gap-2 border border-border">
+          <lucide-icon name="User" class="w-3.5 h-3.5"></lucide-icon>
+          Investor Suite
+        </button>
+
+        <button type="button" (click)="viewMode.set('admin')"
+                [ngClass]="viewMode() === 'admin' ? 'bg-purple-600 text-white font-semibold shadow' : 'bg-surface text-text-secondary hover:text-white'"
+                class="px-4 py-2 rounded-lg text-xs font-medium transition-all flex items-center gap-2 border border-border">
+          <lucide-icon name="Shield" class="w-3.5 h-3.5"></lucide-icon>
+          Admin &amp; Operations Console
+          <span class="text-2xs bg-white/20 text-white px-1.5 py-0.2 rounded-full">Super User</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ============================================================== -->
+    <!-- INVESTOR SUITE (3 EXPANDABLE PANELS)                            -->
+    <!-- ============================================================== -->
+    @if (viewMode() === 'investor') {
+      <div class="space-y-6">
+
+        <!-- PANEL 1: PRE-TRADE FEE SIMULATOR -->
+        <app-expansion-panel
+          [title]="'Pre-Trade Fee Simulator'"
+          [subtitle]="'Calculate exact itemized trading friction, break-even price, and tax breakdown before placing an order'"
+          [titleIcon]="'Zap'"
+          [iconBgClass]="'bg-gradient-to-br from-accent to-accent-hover'"
+          [(isExpanded)]="simulatorExpanded">
+
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <!-- Left: Trade Parameters Form -->
+            <div class="lg:col-span-5 space-y-4">
+              <div class="p-4 bg-surface-alt border border-border rounded-xl space-y-4">
+                <div class="flex items-center justify-between pb-2 border-b border-divider">
+                  <span class="text-xs font-semibold uppercase tracking-wider text-white">Order Inputs</span>
+                  <span class="text-2xs text-text-muted">Real-time contract note</span>
+                </div>
+
+                <!-- Buy / Sell Action -->
+                <div>
+                  <label class="block text-2xs font-semibold text-text-secondary uppercase mb-1.5">Trade Action</label>
+                  <div class="grid grid-cols-2 gap-2">
+                    <button type="button" (click)="simEvent.set('BUY'); runSimulation()"
+                            [ngClass]="simEvent() === 'BUY' ? 'bg-success text-white font-semibold' : 'bg-surface text-text-secondary hover:text-white border border-border'"
+                            class="py-2 px-3 rounded-lg text-xs text-center transition-all">
+                      BUY (Acquire)
+                    </button>
+                    <button type="button" (click)="simEvent.set('SELL'); runSimulation()"
+                            [ngClass]="simEvent() === 'SELL' ? 'bg-danger text-white font-semibold' : 'bg-surface text-text-secondary hover:text-white border border-border'"
+                            class="py-2 px-3 rounded-lg text-xs text-center transition-all">
+                      SELL (Dispose)
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Broker & Asset Type -->
+                <div class="grid grid-cols-2 gap-3">
+                  <div>
+                    <label class="block text-2xs font-semibold text-text-secondary uppercase mb-1">Broker</label>
+                    <select [(ngModel)]="simBroker" (change)="runSimulation()"
+                            class="w-full bg-surface border border-border rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-accent">
+                      <option value="ZERODHA">Zerodha</option>
+                      <option value="UPSTOX">Upstox</option>
+                      <option value="FYERS">Fyers</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block text-2xs font-semibold text-text-secondary uppercase mb-1">Asset Class</label>
+                    <select [(ngModel)]="simAssetType" (change)="runSimulation()"
+                            class="w-full bg-surface border border-border rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-accent">
+                      <option value="EQUITY">Equity Share</option>
+                      <option value="MUTUAL_FUND">Mutual Fund</option>
+                    </select>
+                  </div>
+                </div>
+
+                <!-- Segment & Exchange -->
+                <div class="grid grid-cols-2 gap-3">
+                  <div>
+                    <label class="block text-2xs font-semibold text-text-secondary uppercase mb-1">Segment</label>
+                    <select [(ngModel)]="simSegment" (change)="runSimulation()"
+                            class="w-full bg-surface border border-border rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-accent">
+                      <option value="DELIVERY">Delivery (CNC)</option>
+                      <option value="INTRADAY">Intraday (MIS)</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block text-2xs font-semibold text-text-secondary uppercase mb-1">Exchange</label>
+                    <select [(ngModel)]="simExchange" (change)="runSimulation()"
+                            class="w-full bg-surface border border-border rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-accent">
+                      <option value="NSE">NSE</option>
+                      <option value="BSE">BSE</option>
+                    </select>
+                  </div>
+                </div>
+
+                <!-- Stock Symbol -->
+                <div>
+                  <label class="block text-2xs font-semibold text-text-secondary uppercase mb-1">Symbol / Scrip</label>
+                  <input type="text" [(ngModel)]="simStockCode" (blur)="runSimulation()" placeholder="e.g. RELIANCE, TCS"
+                         class="w-full bg-surface border border-border rounded-lg px-2.5 py-1.5 text-xs text-white uppercase focus:outline-none focus:border-accent font-mono" />
+                </div>
+
+                <!-- Quantity & Price -->
+                <div class="grid grid-cols-2 gap-3">
+                  <div>
+                    <label class="block text-2xs font-semibold text-text-secondary uppercase mb-1">Quantity</label>
+                    <input type="number" min="1" [(ngModel)]="simQuantity" (input)="runSimulation()"
+                           class="w-full bg-surface border border-border rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-accent font-mono" />
+                  </div>
+                  <div>
+                    <label class="block text-2xs font-semibold text-text-secondary uppercase mb-1">Price / Share (₹)</label>
+                    <input type="number" min="0.01" step="0.05" [(ngModel)]="simPrice" (input)="runSimulation()"
+                           class="w-full bg-surface border border-border rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-accent font-mono" />
+                  </div>
+                </div>
+
+                <!-- Conditional MF Holding Days -->
+                @if (simAssetType() === 'MUTUAL_FUND' && simEvent() === 'SELL') {
+                  <div class="p-3 bg-purple-950/20 border border-purple-500/20 rounded-lg">
+                    <label class="block text-2xs font-semibold text-purple-300 uppercase mb-1">Holding Days (Exit Load)</label>
+                    <input type="number" [(ngModel)]="simHoldingDays" (input)="runSimulation()"
+                           class="w-full bg-surface border border-border rounded-lg px-2.5 py-1.5 text-xs text-white font-mono" />
+                  </div>
+                }
+
+                <ui-button variant="primary" [fullWidth]="true" size="sm" (click)="runSimulation()" [loading]="isSimulating()">
+                  <lucide-icon name="RotateCw" class="w-3.5 h-3.5 mr-1.5"></lucide-icon>
+                  Recalculate Friction
+                </ui-button>
+              </div>
+            </div>
+
+            <!-- Right: Simulated Contract Note Breakdown -->
+            <div class="lg:col-span-7 space-y-4">
+              <!-- Result KPI Summary -->
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                <div class="p-3 bg-surface-alt border border-border rounded-lg">
+                  <span class="text-2xs text-text-muted uppercase font-medium">Turnover</span>
+                  <div class="text-base font-bold text-white font-mono mt-0.5">₹{{ simGrossTurnover() | number:'1.2-2' }}</div>
+                </div>
+                <div class="p-3 bg-surface-alt border border-border rounded-lg">
+                  <span class="text-2xs text-text-muted uppercase font-medium">Charges &amp; Taxes</span>
+                  <div class="text-base font-bold text-warning font-mono mt-0.5">₹{{ (simulationResult()?.totalCharges || 0) | number:'1.2-2' }}</div>
+                </div>
+                <div class="p-3 bg-surface-alt border border-border rounded-lg">
+                  <span class="text-2xs text-text-muted uppercase font-medium">Net Settlement</span>
+                  <div class="text-base font-bold text-accent font-mono mt-0.5">₹{{ simNetTotal() | number:'1.2-2' }}</div>
+                </div>
+                <div class="p-3 bg-surface-alt border border-border rounded-lg">
+                  <span class="text-2xs text-text-muted uppercase font-medium">Break-Even / Share</span>
+                  <div class="text-base font-bold text-blue-accent font-mono mt-0.5">+₹{{ simBreakEven() | number:'1.2-2' }}</div>
+                </div>
+              </div>
+
+              <!-- Deductible vs Non-Deductible Sub-banner -->
+              <div class="p-3 rounded-lg bg-surface-alt border border-border flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+                <div class="flex items-center gap-2">
+                  <span class="w-2 h-2 rounded-full bg-success"></span>
+                  <span class="text-text-secondary">Deductible from Capital Gains:</span>
+                  <span class="font-semibold text-success font-mono">₹{{ (simulationResult()?.deductibleCharges || 0) | number:'1.2-2' }}</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="w-2 h-2 rounded-full bg-danger"></span>
+                  <span class="text-text-secondary">Non-Deductible (STT/Stamp):</span>
+                  <span class="font-semibold text-danger font-mono">₹{{ (simulationResult()?.nonDeductibleCharges || 0) | number:'1.2-2' }}</span>
+                </div>
+              </div>
+
+              <!-- Lines Table -->
+              <div class="border border-border rounded-xl bg-surface-alt overflow-hidden">
+                <div class="px-4 py-2.5 border-b border-divider flex items-center justify-between text-xs">
+                  <span class="font-semibold text-white uppercase tracking-wider">Itemized Contract Note Lines</span>
+                  <span class="text-2xs text-text-muted font-mono">Schedule: {{ simulationResult()?.scheduleCode }}</span>
+                </div>
+
+                <table class="w-full text-left text-xs border-collapse">
+                  <thead>
+                    <tr class="border-b border-divider text-text-muted bg-surface/50">
+                      <th class="py-2.5 px-4 font-medium">Charge Component</th>
+                      <th class="py-2.5 px-3 font-medium">Category</th>
+                      <th class="py-2.5 px-3 font-medium">Taxable Base</th>
+                      <th class="py-2.5 px-4 font-medium text-right">Amount</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-border/50">
+                    @for (line of simulationResult()?.lines || []; track line.code) {
+                      <tr class="hover:bg-surface-hover/40 transition-colors">
+                        <td class="py-2 px-4">
+                          <div class="font-medium text-white">{{ line.displayName }}</div>
+                          @if (line.notes) {
+                            <div class="text-2xs text-text-muted">{{ line.notes }}</div>
+                          }
+                        </td>
+                        <td class="py-2 px-3 text-text-secondary font-mono">{{ line.category }}</td>
+                        <td class="py-2 px-3">
+                          <ui-badge [tone]="line.taxable ? 'info' : 'neutral'" styleVariant="soft">
+                            {{ line.taxable ? 'Yes (GST Base)' : 'Exempt' }}
+                          </ui-badge>
+                        </td>
+                        <td class="py-2 px-4 text-right font-mono font-semibold text-white">
+                          ₹{{ line.amount | number:'1.2-2' }}
+                        </td>
+                      </tr>
+                    }
+                  </tbody>
+                  <tfoot>
+                    <tr class="border-t border-border bg-surface font-semibold">
+                      <td colspan="3" class="py-2.5 px-4 text-white">Total Friction &amp; Levies</td>
+                      <td class="py-2.5 px-4 text-right text-accent font-mono text-sm">
+                        ₹{{ (simulationResult()?.totalCharges || 0) | number:'1.2-2' }}
+                      </td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+            </div>
+          </div>
+        </app-expansion-panel>
+
+        <!-- PANEL 2: CHARGES LEDGER & CONTRACT NOTES -->
+        <app-expansion-panel
+          [title]="'Charges Ledger & Contract Notes'"
+          [subtitle]="'Historical transaction fees with line-by-line audited contract notes'"
+          [titleIcon]="'FileText'"
+          [iconBgClass]="'bg-gradient-to-br from-accent to-accent-hover'"
+          [(isExpanded)]="ledgerExpanded">
+
+          <div class="space-y-4">
+            <!-- Coverage Gaps Alert -->
+            @if (ledgerGaps().length > 0) {
+              <div class="p-3.5 rounded-lg border border-warning/30 bg-warning/10 flex items-start gap-3">
+                <lucide-icon name="AlertTriangle" class="h-4 w-4 text-warning shrink-0 mt-0.5"></lucide-icon>
+                <div class="flex-1 text-xs">
+                  <span class="font-semibold text-warning">Coverage Gaps Detected:</span>
+                  <span class="text-text-secondary ml-1">
+                    {{ ledgerGaps().length }} trade(s) had missing rate cards and were recorded as zero-cost gaps to prevent silent under-costing.
+                  </span>
+                </div>
+              </div>
+            }
+
+            <!-- Filter Bar -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 bg-surface-alt rounded-lg border border-border">
+              <div class="flex items-center gap-2">
+                <span class="text-xs text-text-muted">Asset:</span>
+                <button (click)="filterAssetType.set('ALL'); loadLedger()"
+                        [ngClass]="filterAssetType() === 'ALL' ? 'bg-accent text-white' : 'bg-surface text-text-secondary'"
+                        class="px-2.5 py-1 rounded text-xs font-medium transition-colors">All</button>
+                <button (click)="filterAssetType.set('EQUITY'); loadLedger()"
+                        [ngClass]="filterAssetType() === 'EQUITY' ? 'bg-accent text-white' : 'bg-surface text-text-secondary'"
+                        class="px-2.5 py-1 rounded text-xs font-medium transition-colors">Equity</button>
+                <button (click)="filterAssetType.set('MUTUAL_FUND'); loadLedger()"
+                        [ngClass]="filterAssetType() === 'MUTUAL_FUND' ? 'bg-accent text-white' : 'bg-surface text-text-secondary'"
+                        class="px-2.5 py-1 rounded text-xs font-medium transition-colors">Mutual Funds</button>
+              </div>
+
+              <div class="flex items-center gap-2">
+                <input type="date" [(ngModel)]="filterFromDate" (change)="loadLedger()"
+                       class="bg-surface border border-border rounded px-2 py-1 text-xs text-white" />
+                <span class="text-xs text-text-muted">to</span>
+                <input type="date" [(ngModel)]="filterToDate" (change)="loadLedger()"
+                       class="bg-surface border border-border rounded px-2 py-1 text-xs text-white" />
+                <ui-button variant="secondary" size="sm" (click)="loadLedger()" [loading]="ledgerLoading()">Filter</ui-button>
+              </div>
+            </div>
+
+            <!-- Ledger Table -->
+            <div class="border border-border rounded-xl bg-surface-alt overflow-hidden">
+              <table class="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr class="border-b border-divider text-text-muted bg-surface/60">
+                    <th class="py-2.5 px-4">Date</th>
+                    <th class="py-2.5 px-3">Transaction ID</th>
+                    <th class="py-2.5 px-3">Stock / Scrip</th>
+                    <th class="py-2.5 px-3">Action</th>
+                    <th class="py-2.5 px-3">Broker</th>
+                    <th class="py-2.5 px-3 text-right">Total Charges</th>
+                    <th class="py-2.5 px-3">Resolution</th>
+                    <th class="py-2.5 px-4 text-right">Contract Note</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-border/50">
+                  @for (row of ledgerCharges(); track row.id) {
+                    <tr class="hover:bg-surface-hover/40 transition-colors">
+                      <td class="py-2.5 px-4 font-mono text-text-secondary">{{ row.transactionDate }}</td>
+                      <td class="py-2.5 px-3 font-mono text-white">{{ row.transactionId }}</td>
+                      <td class="py-2.5 px-3 font-semibold text-white">{{ row.stockCode || 'Demat AMC' }}</td>
+                      <td class="py-2.5 px-3">
+                        <ui-badge [tone]="row.event === 'BUY' ? 'success' : (row.event === 'SELL' ? 'danger' : 'info')" styleVariant="soft">
+                          {{ row.event }}
+                        </ui-badge>
+                      </td>
+                      <td class="py-2.5 px-3 text-text-secondary">{{ row.brokerName }}</td>
+                      <td class="py-2.5 px-3 text-right font-mono font-semibold text-accent">₹{{ row.totalCharges | number:'1.2-2' }}</td>
+                      <td class="py-2.5 px-3">
+                        <ui-badge [tone]="row.resolution === 'RESOLVED' ? 'success' : 'warning'" styleVariant="soft">
+                          {{ row.resolution }}
+                        </ui-badge>
+                      </td>
+                      <td class="py-2.5 px-4 text-right">
+                        <ui-button variant="ghost" size="sm" (click)="openContractNote(row.transactionId)">
+                          View Note
+                        </ui-button>
+                      </td>
+                    </tr>
+                  }
+                  @if (ledgerCharges().length === 0) {
+                    <tr>
+                      <td colspan="8" class="py-8 text-center text-text-muted">No charges recorded for the current filter.</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </app-expansion-panel>
+
+        <!-- PANEL 3: MY DEMAT ACCOUNTS & AMC -->
+        <app-expansion-panel
+          [title]="'Linked Demat Accounts'"
+          [subtitle]="'Manage depository accounts across brokers and track recurring maintenance fee schedules'"
+          [titleIcon]="'Briefcase'"
+          [iconBgClass]="'bg-gradient-to-br from-blue-600 to-blue-700'"
+          [(isExpanded)]="dematExpanded">
+
+          <div class="space-y-4">
+            <div class="flex items-center justify-between pb-2 border-b border-divider">
+              <span class="text-xs text-text-secondary">Depository Participant (DP) Accounts</span>
+              <ui-button variant="primary" size="sm" (click)="openAddDematModal()">
+                <lucide-icon name="Plus" class="w-3.5 h-3.5 mr-1"></lucide-icon>
+                Link Demat Account
+              </ui-button>
+            </div>
+
+            <!-- Demat Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              @for (acc of dematAccounts(); track acc.dematAccountId) {
+                <div class="p-4 bg-surface-alt border border-border rounded-xl space-y-3 hover:border-accent/40 transition-colors">
+                  <div class="flex items-start justify-between">
+                    <div>
+                      <span class="text-2xs text-text-muted uppercase font-mono">Demat BOID</span>
+                      <div class="text-sm font-mono font-bold text-white mt-0.5">{{ acc.dematAccountId }}</div>
+                    </div>
+                    <ui-badge tone="accent" styleVariant="soft">{{ acc.brokerName }}</ui-badge>
+                  </div>
+
+                  <div class="grid grid-cols-2 gap-2 text-xs border-y border-border/60 py-2">
+                    <div>
+                      <span class="text-2xs text-text-muted block">Holder</span>
+                      <span class="text-white font-medium">{{ acc.accountHolder }}</span>
+                    </div>
+                    <div>
+                      <span class="text-2xs text-text-muted block">AMC Frequency</span>
+                      <span class="text-white font-medium">{{ acc.amcFrequency }}</span>
+                    </div>
+                    <div>
+                      <span class="text-2xs text-text-muted block">Opened</span>
+                      <span class="text-text-secondary font-mono">{{ acc.openedOn }}</span>
+                    </div>
+                    <div>
+                      <span class="text-2xs text-text-muted block">Billed Through</span>
+                      <span class="text-accent font-mono">{{ acc.lastBilledThrough || 'Never' }}</span>
+                    </div>
+                  </div>
+
+                  @if ((acc.billingEvents?.length || 0) > 0) {
+                    <div class="space-y-1">
+                      <span class="text-2xs uppercase text-text-muted font-medium">Recent AMC Billings:</span>
+                      @for (b of acc.billingEvents; track b.transactionId) {
+                        <div class="flex items-center justify-between text-2xs bg-surface px-2 py-1 rounded border border-border">
+                          <span class="text-text-secondary font-mono">{{ b.periodFrom }} to {{ b.periodTo }}</span>
+                          <span class="font-mono text-accent font-semibold">₹{{ b.amount | number:'1.2-2' }}</span>
+                        </div>
+                      }
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          </div>
+        </app-expansion-panel>
+
+      </div>
+    }
+
+    <!-- ============================================================== -->
+    <!-- OPERATIONS & ADMIN CONSOLE (3 EXPANDABLE PANELS)                -->
+    <!-- ============================================================== -->
+    @if (viewMode() === 'admin') {
+      <div class="space-y-6">
+
+        <!-- PANEL 4: RATE CARDS & STATUTORY CATALOGUE -->
+        <app-expansion-panel
+          [title]="'Broker Rate Cards & Taxonomy'"
+          [subtitle]="'Inspect and manage broker fee schedules, unverified rates, drift audits, and statutory catalogue'"
+          [titleIcon]="'Database'"
+          [iconBgClass]="'bg-gradient-to-br from-purple-600 to-purple-700'"
+          [(isExpanded)]="rateCardsExpanded">
+
+          <div class="space-y-4">
+            <!-- Top Action Header -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 bg-purple-950/20 border border-purple-500/20 rounded-xl">
+              <div>
+                <span class="text-xs font-semibold text-white">Rate Card Governance</span>
+                <p class="text-2xs text-text-secondary">Brokers revise transaction fees quarterly. Seed standard rates or inspect unverified schedules.</p>
+              </div>
+              <ui-button variant="primary" size="sm" (click)="triggerSeed()" [loading]="isSeeding()">
+                <lucide-icon name="RotateCw" class="w-3.5 h-3.5 mr-1.5"></lucide-icon>
+                Seed Reference Pricing
+              </ui-button>
+            </div>
+
+            <!-- Sub Navigation Tabs -->
+            <div class="flex items-center gap-2 border-b border-divider pb-2">
+              <button (click)="rateCardSubTab.set('cards')"
+                      [ngClass]="rateCardSubTab() === 'cards' ? 'border-b-2 border-accent text-accent font-semibold' : 'text-text-secondary hover:text-white'"
+                      class="px-3 py-1.5 text-xs transition-colors">Active Schedules</button>
+              <button (click)="rateCardSubTab.set('unverified')"
+                      [ngClass]="rateCardSubTab() === 'unverified' ? 'border-b-2 border-accent text-accent font-semibold' : 'text-text-secondary hover:text-white'"
+                      class="px-3 py-1.5 text-xs transition-colors flex items-center gap-1.5">
+                <span>Unverified Rates</span>
+                <span class="px-1.5 py-0.2 rounded-full text-2xs bg-warning text-black font-bold">{{ unverifiedCards().length }}</span>
+              </button>
+              <button (click)="rateCardSubTab.set('drift')"
+                      [ngClass]="rateCardSubTab() === 'drift' ? 'border-b-2 border-accent text-accent font-semibold' : 'text-text-secondary hover:text-white'"
+                      class="px-3 py-1.5 text-xs transition-colors">Drift Audit</button>
+              <button (click)="rateCardSubTab.set('catalogue')"
+                      [ngClass]="rateCardSubTab() === 'catalogue' ? 'border-b-2 border-accent text-accent font-semibold' : 'text-text-secondary hover:text-white'"
+                      class="px-3 py-1.5 text-xs transition-colors">Tax Catalogue</button>
+            </div>
+
+            <!-- Schedules Table -->
+            @if (rateCardSubTab() === 'cards') {
+              <div class="border border-border rounded-xl bg-surface-alt overflow-hidden">
+                <table class="w-full text-left text-xs border-collapse">
+                  <thead>
+                    <tr class="border-b border-divider text-text-muted bg-surface/60">
+                      <th class="py-2.5 px-4">Schedule Code</th>
+                      <th class="py-2.5 px-3">Asset</th>
+                      <th class="py-2.5 px-3">Segment</th>
+                      <th class="py-2.5 px-3">Start Date</th>
+                      <th class="py-2.5 px-3">Status</th>
+                      <th class="py-2.5 px-4 text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-border/50">
+                    @for (c of rateCards(); track c.scheduleCode) {
+                      <tr class="hover:bg-surface-hover/40 transition-colors">
+                        <td class="py-2.5 px-4 font-mono font-semibold text-white">{{ c.scheduleCode }}</td>
+                        <td class="py-2.5 px-3 text-text-secondary">{{ c.assetType }}</td>
+                        <td class="py-2.5 px-3 text-text-secondary">{{ c.segment }}</td>
+                        <td class="py-2.5 px-3 font-mono text-text-secondary">{{ c.startDate }}</td>
+                        <td class="py-2.5 px-3">
+                          <ui-badge [tone]="c.endDate ? 'neutral' : 'success'" styleVariant="soft">
+                            {{ c.endDate ? 'Retired' : 'Active' }}
+                          </ui-badge>
+                        </td>
+                        <td class="py-2.5 px-4 text-right space-x-2">
+                          <ui-button variant="ghost" size="sm" (click)="viewScheduleRules(c)">Rules</ui-button>
+                          @if (!c.endDate) {
+                            <ui-button variant="danger" size="sm" (click)="retireSchedule(c.scheduleCode)">Close</ui-button>
+                          }
+                        </td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            }
+
+            <!-- Unverified Table -->
+            @if (rateCardSubTab() === 'unverified') {
+              <div class="p-4 bg-surface-alt border border-border rounded-xl space-y-3">
+                <span class="text-xs font-semibold text-warning">Schedules Older than 90 Days Requiring Rate Re-Verification</span>
+                <div class="space-y-2">
+                  @for (unv of unverifiedCards(); track unv.scheduleCode) {
+                    <div class="p-2.5 bg-surface border border-border rounded flex items-center justify-between text-xs">
+                      <div>
+                        <span class="font-mono font-semibold text-white">{{ unv.scheduleCode }}</span>
+                        <span class="text-text-muted ml-2">({{ unv.brokerName }})</span>
+                      </div>
+                      <ui-badge tone="warning" styleVariant="soft">Needs Review</ui-badge>
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+
+            <!-- Drift Audit -->
+            @if (rateCardSubTab() === 'drift') {
+              <div class="p-4 bg-surface-alt border border-border rounded-xl space-y-3">
+                <span class="text-xs font-semibold text-white">Database vs Reference Git Files Drift</span>
+                <div class="space-y-2">
+                  @for (d of driftItems(); track d.scheduleCode) {
+                    <div class="p-2.5 bg-surface border border-border rounded flex items-center justify-between text-xs">
+                      <div>
+                        <span class="font-mono font-semibold text-white">{{ d.scheduleCode }}</span>
+                        <div class="text-2xs text-text-muted">{{ d.field }}: File={{ d.fileValue }}, DB={{ d.databaseValue }}</div>
+                      </div>
+                      <ui-badge tone="info" styleVariant="soft">In Sync</ui-badge>
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+
+            <!-- Catalogue -->
+            @if (rateCardSubTab() === 'catalogue') {
+              <div class="border border-border rounded-xl bg-surface-alt overflow-hidden">
+                <table class="w-full text-left text-xs border-collapse">
+                  <thead>
+                    <tr class="border-b border-divider text-text-muted bg-surface/60">
+                      <th class="py-2.5 px-4">Code</th>
+                      <th class="py-2.5 px-3">Name</th>
+                      <th class="py-2.5 px-3">Category</th>
+                      <th class="py-2.5 px-3">Capital Gains Deductible</th>
+                      <th class="py-2.5 px-4">Statutory Act</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-border/50">
+                    @for (e of catalogueEntries(); track e.code) {
+                      <tr class="hover:bg-surface-hover/40 transition-colors">
+                        <td class="py-2.5 px-4 font-mono font-semibold text-white">{{ e.code }}</td>
+                        <td class="py-2.5 px-3 text-white">{{ e.displayName }}</td>
+                        <td class="py-2.5 px-3 text-text-secondary font-mono">{{ e.category }}</td>
+                        <td class="py-2.5 px-3">
+                          <ui-badge [tone]="e.deductibleForCapitalGains ? 'success' : 'danger'" styleVariant="soft">
+                            {{ e.deductibleForCapitalGains ? 'Yes (Deductible)' : 'No (Disallowed)' }}
+                          </ui-badge>
+                        </td>
+                        <td class="py-2.5 px-4 text-text-muted italic">{{ e.statutoryReference || '—' }}</td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            }
+          </div>
+        </app-expansion-panel>
+
+        <!-- PANEL 5: DEMAT AMC BILLING CONSOLE -->
+        <app-expansion-panel
+          [title]="'Demat AMC Periodic Billing Operations'"
+          [subtitle]="'Preview overdue demat accounts and execute automated maintenance billing runs'"
+          [titleIcon]="'Clock'"
+          [iconBgClass]="'bg-gradient-to-br from-amber-600 to-amber-700'"
+          [(isExpanded)]="amcExpanded">
+
+          <div class="space-y-4">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 p-4 bg-surface-alt border border-border rounded-xl">
+              <div>
+                <label class="block text-2xs font-semibold text-text-secondary uppercase mb-1">Billing Frequency</label>
+                <select [(ngModel)]="amcFrequency" class="w-full bg-surface border border-border rounded px-2.5 py-1.5 text-xs text-white">
+                  <option value="QUARTERLY">Quarterly AMC</option>
+                  <option value="YEARLY">Yearly AMC</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-2xs font-semibold text-text-secondary uppercase mb-1">Target Billing Date</label>
+                <input type="date" [(ngModel)]="amcBilledThrough"
+                       class="w-full bg-surface border border-border rounded px-2.5 py-1.5 text-xs text-white" />
+              </div>
+
+              <div class="flex items-end gap-2">
+                <ui-button variant="secondary" size="sm" (click)="previewAmcDue()" [loading]="amcPreviewLoading()" class="flex-1">
+                  Preview Due
+                </ui-button>
+                <ui-button variant="danger" size="sm" (click)="imposeAmcBilling()" [loading]="isImposingAmc()" class="flex-1">
+                  Impose Charges
+                </ui-button>
+              </div>
+            </div>
+
+            @if (amcDueAccounts().length > 0) {
+              <div class="border border-border rounded-xl bg-surface-alt overflow-hidden">
+                <table class="w-full text-left text-xs border-collapse">
+                  <thead>
+                    <tr class="border-b border-divider text-text-muted bg-surface/60">
+                      <th class="py-2.5 px-4">Demat Account ID</th>
+                      <th class="py-2.5 px-3">User</th>
+                      <th class="py-2.5 px-3">Broker</th>
+                      <th class="py-2.5 px-3">Frequency</th>
+                      <th class="py-2.5 px-4">Billed Through</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-border/50">
+                    @for (acc of amcDueAccounts(); track acc.dematAccountId) {
+                      <tr>
+                        <td class="py-2.5 px-4 font-mono font-semibold text-white">{{ acc.dematAccountId }}</td>
+                        <td class="py-2.5 px-3 text-text-secondary">{{ acc.email }}</td>
+                        <td class="py-2.5 px-3 text-white">{{ acc.brokerName }}</td>
+                        <td class="py-2.5 px-3 text-text-secondary">{{ acc.amcFrequency }}</td>
+                        <td class="py-2.5 px-4 font-mono text-accent">{{ acc.lastBilledThrough || 'Never' }}</td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            }
+          </div>
+        </app-expansion-panel>
+
+        <!-- PANEL 6: SHADOW MODE AUDIT RECONCILIATION -->
+        <app-expansion-panel
+          [title]="'Shadow Mode & Audit Reconciliation'"
+          [subtitle]="'Audit engine precision by comparing calculated charges against user-entered contract notes'"
+          [titleIcon]="'RotateCw'"
+          [iconBgClass]="'bg-gradient-to-br from-accent to-accent-hover'"
+          [(isExpanded)]="reconExpanded">
+
+          <div class="space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 bg-surface-alt rounded-lg border border-border">
+              <div class="flex items-center gap-2 flex-1">
+                <span class="text-xs text-text-muted">Target User:</span>
+                <input type="email" [(ngModel)]="reconEmail" placeholder="user@domain.com"
+                       class="bg-surface border border-border rounded px-2.5 py-1 text-xs text-white max-w-xs w-full" />
+                <ui-button variant="secondary" size="sm" (click)="loadReconciliation()" [loading]="reconLoading()">Run Audit</ui-button>
+              </div>
+
+              <div class="flex items-center gap-2">
+                <button (click)="reconFilter.set('ALL')"
+                        [ngClass]="reconFilter() === 'ALL' ? 'bg-accent text-white' : 'bg-surface text-text-secondary'"
+                        class="px-2.5 py-1 rounded text-xs font-medium">All</button>
+                <button (click)="reconFilter.set('DISCREPANCIES')"
+                        [ngClass]="reconFilter() === 'DISCREPANCIES' ? 'bg-accent text-white' : 'bg-surface text-text-secondary'"
+                        class="px-2.5 py-1 rounded text-xs font-medium">Deltas Only</button>
+                <button (click)="reconFilter.set('UNRESOLVED')"
+                        [ngClass]="reconFilter() === 'UNRESOLVED' ? 'bg-accent text-white' : 'bg-surface text-text-secondary'"
+                        class="px-2.5 py-1 rounded text-xs font-medium">Gaps</button>
+              </div>
+            </div>
+
+            <!-- Reconciliation Table -->
+            <div class="border border-border rounded-xl bg-surface-alt overflow-hidden">
+              <table class="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr class="border-b border-divider text-text-muted bg-surface/60">
+                    <th class="py-2.5 px-4">Date</th>
+                    <th class="py-2.5 px-3">Txn ID</th>
+                    <th class="py-2.5 px-3">Stock</th>
+                    <th class="py-2.5 px-3 text-right">Engine Computed</th>
+                    <th class="py-2.5 px-3 text-right">User Entered</th>
+                    <th class="py-2.5 px-3 text-right">Delta</th>
+                    <th class="py-2.5 px-4">Notes</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-border/50">
+                  @for (row of filteredReconRows(); track row.transactionId) {
+                    <tr class="hover:bg-surface-hover/40 transition-colors">
+                      <td class="py-2.5 px-4 font-mono text-text-secondary">{{ row.transactionDate }}</td>
+                      <td class="py-2.5 px-3 font-mono text-white">{{ row.transactionId }}</td>
+                      <td class="py-2.5 px-3 font-semibold text-white">{{ row.stockCode || '—' }}</td>
+                      <td class="py-2.5 px-3 text-right font-mono font-semibold text-accent">₹{{ row.computedTotal | number:'1.2-2' }}</td>
+                      <td class="py-2.5 px-3 text-right font-mono text-white">₹{{ (row.enteredTotal || 0) | number:'1.2-2' }}</td>
+                      <td class="py-2.5 px-3 text-right font-mono font-semibold"
+                          [ngClass]="(row.delta || 0) === 0 ? 'text-accent' : 'text-danger'">
+                        ₹{{ (row.delta || 0) | number:'1.2-2' }}
+                      </td>
+                      <td class="py-2.5 px-4 text-text-muted italic">{{ row.note || 'Exact Match' }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </app-expansion-panel>
+
+      </div>
+    }
+
+  </main>
+
+  <app-footer></app-footer>
+
+  <!-- ============================================================== -->
+  <!-- MODALS (Contract Note & Link Demat Account)                    -->
+  <!-- ============================================================== -->
+  @if (isContractNoteModalOpen()) {
+    <div class="fixed inset-0 bg-black/75 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+      <div class="bg-surface border border-border rounded-2xl max-w-xl w-full p-6 space-y-4 shadow-modal animate-fade-in max-h-[90vh] overflow-y-auto">
+        <div class="flex items-center justify-between pb-3 border-b border-divider">
+          <div>
+            <h3 class="text-base font-bold text-white flex items-center gap-2">
+              <lucide-icon name="FileText" class="w-4 h-4 text-accent"></lucide-icon>
+              Contract Note: {{ selectedTxnId() }}
+            </h3>
+            <span class="text-2xs text-text-muted font-mono">Schedule: {{ selectedContractNote()?.scheduleCode }}</span>
+          </div>
+          <button (click)="closeContractNote()" class="text-text-muted hover:text-white">
+            <lucide-icon name="X" class="w-5 h-5"></lucide-icon>
+          </button>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3 p-3 bg-surface-alt rounded-lg border border-border text-xs">
+          <div>
+            <span class="text-2xs text-text-muted uppercase">Deductible Expense</span>
+            <div class="text-sm font-bold text-success font-mono">₹{{ (selectedContractNote()?.deductibleCharges || 0) | number:'1.2-2' }}</div>
+          </div>
+          <div>
+            <span class="text-2xs text-text-muted uppercase">Total Outlay</span>
+            <div class="text-sm font-bold text-white font-mono">₹{{ (selectedContractNote()?.totalCharges || 0) | number:'1.2-2' }}</div>
+          </div>
+        </div>
+
+        <table class="w-full text-left text-xs border-collapse">
+          <thead>
+            <tr class="border-b border-divider text-text-muted">
+              <th class="py-2 px-3">Item</th>
+              <th class="py-2 px-2">Category</th>
+              <th class="py-2 px-3 text-right">Amount</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-border/50">
+            @for (l of selectedContractNote()?.lines || []; track l.code) {
+              <tr>
+                <td class="py-2 px-3 text-white font-medium">{{ l.displayName }}</td>
+                <td class="py-2 px-2 text-text-secondary font-mono">{{ l.category }}</td>
+                <td class="py-2 px-3 text-right font-mono font-semibold text-white">₹{{ l.amount | number:'1.2-2' }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+
+        <div class="pt-3 border-t border-divider flex justify-end">
+          <ui-button variant="secondary" size="sm" (click)="closeContractNote()">Close</ui-button>
+        </div>
+      </div>
+    </div>
+  }
+
+  @if (isAddDematModalOpen()) {
+    <div class="fixed inset-0 bg-black/75 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+      <div class="bg-surface border border-border rounded-2xl max-w-md w-full p-6 space-y-4 shadow-modal animate-fade-in">
+        <div class="flex items-center justify-between pb-2 border-b border-divider">
+          <h3 class="text-base font-bold text-white">Link New Demat Account</h3>
+          <button (click)="closeAddDematModal()" class="text-text-muted hover:text-white">
+            <lucide-icon name="X" class="w-5 h-5"></lucide-icon>
+          </button>
+        </div>
+
+        <div class="space-y-3 text-xs">
+          <div>
+            <label class="block text-text-secondary mb-1">Demat Account ID (16-Digit BOID)</label>
+            <input type="text" [(ngModel)]="newDematId" placeholder="1208160012345678"
+                   class="w-full bg-surface border border-border rounded px-3 py-2 text-white font-mono" />
+          </div>
+          <div>
+            <label class="block text-text-secondary mb-1">Broker</label>
+            <select [(ngModel)]="newDematBroker" class="w-full bg-surface border border-border rounded px-3 py-2 text-white">
+              <option value="ZERODHA">Zerodha</option>
+              <option value="UPSTOX">Upstox</option>
+              <option value="FYERS">Fyers</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-text-secondary mb-1">Account Holder Name</label>
+            <input type="text" [(ngModel)]="newDematHolder" placeholder="e.g. Self or Spouse"
+                   class="w-full bg-surface border border-border rounded px-3 py-2 text-white" />
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-text-secondary mb-1">Opening Date</label>
+              <input type="date" [(ngModel)]="newDematOpenedOn"
+                     class="w-full bg-surface border border-border rounded px-3 py-2 text-white font-mono" />
+            </div>
+            <div>
+              <label class="block text-text-secondary mb-1">AMC Frequency</label>
+              <select [(ngModel)]="newDematFrequency" class="w-full bg-surface border border-border rounded px-3 py-2 text-white">
+                <option value="QUARTERLY">Quarterly</option>
+                <option value="YEARLY">Yearly</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="pt-3 border-t border-divider flex justify-end gap-2">
+          <ui-button variant="ghost" size="sm" (click)="closeAddDematModal()">Cancel</ui-button>
+          <ui-button variant="primary" size="sm" (click)="saveDematAccount()">Save Demat Account</ui-button>
+        </div>
+      </div>
+    </div>
+  }
+
+  @if (isViewRulesModalOpen()) {
+    <div class="fixed inset-0 bg-black/75 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+      <div class="bg-surface border border-border rounded-2xl max-w-xl w-full p-6 space-y-4 shadow-modal animate-fade-in max-h-[90vh] overflow-y-auto">
+        <div class="flex items-center justify-between pb-2 border-b border-divider">
+          <h3 class="text-base font-bold text-white font-mono">Rules: {{ selectedScheduleForView()?.scheduleCode }}</h3>
+          <button (click)="closeViewRulesModal()" class="text-text-muted hover:text-white">
+            <lucide-icon name="X" class="w-5 h-5"></lucide-icon>
+          </button>
+        </div>
+
+        <table class="w-full text-left text-xs border-collapse">
+          <thead>
+            <tr class="border-b border-divider text-text-muted">
+              <th class="py-2 px-3">Rule</th>
+              <th class="py-2 px-3">Basis</th>
+              <th class="py-2 px-3">Rate / Flat</th>
+              <th class="py-2 px-3">Taxable</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-border/50">
+            @for (r of selectedScheduleForView()?.rules || []; track r.code) {
+              <tr>
+                <td class="py-2 px-3 font-semibold text-white">{{ r.code }}</td>
+                <td class="py-2 px-3 text-text-secondary font-mono">{{ r.basis }}</td>
+                <td class="py-2 px-3 text-accent font-mono">{{ r.rate ? (r.rate + '%') : ('₹' + r.flatAmount) }}</td>
+                <td class="py-2 px-3">
+                  <ui-badge [tone]="r.taxable ? 'info' : 'neutral'" styleVariant="soft">{{ r.taxable ? 'Yes' : 'No' }}</ui-badge>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+
+        <div class="pt-3 border-t border-divider flex justify-end">
+          <ui-button variant="secondary" size="sm" (click)="closeViewRulesModal()">Close</ui-button>
+        </div>
+      </div>
+    </div>
+  }
+</div>
