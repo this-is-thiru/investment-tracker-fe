@@ -8,6 +8,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '@services/auth.service';
 import { LoginRequest } from '../../models/login-request.model';
+import { AuthModalRoute } from '@core/enums';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
@@ -47,7 +48,7 @@ export class SignInComponent implements OnInit {
   private initLoginForm(): FormGroup {
     return this.formBuilder.group({
       email: ['', [Validators.required, Validators.email]], // added email validator
-      password: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(12)]]
+      password: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(128)]]
     });
   }
 
@@ -110,7 +111,7 @@ export class SignInComponent implements OnInit {
 
   onForgotPassword(): void {
     // Navigate to the forgot password modal
-    this.router.navigate([{ outlets: { modal: ['forgot-password'] } }]);
+    this.router.navigate([{ outlets: { modal: [AuthModalRoute.FORGOT_PASSWORD] } }]);
   }
 
   // Only allow in-app paths, never protocol-relative or absolute URLs

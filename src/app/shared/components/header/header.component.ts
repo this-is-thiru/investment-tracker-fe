@@ -8,11 +8,13 @@ import { NotificationService, Notification } from '@services/notification.servic
 import { NavItem } from '@models/nav-item.model';
 import { map } from 'rxjs/operators';
 import { ButtonComponent } from "@shared/ui/button/button.component";
+import { BadgeComponent } from "@shared/ui/badge/badge.component";
+import { UserRole, AuthModalRoute } from "@core/enums";
 
 
 @Component({
   selector: 'app-header',
-  imports: [CommonModule, LucideIconsModule, RouterModule, TooltipDirective, ButtonComponent],
+  imports: [CommonModule, LucideIconsModule, RouterModule, TooltipDirective, ButtonComponent, BadgeComponent],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.css']
 })
@@ -30,6 +32,33 @@ export class HeaderComponent {
   isAuthenticated = this.authService.isLoggedIn;
   isDemo = this.authService.isDemo;
   userEmail = this.authService.userEmail;
+  userRole = this.authService.userRole;
+  isSuperUser = this.authService.isSuperUser;
+  isAdmin = this.authService.isAdminUser;
+
+  formatRoleName(role: string): string {
+    switch (role) {
+      case UserRole.SUPER_USER: return 'Super User';
+      case UserRole.ADMIN: return 'Admin';
+      case UserRole.MANAGER: return 'Manager';
+      case UserRole.EDITOR: return 'Editor';
+      case UserRole.AUTHOR: return 'Author';
+      case UserRole.MODERATOR: return 'Moderator';
+      case UserRole.USER: return 'User';
+      case UserRole.GUEST: return 'Guest';
+      case UserRole.TEST_USER: return 'Test User';
+      default: return role;
+    }
+  }
+
+  getRoleTone(role: string): 'accent' | 'purple' | 'info' | 'neutral' {
+    switch (role) {
+      case UserRole.SUPER_USER: return 'accent';
+      case UserRole.ADMIN: return 'purple';
+      case UserRole.MANAGER: return 'info';
+      default: return 'neutral';
+    }
+  }
 
 
   // --- Nav Items ---
@@ -73,7 +102,11 @@ export class HeaderComponent {
   }
 
   openSignIn(): void {
-    this.router.navigate([{ outlets: { modal: ['sign-in'] } }]);
+    this.router.navigate([{ outlets: { modal: [AuthModalRoute.SIGN_IN] } }]);
+  }
+
+  openChangePassword(): void {
+    this.router.navigate([{ outlets: { modal: [AuthModalRoute.CHANGE_PASSWORD] } }]);
   }
 
   // --- Toggles ---

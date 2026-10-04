@@ -1,5 +1,6 @@
 // storage.service.ts
 import { Injectable } from '@angular/core';
+import { StorageKey, UserRole } from '@core/enums';
 
 @Injectable({
   providedIn: 'root',
@@ -50,7 +51,7 @@ export class StorageService {
   }
 
   isUserAuthenticated(): boolean {
-    const token = this.getItem('jwtToken');
+    const token = this.getItem(StorageKey.JWT_TOKEN);
     return !!token && this.isTokenValid(token);
   }
 
@@ -81,16 +82,39 @@ export class StorageService {
     }
   }
 
-  getUserRoleFromToken(token: string): string | null {
+  getUserAuthoritiesFromToken(token: string): string[] {
     try {
       const [, payload] = token.split('.');
-      if (!payload) return null;
+      if (!payload) return [];
 
       const decoded = JSON.parse(atob(payload));
-      return decoded.role || decoded.roles || null;
+      const rawAuthorities = decoded.authorities || decoded.roles || decoded.role;
+
+      if (!rawAuthorities) return [];
+
+      let list: string[] = [];
+      if (Array.isArray(rawAuthorities)) {
+        list = rawAuthorities.map((item: any) =>
+          typeof item === 'string' ? item : item?.authority || ''
+        );
+      } else if (typeof rawAuthorities === 'string') {
+        list = rawAuthorities.split(',').map((s: string) => s.trim());
+      }
+
+      // Normalize by stripping "ROLE_" prefix and converting to uppercase
+      return list
+        .filter((r) => !!r)
+        .map((r) => r.toUpperCase().replace(/^ROLE_/, ''));
     } catch (error) {
-      console.error('Error decoding token for role:', error);
-      return null;
+      console.error('Error decoding token for authorities:', error);
+      return [];
     }
+  }
+
+  getUserRoleFromToken(token: string): UserRole | string | null {
+    const authorities = this.getUserAuthoritiesFromToken(token);
+    if (authorities.includes(UserRole.SUPER_USER)) return UserRole.SUPER_USER;
+    if (authorities.includes(UserRole.ADMIN)) return UserRole.ADMIN;
+    return authorities.length > 0 ? authorities[0] : null;
   }
 }

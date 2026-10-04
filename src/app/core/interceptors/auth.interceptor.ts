@@ -1,7 +1,12 @@
-import { HttpInterceptorFn, HttpResponse } from '@angular/common/http';
-import { inject } from '@angular/core';
-import { map } from 'rxjs/operators';
+import { HttpInterceptorFn, HttpResponse, HttpErrorResponse } from '@angular/common/http';
+import { inject, Injector } from '@angular/core';
+import { Router } from '@angular/router';
+import { map, catchError } from 'rxjs/operators';
+import { throwError } from 'rxjs';
 import { StorageService } from '@services/storage.service';
+import { AuthService } from '@services/auth.service';
+import { NotificationService } from '@services/notification.service';
+import { StorageKey, AuthModalRoute } from '@core/enums';
 import { environment } from '@env/environment';
 
 // Only attach our JWT (and unwrap our API's { data } envelope) for requests
@@ -20,7 +25,10 @@ export const AuthInterceptor: HttpInterceptorFn = (req, next) => {
   }
 
   const storageService = inject(StorageService);
-  const token = storageService.getItem('jwtToken');
+  const router = inject(Router);
+  const notificationService = inject(NotificationService);
+  const injector = inject(Injector);
+  const token = storageService.getItem(StorageKey.JWT_TOKEN);
 
   const cloned = token
     ? req.clone({
@@ -38,6 +46,41 @@ export const AuthInterceptor: HttpInterceptorFn = (req, next) => {
         }
       }
       return event;
+    }),
+    catchError((error: HttpErrorResponse) => {
+      // 401 Unauthorized handling: session expired or token invalidated
+      // Avoid intercepting /auth/login so that bad credentials can be reported by the form
+      if (error.status === 401 && !req.url.includes('/auth/login')) {
+        const authService = injector.get(AuthService);
+
+        // In demo mode, bypass auto-logout and let feature services fallback to mock data
+        if (authService.isDemo()) {
+          return throwError(() => error);
+        }
+
+        const currentUrl = router.url;
+        authService.logOut(false);
+        notificationService.addNotification(
+          'Session Expired',
+          'Your session has expired. Please sign in again.',
+          'warning',
+          null
+        );
+
+        // Redirect to sign-in modal remembering returnUrl
+        router.navigate([{ outlets: { primary: ['home'], modal: [AuthModalRoute.SIGN_IN] } }], {
+          queryParams: { returnUrl: currentUrl },
+        });
+      } else if (error.status === 403) {
+        notificationService.addNotification(
+          'Access Denied',
+          'You do not have permission to perform this action.',
+          'error',
+          null
+        );
+      }
+
+      return throwError(() => error);
     })
   );
 };

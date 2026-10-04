@@ -87,7 +87,7 @@
     }
   }
 
-  :has(app-sign-in, app-sign-up, app-change-password) main {
+  :has(app-sign-in, app-sign-up, app-change-password, app-forgot-password) main {
     filter: blur(3px);
     pointer-events: none;
   }

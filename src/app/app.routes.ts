@@ -54,8 +54,14 @@ export const routes: Routes = [
       },
       {
         path: 'forgot-password',
-        loadComponent: () => import('./features/auth/components/change-password/change-password.component').then(m => m.ChangePasswordComponent),
+        loadComponent: () => import('./features/auth/components/forgot-password/forgot-password.component').then(m => m.ForgotPasswordComponent),
         outlet: 'modal'
+      },
+      {
+        path: 'change-password',
+        loadComponent: () => import('./features/auth/components/change-password/change-password.component').then(m => m.ChangePasswordComponent),
+        outlet: 'modal',
+        canActivate: [authGuard]
       },
       {
         path: 'settings',

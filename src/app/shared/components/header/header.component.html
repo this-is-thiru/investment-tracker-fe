@@ -129,9 +129,9 @@
 
               <div class="h-px bg-border mx-2"></div>
 
-              <!-- Settings (not available in demo) -->
+              <!-- Settings & Password (not available in demo) -->
               @if (!isDemo()) {
-                <div class="p-2">
+                <div class="p-2 space-y-1">
                   <button
                     type="button"
                     (click)="onNavigate('settings'); closeAllMenus()"
@@ -139,6 +139,14 @@
                   >
                     <lucide-icon name="settings-icon" class="h-4 w-4 text-accent"></lucide-icon>
                     Settings
+                  </button>
+                  <button
+                    type="button"
+                    (click)="openChangePassword(); closeAllMenus()"
+                    class="w-full px-3 py-2.5 rounded-lg text-sm font-medium transition-all text-text-secondary hover:text-white hover:bg-surface-input flex items-center gap-2.5"
+                  >
+                    <lucide-icon name="lock" class="h-4 w-4 text-accent"></lucide-icon>
+                    Change Password
                   </button>
                 </div>
 
@@ -226,15 +234,22 @@
                 <div class="h-px bg-border mx-2"></div>
               }
 
-              <!-- Settings (not available in demo) -->
+              <!-- Settings & Password (not available in demo) -->
               @if (!isDemo()) {
-                <div class="p-2">
+                <div class="p-2 space-y-1">
                   <button
                     (click)="onNavigate('settings'); closeAllMenus()"
                     class="w-full px-4 py-2.5 text-sm text-text-secondary hover:text-white hover:bg-surface-input rounded-lg transition-all flex items-center gap-2"
                   >
-                    <lucide-icon name="settings-icon" class="h-4 w-4"></lucide-icon>
+                    <lucide-icon name="settings-icon" class="h-4 w-4 text-accent"></lucide-icon>
                     Settings
+                  </button>
+                  <button
+                    (click)="openChangePassword(); closeAllMenus()"
+                    class="w-full px-4 py-2.5 text-sm text-text-secondary hover:text-white hover:bg-surface-input rounded-lg transition-all flex items-center gap-2"
+                  >
+                    <lucide-icon name="lock" class="h-4 w-4 text-accent"></lucide-icon>
+                    Change Password
                   </button>
                 </div>
 
@@ -290,10 +305,15 @@
 <ng-template #accountSummary>
   <div class="px-4 py-3 flex items-center gap-3">
     <div class="w-9 h-9 rounded-full bg-accent/10 flex items-center justify-center shrink-0">
-      <lucide-icon name="user" class="h-4 w-4 text-accent"></lucide-icon>
+      <lucide-icon [name]="isSuperUser() ? 'Crown' : 'User'" class="h-4 w-4 text-accent"></lucide-icon>
     </div>
-    <div class="min-w-0">
-      <p class="text-xs text-text-muted">{{ isDemo() ? 'Demo account' : 'Signed in as' }}</p>
+    <div class="min-w-0 flex-1">
+      <div class="flex items-center gap-2 flex-wrap mb-0.5">
+        <p class="text-xs text-text-muted">{{ isDemo() ? 'Demo account' : 'Signed in as' }}</p>
+        @if (userRole() && !isDemo()) {
+          <ui-badge [tone]="getRoleTone(userRole()!)" styleVariant="soft">{{ formatRoleName(userRole()!) }}</ui-badge>
+        }
+      </div>
       <p class="text-sm text-white font-medium truncate" [appTooltip]="userEmail() || ''">{{ userEmail() }}</p>
     </div>
   </div>

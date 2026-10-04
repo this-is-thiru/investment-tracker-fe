@@ -11,6 +11,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { finalize } from 'rxjs/operators';
 import { RegisterRequest } from '../../models/register-request.model';
+import { UserRole, AuthModalRoute } from '@core/enums';
 import { NotificationService } from '@services/notification.service';
 import { LucideIconsModule } from '@core/icons/lucide-icons.module'; // import LucideIconsModule for custom SVG icons
 import { ModalComponent } from '@shared/ui/modal/modal.component';
@@ -47,7 +48,7 @@ export class SignUpComponent {
       password: ['', [
         Validators.required,
         Validators.minLength(6),
-        Validators.maxLength(12)
+        Validators.maxLength(128)
       ]],
       confirmPassword: ['', Validators.required]
     }, { validator: this.passwordMatchValidator });
@@ -70,7 +71,7 @@ export class SignUpComponent {
     const signUpData: RegisterRequest = {
       email: this.registrationForm.get('email')?.value,
       password: this.registrationForm.get('password')?.value,
-      role: 'USER' // Adding default role for new registrations
+      role: UserRole.USER // Adding default role for new registrations
     };
 
     this.authService.register(signUpData).pipe(
@@ -85,17 +86,18 @@ export class SignUpComponent {
           'Account created successfully! You can now sign in.',
           'success'
         );
-        this.router.navigate([{ outlets: { modal: ['sign-in'] } }], { queryParamsHandling: 'preserve' });
+        this.router.navigate([{ outlets: { modal: [AuthModalRoute.SIGN_IN] } }], { queryParamsHandling: 'preserve' });
       },
       error: (err) => {
         console.error('Registration error:', err);
         
         // User-friendly error messages
         let message = 'Registration failed. Please try again later.';
-        if (err.status === 409) {
+        const backendMessage = err?.error?.message || (typeof err?.error === 'string' ? err.error : '');
+        if (err.status === 409 || backendMessage.toLowerCase().includes('already exists')) {
           message = 'This email is already registered. Please try signing in instead.';
         } else if (err.status === 400) {
-          message = 'Please check your information and try again.';
+          message = backendMessage || 'Please check your information and try again.';
         } else if (err.status === 0) {
           message = 'Unable to connect to the server. Please check your internet connection.';
         }

@@ -1,12 +1,13 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { StorageService } from '@services/storage.service';
+import { StorageKey, AuthModalRoute } from '@core/enums';
 
 export const authGuard: CanActivateFn = (_route, state) => {
   const router = inject(Router);
   const storageService = inject(StorageService);
 
-  const token = storageService.getItem('jwtToken');
+  const token = storageService.getItem(StorageKey.JWT_TOKEN);
   if (token && storageService.isTokenValid(token)) {
     return true;
   }
@@ -17,7 +18,7 @@ export const authGuard: CanActivateFn = (_route, state) => {
   delete target.root.children['modal'];
 
   return router.createUrlTree(
-    [{ outlets: { primary: ['home'], modal: ['sign-in'] } }],
+    [{ outlets: { primary: ['home'], modal: [AuthModalRoute.SIGN_IN] } }],
     { queryParams: { returnUrl: router.serializeUrl(target) } }
   );
 };
