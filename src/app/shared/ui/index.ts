@@ -10,3 +10,4 @@ export * from './confirm-dialog/confirm-dialog.service';
 export * from './empty-state/empty-state.component';
 export * from './spinner/spinner.component';
 export * from './tabs/tabs.component';
+export * from './alert/alert.component';

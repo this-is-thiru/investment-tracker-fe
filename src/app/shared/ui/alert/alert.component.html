@@ -1,0 +1,14 @@
+<div class="ui-alert" [ngClass]="'ui-alert--' + tone" [attr.role]="tone === 'danger' ? 'alert' : 'status'">
+  <lucide-icon [name]="icon" class="ui-alert__icon"></lucide-icon>
+  <div class="ui-alert__body">
+    @if (title) {
+      <p class="ui-alert__title">{{ title }}</p>
+    }
+    <div class="ui-alert__content"><ng-content></ng-content></div>
+  </div>
+  @if (dismissible) {
+    <button type="button" class="ui-alert__close" aria-label="Dismiss" (click)="dismissed.emit()">
+      <lucide-icon name="x" class="w-4 h-4"></lucide-icon>
+    </button>
+  }
+</div>

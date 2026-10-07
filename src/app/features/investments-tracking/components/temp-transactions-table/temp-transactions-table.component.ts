@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { NotificationService } from '@services/notification.service';
+import { finalize } from 'rxjs/operators';
 import { TransactionsResponse } from '@models/transactions-response.model';
 import { TransactionService } from '@services/transaction.service';
 import { CorporateActionService } from '../../services/corporate-action.service';
@@ -20,6 +20,18 @@ import { TooltipDirective } from '@shared/directives/tooltip/tooltip.directive';
 import { BadgeComponent } from '@shared/ui/badge/badge.component';
 import { ButtonComponent } from '@shared/ui/button/button.component';
 import { EmptyStateComponent } from '@shared/ui/empty-state/empty-state.component';
+import { AlertComponent, AlertTone } from '@shared/ui/alert/alert.component';
+import { RedriveResult } from '@models/redrive-result.model';
+import { BrokerName } from '@models/corporate-action.model';
+
+type BrokerChoice = BrokerName | 'ALL';
+
+const QUARTERS = [
+  { label: 'Q1 · Jan – Mar', value: 'JANUARY', range: ['Jan', 'Mar'] },
+  { label: 'Q2 · Apr – Jun', value: 'APRIL', range: ['Apr', 'Jun'] },
+  { label: 'Q3 · Jul – Sep', value: 'JULY', range: ['Jul', 'Sep'] },
+  { label: 'Q4 · Oct – Dec', value: 'OCTOBER', range: ['Oct', 'Dec'] },
+];
 
 @Component({
   selector: 'app-temp-transactions-table',
@@ -34,110 +46,52 @@ import { EmptyStateComponent } from '@shared/ui/empty-state/empty-state.componen
     BadgeComponent,
     ButtonComponent,
     EmptyStateComponent,
+    AlertComponent,
   ],
   templateUrl: './temp-transactions-table.component.html',
 })
 export class TempTransactionsTableComponent implements OnInit {
   @Input() userEmail = '';
+  /** Holdings changed (corporate actions applied or transactions redriven) */
   @Output() actionApplied = new EventEmitter<void>();
   /** Number of temporary rows still waiting for review, emitted after each load */
   @Output() countChange = new EventEmitter<number>();
+  /** User asked to see the corporate actions registry */
+  @Output() viewActions = new EventEmitter<void>();
 
   private transactionService = inject(TransactionService);
   private corporateActionService = inject(CorporateActionService);
   private authService = inject(AuthService);
-  private notificationService = inject(NotificationService);
   private cdr = inject(ChangeDetectorRef);
 
   transactions: TransactionsResponse[] = [];
   loading = false;
+  loadError: string | null = null;
 
-  // Batch Perform Action fields
-  actionType = 'bonus';
-  performMonth = 'OCTOBER';
-  performYear = 2025;
-  performBroker = 'ZERODHA';
+  // Step 1: apply corporate actions for a quarter
+  quarters = QUARTERS;
+  performMonth = QUARTERS[Math.floor(new Date().getMonth() / 3)].value;
+  performYear = new Date().getFullYear();
+  performBroker: BrokerChoice = 'ALL';
   isPerforming = false;
+  performOutcome: { tone: AlertTone; title: string; message: string } | null = null;
 
-  actionOptions = [
-    { label: 'Bonus Issue', value: 'bonus' },
-    { label: 'Stock Split', value: 'split' },
-    { label: 'Dividend Payment', value: 'dividend' },
-    { label: 'Merger/Acquisition', value: 'merger' },
-  ];
+  // Step 2: redrive held transactions
+  isRedriving = false;
+  redriveResult: RedriveResult | null = null;
+  redriveError: string | null = null;
 
-  months = [
-    { label: 'January', value: 'JANUARY' },
-    { label: 'February', value: 'FEBRUARY' },
-    { label: 'March', value: 'MARCH' },
-    { label: 'April', value: 'APRIL' },
-    { label: 'May', value: 'MAY' },
-    { label: 'June', value: 'JUNE' },
-    { label: 'July', value: 'JULY' },
-    { label: 'August', value: 'AUGUST' },
-    { label: 'September', value: 'SEPTEMBER' },
-    { label: 'October', value: 'OCTOBER' },
-    { label: 'November', value: 'NOVEMBER' },
-    { label: 'December', value: 'DECEMBER' }
-  ];
+  years = Array.from({ length: new Date().getFullYear() - 2014 }, (_, i) => {
+    const year = new Date().getFullYear() - i;
+    return { label: String(year), value: year };
+  });
 
-  brokers = [
+  brokers: { label: string; value: BrokerChoice }[] = [
+    { label: 'All brokers', value: 'ALL' },
     { label: 'Zerodha', value: 'ZERODHA' },
-    { label: 'Groww', value: 'GROWW' },
     { label: 'Upstox', value: 'UPSTOX' },
-    { label: 'Angel One', value: 'ANGEL_ONE' }
+    { label: 'Fyers', value: 'FYERS' },
   ];
-
-  // Dynamic UI Helpers
-  getDynamicIcon(type: string): string {
-    switch (type) {
-      case 'bonus': return 'gift';
-      case 'split': return 'scissors';
-      case 'dividend': return 'coins';
-      case 'merger': return 'git-merge';
-      default: return 'zap';
-    }
-  }
-
-  getDynamicIconColor(type: string): string {
-    switch (type) {
-      case 'bonus': return 'text-yellow-500';
-      case 'split': return 'text-cyan-400';
-      case 'dividend': return 'text-green-500';
-      case 'merger': return 'text-orange-500';
-      default: return 'text-[#EAB308]';
-    }
-  }
-
-  getDynamicDescription(type: string): string {
-    switch (type) {
-      case 'bonus': return 'Trigger automated processing of bonus issues for a specific month, year, and broker.';
-      case 'split': return 'Trigger automated processing of stock splits for a specific month, year, and broker.';
-      case 'dividend': return 'Trigger automated processing of dividend payments for a specific month, year, and broker.';
-      case 'merger': return 'Trigger automated processing of mergers & acquisitions for a specific month, year, and broker.';
-      default: return 'Trigger automated processing of corporate actions for a specific month, year, and broker.';
-    }
-  }
-
-  getDynamicButtonText(type: string): string {
-    switch (type) {
-      case 'bonus': return 'Perform Bonus Actions';
-      case 'split': return 'Perform Split Actions';
-      case 'dividend': return 'Perform Dividend Actions';
-      case 'merger': return 'Perform Merger Actions';
-      default: return 'Perform Batch Actions';
-    }
-  }
-
-  getDynamicButtonClass(type: string): string {
-    switch (type) {
-      case 'bonus': return 'bg-gradient-to-r from-[#FACC15] to-[#EAB308] text-black hover:brightness-110';
-      case 'split': return 'bg-gradient-to-r from-[#22D3EE] to-[#06B6D4] text-black hover:brightness-110';
-      case 'dividend': return 'bg-gradient-to-r from-[#4ADE80] to-[#22C55E] text-black hover:brightness-110';
-      case 'merger': return 'bg-gradient-to-r from-[#FB923C] to-[#F97316] text-white hover:brightness-110';
-      default: return 'bg-gradient-to-r from-[#FACC15] to-[#EAB308] text-black hover:brightness-110';
-    }
-  }
 
   ngOnInit(): void {
     this.loadTransactions();
@@ -150,97 +104,157 @@ export class TempTransactionsTableComponent implements OnInit {
   loadTransactions(): void {
     if (!this.userEmail) return;
     this.loading = true;
-    this.transactionService.getTemporaryTransactions(this.userEmail).subscribe({
-      next: (data) => {
-        this.transactions = data.map((t, i) => ({
-          ...t,
-          rowId: t.rowId || `temp-${i}-${t.stockCode || 'unknown'}-${t.transactionDate || ''}`,
-        }));
-        this.loading = false;
-        this.countChange.emit(this.transactions.length);
-        this.cdr.detectChanges();
-      },
-      error: () => {
-        this.loading = false;
-        this.notificationService.addNotification(
-          'Error',
-          'Failed to load temporary transactions',
-          'error'
-        );
-        this.cdr.detectChanges();
-      },
-    });
+    this.loadError = null;
+    this.transactionService
+      .getTemporaryTransactions(this.userEmail)
+      .pipe(
+        finalize(() => {
+          this.loading = false;
+          this.cdr.markForCheck();
+        })
+      )
+      .subscribe({
+        next: (data) => {
+          this.transactions = (data || []).map((t, i) => ({
+            ...t,
+            rowId: t.rowId || `temp-${i}-${t.stockCode || 'unknown'}-${t.transactionDate || ''}`,
+          }));
+          this.countChange.emit(this.transactions.length);
+        },
+        error: (err) => {
+          this.loadError = this.errorMessage(err, 'Pending transactions could not be loaded.');
+        },
+      });
+  }
+
+  get quarterLabel(): string {
+    const q = QUARTERS.find((x) => x.value === this.performMonth);
+    return q ? `${q.range[0]} – ${q.range[1]} ${this.performYear}` : '';
+  }
+
+  get brokerLabel(): string {
+    return this.brokers.find((b) => b.value === this.performBroker)?.label ?? '';
   }
 
   performActions(): void {
-    const email = this.userEmail || this.authService.getUserEmail();
-    if (!email) {
-      this.notificationService.addNotification(
-        'Authentication Required',
-        'You need to be signed in to perform corporate actions.',
-        'error'
-      );
-      return;
-    }
+    const email = this.currentEmail();
+    if (!email) return;
 
-    if (!this.performMonth) {
-      this.notificationService.addNotification(
-        'Validation Error',
-        'Please select a month.',
-        'error'
-      );
-      return;
-    }
-
-    if (!this.performYear || this.performYear < 2000 || this.performYear > 2100) {
-      this.notificationService.addNotification(
-        'Validation Error',
-        'Please enter a valid year.',
-        'error'
-      );
-      return;
-    }
-
-    if (!this.performBroker.trim()) {
-      this.notificationService.addNotification(
-        'Validation Error',
-        'Please select or enter a broker name.',
-        'error'
-      );
-      return;
-    }
-
-    // Map UI actionType value to API types if backend requires uppercase
-    const mappedActionType = this.actionType === 'split' ? 'STOCK_SPLIT' : this.actionType.toUpperCase();
-
+    const allBrokers = this.performBroker === 'ALL';
     const payload = {
-      actionType: mappedActionType,
       month: this.performMonth,
       year: Number(this.performYear),
-      brokerName: this.performBroker.trim().toUpperCase(),
+      brokerName: allBrokers ? undefined : (this.performBroker as BrokerName),
     };
+    const scope = `${this.quarterLabel} · ${this.brokerLabel}`;
 
     this.isPerforming = true;
-    this.corporateActionService.performCorporateAction(email, payload).subscribe({
-      next: () => {
-        this.isPerforming = false;
-        this.notificationService.addNotification(
-          'Batch Actions Performed',
-          `Corporate actions (${this.actionType.toUpperCase()}) batch performed successfully for ${this.performMonth} ${this.performYear} (Broker: ${this.performBroker.toUpperCase()}).`,
-          'success'
-        );
-        this.actionApplied.emit();
-        this.loadTransactions();
-      },
-      error: (err) => {
-        this.isPerforming = false;
-        console.error('Batch perform corporate actions failed:', err);
-        this.notificationService.addNotification(
-          'Batch Actions Failed',
-          `Failed to perform corporate actions batch for ${this.performMonth} ${this.performYear}.`,
-          'error'
-        );
-      },
-    });
+    this.performOutcome = null;
+    this.corporateActionService
+      .performBatchCorporateActions(email, payload, allBrokers)
+      .pipe(
+        finalize(() => {
+          this.isPerforming = false;
+          this.cdr.markForCheck();
+        })
+      )
+      .subscribe({
+        next: () => {
+          this.performOutcome = {
+            tone: 'success',
+            title: 'Corporate actions applied',
+            message: this.transactions.length
+              ? `Holdings adjusted for ${scope}. Redrive the pending transactions next.`
+              : `Holdings adjusted for ${scope}.`,
+          };
+          this.actionApplied.emit();
+          this.loadTransactions();
+        },
+        error: (err) => {
+          this.performOutcome = {
+            tone: 'danger',
+            title: 'Corporate actions were not applied',
+            message: this.errorMessage(err, 'Check the quarter, year and broker, then try again.'),
+          };
+        },
+      });
+  }
+
+  redriveTransactions(): void {
+    const email = this.currentEmail();
+    if (!email) return;
+
+    this.isRedriving = true;
+    this.redriveResult = null;
+    this.redriveError = null;
+    this.transactionService
+      .redriveTemporaryTransactions(email)
+      .pipe(
+        finalize(() => {
+          this.isRedriving = false;
+          this.cdr.markForCheck();
+        })
+      )
+      .subscribe({
+        next: (result) => {
+          this.redriveResult = result;
+          if (result?.succeeded?.length) {
+            this.actionApplied.emit();
+          }
+          this.loadTransactions();
+        },
+        error: (err) => {
+          this.redriveError = this.errorMessage(err, 'Pending transactions could not be redriven. Please try again.');
+        },
+      });
+  }
+
+  // Redrive result helpers
+
+  get failedEntries(): { id: string; reason: string }[] {
+    return Object.entries(this.redriveResult?.failed ?? {}).map(([id, reason]) => ({ id, reason }));
+  }
+
+  get redriveTone(): AlertTone {
+    const r = this.redriveResult;
+    if (!r) return 'info';
+    const succeeded = r.succeeded?.length ?? 0;
+    if (this.failedEntries.length) return succeeded ? 'warning' : 'danger';
+    if (r.stillFiltered?.length) return 'warning';
+    return succeeded ? 'success' : 'info';
+  }
+
+  get redriveTitle(): string {
+    const succeeded = this.redriveResult?.succeeded?.length ?? 0;
+    if (succeeded) {
+      return `${succeeded} transaction${succeeded === 1 ? '' : 's'} moved to your portfolio`;
+    }
+    return 'No transactions were moved to your portfolio';
+  }
+
+  dismissPerformOutcome(): void {
+    this.performOutcome = null;
+  }
+
+  dismissRedrive(): void {
+    this.redriveResult = null;
+    this.redriveError = null;
+  }
+
+  private currentEmail(): string {
+    const email = this.userEmail || this.authService.getUserEmail();
+    if (!email) {
+      this.performOutcome = {
+        tone: 'danger',
+        title: 'Sign in required',
+        message: 'You need to be signed in to change your holdings.',
+      };
+    }
+    return email || '';
+  }
+
+  private errorMessage(err: any, fallback: string): string {
+    const msg = err?.error?.message || (typeof err?.error === 'string' ? err.error : '') || err?.message;
+    return msg || fallback;
   }
 }

@@ -4,6 +4,7 @@ import { catchError, tap } from 'rxjs/operators';
 import { HttpClient, HttpEvent, HttpEventType, HttpErrorResponse } from '@angular/common/http';
 import { BaseurlService } from './baseurl.service';
 import { TransactionsResponse } from '@models/transactions-response.model';
+import { RedriveResult } from '@models/redrive-result.model';
 
 @Injectable({
   providedIn: 'root',
@@ -296,6 +297,22 @@ export class TransactionService {
     const url = `${this.BASE_URL.getBaseUrl()}/temporary-transactions/user/${email}/all`;
     return this.http.get<TransactionsResponse[]>(url);
   }
+
+  /** Redrive temporary transactions */
+  redriveTemporaryTransactions(email: string): Observable<RedriveResult> {
+    if (email === 'demo@wealthlens.com') {
+      return of({
+        succeeded: ['demo-tx-1'],
+        failed: {},
+        stillFiltered: [],
+        filteredOut: [],
+        message: 'Demo mode: 1 temporary transaction redriven successfully.',
+      });
+    }
+    const url = `${this.BASE_URL.getBaseUrl()}/temporary-transactions/user/${email}/redrive`;
+    return this.http.post<RedriveResult>(url, {});
+  }
+
 
   /** Fetch holdings */
   getAllHoldings(email: string): Observable<any> {

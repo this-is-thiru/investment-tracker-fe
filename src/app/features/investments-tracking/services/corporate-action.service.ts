@@ -2,12 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { BaseurlService } from '@services/baseurl.service';
-
-export interface CorporateActionPayload {
-  actionType: string;
-  stockCode: string;
-  [key: string]: any;
-}
+import { CorporateActionDto, CorporateActionPerformDto } from '@models/corporate-action.model';
 
 @Injectable({
   providedIn: 'root',
@@ -16,20 +11,9 @@ export class CorporateActionService {
   private http = inject(HttpClient);
   private BASE_URL = inject(BaseurlService);
 
-  apply(email: string, payload: CorporateActionPayload): Observable<any> {
-    if (email === 'demo@wealthlens.com') {
-      return throwError(() => new HttpErrorResponse({
-        status: 403,
-        error: { message: 'Applying corporate actions is disabled in read-only guest session.' }
-      }));
-    }
-    const url = `${this.BASE_URL.getBaseUrl()}/corporate-actions/user/${email}/apply`;
-    return this.http.post(url, payload);
-  }
-
-  addCorporateAction(payload: any): Observable<any> {
+  addCorporateAction(payload: any): Observable<string> {
     const url = `${this.BASE_URL.getBaseUrl()}/corporate-action/add`;
-    return this.http.post(url, payload);
+    return this.http.post(url, payload, { responseType: 'text' });
   }
 
   getAllCorporateActions(): Observable<any[]> {
@@ -42,19 +26,47 @@ export class CorporateActionService {
     return this.http.get<any>(url);
   }
 
-  performCorporateAction(email: string, payload: any): Observable<any> {
+  getCorporateActions(ids: string[]): Observable<CorporateActionDto[]> {
+    const url = `${this.BASE_URL.getBaseUrl()}/corporate-action/list?ids=${encodeURIComponent(ids.join(','))}`;
+    return this.http.get<CorporateActionDto[]>(url);
+  }
+
+  updateCorporateActionPriority(id: string, priority: number): Observable<string> {
+    const url = `${this.BASE_URL.getBaseUrl()}/corporate-action/update/priority/${id}/${priority}`;
+    return this.http.put(url, {}, { responseType: 'text' });
+  }
+
+  performBatchCorporateActions(
+    email: string,
+    payload: CorporateActionPerformDto,
+    allBrokers = false
+  ): Observable<any> {
     if (email === 'demo@wealthlens.com') {
       return throwError(() => new HttpErrorResponse({
         status: 403,
         error: { message: 'Performing batch corporate actions is disabled in read-only guest session.' }
       }));
     }
-    const url = `${this.BASE_URL.getBaseUrl()}/corporate-action/user/${email}/perform`;
+    const url = `${this.BASE_URL.getBaseUrl()}/corporate-action/user/${email}/perform?allBrokers=${allBrokers}`;
     return this.http.put(url, payload);
   }
 
-  deleteCorporateAction(id: string, payload: any): Observable<any> {
+  performCorporateAction(email: string, payload: any, allBrokers = false): Observable<any> {
+    return this.performBatchCorporateActions(email, payload, allBrokers);
+  }
+
+  performSingleCorporateAction(payload: any): Observable<string> {
+    const url = `${this.BASE_URL.getBaseUrl()}/corporate-action/perform`;
+    return this.http.put(url, payload, { responseType: 'text' });
+  }
+
+  anyCorporateActionToPerform(payload: any): Observable<boolean> {
+    const url = `${this.BASE_URL.getBaseUrl()}/corporate-action/perform/test`;
+    return this.http.put<boolean>(url, payload);
+  }
+
+  deleteCorporateAction(id: string): Observable<any> {
     const url = `${this.BASE_URL.getBaseUrl()}/corporate-action/delete/${id}`;
-    return this.http.delete(url, { body: payload });
+    return this.http.delete(url);
   }
 }

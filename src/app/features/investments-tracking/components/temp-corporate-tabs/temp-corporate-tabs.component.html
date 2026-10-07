@@ -10,18 +10,18 @@
 >
   <div class="space-y-6">
     <ui-tabs ariaLabel="Transactions and corporate actions" [items]="tabs"
-      [value]="activeTab" (valueChange)="activeTab = $any($event)" />
+      [value]="activeTab" (valueChange)="onTabChange($any($event))" />
 
     @if (activeTab === 'temporary') {
-      <app-temp-transactions-table [userEmail]="userEmail" (actionApplied)="onActionApplied()" (countChange)="onPendingCount($event)"></app-temp-transactions-table>
+      <app-temp-transactions-table [userEmail]="userEmail" (actionApplied)="onActionApplied()" (countChange)="onPendingCount($event)" (viewActions)="onTabChange('list-actions')"></app-temp-transactions-table>
     }
 
     @if (activeTab === 'list-actions') {
-      <app-corporate-action-list></app-corporate-action-list>
+      <app-corporate-action-list (addAction)="onTabChange('add-action')"></app-corporate-action-list>
     }
 
     @if (activeTab === 'add-action') {
-      <app-add-corporate-action (actionAdded)="onActionAdded()"></app-add-corporate-action>
+      <app-add-corporate-action (actionAdded)="onActionAdded()" (viewActions)="onTabChange('list-actions')"></app-add-corporate-action>
     }
   </div>
 </app-expansion-panel>

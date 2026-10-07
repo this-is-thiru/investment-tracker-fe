@@ -37,6 +37,8 @@ export class TempCorporateTabsComponent {
   @Input() userEmail = '';
   @Output() dataChanged = new EventEmitter<void>();
 
+  @ViewChild(TabsComponent) uiTabs?: TabsComponent;
+
   @ViewChild(TempTransactionsTableComponent)
   tempTable?: TempTransactionsTableComponent;
 
@@ -67,7 +69,7 @@ export class TempCorporateTabsComponent {
   }
 
   // The table only exists while its tab is open; otherwise fetch the count directly
-  private loadPendingCount(): void {
+  loadPendingCount(): void {
     if (!this.userEmail) return;
     this.transactionService.getTemporaryTransactions(this.userEmail).pipe(finalize(() => this.cdr.markForCheck())).subscribe({
       next: (rows) => this.onPendingCount(rows.length),
@@ -75,9 +77,19 @@ export class TempCorporateTabsComponent {
     });
   }
 
+  onTabChange(tab: Tab): void {
+    this.activeTab = tab;
+    if (this.uiTabs) {
+      this.uiTabs.value = tab;
+    }
+    this.cdr.markForCheck();
+    this.cdr.detectChanges();
+    this.loadPendingCount();
+  }
+
   onActionApplied(): void {
+    // The table reloads itself and reports the new count
     this.dataChanged.emit();
-    this.tempTable?.refresh();
   }
 
   onActionAdded(): void {
