@@ -1,486 +1,340 @@
 <div class="space-y-4 animate-fade-in">
-  <!-- Top Intro Paragraph matching Temporary tab -->
   <p class="text-sm text-text-secondary">
-    Register corporate actions (bonus issues, stock splits, demergers, cash dividends, buybacks, and symbol changes)
-    to automatically adjust equity holdings and cost bases during broker trade uploads and quarterly batch reconciliation.
+    Register a bonus, split, demerger, dividend, buyback or symbol change so the quantities and cost bases
+    of affected holdings are adjusted correctly.
   </p>
 
-  <!-- Two-card overview workflow matching Temporary and All Actions tabs -->
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-    <!-- Card 1: Event Specification Guide -->
+    <!-- Dates guidance -->
     <div class="bg-surface-alt border border-border rounded-xl p-4 flex flex-col gap-4">
       <div class="flex items-start gap-3">
-        <span class="w-6 h-6 shrink-0 rounded-full bg-accent/15 text-accent text-xs font-bold flex items-center justify-center">1</span>
+        <span class="w-6 h-6 shrink-0 rounded-full bg-accent/15 text-accent flex items-center justify-center">
+          <lucide-icon name="calendar" class="w-3.5 h-3.5"></lucide-icon>
+        </span>
         <div>
-          <h4 class="text-sm font-semibold text-white">Event specification & dates</h4>
-          <p class="text-xs text-text-muted mt-0.5">Accurate dates and ratios prevent held transactions and portfolio drift.</p>
+          <h4 class="text-sm font-semibold text-white">Getting the dates right</h4>
+          <p class="text-xs text-text-muted mt-0.5">Wrong dates are the most common reason transactions get held back.</p>
         </div>
       </div>
 
-      <div class="text-xs text-text-secondary space-y-2">
-        <div class="flex items-start gap-2">
-          <span class="font-mono text-accent font-semibold shrink-0">Record Date:</span>
-          <span>Determines shareholder eligibility cutoff for portfolio adjustments.</span>
-        </div>
-        <div class="flex items-start gap-2">
-          <span class="font-mono text-text-muted font-semibold shrink-0">Quick Sync:</span>
-          <span>Use "Sync with Ex-Date" to automatically align Record and Execution dates.</span>
-        </div>
-      </div>
+      <ul class="text-xs text-text-secondary space-y-2">
+        <li class="flex items-start gap-2">
+          <span class="font-mono text-accent font-semibold shrink-0">Record date</span>
+          <span>decides who is eligible and which quarter the action is applied in.</span>
+        </li>
+        <li class="flex items-start gap-2">
+          <span class="font-mono text-text-muted font-semibold shrink-0">Ex-date</span>
+          <span>fills in the other dates automatically; change them only if they differ.</span>
+        </li>
+      </ul>
 
-      <div class="mt-auto flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-2 border-t border-border/50">
-        <span class="text-xs text-text-muted">Review existing configured actions?</span>
+      <div class="mt-auto flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <span class="text-xs text-text-muted">Check what's already registered first.</span>
         <ui-button variant="secondary" size="sm" (click)="onViewActionsClick()">
-          <lucide-icon name="arrow-left" class="w-3.5 h-3.5"></lucide-icon>
+          <lucide-icon name="file-text" class="w-3.5 h-3.5"></lucide-icon>
           View all actions
         </ui-button>
       </div>
     </div>
 
-    <!-- Card 2: Registry Conflict Guard -->
+    <!-- Registry check -->
     <div class="bg-surface-alt border border-border rounded-xl p-4 flex flex-col gap-4">
       <div class="flex items-start gap-3">
-        <span class="w-6 h-6 shrink-0 rounded-full bg-accent/15 text-accent text-xs font-bold flex items-center justify-center">2</span>
+        <span class="w-6 h-6 shrink-0 rounded-full bg-accent/15 text-accent flex items-center justify-center">
+          <lucide-icon name="shield" class="w-3.5 h-3.5"></lucide-icon>
+        </span>
         <div>
-          <h4 class="text-sm font-semibold text-white">Pre-flight registry guard</h4>
-          <p class="text-xs text-text-muted mt-0.5">Automatic conflict detection against existing records.</p>
+          <h4 class="text-sm font-semibold text-white">Duplicate check</h4>
+          <p class="text-xs text-text-muted mt-0.5">Compared live against the registry as you fill the form.</p>
         </div>
       </div>
 
       <div class="flex items-baseline gap-2">
         <span class="text-2xl font-bold text-white font-mono">{{ existingActions.length }}</span>
-        <span class="text-sm text-text-secondary">active actions monitored in registry</span>
+        <span class="text-sm text-text-secondary">{{ existingActions.length === 1 ? 'action' : 'actions' }} registered</span>
       </div>
 
-      <!-- Real-time conflict status -->
-      @if (conflictWarning) {
-        <div class="text-xs text-warning bg-warning/10 border border-warning/20 rounded-lg px-2.5 py-1.5 flex items-center gap-1.5">
-          <lucide-icon name="alert-triangle" class="w-3.5 h-3.5 shrink-0"></lucide-icon>
-          <span>{{ conflictWarning }}</span>
-        </div>
-      } @else if (stockCode && recordDate) {
-        <div class="text-xs text-success bg-success/10 border border-success/20 rounded-lg px-2.5 py-1.5 flex items-center gap-1.5">
-          <lucide-icon name="check-circle-2" class="w-3.5 h-3.5 shrink-0"></lucide-icon>
-          <span>{{ stockCode }} has no conflicting events on {{ recordDate }}</span>
-        </div>
-      } @else {
-        <div class="text-xs text-text-muted">
-          Priority 0 runs first during quarterly batch reconciliation. Actions on the same record date require unique priorities.
-        </div>
-      }
-
-      <div class="mt-auto flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-2 border-t border-border/50">
-        <span class="text-xs text-text-muted">Start over with a clean form?</span>
-        <ui-button variant="secondary" size="sm" (click)="resetForm()">
-          <lucide-icon name="rotate-ccw" class="w-3.5 h-3.5"></lucide-icon>
-          Clear form
-        </ui-button>
+      <div class="mt-auto text-xs">
+        @if (conflictWarning) {
+          <p class="flex items-start gap-1.5 text-warning">
+            <lucide-icon name="alert-triangle" class="w-3.5 h-3.5 shrink-0 mt-px"></lucide-icon>
+            <span>{{ conflictWarning }}</span>
+          </p>
+        } @else if (stockCode && recordDate) {
+          <p class="flex items-start gap-1.5 text-success">
+            <lucide-icon name="check-circle-2" class="w-3.5 h-3.5 shrink-0 mt-px"></lucide-icon>
+            <span>Nothing else is registered for {{ stockCode }} on {{ recordDate }}.</span>
+          </p>
+        } @else {
+          <p class="text-text-muted">Enter a stock code and record date to check for clashes.</p>
+        }
       </div>
     </div>
   </div>
 
-  <!-- Success Outcome Alert -->
   @if (successMessage) {
-    <ui-alert tone="success" title="Corporate action registered" [dismissible]="true" (dismissed)="successMessage = null">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <span>{{ successMessage }}</span>
-        <ui-button variant="secondary" size="sm" (click)="onViewActionsClick()">
-          View in All Actions
-          <lucide-icon name="arrow-right" class="w-3.5 h-3.5"></lucide-icon>
-        </ui-button>
-      </div>
+    <ui-alert tone="success" title="Corporate action added" [dismissible]="true" (dismissed)="successMessage = null">
+      {{ successMessage }}
+      <button type="button" class="ml-1 text-accent hover:text-accent-hover font-medium hover:underline" (click)="onViewActionsClick()">View all actions</button>
     </ui-alert>
   }
 
-  <!-- Validation Error Alert -->
   @if (validationError) {
-    <ui-alert tone="danger" title="Validation requirement" [dismissible]="true" (dismissed)="validationError = null">
+    <ui-alert tone="danger" [title]="errorTitle" [dismissible]="true" (dismissed)="validationError = null">
       {{ validationError }}
     </ui-alert>
   }
 
-  <!-- Section Header -->
   <div class="flex items-center justify-between gap-3 pt-2">
     <h4 class="text-sm font-semibold text-white flex items-center gap-2">
-      New corporate action specification
+      New corporate action
       <ui-badge [tone]="getBadgeTone(type)">{{ typeLabel(type) }}</ui-badge>
     </h4>
-    <div class="flex items-center gap-2">
-      <span class="text-xs text-text-muted hidden sm:inline"><span class="text-rose-400">*</span> Required fields</span>
-      <ui-button variant="secondary" size="sm" (click)="onViewActionsClick()">
-        <lucide-icon name="arrow-left" class="w-3.5 h-3.5"></lucide-icon>
-        All Actions
-      </ui-button>
-    </div>
+    <span class="text-xs text-text-muted"><span class="text-danger">*</span> Required</span>
   </div>
 
-  <!-- Form Container -->
-  <div class="bg-surface-alt border border-border rounded-xl p-5 space-y-5">
-    <!-- Grid 1: Basic Stock Details -->
+  <form class="bg-surface-alt border border-border rounded-xl p-4 sm:p-5 space-y-5" (ngSubmit)="submitForm()" novalidate>
+    <!-- Stock -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div>
-        <label for="reg-stock-code" class="block text-2xs font-bold text-text-muted uppercase tracking-wider mb-1.5">
-          Stock Code <span class="text-rose-500">*</span>
+        <label for="reg-stock-code" class="block text-2xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">
+          Stock code <span class="text-danger">*</span>
         </label>
-        <input
-          id="reg-stock-code"
-          type="text"
-          [ngModel]="stockCode"
-          (ngModelChange)="onStockCodeChange($event)"
-          placeholder="e.g., RELIANCE"
-          class="w-full px-3 py-2 text-sm rounded-lg bg-surface border border-border text-white placeholder-text-muted focus:ring-1 focus:ring-accent focus:border-accent focus:outline-none uppercase font-mono"
-        />
-        <span class="block text-3xs text-text-muted mt-1">Exchange ticker symbol (NSE / BSE).</span>
+        <input id="reg-stock-code" name="stockCode" type="text" autocomplete="off"
+          [ngModel]="stockCode" (ngModelChange)="onStockCodeChange($event)" placeholder="RELIANCE"
+          class="w-full px-3 py-2 text-sm rounded-lg bg-surface border border-border text-white placeholder-text-muted focus:ring-1 focus:ring-accent focus:border-accent focus:outline-none font-mono uppercase" />
+        <p class="text-2xs text-text-muted mt-1">NSE or BSE ticker.</p>
       </div>
 
       <div>
-        <label for="reg-stock-name" class="block text-2xs font-bold text-text-muted uppercase tracking-wider mb-1.5">
-          Stock Name <span class="text-rose-500">*</span>
+        <label for="reg-stock-name" class="block text-2xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">
+          Stock name <span class="text-danger">*</span>
         </label>
-        <input
-          id="reg-stock-name"
-          type="text"
-          [ngModel]="stockName"
-          (ngModelChange)="onStockNameChange($event)"
-          placeholder="e.g., Reliance Industries Ltd"
-          class="w-full px-3 py-2 text-sm rounded-lg bg-surface border border-border text-white placeholder-text-muted focus:ring-1 focus:ring-accent focus:border-accent focus:outline-none"
-        />
-        <span class="block text-3xs text-text-muted mt-1">Full company name as recorded in registry.</span>
+        <input id="reg-stock-name" name="stockName" type="text" autocomplete="off"
+          [ngModel]="stockName" (ngModelChange)="onStockNameChange($event)" placeholder="Reliance Industries Ltd"
+          class="w-full px-3 py-2 text-sm rounded-lg bg-surface border border-border text-white placeholder-text-muted focus:ring-1 focus:ring-accent focus:border-accent focus:outline-none" />
+        <p class="text-2xs text-text-muted mt-1">Company name as your broker shows it.</p>
       </div>
     </div>
 
-    <!-- Grid 2: Action Type, Asset Type, Priority -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <!-- Type, asset, priority -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
       <div>
-        <label for="reg-action-type" class="block text-2xs font-bold text-text-muted uppercase tracking-wider mb-1.5">Action Type</label>
-        <p-select
-          inputId="reg-action-type"
-          [options]="actionTypes"
-          [(ngModel)]="type"
-          (ngModelChange)="onTypeChange($event)"
-          optionLabel="label"
-          optionValue="value"
-          styleClass="w-full text-sm"
-          appendTo="body"
-        ></p-select>
+        <label for="reg-action-type" class="block text-2xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">Action type</label>
+        <p-select inputId="reg-action-type" name="type" [options]="actionTypes" [ngModel]="type" (ngModelChange)="onTypeChange($event)"
+          optionLabel="label" optionValue="value" styleClass="w-full text-sm" appendTo="body"></p-select>
       </div>
 
       <div>
-        <label for="reg-asset-type" class="block text-2xs font-bold text-text-muted uppercase tracking-wider mb-1.5">Asset Type</label>
-        <p-select
-          inputId="reg-asset-type"
-          [options]="assetTypes"
-          [(ngModel)]="assetType"
-          optionLabel="label"
-          optionValue="value"
-          styleClass="w-full text-sm"
-          appendTo="body"
-        ></p-select>
+        <label for="reg-asset-type" class="block text-2xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">Asset type</label>
+        <p-select inputId="reg-asset-type" name="assetType" [options]="assetTypes" [(ngModel)]="assetType"
+          optionLabel="label" optionValue="value" styleClass="w-full text-sm" appendTo="body"></p-select>
       </div>
 
       <div>
-        <div class="flex items-center justify-between mb-1.5">
-          <label for="reg-priority" class="text-2xs font-bold text-text-muted uppercase tracking-wider">Priority</label>
-          <span class="text-3xs text-text-muted">Order: 0 = highest</span>
-        </div>
-        <input
-          id="reg-priority"
-          type="number"
-          [(ngModel)]="priority"
-          placeholder="0"
-          min="0"
-          class="w-full px-3 py-2 text-sm rounded-lg bg-surface border border-border text-white placeholder-text-muted focus:ring-1 focus:ring-accent focus:border-accent focus:outline-none font-mono"
-        />
+        <label for="reg-priority" class="block text-2xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">Priority</label>
+        <input id="reg-priority" name="priority" type="number" [(ngModel)]="priority" min="0" max="999" step="1" placeholder="0"
+          class="w-full px-3 py-2 text-sm rounded-lg bg-surface border border-border text-white placeholder-text-muted focus:ring-1 focus:ring-accent focus:border-accent focus:outline-none font-mono" />
+        <p class="text-2xs text-text-muted mt-1">0 runs first.</p>
       </div>
     </div>
 
-    <!-- Grid 3: Event Dates Panel -->
-    <div class="border border-border/80 bg-surface/50 rounded-xl p-4 space-y-3">
-      <div class="flex items-center justify-between">
-        <span class="text-xs font-semibold text-white uppercase tracking-wider flex items-center gap-1.5">
-          <lucide-icon name="calendar" class="w-4 h-4 text-accent"></lucide-icon>
-          Event Dates
-        </span>
-        <button
-          type="button"
-          (click)="syncDates()"
-          class="text-xs text-accent hover:text-accent-hover hover:underline flex items-center gap-1 font-medium transition-colors"
-        >
+    <!-- Dates -->
+    <div class="bg-surface/50 border border-border rounded-xl p-4 space-y-3">
+      <div class="flex items-center justify-between gap-3">
+        <h5 class="text-xs font-semibold text-white flex items-center gap-1.5">
+          <lucide-icon name="calendar" class="w-3.5 h-3.5 text-accent"></lucide-icon>
+          Dates
+        </h5>
+        <ui-button variant="ghost" size="sm" (click)="syncDates()" [disabled]="!exDate">
           <lucide-icon name="rotate-cw" class="w-3.5 h-3.5"></lucide-icon>
-          Sync with Ex-Date
-        </button>
+          Copy ex-date to all
+        </ui-button>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div>
-          <label for="reg-ex-date" class="block text-2xs font-semibold text-text-muted mb-1">
-            Ex-Date <span class="text-rose-500">*</span>
+          <label for="reg-ex-date" class="block text-2xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">
+            Ex-date <span class="text-danger">*</span>
           </label>
-          <input
-            id="reg-ex-date"
-            type="date"
-            [ngModel]="exDate"
-            (ngModelChange)="onExDateChange($event)"
-            class="w-full px-3 py-2 text-sm rounded-lg bg-surface border border-border text-white focus:ring-1 focus:ring-accent focus:border-accent focus:outline-none font-mono"
-          />
+          <input id="reg-ex-date" name="exDate" type="date" [ngModel]="exDate" (ngModelChange)="onExDateChange($event)"
+            class="w-full px-3 py-2 text-sm rounded-lg bg-surface border border-border text-white focus:ring-1 focus:ring-accent focus:border-accent focus:outline-none font-mono" />
         </div>
 
         <div>
-          <label for="reg-record-date" class="block text-2xs font-semibold text-text-muted mb-1">
-            Record Date <span class="text-rose-500">*</span>
-          </label>
-          <input
-            id="reg-record-date"
-            type="date"
-            [(ngModel)]="recordDate"
-            class="w-full px-3 py-2 text-sm rounded-lg bg-surface border border-border text-white focus:ring-1 focus:ring-accent focus:border-accent focus:outline-none font-mono"
-          />
+          <label for="reg-record-date" class="block text-2xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">Record date</label>
+          <input id="reg-record-date" name="recordDate" type="date" [(ngModel)]="recordDate" [min]="exDate"
+            class="w-full px-3 py-2 text-sm rounded-lg bg-surface border border-border text-white focus:ring-1 focus:ring-accent focus:border-accent focus:outline-none font-mono" />
+          <p class="text-2xs text-text-muted mt-1">Defaults to the ex-date.</p>
         </div>
 
         <div>
-          <label for="reg-effective-date" class="block text-2xs font-semibold text-text-muted mb-1">
-            Effective / Execution Date
-          </label>
-          <input
-            id="reg-effective-date"
-            type="date"
-            [(ngModel)]="date"
-            class="w-full px-3 py-2 text-sm rounded-lg bg-surface border border-border text-white focus:ring-1 focus:ring-accent focus:border-accent focus:outline-none font-mono"
-          />
+          <label for="reg-effective-date" class="block text-2xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">Effective date</label>
+          <input id="reg-effective-date" name="date" type="date" [(ngModel)]="date"
+            class="w-full px-3 py-2 text-sm rounded-lg bg-surface border border-border text-white focus:ring-1 focus:ring-accent focus:border-accent focus:outline-none font-mono" />
+          <p class="text-2xs text-text-muted mt-1">Defaults to the ex-date.</p>
         </div>
       </div>
     </div>
 
-    <!-- CONDITIONAL EVENT PARAMETERS -->
-
-    <!-- Case: BONUS, STOCK_SPLIT, BUYBACK, RIGHTS_ISSUANCE -->
+    <!-- Bonus, split, buyback, rights -->
     @if (type === 'BONUS' || type === 'STOCK_SPLIT' || type === 'BUYBACK' || type === 'RIGHTS_ISSUANCE') {
-      <div class="border border-border/80 bg-surface/50 rounded-xl p-4 space-y-3 animate-fade-in">
+      <div class="bg-surface/50 border border-border rounded-xl p-4 animate-fade-in">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label for="reg-ratio" class="block text-2xs font-bold text-text-muted uppercase tracking-wider mb-1.5">
-              Ratio <span class="text-rose-500">*</span>
+            <label for="reg-ratio" class="block text-2xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">
+              Ratio <span class="text-danger">*</span>
             </label>
-            <input
-              id="reg-ratio"
-              type="text"
-              [(ngModel)]="ratio"
-              [placeholder]="type === 'STOCK_SPLIT' ? 'e.g. 1:10 (1 old share into 10 new)' : 'e.g. 1:1, 2:1'"
-              class="w-full px-3 py-2 text-sm rounded-lg bg-surface border border-border text-white placeholder-text-muted focus:ring-1 focus:ring-accent focus:border-accent focus:outline-none font-mono"
-            />
-            <span class="block text-3xs text-text-muted mt-1">{{ ratioHelpText }}</span>
+            <input id="reg-ratio" name="ratio" type="text" autocomplete="off" [(ngModel)]="ratio"
+              [placeholder]="type === 'STOCK_SPLIT' ? '1:10' : '1:1'"
+              class="w-full px-3 py-2 text-sm rounded-lg bg-surface border border-border text-white placeholder-text-muted focus:ring-1 focus:ring-accent focus:border-accent focus:outline-none font-mono" />
+            <p class="text-2xs text-text-muted mt-1">{{ ratioHelpText }}</p>
           </div>
 
           @if (type === 'BUYBACK' || type === 'RIGHTS_ISSUANCE') {
             <div>
-              <label for="reg-action-price" class="block text-2xs font-bold text-text-muted uppercase tracking-wider mb-1.5">
-                Action Price (₹)
+              <label for="reg-action-price" class="block text-2xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">
+                {{ type === 'BUYBACK' ? 'Buyback price' : 'Issue price' }} (₹)
               </label>
-              <input
-                id="reg-action-price"
-                type="text"
-                [(ngModel)]="actionPrice"
-                placeholder="e.g. 450.00"
-                class="w-full px-3 py-2 text-sm rounded-lg bg-surface border border-border text-white placeholder-text-muted focus:ring-1 focus:ring-accent focus:border-accent focus:outline-none font-mono"
-              />
-              <span class="block text-3xs text-text-muted mt-1">Tender offer or rights subscription price per share.</span>
+              <input id="reg-action-price" name="actionPrice" type="text" inputmode="decimal" autocomplete="off" [(ngModel)]="actionPrice" placeholder="450.00"
+                class="w-full px-3 py-2 text-sm rounded-lg bg-surface border border-border text-white placeholder-text-muted focus:ring-1 focus:ring-accent focus:border-accent focus:outline-none font-mono" />
+              <p class="text-2xs text-text-muted mt-1">Price per share, if announced.</p>
             </div>
           }
         </div>
       </div>
     }
 
-    <!-- Case: NAME_OR_SYMBOL_CHANGE -->
+    <!-- Name / symbol change -->
     @if (type === 'NAME_OR_SYMBOL_CHANGE') {
-      <div class="border border-border/80 bg-surface/50 rounded-xl p-4 space-y-3 animate-fade-in">
-        <h4 class="text-xs font-semibold text-white uppercase tracking-wider flex items-center gap-1.5">
-          <lucide-icon name="arrow-right" class="w-4 h-4 text-warning"></lucide-icon>
-          New Symbol & Name Details
-        </h4>
+      <div class="bg-surface/50 border border-border rounded-xl p-4 space-y-3 animate-fade-in">
+        <h5 class="text-xs font-semibold text-white flex items-center gap-1.5">
+          <lucide-icon name="arrow-right" class="w-3.5 h-3.5 text-warning"></lucide-icon>
+          Renamed to
+        </h5>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label for="reg-to-stock-code" class="block text-2xs font-semibold text-text-muted mb-1.5">
-              New (To) Stock Code <span class="text-rose-500">*</span>
+            <label for="reg-to-stock-code" class="block text-2xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">
+              New stock code <span class="text-danger">*</span>
             </label>
-            <input
-              id="reg-to-stock-code"
-              type="text"
-              [(ngModel)]="toStockCode"
-              placeholder="e.g. TATAMOTORS"
-              class="w-full px-3 py-2 text-sm rounded-lg bg-surface border border-border text-white placeholder-text-muted focus:ring-1 focus:ring-accent focus:border-accent focus:outline-none font-mono uppercase"
-            />
+            <input id="reg-to-stock-code" name="toStockCode" type="text" autocomplete="off" [(ngModel)]="toStockCode" placeholder="TMPV"
+              class="w-full px-3 py-2 text-sm rounded-lg bg-surface border border-border text-white placeholder-text-muted focus:ring-1 focus:ring-accent focus:border-accent focus:outline-none font-mono uppercase" />
           </div>
           <div>
-            <label for="reg-to-stock-name" class="block text-2xs font-semibold text-text-muted mb-1.5">
-              New (To) Stock Name
-            </label>
-            <input
-              id="reg-to-stock-name"
-              type="text"
-              [(ngModel)]="toStockName"
-              placeholder="e.g. Tata Motors Limited"
-              class="w-full px-3 py-2 text-sm rounded-lg bg-surface border border-border text-white placeholder-text-muted focus:ring-1 focus:ring-accent focus:border-accent focus:outline-none"
-            />
+            <label for="reg-to-stock-name" class="block text-2xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">New stock name</label>
+            <input id="reg-to-stock-name" name="toStockName" type="text" autocomplete="off" [(ngModel)]="toStockName" placeholder="Same as current if blank"
+              class="w-full px-3 py-2 text-sm rounded-lg bg-surface border border-border text-white placeholder-text-muted focus:ring-1 focus:ring-accent focus:border-accent focus:outline-none" />
           </div>
         </div>
       </div>
     }
 
-    <!-- Case: DIVIDEND -->
+    <!-- Dividend -->
     @if (type === 'DIVIDEND') {
-      <div class="border border-border/80 bg-surface/50 rounded-xl p-4 space-y-2 animate-fade-in">
-        <label for="reg-dividend-amount" class="block text-2xs font-bold text-text-muted uppercase tracking-wider">
-          Dividend Amount (₹) <span class="text-rose-500">*</span>
-        </label>
-        <input
-          id="reg-dividend-amount"
-          type="number"
-          [(ngModel)]="dividendAmount"
-          placeholder="e.g. 8.50"
-          step="0.01"
-          class="w-full md:w-[320px] px-3 py-2 text-sm rounded-lg bg-surface border border-border text-white placeholder-text-muted focus:ring-1 focus:ring-accent focus:border-accent focus:outline-none font-mono"
-        />
-        <span class="block text-3xs text-text-muted">Net cash dividend amount paid per share held on record date.</span>
+      <div class="bg-surface/50 border border-border rounded-xl p-4 animate-fade-in">
+        <div class="md:w-1/2">
+          <label for="reg-dividend-amount" class="block text-2xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">
+            Dividend per share (₹) <span class="text-danger">*</span>
+          </label>
+          <input id="reg-dividend-amount" name="dividendAmount" type="number" [(ngModel)]="dividendAmount" placeholder="8.50" min="0" step="0.01"
+            class="w-full px-3 py-2 text-sm rounded-lg bg-surface border border-border text-white placeholder-text-muted focus:ring-1 focus:ring-accent focus:border-accent focus:outline-none font-mono" />
+          <p class="text-2xs text-text-muted mt-1">Paid on every share held on the record date.</p>
+        </div>
       </div>
     }
 
-    <!-- Case: DEMERGER -->
+    <!-- Demerger -->
     @if (type === 'DEMERGER') {
-      <div class="border border-border/80 bg-surface/50 rounded-xl p-4 space-y-4 animate-fade-in">
-        <h4 class="text-xs font-semibold text-white uppercase tracking-wider flex items-center gap-1.5">
-          <lucide-icon name="git-branch" class="w-4 h-4 text-purple"></lucide-icon>
-          Demerger Specification Details
-        </h4>
+      <div class="bg-surface/50 border border-border rounded-xl p-4 space-y-4 animate-fade-in">
+        <h5 class="text-xs font-semibold text-white flex items-center gap-1.5">
+          <lucide-icon name="git-branch" class="w-3.5 h-3.5 text-purple"></lucide-icon>
+          Demerger terms
+        </h5>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label for="reg-demerger-ratio" class="block text-2xs font-semibold text-text-muted mb-1.5">
-              Demerger Ratio <span class="text-rose-500">*</span>
+            <label for="reg-demerger-ratio" class="block text-2xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">
+              Share ratio <span class="text-danger">*</span>
             </label>
-            <input
-              id="reg-demerger-ratio"
-              type="text"
-              [(ngModel)]="demergerRatio"
-              placeholder="e.g., 1:1"
-              class="w-full px-3 py-2 text-sm rounded-lg bg-surface border border-border text-white placeholder-text-muted focus:ring-1 focus:ring-accent focus:border-accent focus:outline-none font-mono"
-            />
-            <span class="block text-3xs text-text-muted mt-1">Ratio of new company shares allotted per parent share held.</span>
+            <input id="reg-demerger-ratio" name="demergerRatio" type="text" autocomplete="off" [(ngModel)]="demergerRatio" placeholder="1:1"
+              class="w-full px-3 py-2 text-sm rounded-lg bg-surface border border-border text-white placeholder-text-muted focus:ring-1 focus:ring-accent focus:border-accent focus:outline-none font-mono" />
+            <p class="text-2xs text-text-muted mt-1">New company shares for each parent share held.</p>
           </div>
 
           <div>
-            <label for="reg-demerger-price-ratio" class="block text-2xs font-semibold text-text-muted mb-1.5">
-              Cost Split Ratio <span class="text-rose-500">*</span>
+            <label for="reg-demerger-price-ratio" class="block text-2xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">
+              Cost split <span class="text-danger">*</span>
             </label>
-            <input
-              id="reg-demerger-price-ratio"
-              type="text"
-              [(ngModel)]="demergerPriceRatio"
-              placeholder="e.g., 90:10"
-              class="w-full px-3 py-2 text-sm rounded-lg bg-surface border border-border text-white placeholder-text-muted focus:ring-1 focus:ring-accent focus:border-accent focus:outline-none font-mono"
-            />
-            <span class="block text-3xs text-text-muted mt-1">Parent : Resulting child cost acquisition split (e.g. 90:10).</span>
+            <input id="reg-demerger-price-ratio" name="demergerPriceRatio" type="text" autocomplete="off" [(ngModel)]="demergerPriceRatio" placeholder="90:10"
+              class="w-full px-3 py-2 text-sm rounded-lg bg-surface border border-border text-white placeholder-text-muted focus:ring-1 focus:ring-accent focus:border-accent focus:outline-none font-mono" />
+            <p class="text-2xs text-text-muted mt-1">How the original cost divides between parent and new company.</p>
           </div>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label for="reg-main-stock-code" class="block text-2xs font-semibold text-text-muted mb-1.5">Parent Stock Code</label>
-            <input
-              id="reg-main-stock-code"
-              type="text"
-              [(ngModel)]="mainStockCode"
-              placeholder="Code of parent company"
-              class="w-full px-3 py-2 text-sm rounded-lg bg-surface border border-border text-white placeholder-text-muted focus:ring-1 focus:ring-accent focus:border-accent focus:outline-none font-mono uppercase"
-            />
+            <label for="reg-main-stock-code" class="block text-2xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">Parent stock code</label>
+            <input id="reg-main-stock-code" name="mainStockCode" type="text" autocomplete="off" [(ngModel)]="mainStockCode" placeholder="Same as stock code"
+              class="w-full px-3 py-2 text-sm rounded-lg bg-surface border border-border text-white placeholder-text-muted focus:ring-1 focus:ring-accent focus:border-accent focus:outline-none font-mono uppercase" />
           </div>
-
           <div>
-            <label for="reg-main-stock-name" class="block text-2xs font-semibold text-text-muted mb-1.5">Parent Stock Name</label>
-            <input
-              id="reg-main-stock-name"
-              type="text"
-              [(ngModel)]="mainStockName"
-              placeholder="Name of parent company"
-              class="w-full px-3 py-2 text-sm rounded-lg bg-surface border border-border text-white placeholder-text-muted focus:ring-1 focus:ring-accent focus:border-accent focus:outline-none"
-            />
+            <label for="reg-main-stock-name" class="block text-2xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">Parent stock name</label>
+            <input id="reg-main-stock-name" name="mainStockName" type="text" autocomplete="off" [(ngModel)]="mainStockName" placeholder="Same as stock name"
+              class="w-full px-3 py-2 text-sm rounded-lg bg-surface border border-border text-white placeholder-text-muted focus:ring-1 focus:ring-accent focus:border-accent focus:outline-none" />
           </div>
         </div>
 
-        <!-- Demerger Child Stocks List -->
-        <div class="border-t border-border/80 pt-3 space-y-3">
-          <div class="flex items-center justify-between">
+        <div class="border-t border-border pt-4 space-y-3">
+          <div class="flex items-center justify-between gap-3">
             <div>
-              <label class="text-xs font-semibold text-white">Demerged Child Companies <span class="text-rose-500">*</span></label>
-              <p class="text-3xs text-text-muted">Reconciliation engine allocates equity to 1 child company per demerger event</p>
+              <p class="text-2xs font-semibold text-text-secondary uppercase tracking-wider">Resulting company <span class="text-danger">*</span></p>
+              <p class="text-2xs text-text-muted mt-0.5">One new company per demerger.</p>
             </div>
-            <button
-              type="button"
-              (click)="addDemergerStock()"
-              [disabled]="demergerStocks.length >= 1"
-              [class.opacity-40]="demergerStocks.length >= 1"
-              [class.cursor-not-allowed]="demergerStocks.length >= 1"
-              class="text-xs font-medium text-accent hover:text-accent-hover hover:underline flex items-center gap-1 transition-colors"
-            >
-              <lucide-icon name="plus" class="w-3.5 h-3.5"></lucide-icon>
-              Add Child Stock
-            </button>
+            @if (demergerStocks.length === 0) {
+              <ui-button variant="ghost" size="sm" (click)="addDemergerStock()">
+                <lucide-icon name="plus" class="w-3.5 h-3.5"></lucide-icon>
+                Add company
+              </ui-button>
+            }
           </div>
 
           @for (stock of demergerStocks; track $index) {
-            <div class="flex items-center gap-3">
-              <input
-                type="text"
-                [(ngModel)]="stock.stockCode"
-                placeholder="Child Stock Code (e.g. JIOFIN)"
-                class="flex-1 px-3 py-2 text-sm rounded-lg bg-surface border border-border text-white placeholder-text-muted focus:ring-1 focus:ring-accent focus:border-accent focus:outline-none font-mono uppercase"
-              />
-              <input
-                type="text"
-                [(ngModel)]="stock.stockName"
-                placeholder="Child Stock Name (e.g. Jio Financial Services Ltd)"
-                class="flex-1 px-3 py-2 text-sm rounded-lg bg-surface border border-border text-white placeholder-text-muted focus:ring-1 focus:ring-accent focus:border-accent focus:outline-none"
-              />
-              <button
-                type="button"
-                (click)="removeDemergerStock($index)"
-                class="p-2 text-text-muted hover:text-danger transition-colors rounded-lg hover:bg-surface"
-                title="Remove Child Stock"
-              >
-                <lucide-icon name="trash" class="w-4 h-4"></lucide-icon>
-              </button>
+            <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+              <input type="text" [name]="'childCode' + $index" autocomplete="off" [(ngModel)]="stock.stockCode" placeholder="Code, e.g. JIOFIN" aria-label="Resulting company code"
+                class="sm:w-48 px-3 py-2 text-sm rounded-lg bg-surface border border-border text-white placeholder-text-muted focus:ring-1 focus:ring-accent focus:border-accent focus:outline-none font-mono uppercase" />
+              <input type="text" [name]="'childName' + $index" autocomplete="off" [(ngModel)]="stock.stockName" placeholder="Name, e.g. Jio Financial Services Ltd" aria-label="Resulting company name"
+                class="flex-1 px-3 py-2 text-sm rounded-lg bg-surface border border-border text-white placeholder-text-muted focus:ring-1 focus:ring-accent focus:border-accent focus:outline-none" />
+              <ui-button variant="icon" size="sm" class="self-end sm:self-auto" (click)="removeDemergerStock($index)" appTooltip="Remove" ariaLabel="Remove resulting company">
+                <lucide-icon name="trash" class="w-3.5 h-3.5"></lucide-icon>
+              </ui-button>
             </div>
           }
         </div>
       </div>
     }
 
-    <!-- Description -->
+    <!-- Notes -->
     <div>
-      <label for="reg-description" class="block text-2xs font-bold text-text-muted uppercase tracking-wider mb-1.5">
-        Description / Circular Notes
-      </label>
-      <textarea
-        id="reg-description"
-        rows="2"
-        [(ngModel)]="description"
-        placeholder="Optional notes regarding the corporate action announcement or exchange filing..."
-        class="w-full px-3 py-2 text-sm rounded-lg bg-surface border border-border text-white placeholder-text-muted focus:ring-1 focus:ring-accent focus:border-accent focus:outline-none resize-none"
-      ></textarea>
+      <label for="reg-description" class="block text-2xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">Notes</label>
+      <textarea id="reg-description" name="description" rows="2" [(ngModel)]="description"
+        placeholder="Optional: link or reference to the exchange announcement"
+        class="w-full px-3 py-2 text-sm rounded-lg bg-surface border border-border text-white placeholder-text-muted focus:ring-1 focus:ring-accent focus:border-accent focus:outline-none resize-none"></textarea>
     </div>
 
-    <!-- Actions -->
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t border-border/50">
-      <span class="text-xs text-text-muted">Actions are immediately recorded in the reconciliation registry.</span>
-      <div class="flex items-center gap-3 self-end sm:self-auto">
-        <ui-button variant="secondary" size="md" (click)="resetForm()">
-          <lucide-icon name="rotate-ccw" class="w-4 h-4"></lucide-icon>
-          Reset
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-4 border-t border-border">
+      <span class="text-xs text-text-muted">Applied to holdings when its quarter is processed.</span>
+      <div class="flex items-center gap-2 self-end sm:self-auto">
+        <ui-button variant="secondary" size="sm" (click)="resetForm()" [disabled]="isLoading">
+          <lucide-icon name="rotate-ccw" class="w-3.5 h-3.5"></lucide-icon>
+          Clear
         </ui-button>
-        <ui-button variant="primary" size="md" (click)="submitForm()" [disabled]="isLoading" [loading]="isLoading">
-          <lucide-icon name="check" class="w-4 h-4"></lucide-icon>
-          Register Action
+        <ui-button type="submit" variant="primary" size="sm" [loading]="isLoading">
+          @if (!isLoading) {
+            <lucide-icon name="check" class="w-3.5 h-3.5"></lucide-icon>
+          }
+          {{ isLoading ? 'Adding…' : 'Add action' }}
         </ui-button>
       </div>
     </div>
-  </div>
+  </form>
 </div>

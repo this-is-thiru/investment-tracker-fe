@@ -49,9 +49,17 @@ export class ModalComponent implements OnInit, OnDestroy {
 
   @HostListener('document:keydown.escape')
   handleEscape(): void {
-    if (this.open && this.dismissible) {
+    if (this.open && this.dismissible && this.isTopmost()) {
       this.close();
     }
+  }
+
+  // A confirm dialog opened over another modal should take Escape on its own
+  private isTopmost(): boolean {
+    const open = Array.from(document.querySelectorAll('ui-modal')).filter((el) =>
+      el.querySelector(':scope > .ui-modal__backdrop')
+    );
+    return open[open.length - 1] === this.host.nativeElement;
   }
 
   close(): void {

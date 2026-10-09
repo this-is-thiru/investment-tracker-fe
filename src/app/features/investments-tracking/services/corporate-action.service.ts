@@ -4,6 +4,26 @@ import { Observable, throwError } from 'rxjs';
 import { BaseurlService } from '@services/baseurl.service';
 import { CorporateActionDto, CorporateActionPerformDto } from '@models/corporate-action.model';
 
+/**
+ * Readable message from a failed request. Endpoints called with
+ * `responseType: 'text'` hand back the error body as a raw string, which may
+ * itself be a JSON `{ message }` payload.
+ */
+export function describeHttpError(err: any, fallback: string): string {
+  let body = err?.error;
+  if (typeof body === 'string') {
+    try {
+      body = JSON.parse(body);
+    } catch {
+      return body.trim() || fallback;
+    }
+  }
+  const msg = body?.message || body?.error;
+  if (typeof msg === 'string' && msg) return msg;
+  // HttpErrorResponse.message is "Http failure response for <url>…", not for users
+  return err?.name !== 'HttpErrorResponse' && err?.message ? err.message : fallback;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -40,7 +60,7 @@ export class CorporateActionService {
     email: string,
     payload: CorporateActionPerformDto,
     allBrokers = false
-  ): Observable<any> {
+  ): Observable<string> {
     if (email === 'demo@wealthlens.com') {
       return throwError(() => new HttpErrorResponse({
         status: 403,
@@ -48,7 +68,7 @@ export class CorporateActionService {
       }));
     }
     const url = `${this.BASE_URL.getBaseUrl()}/corporate-action/user/${email}/perform?allBrokers=${allBrokers}`;
-    return this.http.put(url, payload);
+    return this.http.put(url, payload, { responseType: 'text' });
   }
 
   performCorporateAction(email: string, payload: any, allBrokers = false): Observable<any> {
@@ -65,8 +85,8 @@ export class CorporateActionService {
     return this.http.put<boolean>(url, payload);
   }
 
-  deleteCorporateAction(id: string): Observable<any> {
+  deleteCorporateAction(id: string): Observable<string> {
     const url = `${this.BASE_URL.getBaseUrl()}/corporate-action/delete/${id}`;
-    return this.http.delete(url);
+    return this.http.delete(url, { responseType: 'text' });
   }
 }

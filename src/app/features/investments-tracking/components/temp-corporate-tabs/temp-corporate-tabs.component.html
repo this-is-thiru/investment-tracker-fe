@@ -17,7 +17,7 @@
     }
 
     @if (activeTab === 'list-actions') {
-      <app-corporate-action-list (addAction)="onTabChange('add-action')"></app-corporate-action-list>
+      <app-corporate-action-list (addAction)="onTabChange('add-action')" (actionExecuted)="onActionApplied()"></app-corporate-action-list>
     }
 
     @if (activeTab === 'add-action') {

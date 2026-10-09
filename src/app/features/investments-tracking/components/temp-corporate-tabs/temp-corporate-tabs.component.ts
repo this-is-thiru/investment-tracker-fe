@@ -84,7 +84,10 @@ export class TempCorporateTabsComponent {
     }
     this.cdr.markForCheck();
     this.cdr.detectChanges();
-    this.loadPendingCount();
+    // The temporary table reports its own count; elsewhere fetch it once if still unknown
+    if (tab !== 'temporary' && this.pendingCount === null) {
+      this.loadPendingCount();
+    }
   }
 
   onActionApplied(): void {

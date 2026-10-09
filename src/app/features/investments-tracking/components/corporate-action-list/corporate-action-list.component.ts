@@ -1,8 +1,9 @@
-import { Component, OnInit, Output, EventEmitter, ChangeDetectorRef, inject } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, ChangeDetectorRef, HostListener, inject } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { CorporateActionService } from '../../services/corporate-action.service';
+import { CorporateActionService, describeHttpError } from '../../services/corporate-action.service';
 import { AuthService } from '@services/auth.service';
 import { NotificationService } from '@services/notification.service';
 import { LucideIconsModule } from '@core/icons/lucide-icons.module';
@@ -14,6 +15,14 @@ import { EmptyStateComponent } from '@shared/ui/empty-state/empty-state.componen
 import { ModalComponent } from '@shared/ui/modal/modal.component';
 import { AlertComponent } from '@shared/ui/alert/alert.component';
 import { ConfirmDialogService } from '@shared/ui/confirm-dialog/confirm-dialog.service';
+import { ActionEffect, EXAMPLE_COST, EXAMPLE_SHARES, describeEffect } from './corporate-action-effect';
+
+export interface TimelineStep {
+  label: string;
+  date: string;
+  /** On or before today */
+  reached: boolean;
+}
 
 @Component({
   selector: 'app-corporate-action-list',
@@ -34,6 +43,8 @@ import { ConfirmDialogService } from '@shared/ui/confirm-dialog/confirm-dialog.s
 })
 export class CorporateActionListComponent implements OnInit {
   @Output() addAction = new EventEmitter<void>();
+  /** A registered action was applied to holdings from the detail modal */
+  @Output() actionExecuted = new EventEmitter<void>();
 
   private corporateActionService = inject(CorporateActionService);
   private cdr = inject(ChangeDetectorRef);
@@ -48,15 +59,22 @@ export class CorporateActionListComponent implements OnInit {
 
   // Detail modal state
   selectedAction: any = null;
+  selectedEffect: ActionEffect | null = null;
+  selectedTimeline: TimelineStep[] = [];
   showDetailModal = false;
   isDetailLoading = false;
   detailIsPartial = false;
   isExecutingAction = false;
+  readonly exampleShares = EXAMPLE_SHARES;
+  readonly exampleCost = EXAMPLE_COST;
+  private detailRequest?: Subscription;
 
   // Inline priority editing state
   editingPriorityId: string | null = null;
   editPriorityValue: number = 0;
   isSavingPriority = false;
+
+  deletingId: string | null = null;
 
   searchQuery = '';
   filterType = 'ALL';
@@ -83,12 +101,20 @@ export class CorporateActionListComponent implements OnInit {
   get dividendCount(): number {
     return this.actions.filter((a) => a.type === 'DIVIDEND').length;
   }
+  get otherCount(): number {
+    return this.actions.length - (this.bonusCount + this.splitCount + this.demergerCount + this.dividendCount);
+  }
+
+  get hasFilters(): boolean {
+    return !!this.searchQuery.trim() || this.filterType !== 'ALL';
+  }
+
   onAddActionClick(): void {
     this.addAction.emit();
   }
 
-  get otherCount(): number {
-    return this.actions.length - (this.bonusCount + this.splitCount + this.demergerCount + this.dividendCount);
+  actionKey(action: any): string {
+    return action?.id || action?.stockCode || '';
   }
 
   ngOnInit(): void {
@@ -97,6 +123,19 @@ export class CorporateActionListComponent implements OnInit {
 
   typeLabel(type: string): string {
     return this.typeOptions.find((o) => o.value === type)?.label ?? (type || 'Corporate action');
+  }
+
+  assetTypeLabel(assetType: string | null | undefined): string {
+    switch (assetType) {
+      case 'MUTUAL_FUND':
+        return 'Mutual fund';
+      case 'BOND':
+        return 'Bond';
+      case 'OTHER':
+        return 'Other';
+      default:
+        return 'Equity';
+    }
   }
 
   canExecuteDirectly(action: any): boolean {
@@ -162,28 +201,25 @@ export class CorporateActionListComponent implements OnInit {
     this.loadError = null;
     this.corporateActionService
       .getAllCorporateActions()
-      .pipe(finalize(() => this.cdr.markForCheck()))
+      .pipe(
+        finalize(() => {
+          this.isLoading = false;
+          this.cdr.markForCheck();
+        })
+      )
       .subscribe({
         next: (data) => {
           this.actions = data || [];
           this.applyFilters();
-          this.isLoading = false;
         },
         error: (err) => {
-          console.error('Failed to load corporate actions', err);
-          this.isLoading = false;
-          this.loadError = 'Failed to load corporate actions from server. Please try refreshing.';
-          this.notificationService.addNotification(
-            'Load Failed',
-            'Failed to load corporate actions from server.',
-            'error'
-          );
+          this.loadError = describeHttpError(err, 'Corporate actions could not be loaded. Please try again.');
         },
       });
   }
 
   startEditPriority(action: any): void {
-    this.editingPriorityId = action.id || action.stockCode;
+    this.editingPriorityId = this.actionKey(action);
     this.editPriorityValue = action.priority ?? 0;
   }
 
@@ -192,12 +228,22 @@ export class CorporateActionListComponent implements OnInit {
   }
 
   savePriority(action: any): void {
-    const actionId = action.id || action.stockCode;
-    if (!actionId) return;
+    const actionId = this.actionKey(action);
+    if (!actionId || this.isSavingPriority) return;
+
+    const priority = Number(this.editPriorityValue);
+    if (!Number.isInteger(priority) || priority < 0 || priority > 999) {
+      this.notificationService.addNotification('Invalid priority', 'Priority must be a whole number from 0 to 999.', 'error');
+      return;
+    }
+    if (priority === (action.priority ?? 0)) {
+      this.editingPriorityId = null;
+      return;
+    }
 
     this.isSavingPriority = true;
     this.corporateActionService
-      .updateCorporateActionPriority(actionId, this.editPriorityValue)
+      .updateCorporateActionPriority(actionId, priority)
       .pipe(
         finalize(() => {
           this.isSavingPriority = false;
@@ -205,77 +251,115 @@ export class CorporateActionListComponent implements OnInit {
         })
       )
       .subscribe({
-        next: (msg) => {
-          action.priority = this.editPriorityValue;
+        next: () => {
+          action.priority = priority;
           this.editingPriorityId = null;
-          const name = action.stockName || action.stockCode;
           this.notificationService.addNotification(
-            'Priority Updated',
-            msg || ('Priority for ' + name + ' set to ' + this.editPriorityValue + '.'),
+            'Priority updated',
+            `${action.stockName || action.stockCode} will now run at priority ${priority}.`,
             'success'
           );
         },
         error: (err) => {
-          console.error('Failed to update priority', err);
-          const errMsg = err?.error?.message || err?.error || err?.message || 'Failed to update priority.';
           this.notificationService.addNotification(
-            'Update Failed',
-            errMsg,
+            'Priority not updated',
+            describeHttpError(err, 'The priority could not be saved. Please try again.'),
             'error'
           );
         },
       });
   }
 
-  viewDetails(id: string): void {
+  // The list row is shown straight away; the detail call then fills in anything the list omits
+  viewDetails(action: any): void {
+    const id = this.actionKey(action);
     if (!id) return;
-    this.isDetailLoading = true;
     this.showDetailModal = true;
-    this.selectedAction = null;
     this.detailIsPartial = false;
+    this.setSelected({ ...action });
 
-    this.corporateActionService
+    this.detailRequest?.unsubscribe();
+    this.isDetailLoading = true;
+    this.detailRequest = this.corporateActionService
       .getCorporateActionById(id)
-      .pipe(finalize(() => this.cdr.markForCheck()))
+      .pipe(
+        finalize(() => {
+          this.isDetailLoading = false;
+          this.cdr.markForCheck();
+        })
+      )
       .subscribe({
         next: (data) => {
-          this.selectedAction = data;
-          this.isDetailLoading = false;
-        },
-        error: (err) => {
-          console.error('Failed to load corporate action with ID ' + id, err);
-          this.isDetailLoading = false;
-
-          const localAction = this.actions.find((a) => a.id === id || a.stockCode === id);
-          if (localAction) {
-            this.selectedAction = { ...localAction };
-            this.detailIsPartial = true;
+          if (data) {
+            this.setSelected({ ...action, ...data });
           } else {
-            this.showDetailModal = false;
-            this.notificationService.addNotification(
-              'Fetch Failed',
-              'Failed to fetch corporate action details from server.',
-              'error'
-            );
+            this.detailIsPartial = true;
           }
         },
+        error: () => (this.detailIsPartial = true),
       });
   }
 
+  /** Position of the open action within the current (filtered, sorted) list */
+  get selectedIndex(): number {
+    const key = this.actionKey(this.selectedAction);
+    return key ? this.filteredActions.findIndex((a) => this.actionKey(a) === key) : -1;
+  }
+
+  showAdjacent(step: 1 | -1): void {
+    const next = this.filteredActions[this.selectedIndex + step];
+    if (next && this.selectedIndex >= 0) {
+      this.viewDetails(next);
+    }
+  }
+
+  @HostListener('document:keydown', ['$event'])
+  onDetailKeydown(event: KeyboardEvent): void {
+    if (!this.showDetailModal || this.confirmDialog.request()) return;
+    const target = event.target as HTMLElement | null;
+    if (target?.closest('input, textarea, select, [contenteditable]')) return;
+    if (event.key === 'ArrowRight') this.showAdjacent(1);
+    if (event.key === 'ArrowLeft') this.showAdjacent(-1);
+  }
+
+  get isUpcoming(): boolean {
+    const record = this.selectedAction?.recordDate;
+    return !!record && record > this.todayIso();
+  }
+
+  private setSelected(action: any): void {
+    this.selectedAction = action;
+    this.selectedEffect = describeEffect(action);
+    const today = this.todayIso();
+    this.selectedTimeline = [
+      { label: 'Ex-date', date: action.exDate },
+      { label: 'Record date', date: action.recordDate },
+      { label: 'Effective', date: action.date },
+    ]
+      .filter((s) => !!s.date)
+      .map((s) => ({ ...s, reached: s.date <= today }));
+  }
+
+  private todayIso(): string {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  }
+
   async executeSingleAction(action: any): Promise<void> {
-    if (!action) return;
+    if (!action || this.isExecutingAction) return;
     const stockDisplayName = action.stockName || action.stockCode;
     const ok = await this.confirmDialog.confirm({
-      title: 'Execute Corporate Action',
-      message: 'Apply ' + this.typeLabel(action.type) + ' for ' + stockDisplayName + ' system-wide across all matching assets and historical transactions?',
+      title: 'Apply corporate action?',
+      message: `Apply the ${this.typeLabel(action.type)} for ${stockDisplayName}${
+        action.toStockCode ? ' → ' + action.toStockCode : ''
+      } to every matching holding and past transaction?`,
       tone: 'accent',
-      confirmLabel: 'Execute Now',
+      confirmLabel: 'Apply now',
     });
-    if (!ok) {
-      return;
-    }
+    if (!ok) return;
 
     this.isExecutingAction = true;
+    this.cdr.markForCheck();
     this.corporateActionService
       .performSingleCorporateAction(action)
       .pipe(
@@ -285,21 +369,20 @@ export class CorporateActionListComponent implements OnInit {
         })
       )
       .subscribe({
-        next: (msg) => {
+        next: () => {
           this.notificationService.addNotification(
-            'Action Executed',
-            msg || ('Successfully executed ' + action.type + ' for ' + stockDisplayName + '.'),
+            'Corporate action applied',
+            `${this.typeLabel(action.type)} applied for ${stockDisplayName}.`,
             'success'
           );
           this.closeModal();
+          this.actionExecuted.emit();
           this.loadActions();
         },
         error: (err) => {
-          console.error('Failed to execute single corporate action', err);
-          const errMsg = err?.error?.message || err?.error || err?.message || 'Execution failed';
           this.notificationService.addNotification(
-            'Execution Failed',
-            'Failed to execute action: ' + errMsg,
+            'Corporate action not applied',
+            describeHttpError(err, 'The action could not be applied. Please try again.'),
             'error'
           );
         },
@@ -309,48 +392,51 @@ export class CorporateActionListComponent implements OnInit {
   async deleteAction(action: any): Promise<void> {
     if (!this.authService.isSuperUserRole()) {
       this.notificationService.addNotification(
-        'Permission Denied',
-        'Super User role is required to delete corporate actions.',
+        'Permission denied',
+        'Only super users can delete corporate actions.',
         'error'
       );
       return;
     }
 
-    const actionId = action.id || action.stockCode;
+    const actionId = this.actionKey(action);
+    if (!actionId || this.deletingId) return;
     const stockDisplayName = action.stockName || action.stockCode;
-    if (!action || !actionId) {
-      this.notificationService.addNotification('Error', 'Action identifier is missing.', 'error');
-      return;
-    }
 
     const ok = await this.confirmDialog.confirm({
-      title: 'Delete Corporate Action',
-      message: 'Delete the ' + this.typeLabel(action.type) + ' action for ' + stockDisplayName + '? This cannot be undone.',
+      title: 'Delete corporate action?',
+      message: `Delete the ${this.typeLabel(action.type)} for ${stockDisplayName}? This cannot be undone.`,
       tone: 'danger',
       confirmLabel: 'Delete',
     });
-    if (!ok) {
-      return;
-    }
+    if (!ok) return;
 
+    this.deletingId = actionId;
+    this.cdr.markForCheck();
     this.corporateActionService
       .deleteCorporateAction(actionId)
-      .pipe(finalize(() => this.cdr.markForCheck()))
+      .pipe(
+        finalize(() => {
+          this.deletingId = null;
+          this.cdr.markForCheck();
+        })
+      )
       .subscribe({
         next: () => {
           this.notificationService.addNotification(
-            'Corporate Action Deleted',
-            'Successfully deleted corporate action for ' + stockDisplayName + '.',
+            'Corporate action deleted',
+            `The ${this.typeLabel(action.type)} for ${stockDisplayName} was removed.`,
             'success'
           );
+          if (this.showDetailModal && this.actionKey(this.selectedAction) === actionId) {
+            this.closeModal();
+          }
           this.loadActions();
         },
         error: (err) => {
-          console.error('Failed to delete corporate action', err);
-          const errMsg = err?.error?.message || err?.error || err?.message || 'Failed to delete corporate action';
           this.notificationService.addNotification(
-            'Deletion Failed',
-            errMsg,
+            'Corporate action not deleted',
+            describeHttpError(err, 'The action could not be deleted. Please try again.'),
             'error'
           );
         },
@@ -358,8 +444,13 @@ export class CorporateActionListComponent implements OnInit {
   }
 
   closeModal(): void {
+    this.detailRequest?.unsubscribe();
     this.showDetailModal = false;
+    this.isDetailLoading = false;
     this.selectedAction = null;
+    this.selectedEffect = null;
+    this.selectedTimeline = [];
+    this.detailIsPartial = false;
   }
 
   refresh(): void {

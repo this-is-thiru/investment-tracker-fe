@@ -36,7 +36,7 @@
 
       <div class="mt-auto flex flex-col sm:flex-row sm:items-center justify-between gap-2">
         <span class="text-xs text-text-muted">{{ quarterLabel }} · {{ brokerLabel }}</span>
-        <ui-button variant="primary" size="sm" [loading]="isPerforming" (click)="performActions()">
+        <ui-button variant="primary" size="sm" [loading]="isPerforming" [disabled]="isRedriving" (click)="performActions()">
           @if (!isPerforming) {
             <lucide-icon name="zap" class="w-3.5 h-3.5"></lucide-icon>
           }
@@ -65,7 +65,7 @@
           {{ transactions.length ? 'Run step 1 first if new actions were registered.' : 'Nothing to redrive right now.' }}
         </span>
         <ui-button variant="secondary" size="sm" [loading]="isRedriving"
-          [disabled]="loading || transactions.length === 0" (click)="redriveTransactions()">
+          [disabled]="loading || isPerforming || transactions.length === 0" (click)="redriveTransactions()">
           @if (!isRedriving) {
             <lucide-icon name="play-circle" class="w-3.5 h-3.5"></lucide-icon>
           }
@@ -92,8 +92,8 @@
     <ui-alert [tone]="redriveTone" [title]="redriveTitle" [dismissible]="true" (dismissed)="dismissRedrive()">
       <div class="space-y-2">
         <div class="flex flex-wrap gap-x-4 gap-y-1 text-xs">
-          <span><span class="font-semibold text-success font-mono">{{ res.succeeded.length || 0 }}</span> processed</span>
-          <span><span class="font-semibold text-warning font-mono">{{ res.stillFiltered.length || 0 }}</span> still held</span>
+          <span><span class="font-semibold text-success font-mono">{{ res.succeeded.length }}</span> processed</span>
+          <span><span class="font-semibold text-warning font-mono">{{ res.stillFiltered.length }}</span> still held</span>
           <span><span class="font-semibold text-danger font-mono">{{ failedEntries.length }}</span> failed</span>
         </div>
         @if (res.message) {

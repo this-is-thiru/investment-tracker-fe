@@ -23,6 +23,8 @@ import {
   EyeOff,
   LogOut,
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   AlertCircle, 
   Download, 
   PlayCircle, 
@@ -48,7 +50,8 @@ import {
   Calendar,
   FileSpreadsheet,
   Filter,
-  Inbox
+  Inbox,
+  Check
 } from 'lucide-angular';
 
 export const LUCIDE_ICONS = {
@@ -76,10 +79,15 @@ export const LUCIDE_ICONS = {
   EyeOff,
   LogOut,
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   AlertCircle, 
   Download, 
   PlayCircle, 
-  RotateCw, 
+  RotateCw,
+  RotateCcw,
+  ArrowLeft,
+  GitBranch,
   Upload,
   Briefcase,
   SettingsIcon,
@@ -98,5 +106,6 @@ export const LUCIDE_ICONS = {
   Calendar,
   FileSpreadsheet,
   Filter,
-  Inbox
+  Inbox,
+  Check
 };

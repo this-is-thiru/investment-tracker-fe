@@ -1,28 +1,28 @@
 <div class="space-y-4 animate-fade-in">
   <p class="text-sm text-text-secondary">
-    Corporate actions registered in WealthLens adjust equity positions and cost bases during broker statement uploads and quarterly batch reconciliation.
+    Registered corporate actions adjust quantities and cost bases when broker statements are uploaded
+    and when the quarter's actions are applied from the Temporary tab.
   </p>
 
-  <!-- Two-card overview workflow matching Temporary tab -->
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-    <!-- Card 1: Registry overview -->
+    <!-- Registry overview -->
     <div class="bg-surface-alt border border-border rounded-xl p-4 flex flex-col gap-4">
       <div class="flex items-start gap-3">
-        <span class="w-6 h-6 shrink-0 rounded-full bg-accent/15 text-accent text-xs font-bold flex items-center justify-center">
+        <span class="w-6 h-6 shrink-0 rounded-full bg-accent/15 text-accent flex items-center justify-center">
           <lucide-icon name="file-text" class="w-3.5 h-3.5"></lucide-icon>
         </span>
         <div>
           <h4 class="text-sm font-semibold text-white">Registry overview</h4>
-          <p class="text-xs text-text-muted mt-0.5">Corporate events configured across all supported exchanges and instruments.</p>
+          <p class="text-xs text-text-muted mt-0.5">Every corporate action WealthLens knows about, across exchanges.</p>
         </div>
       </div>
 
       <div class="flex items-baseline gap-2">
         <span class="text-2xl font-bold text-white font-mono">{{ actions.length }}</span>
-        <span class="text-sm text-text-secondary">{{ actions.length === 1 ? 'action' : 'actions' }} configured</span>
+        <span class="text-sm text-text-secondary">{{ actions.length === 1 ? 'action' : 'actions' }} registered</span>
       </div>
 
-      <div class="flex flex-wrap gap-1.5 text-xs">
+      <div class="flex flex-wrap gap-1.5">
         <ui-badge tone="accent">{{ bonusCount }} Bonus</ui-badge>
         <ui-badge tone="warning">{{ splitCount }} Split</ui-badge>
         <ui-badge tone="purple">{{ demergerCount }} Demerger</ui-badge>
@@ -32,8 +32,8 @@
         }
       </div>
 
-      <div class="mt-auto flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-2 border-t border-border/50">
-        <span class="text-xs text-text-muted">Need to configure a new stock event?</span>
+      <div class="mt-auto flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <span class="text-xs text-text-muted">Missing an event for one of your stocks?</span>
         <ui-button variant="primary" size="sm" (click)="onAddActionClick()">
           <lucide-icon name="plus" class="w-3.5 h-3.5"></lucide-icon>
           Add action
@@ -41,264 +41,226 @@
       </div>
     </div>
 
-    <!-- Card 2: Priority & Processing Guidelines -->
+    <!-- Execution rules -->
     <div class="bg-surface-alt border border-border rounded-xl p-4 flex flex-col gap-4">
       <div class="flex items-start gap-3">
-        <span class="w-6 h-6 shrink-0 rounded-full bg-accent/15 text-accent text-xs font-bold flex items-center justify-center">
+        <span class="w-6 h-6 shrink-0 rounded-full bg-accent/15 text-accent flex items-center justify-center">
           <lucide-icon name="trending-up" class="w-3.5 h-3.5"></lucide-icon>
         </span>
         <div>
-          <h4 class="text-sm font-semibold text-white">Execution & priority rules</h4>
-          <p class="text-xs text-text-muted mt-0.5">Order of execution matters when multiple actions affect the same stock.</p>
+          <h4 class="text-sm font-semibold text-white">Execution order</h4>
+          <p class="text-xs text-text-muted mt-0.5">Matters when several actions hit the same stock on the same record date.</p>
         </div>
       </div>
 
-      <div class="text-xs text-text-secondary space-y-2">
-        <div class="flex items-start gap-2">
-          <span class="font-mono text-accent font-semibold shrink-0">Priority 0:</span>
-          <span>Highest precedence. Executes first during quarterly batch reconciliation.</span>
-        </div>
-        <div class="flex items-start gap-2">
-          <span class="font-mono text-text-muted font-semibold shrink-0">Prerequisite:</span>
-          <span>Temporary transactions prior to record date must be resolved before quarterly actions run.</span>
-        </div>
-      </div>
+      <ul class="text-xs text-text-secondary space-y-2">
+        <li class="flex items-start gap-2">
+          <span class="font-mono text-accent font-semibold shrink-0">Priority 0</span>
+          <span>runs first; higher numbers follow in order.</span>
+        </li>
+        <li class="flex items-start gap-2">
+          <span class="font-mono text-text-muted font-semibold shrink-0">Unique</span>
+          <span>priorities are required for actions on the same stock and record date.</span>
+        </li>
+      </ul>
 
-      <div class="mt-auto flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-2 border-t border-border/50">
-        <span class="text-xs text-text-muted">
-          {{ authService.isSuperUserRole() ? 'Super User mode: delete & priority edit enabled' : 'Standard mode (Super User needed to delete)' }}
-        </span>
-        <ui-button variant="secondary" size="sm" (click)="refresh()" [disabled]="isLoading">
-          <lucide-icon name="rotate-cw" [class.animate-spin]="isLoading" class="w-3.5 h-3.5"></lucide-icon>
-          Refresh
-        </ui-button>
+      <div class="mt-auto flex items-center gap-2 text-xs text-text-muted">
+        <lucide-icon name="info" class="w-3.5 h-3.5 shrink-0"></lucide-icon>
+        @if (authService.isSuperUserRole()) {
+          <span>You can edit priorities and delete actions.</span>
+        } @else if (authService.isAdmin()) {
+          <span>You can edit priorities. Deleting needs a super user.</span>
+        } @else {
+          <span>Editing priorities needs an admin; deleting needs a super user.</span>
+        }
       </div>
     </div>
   </div>
 
-  <!-- Load Error Alert -->
-  @if (loadError) {
-    <ui-alert tone="danger" title="Couldn't load corporate actions" [dismissible]="true" (dismissed)="loadError = null">
-      {{ loadError }}
-      <button type="button" class="ml-1 text-accent hover:underline font-medium" (click)="refresh()">Try again</button>
-    </ui-alert>
-  }
-
-  <!-- Section Header & Filter Bar -->
+  <!-- Registered actions -->
   <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2">
     <h4 class="text-sm font-semibold text-white flex items-center gap-2">
-      Registered corporate actions
-      <ui-badge [tone]="filteredActions.length ? 'accent' : 'neutral'">{{ filteredActions.length }}</ui-badge>
+      Registered actions
+      <ui-badge [tone]="filteredActions.length ? 'accent' : 'neutral'">
+        {{ hasFilters ? filteredActions.length + ' of ' + actions.length : actions.length }}
+      </ui-badge>
     </h4>
 
-    <div class="flex items-center gap-2 flex-wrap">
-      <!-- Search Input -->
-      <div class="relative min-w-[200px]">
-        <span class="absolute inset-y-0 left-0 flex items-center pl-2.5 pointer-events-none">
-          <lucide-icon name="Search" class="w-3.5 h-3.5 text-text-muted"></lucide-icon>
-        </span>
+    <div class="flex flex-wrap items-center gap-2">
+      <div class="relative flex-1 sm:flex-none sm:w-56">
+        <lucide-icon name="search" class="w-3.5 h-3.5 text-text-muted absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none"></lucide-icon>
         <input
-          type="text"
+          type="search"
           [(ngModel)]="searchQuery"
           (ngModelChange)="applyFilters()"
-          placeholder="Search stock, symbol, type..."
-          class="w-full pl-8 pr-3 py-1.5 text-xs rounded-lg bg-surface border border-border text-white placeholder-text-muted focus:ring-1 focus:ring-accent focus:outline-none"
+          placeholder="Search stock or symbol"
+          aria-label="Search corporate actions"
+          class="w-full pl-8 pr-3 py-1.5 text-sm rounded-lg bg-surface border border-border text-white placeholder-text-muted focus:ring-1 focus:ring-accent focus:border-accent focus:outline-none"
         />
       </div>
 
-      <!-- Action Type Select -->
       <p-select
         [options]="typeOptions"
         [(ngModel)]="filterType"
         (ngModelChange)="applyFilters()"
         optionLabel="label"
         optionValue="value"
-        placeholder="Action type"
-        styleClass="text-xs"
+        ariaLabel="Filter by action type"
+        styleClass="text-sm"
         appendTo="body"
       ></p-select>
 
-      @if (searchQuery || filterType !== 'ALL') {
-        <ui-button variant="secondary" size="sm" (click)="resetFilters()">
-          <lucide-icon name="X" class="w-3 h-3"></lucide-icon>
-          Reset
+      @if (hasFilters) {
+        <ui-button variant="ghost" size="sm" (click)="resetFilters()">
+          <lucide-icon name="x" class="w-3.5 h-3.5"></lucide-icon>
+          Clear
         </ui-button>
       }
 
-      <!-- Primary Add Action CTA in Table Toolbar -->
-      <ui-button variant="primary" size="sm" (click)="onAddActionClick()">
-        <lucide-icon name="plus" class="w-3.5 h-3.5"></lucide-icon>
-        Add Action
+      <ui-button variant="secondary" size="sm" (click)="refresh()" [disabled]="isLoading">
+        <lucide-icon name="rotate-cw" [class.animate-spin]="isLoading" class="w-3.5 h-3.5"></lucide-icon>
+        Refresh
       </ui-button>
     </div>
   </div>
 
-  <!-- Table -->
-  @if (isLoading && actions.length === 0) {
-    <div class="rounded-xl border border-border divide-y divide-divider" aria-busy="true" aria-label="Loading actions">
+  @if (loadError) {
+    <ui-alert tone="danger" title="Couldn't load corporate actions">
+      {{ loadError }}
+      <button type="button" class="ml-1 text-accent hover:text-accent-hover font-medium hover:underline" (click)="refresh()">Try again</button>
+    </ui-alert>
+  } @else if (isLoading && actions.length === 0) {
+    <div class="rounded-xl border border-border divide-y divide-divider" aria-busy="true" aria-label="Loading corporate actions">
       @for (row of [1, 2, 3]; track row) {
         <div class="flex items-center gap-4 px-4 py-3">
-          <p-skeleton width="25%" height="14px" styleClass="bg-surface-hover"></p-skeleton>
-          <p-skeleton width="15%" height="14px" styleClass="bg-surface-hover"></p-skeleton>
-          <p-skeleton width="20%" height="14px" styleClass="bg-surface-hover"></p-skeleton>
-          <p-skeleton width="15%" height="14px" styleClass="bg-surface-hover"></p-skeleton>
+          <p-skeleton width="28%" height="14px" styleClass="bg-surface-hover"></p-skeleton>
+          <p-skeleton width="12%" height="14px" styleClass="bg-surface-hover"></p-skeleton>
+          <p-skeleton width="16%" height="14px" styleClass="bg-surface-hover"></p-skeleton>
+          <p-skeleton width="18%" height="14px" styleClass="bg-surface-hover"></p-skeleton>
         </div>
       }
     </div>
   } @else {
     <div class="overflow-x-auto rounded-xl border border-border">
-      <p-table
-        [value]="filteredActions"
-        [paginator]="filteredActions.length > 10"
-        [rows]="10"
-        [rowsPerPageOptions]="[10, 20, 50]"
-        paginatorDropdownAppendTo="body"
-        responsiveLayout="scroll"
-        styleClass="p-datatable-sm w-full"
-      >
+      <p-table [value]="filteredActions" [paginator]="filteredActions.length > 10" [rows]="10" [rowsPerPageOptions]="[10, 20, 50]"
+        paginatorDropdownAppendTo="body" [tableStyle]="{ 'min-width': '56rem' }" responsiveLayout="scroll" styleClass="p-datatable-sm w-full">
         <ng-template pTemplate="header">
           <tr>
-            <th pSortableColumn="stockName" class="text-left py-3 px-4 text-text-secondary text-xs font-semibold uppercase tracking-wider">
+            <th pSortableColumn="stockName">
               <div class="flex items-center gap-1 whitespace-nowrap">Stock <p-sortIcon field="stockName"></p-sortIcon></div>
             </th>
-            <th pSortableColumn="type" class="text-left py-3 px-4 text-text-secondary text-xs font-semibold uppercase tracking-wider">
+            <th pSortableColumn="type">
               <div class="flex items-center gap-1 whitespace-nowrap">Type <p-sortIcon field="type"></p-sortIcon></div>
             </th>
-            <th class="text-left py-3 px-4 text-text-secondary text-xs font-semibold uppercase tracking-wider">
-              Terms / Detail
+            <th>
+              <div class="flex items-center whitespace-nowrap">Terms</div>
             </th>
-            <th pSortableColumn="priority" class="text-center py-3 px-4 text-text-secondary text-xs font-semibold uppercase tracking-wider w-[110px]">
+            <th pSortableColumn="priority" class="text-center">
               <div class="flex items-center justify-center gap-1 whitespace-nowrap">Priority <p-sortIcon field="priority"></p-sortIcon></div>
             </th>
-            <th pSortableColumn="exDate" class="text-left py-3 px-4 text-text-secondary text-xs font-semibold uppercase tracking-wider">
-              <div class="flex items-center gap-1 whitespace-nowrap">Ex Date <p-sortIcon field="exDate"></p-sortIcon></div>
+            <th pSortableColumn="exDate">
+              <div class="flex items-center gap-1 whitespace-nowrap">Ex-date <p-sortIcon field="exDate"></p-sortIcon></div>
             </th>
-            <th pSortableColumn="recordDate" class="text-left py-3 px-4 text-text-secondary text-xs font-semibold uppercase tracking-wider">
-              <div class="flex items-center gap-1 whitespace-nowrap">Record Date <p-sortIcon field="recordDate"></p-sortIcon></div>
+            <th pSortableColumn="recordDate">
+              <div class="flex items-center gap-1 whitespace-nowrap">Record date <p-sortIcon field="recordDate"></p-sortIcon></div>
             </th>
-            <th class="text-center py-3 px-4 text-text-secondary text-xs font-semibold uppercase tracking-wider w-[100px]">
-              Actions
+            <th class="text-right">
+              <div class="flex items-center justify-end whitespace-nowrap">Actions</div>
             </th>
           </tr>
         </ng-template>
         <ng-template pTemplate="body" let-action>
-          <tr class="border-b border-divider hover:bg-surface-hover/30 transition-colors">
-            <!-- Stock -->
+          <tr>
             <td class="px-4 py-3">
-              <div class="font-medium text-white truncate max-w-[220px]" [appTooltip]="action.stockName || action.stockCode">
+              <div class="font-medium text-white truncate max-w-[220px] cursor-default" [appTooltip]="action.stockName || action.stockCode">
                 {{ action.stockName || action.stockCode }}
               </div>
               <div class="text-2xs text-text-muted font-mono mt-0.5">{{ action.stockCode }}</div>
             </td>
 
-            <!-- Type Badge using ui-badge -->
             <td class="px-4 py-3 whitespace-nowrap">
-              <ui-badge [tone]="getBadgeTone(action.type)">{{ action.type }}</ui-badge>
+              <ui-badge [tone]="getBadgeTone(action.type)">{{ typeLabel(action.type) }}</ui-badge>
             </td>
 
-            <!-- Terms / Detail -->
-            <td class="px-4 py-3 text-xs text-text-secondary">
+            <td class="px-4 py-3 text-sm whitespace-nowrap">
               @if (action.type === 'NAME_OR_SYMBOL_CHANGE') {
-                <div class="flex items-center gap-1.5 font-mono text-2xs text-warning">
-                  <span>{{ action.stockCode }}</span>
-                  <lucide-icon name="arrow-right" class="w-3 h-3"></lucide-icon>
-                  <span class="font-bold text-white">{{ action.toStockCode || '—' }}</span>
-                </div>
-              } @else if (action.type === 'DIVIDEND' && action.dividendAmount) {
-                <span class="font-mono text-success font-medium">₹{{ action.dividendAmount | number:'1.2-2' }}/sh</span>
-              } @else if (action.ratio) {
-                <span class="font-mono text-white font-medium bg-surface px-1.5 py-0.5 rounded border border-border">
-                  Ratio {{ action.ratio }}
+                <span class="inline-flex items-center gap-1.5 font-mono text-xs text-text-secondary">
+                  {{ action.stockCode }}
+                  <lucide-icon name="arrow-right" class="w-3 h-3 text-warning"></lucide-icon>
+                  <span class="text-white font-medium">{{ action.toStockCode || '—' }}</span>
                 </span>
-              } @else if (action.actionPrice) {
-                <span class="font-mono text-danger font-medium">₹{{ action.actionPrice }}</span>
+              } @else if (action.type === 'DIVIDEND' && action.dividendAmount) {
+                <span class="font-mono text-success tabular-nums">₹{{ action.dividendAmount | number:'1.2-2' }} / share</span>
               } @else if (action.type === 'DEMERGER' && action.demergerDetail?.demergerRatio) {
-                <span class="font-mono text-purple font-medium">{{ action.demergerDetail.demergerRatio }}</span>
+                <span class="font-mono text-gray-300">{{ action.demergerDetail.demergerRatio }}</span>
+              } @else if (action.ratio) {
+                <span class="font-mono text-gray-300">{{ action.ratio }}</span>
+                @if (action.actionPrice) {
+                  <span class="text-text-muted"> · </span><span class="font-mono text-gray-300 tabular-nums">₹{{ action.actionPrice }}</span>
+                }
+              } @else if (action.actionPrice) {
+                <span class="font-mono text-gray-300 tabular-nums">₹{{ action.actionPrice }}</span>
               } @else {
-                <span class="text-text-disabled font-mono">—</span>
+                <span class="text-text-muted">—</span>
               }
             </td>
 
-            <!-- Priority & Inline Edit -->
             <td class="px-4 py-3 text-center">
-              <div class="inline-flex items-center justify-center gap-1">
-                @if (editingPriorityId === (action.id || action.stockCode)) {
+              @if (editingPriorityId === actionKey(action)) {
+                <div class="inline-flex items-center gap-1">
                   <input
                     type="number"
                     [(ngModel)]="editPriorityValue"
                     (keydown.enter)="savePriority(action)"
                     (keydown.escape)="cancelEditPriority()"
-                    class="w-12 px-1.5 py-0.5 text-xs rounded bg-surface border border-accent text-white text-center font-mono focus:outline-none"
+                    [disabled]="isSavingPriority"
+                    aria-label="Priority"
                     min="0"
                     max="999"
+                    class="w-14 px-1.5 py-0.5 text-xs rounded-md bg-surface border border-accent text-white text-center font-mono focus:outline-none"
                   />
-                  <button
-                    type="button"
-                    (click)="savePriority(action)"
-                    [disabled]="isSavingPriority"
-                    class="p-1 text-success hover:text-success/80 transition-colors"
-                    title="Save"
-                  >
-                    <lucide-icon name="check-circle-2" class="w-3.5 h-3.5"></lucide-icon>
+                  <button type="button" (click)="savePriority(action)" [disabled]="isSavingPriority"
+                    class="p-1 rounded-md text-success hover:bg-success/10 disabled:opacity-50 transition-colors" aria-label="Save priority">
+                    <lucide-icon name="check" class="w-3.5 h-3.5"></lucide-icon>
                   </button>
-                  <button
-                    type="button"
-                    (click)="cancelEditPriority()"
-                    [disabled]="isSavingPriority"
-                    class="p-1 text-text-muted hover:text-white transition-colors"
-                    title="Cancel"
-                  >
+                  <button type="button" (click)="cancelEditPriority()" [disabled]="isSavingPriority"
+                    class="p-1 rounded-md text-text-muted hover:text-white hover:bg-surface-hover disabled:opacity-50 transition-colors" aria-label="Cancel">
                     <lucide-icon name="x" class="w-3.5 h-3.5"></lucide-icon>
                   </button>
-                } @else {
-                  <span
-                    class="font-mono text-xs px-2 py-0.5 rounded bg-surface border border-border text-text-secondary min-w-[28px] text-center"
-                    [appTooltip]="'Execution Priority: ' + (action.priority ?? 0)"
-                  >
+                </div>
+              } @else {
+                <div class="inline-flex items-center gap-1">
+                  <span class="font-mono text-xs px-2 py-0.5 rounded-md bg-surface border border-border text-text-secondary min-w-[28px]">
                     {{ action.priority ?? 0 }}
                   </span>
                   @if (authService.isAdmin()) {
-                    <button
-                      type="button"
-                      (click)="startEditPriority(action)"
-                      class="p-1 text-text-muted hover:text-accent opacity-60 hover:opacity-100 transition-opacity"
-                      appTooltip="Edit Priority"
-                    >
+                    <button type="button" (click)="startEditPriority(action)"
+                      class="p-1 rounded-md text-text-muted hover:text-accent hover:bg-surface-hover transition-colors"
+                      appTooltip="Edit priority" aria-label="Edit priority">
                       <lucide-icon name="edit" class="w-3 h-3"></lucide-icon>
                     </button>
                   }
-                }
-              </div>
+                </div>
+              }
             </td>
 
-            <!-- Dates -->
-            <td class="px-4 py-3 text-text-secondary text-sm font-mono whitespace-nowrap">{{ action.exDate || '—' }}</td>
-            <td class="px-4 py-3 text-text-secondary text-sm font-mono whitespace-nowrap">{{ action.recordDate || '—' }}</td>
+            <td class="px-4 py-3 text-text-secondary text-sm font-mono whitespace-nowrap">{{ formatDate(action.exDate) }}</td>
+            <td class="px-4 py-3 text-text-secondary text-sm font-mono whitespace-nowrap">{{ formatDate(action.recordDate) }}</td>
 
-            <!-- Actions -->
-            <td class="px-4 py-3 text-center">
-              <div class="flex items-center justify-center gap-1.5">
-                <ui-button
-                  variant="icon"
-                  size="sm"
-                  (click)="viewDetails(action.id || action.stockCode)"
-                  appTooltip="View Details"
-                >
+            <td class="px-4 py-3">
+              <div class="flex items-center justify-end gap-1">
+                <ui-button variant="icon" size="sm" (click)="viewDetails(action)" appTooltip="View details" ariaLabel="View details">
                   <lucide-icon name="eye" class="w-3.5 h-3.5"></lucide-icon>
                 </ui-button>
-                <button
-                  type="button"
-                  (click)="deleteAction(action)"
-                  [disabled]="!authService.isSuperUserRole()"
-                  [ngClass]="!authService.isSuperUserRole()
-                    ? 'opacity-40 cursor-not-allowed text-text-muted hover:text-text-disabled border-border hover:bg-transparent'
-                    : 'hover:bg-danger/10 text-gray-300 hover:text-danger hover:border-danger/40'"
-                  class="inline-flex items-center justify-center p-1.5 bg-divider border border-border rounded-lg transition-all"
-                  [appTooltip]="authService.isSuperUserRole() ? 'Delete Corporate Action' : 'Super User role required to delete'"
-                  [appTooltipVariant]="authService.isSuperUserRole() ? 'danger' : 'default'"
-                >
-                  <lucide-icon name="trash" class="w-3.5 h-3.5"></lucide-icon>
-                </button>
+                @if (authService.isSuperUserRole()) {
+                  <ui-button variant="icon" size="sm" (click)="deleteAction(action)"
+                    [loading]="deletingId === actionKey(action)" [disabled]="!!deletingId"
+                    appTooltip="Delete" appTooltipVariant="danger" ariaLabel="Delete corporate action">
+                    @if (deletingId !== actionKey(action)) {
+                      <lucide-icon name="trash" class="w-3.5 h-3.5"></lucide-icon>
+                    }
+                  </ui-button>
+                }
               </div>
             </td>
           </tr>
@@ -306,18 +268,24 @@
         <ng-template pTemplate="emptymessage">
           <tr>
             <td colspan="7" class="py-10 px-4 text-center">
-              <ui-empty-state
-                icon="database"
-                title="No corporate actions found"
-                message="No actions match the current search or filter criteria."
-              >
-                <div class="mt-3">
-                  <ui-button variant="primary" size="sm" (click)="onAddActionClick()">
-                    <lucide-icon name="plus" class="w-3.5 h-3.5"></lucide-icon>
-                    Register corporate action
-                  </ui-button>
-                </div>
-              </ui-empty-state>
+              @if (hasFilters) {
+                <ui-empty-state icon="search" title="No matching actions"
+                  message="Nothing in the registry matches this search and type filter.">
+                  <div class="mt-3">
+                    <ui-button variant="secondary" size="sm" (click)="resetFilters()">Clear filters</ui-button>
+                  </div>
+                </ui-empty-state>
+              } @else {
+                <ui-empty-state icon="file-text" title="No corporate actions yet"
+                  message="Register bonuses, splits, demergers and symbol changes so your holdings stay accurate.">
+                  <div class="mt-3">
+                    <ui-button variant="primary" size="sm" (click)="onAddActionClick()">
+                      <lucide-icon name="plus" class="w-3.5 h-3.5"></lucide-icon>
+                      Add action
+                    </ui-button>
+                  </div>
+                </ui-empty-state>
+              }
             </td>
           </tr>
         </ng-template>
@@ -326,162 +294,193 @@
   }
 </div>
 
-<!-- ================= CORPORATE ACTION DETAILS MODAL ================= -->
-<ui-modal [open]="showDetailModal" size="md" [dismissible]="true" (closed)="closeModal()">
-  <div modalHeader class="flex-1 min-w-0">
-    @if (selectedAction && !isDetailLoading) {
-      <div class="flex items-center gap-2 flex-wrap">
-        <h3 class="text-base sm:text-lg font-semibold text-white truncate">
-          {{ selectedAction.stockName || selectedAction.stockCode }}
-        </h3>
-        <ui-badge [tone]="getBadgeTone(selectedAction.type)">{{ typeLabel(selectedAction.type) }}</ui-badge>
-        @if (selectedAction.priority !== undefined && selectedAction.priority !== null) {
-          <span class="text-2xs font-mono px-2 py-0.5 rounded bg-surface border border-border text-text-secondary">
-            Priority: {{ selectedAction.priority }}
-          </span>
-        }
+<!-- Corporate action details -->
+<ui-modal [open]="showDetailModal" size="lg" [dismissible]="true" (closed)="closeModal()">
+  <div modalHeader class="flex-1 min-w-0 flex items-start justify-between gap-3">
+    @if (selectedAction; as a) {
+      <div class="min-w-0">
+        <div class="flex items-center gap-2 flex-wrap">
+          <h3 class="text-base sm:text-lg font-semibold text-white truncate">{{ a.stockName || a.stockCode }}</h3>
+          <ui-badge [tone]="getBadgeTone(a.type)">{{ typeLabel(a.type) }}</ui-badge>
+          @if (isDetailLoading) {
+            <lucide-icon name="rotate-cw" class="w-3.5 h-3.5 text-text-muted animate-spin" aria-label="Refreshing details"></lucide-icon>
+          }
+        </div>
+        <p class="text-xs text-text-muted mt-1 flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
+          <span class="font-mono text-text-secondary">{{ a.stockCode }}</span>
+          <span aria-hidden="true">·</span>
+          <span>{{ assetTypeLabel(a.assetType) }}</span>
+          <span aria-hidden="true">·</span>
+          <span>Priority <span class="font-mono text-text-secondary">{{ a.priority ?? 0 }}</span></span>
+          @if (a.recordDate) {
+            <span aria-hidden="true">·</span>
+            <span [class.text-warning]="isUpcoming">{{ isUpcoming ? 'Upcoming' : 'Record date passed' }}</span>
+          }
+        </p>
       </div>
-      <p class="text-xs text-text-muted mt-1">
-        <span class="font-mono text-text-secondary">{{ selectedAction.stockCode }}</span>
-        · {{ selectedAction.assetType || 'EQUITY' | titlecase }}
-      </p>
+
+      @if (filteredActions.length > 1 && selectedIndex >= 0) {
+        <div class="shrink-0 flex items-center gap-0.5 rounded-lg border border-border bg-surface p-0.5">
+          <button type="button" (click)="showAdjacent(-1)" [disabled]="selectedIndex === 0"
+            class="p-1 rounded-md text-text-secondary hover:text-white hover:bg-surface-hover disabled:opacity-30 disabled:pointer-events-none transition-colors"
+            aria-label="Previous action">
+            <lucide-icon name="chevron-left" class="w-4 h-4"></lucide-icon>
+          </button>
+          <span class="text-2xs font-mono text-text-muted px-1 tabular-nums whitespace-nowrap">{{ selectedIndex + 1 }} / {{ filteredActions.length }}</span>
+          <button type="button" (click)="showAdjacent(1)" [disabled]="selectedIndex === filteredActions.length - 1"
+            class="p-1 rounded-md text-text-secondary hover:text-white hover:bg-surface-hover disabled:opacity-30 disabled:pointer-events-none transition-colors"
+            aria-label="Next action">
+            <lucide-icon name="chevron-right" class="w-4 h-4"></lucide-icon>
+          </button>
+        </div>
+      }
     } @else {
-      <h3 class="text-lg font-semibold text-white">Corporate Action Details</h3>
+      <h3 class="text-lg font-semibold text-white">Corporate action</h3>
     }
   </div>
 
-  @if (isDetailLoading || !selectedAction) {
-    <div class="space-y-4 py-2" aria-busy="true" aria-label="Loading corporate action">
-      <div class="grid grid-cols-3 gap-3">
-        @for (i of [1, 2, 3]; track i) {
-          <p-skeleton height="3.5rem" styleClass="bg-surface-hover"></p-skeleton>
-        }
-      </div>
-      <p-skeleton height="3rem" styleClass="bg-surface-hover"></p-skeleton>
-      <p-skeleton width="70%" height="1rem" styleClass="bg-surface-hover"></p-skeleton>
-    </div>
-  } @else {
-    <div class="space-y-4">
+  @if (selectedAction; as a) {
+    <div class="space-y-5">
       @if (detailIsPartial) {
-        <ui-alert tone="warning" title="Partial server response">
-          Full server details could not be loaded; displaying cached registry values.
+        <ui-alert tone="warning" title="Showing saved values">
+          The latest details couldn't be loaded, so this shows what's in the list.
         </ui-alert>
       }
 
-      <!-- Standalone Execution Notice (for Name or Symbol Change) -->
-      @if (canExecuteDirectly(selectedAction)) {
-        <div class="flex items-center justify-between gap-3 p-3.5 rounded-xl bg-accent/10 border border-accent/20">
-          <div class="text-xs text-white">
-            <span class="font-semibold text-accent">Direct Execution:</span>
-            <span> Apply this symbol change system-wide to update portfolio holdings and transactions.</span>
+      <!-- What it does to a holding -->
+      <section class="rounded-xl border border-border bg-surface p-4" aria-labelledby="ca-effect-title">
+        <div class="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
+          <h4 id="ca-effect-title" class="text-2xs font-semibold text-text-secondary uppercase tracking-wider">Effect on a holding</h4>
+          @if (selectedEffect) {
+            <span class="text-2xs text-text-muted">Example: {{ exampleShares }} shares bought at ₹{{ exampleCost }}</span>
+          }
+        </div>
+
+        @if (selectedEffect; as effect) {
+          <div class="mt-3 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+            <ng-container *ngTemplateOutlet="holding; context: { $implicit: effect.before, muted: true }"></ng-container>
+
+            <div class="flex justify-center shrink-0 text-text-muted" aria-hidden="true">
+              <lucide-icon name="arrow-right" class="w-4 h-4 rotate-90 sm:rotate-0"></lucide-icon>
+            </div>
+
+            <div class="flex-1 flex flex-col gap-2">
+              @for (side of effect.after; track $index) {
+                <ng-container *ngTemplateOutlet="holding; context: { $implicit: side }"></ng-container>
+              }
+            </div>
           </div>
-          <ui-button
-            variant="primary"
-            size="sm"
-            (click)="executeSingleAction(selectedAction)"
-            [loading]="isExecutingAction"
-          >
-            Apply now
+          <p class="mt-3 text-xs text-text-secondary leading-relaxed">{{ effect.summary }}</p>
+        } @else {
+          <p class="mt-2 text-xs text-text-muted">
+            The terms for this action aren't complete, so its effect can't be shown.
+            @if (a.ratio) { Ratio <span class="font-mono text-text-secondary">{{ a.ratio }}</span>. }
+            @if (a.actionPrice) { Price <span class="font-mono text-text-secondary">₹{{ a.actionPrice }}</span>. }
+          </p>
+        }
+      </section>
+
+      <!-- Symbol changes can be applied straight away -->
+      @if (canExecuteDirectly(a)) {
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-xl bg-accent/10 border border-accent/20">
+          <p class="text-xs text-text-secondary">
+            <span class="font-semibold text-white">Apply directly.</span>
+            Renames {{ a.stockCode }} to {{ a.toStockCode }} in every holding and past transaction.
+          </p>
+          <ui-button variant="primary" size="sm" (click)="executeSingleAction(a)" [loading]="isExecutingAction">
+            @if (!isExecutingAction) {
+              <lucide-icon name="zap" class="w-3.5 h-3.5"></lucide-icon>
+            }
+            {{ isExecutingAction ? 'Applying…' : 'Apply now' }}
           </ui-button>
         </div>
       }
 
-      <!-- Key Terms Banner -->
-      <div class="grid gap-3" [class.grid-cols-2]="(selectedAction.ratio && selectedAction.dividendAmount) || (selectedAction.ratio && selectedAction.actionPrice)">
-        @if (selectedAction.ratio) {
-          <div class="rounded-xl bg-surface-alt border border-border p-3.5">
-            <p class="text-2xs text-text-muted uppercase tracking-wider font-semibold">Ratio</p>
-            <p class="text-xl font-semibold text-white font-mono mt-0.5">{{ selectedAction.ratio }}</p>
-          </div>
-        }
-        @if (selectedAction.dividendAmount) {
-          <div class="rounded-xl bg-surface-alt border border-border p-3.5">
-            <p class="text-2xs text-text-muted uppercase tracking-wider font-semibold">Dividend Per Share</p>
-            <p class="text-xl font-semibold text-success font-mono mt-0.5">
-              ₹{{ selectedAction.dividendAmount | number:'1.2-2' }}
-            </p>
-          </div>
-        }
-        @if (selectedAction.actionPrice) {
-          <div class="rounded-xl bg-surface-alt border border-border p-3.5">
-            <p class="text-2xs text-text-muted uppercase tracking-wider font-semibold">Action Price</p>
-            <p class="text-xl font-semibold text-danger font-mono mt-0.5">
-              ₹{{ selectedAction.actionPrice }}
-            </p>
-          </div>
-        }
-        @if (selectedAction.type === 'NAME_OR_SYMBOL_CHANGE') {
-          <div class="rounded-xl bg-surface-alt border border-border p-3.5">
-            <p class="text-2xs text-text-muted uppercase tracking-wider font-semibold">Target Symbol & Name</p>
-            <p class="text-base font-semibold text-warning font-mono mt-0.5">
-              {{ selectedAction.toStockCode }}
-            </p>
-            @if (selectedAction.toStockName) {
-              <p class="text-xs text-text-secondary mt-0.5">{{ selectedAction.toStockName }}</p>
+      <!-- Key dates -->
+      @if (selectedTimeline.length) {
+        <section aria-labelledby="ca-dates-title">
+          <h4 id="ca-dates-title" class="text-2xs font-semibold text-text-secondary uppercase tracking-wider mb-3">Key dates</h4>
+          <ol class="flex">
+            @for (step of selectedTimeline; track step.label; let last = $last) {
+              <li class="relative flex-1 text-center">
+                @if (!last) {
+                  <span class="absolute top-[5px] left-1/2 w-full h-px" [ngClass]="step.reached ? 'bg-accent/60' : 'bg-border'" aria-hidden="true"></span>
+                }
+                <span class="relative mx-auto block w-[11px] h-[11px] rounded-full border-2"
+                  [ngClass]="step.reached ? 'bg-accent border-accent' : 'bg-surface-alt border-border'" aria-hidden="true"></span>
+                <p class="mt-2 text-2xs text-text-muted uppercase tracking-wider font-semibold">{{ step.label }}</p>
+                <p class="mt-0.5 text-sm font-medium font-mono" [ngClass]="step.reached ? 'text-white' : 'text-text-secondary'">{{ formatDate(step.date) }}</p>
+              </li>
             }
-          </div>
-        }
-      </div>
-
-      <!-- Dates Grid -->
-      <dl class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-        <div class="rounded-xl bg-surface-alt border border-border p-3">
-          <dt class="text-2xs text-text-muted uppercase tracking-wider font-semibold">Ex-Date</dt>
-          <dd class="text-sm font-medium text-white font-mono mt-0.5">{{ formatDate(selectedAction.exDate) }}</dd>
-        </div>
-        <div class="rounded-xl bg-surface-alt border border-border p-3">
-          <dt class="text-2xs text-text-muted uppercase tracking-wider font-semibold">Record Date</dt>
-          <dd class="text-sm font-medium text-white font-mono mt-0.5">{{ formatDate(selectedAction.recordDate) }}</dd>
-        </div>
-        <div class="rounded-xl bg-surface-alt border border-border p-3">
-          <dt class="text-2xs text-text-muted uppercase tracking-wider font-semibold">Applied On</dt>
-          <dd class="text-sm font-medium text-white font-mono mt-0.5">{{ formatDate(selectedAction.date) }}</dd>
-        </div>
-      </dl>
-
-      <!-- Description -->
-      @if (selectedAction.description) {
-        <div class="rounded-xl bg-surface-alt border border-border p-3.5">
-          <h4 class="text-2xs font-semibold text-text-muted uppercase tracking-wider mb-1">Description</h4>
-          <p class="text-xs text-text-secondary leading-relaxed">{{ selectedAction.description }}</p>
-        </div>
+          </ol>
+        </section>
       }
 
-      <!-- Demerger Detail -->
-      @if (selectedAction.type === 'DEMERGER' && selectedAction.demergerDetail; as demerger) {
-        <div class="rounded-xl border border-border overflow-hidden bg-surface-alt">
-          <h4 class="text-xs font-semibold text-text-secondary px-4 py-2.5 bg-surface border-b border-border">
-            Demerger Allocation Terms
-          </h4>
-          <dl class="grid grid-cols-2 gap-4 px-4 py-3">
-            <div>
-              <dt class="text-2xs text-text-muted uppercase tracking-wider font-semibold">Share Ratio</dt>
-              <dd class="text-sm font-medium text-white font-mono mt-0.5">{{ demerger.demergerRatio || '—' }}</dd>
+      <!-- Demerger companies -->
+      @if (a.type === 'DEMERGER' && a.demergerDetail?.demergerStocks?.length) {
+        <section aria-labelledby="ca-demerger-title">
+          <h4 id="ca-demerger-title" class="text-2xs font-semibold text-text-secondary uppercase tracking-wider mb-2">Companies</h4>
+          <div class="rounded-xl border border-border divide-y divide-divider">
+            <div class="flex items-center justify-between gap-3 px-3.5 py-2.5">
+              <span class="text-sm text-white truncate">{{ a.demergerDetail.mainStockName || a.stockName }}</span>
+              <span class="text-2xs text-text-muted shrink-0">Parent · <span class="font-mono">{{ a.demergerDetail.mainStockCode || a.stockCode }}</span></span>
             </div>
-            <div>
-              <dt class="text-2xs text-text-muted uppercase tracking-wider font-semibold">Cost Split Ratio</dt>
-              <dd class="text-sm font-medium text-white font-mono mt-0.5">{{ demerger.demergerPriceRatio || '—' }}</dd>
-            </div>
-          </dl>
+            @for (stock of a.demergerDetail.demergerStocks; track $index) {
+              <div class="flex items-center justify-between gap-3 px-3.5 py-2.5">
+                <span class="text-sm text-white truncate">{{ stock.stockName }}</span>
+                <span class="text-2xs text-text-muted shrink-0">New · <span class="font-mono">{{ stock.stockCode }}</span></span>
+              </div>
+            }
+          </div>
+        </section>
+      }
 
-          @if (demerger.demergerStocks?.length) {
-            <div class="border-t border-border px-4 py-3 space-y-2">
-              <p class="text-2xs text-text-muted uppercase tracking-wider font-semibold">Resulting Company</p>
-              @for (stock of demerger.demergerStocks; track $index) {
-                <div class="flex items-center justify-between gap-3 rounded-lg bg-surface px-3 py-2 border border-border">
-                  <span class="text-sm text-white truncate">{{ stock.stockName }}</span>
-                  <span class="font-mono text-xs text-text-muted shrink-0">{{ stock.stockCode }}</span>
-                </div>
-              }
-            </div>
-          }
-        </div>
+      @if (a.description) {
+        <section aria-labelledby="ca-notes-title">
+          <h4 id="ca-notes-title" class="text-2xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5">Notes</h4>
+          <p class="text-sm text-text-secondary leading-relaxed whitespace-pre-line">{{ a.description }}</p>
+        </section>
       }
     </div>
   }
 
-  <!-- Footer -->
-  <div modalFooter class="px-5 py-3.5 border-t border-border flex justify-end gap-2">
+  <div modalFooter class="px-5 py-3.5 border-t border-border flex items-center justify-end gap-2">
+    @if (selectedAction && authService.isSuperUserRole()) {
+      <ui-button variant="danger" size="sm" class="mr-auto" (click)="deleteAction(selectedAction)"
+        [loading]="deletingId === actionKey(selectedAction)" [disabled]="isExecutingAction">
+        @if (deletingId !== actionKey(selectedAction)) {
+          <lucide-icon name="trash" class="w-3.5 h-3.5"></lucide-icon>
+        }
+        Delete
+      </ui-button>
+    }
+    @if (filteredActions.length > 1) {
+      <span class="hidden sm:inline text-2xs text-text-muted mr-2">
+        <kbd class="font-mono px-1 rounded border border-border">←</kbd>
+        <kbd class="font-mono px-1 rounded border border-border">→</kbd> to browse
+      </span>
+    }
     <ui-button variant="secondary" size="sm" (click)="closeModal()">Close</ui-button>
   </div>
 </ui-modal>
+
+<!-- One side of the effect illustration -->
+<ng-template #holding let-h let-muted="muted">
+  <div class="flex-1 rounded-lg border px-3.5 py-2.5"
+    [ngClass]="muted ? 'border-border bg-surface-alt'
+      : h.tone === 'success' ? 'border-success/30 bg-success/5'
+      : h.tone === 'accent' ? 'border-accent/30 bg-accent/5'
+      : 'border-border bg-surface-alt'">
+    <p class="text-2xs font-mono text-text-muted truncate">{{ h.label }}</p>
+    <p class="mt-0.5 text-white">
+      <span class="text-lg font-semibold tabular-nums">{{ h.shares | number:'1.0-2' }}</span>
+      <span class="text-xs text-text-secondary"> {{ h.shares === 1 ? 'share' : 'shares' }}</span>
+    </p>
+    @if (h.costPerShare !== undefined) {
+      <p class="text-xs text-text-secondary tabular-nums">at ₹{{ h.costPerShare | number:'1.2-2' }} / share</p>
+    }
+    @if (h.caption) {
+      <p class="text-2xs mt-0.5" [ngClass]="h.tone === 'success' ? 'text-success' : 'text-text-muted'">{{ h.caption }}</p>
+    }
+  </div>
+</ng-template>

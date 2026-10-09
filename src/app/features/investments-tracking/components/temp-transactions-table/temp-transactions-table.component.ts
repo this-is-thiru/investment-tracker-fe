@@ -12,7 +12,7 @@ import { FormsModule } from '@angular/forms';
 import { finalize } from 'rxjs/operators';
 import { TransactionsResponse } from '@models/transactions-response.model';
 import { TransactionService } from '@services/transaction.service';
-import { CorporateActionService } from '../../services/corporate-action.service';
+import { CorporateActionService, describeHttpError } from '../../services/corporate-action.service';
 import { AuthService } from '@services/auth.service';
 import { LucideIconsModule } from '@core/icons/lucide-icons.module';
 import { PrimeNgModule } from '@core/prime-ng.module';
@@ -122,7 +122,7 @@ export class TempTransactionsTableComponent implements OnInit {
           this.countChange.emit(this.transactions.length);
         },
         error: (err) => {
-          this.loadError = this.errorMessage(err, 'Pending transactions could not be loaded.');
+          this.loadError = describeHttpError(err, 'Pending transactions could not be loaded.');
         },
       });
   }
@@ -174,7 +174,7 @@ export class TempTransactionsTableComponent implements OnInit {
           this.performOutcome = {
             tone: 'danger',
             title: 'Corporate actions were not applied',
-            message: this.errorMessage(err, 'Check the quarter, year and broker, then try again.'),
+            message: describeHttpError(err, 'Check the quarter, year and broker, then try again.'),
           };
         },
       });
@@ -197,14 +197,21 @@ export class TempTransactionsTableComponent implements OnInit {
       )
       .subscribe({
         next: (result) => {
-          this.redriveResult = result;
-          if (result?.succeeded?.length) {
+          // The backend may omit or null out empty buckets
+          this.redriveResult = {
+            succeeded: result?.succeeded ?? [],
+            failed: result?.failed ?? {},
+            stillFiltered: result?.stillFiltered ?? [],
+            filteredOut: result?.filteredOut ?? [],
+            message: result?.message ?? '',
+          };
+          if (this.redriveResult.succeeded.length) {
             this.actionApplied.emit();
           }
           this.loadTransactions();
         },
         error: (err) => {
-          this.redriveError = this.errorMessage(err, 'Pending transactions could not be redriven. Please try again.');
+          this.redriveError = describeHttpError(err, 'Pending transactions could not be redriven. Please try again.');
         },
       });
   }
@@ -251,10 +258,5 @@ export class TempTransactionsTableComponent implements OnInit {
       };
     }
     return email || '';
-  }
-
-  private errorMessage(err: any, fallback: string): string {
-    const msg = err?.error?.message || (typeof err?.error === 'string' ? err.error : '') || err?.message;
-    return msg || fallback;
   }
 }
