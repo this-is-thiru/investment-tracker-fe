@@ -25,6 +25,15 @@ import { NotificationService } from '@services/notification.service';
 import { ButtonComponent } from '@shared/ui/button/button.component';
 import { BadgeComponent } from '@shared/ui/badge/badge.component';
 import { EmptyStateComponent } from '@shared/ui/empty-state/empty-state.component';
+import { AlertComponent, AlertTone } from '@shared/ui/alert/alert.component';
+
+interface ParsedSheet {
+  headers: string[];
+  rows: any[];
+  textDateRows: number;
+  rowIssues: string[];
+  blankRows: number[];
+}
 
 @Component({
   selector: 'app-upload-transactions',
@@ -39,6 +48,7 @@ import { EmptyStateComponent } from '@shared/ui/empty-state/empty-state.componen
     ButtonComponent,
     BadgeComponent,
     EmptyStateComponent,
+    AlertComponent,
   ],
   providers: [MessageService],
   templateUrl: './upload-transactions.component.html',
@@ -79,18 +89,65 @@ export class UploadTransactionsComponent implements OnDestroy {
   progress = 0;
 
   private workbook: XLSX.WorkBook | null = null;
+  private sheetCache = new Map<string, ParsedSheet>();
   sheetNames: string[] = [];
-  sheetOptions: { label: string; value: string }[] = [];
   selectedSheet: string = '';
 
-  quarters = [
-    { label: 'Q1 (Jan - Mar)', value: 'Q1' },
-    { label: 'Q2 (Apr - Jun)', value: 'Q2' },
-    { label: 'Q3 (Jul - Sep)', value: 'Q3' },
-    { label: 'Q4 (Oct - Dec)', value: 'Q4' },
-  ];
+  /**
+   * The backend reads the sheet at the quarter's position (Q1 → 1st sheet, Q2 → 2nd, ...)
+   * and ignores sheet names, so a quarter is only uploadable when that sheet exists.
+   */
+  private readonly baseQuarters = ['Q1', 'Q2', 'Q3', 'Q4'];
+  private readonly quarterMonths = ['Jan – Mar', 'Apr – Jun', 'Jul – Sep', 'Oct – Dec'];
+
+  quarters: { label: string; value: string; sheet: string; hint: string; disabled: boolean }[] =
+    this.baseQuarters.map((q) => ({ label: q, value: q, sheet: '', hint: '', disabled: false }));
+
+  /** Sheet whose name points at another quarter than its position, e.g. "Q3" sitting first. */
+  sheetNameMismatch: string | null = null;
+  /** Number of sheets past the 4th, which the backend can never read. */
+  ignoredSheetCount = 0;
+  /** Rows whose date cells are text; the backend only accepts real Excel dates. */
+  textDateRows = 0;
+  /** Rows whose BROKER NAME / ASSET TYPE / TRANSACTION TYPE the backend cannot convert. */
+  rowIssues: string[] = [];
+  /** Excel row numbers of blank rows inside the used range; the backend reads these too. */
+  blankRows: number[] = [];
+
+  /** Temporary transactions the backend requires to be redriven before any upload. */
+  pendingTempCount = 0;
+
+  uploadResult: { tone: 'success' | 'warn' | 'error'; title: string; message: string; details: string[] } | null = null;
+
+  get uploadResultTone(): AlertTone {
+    const tone = this.uploadResult?.tone;
+    return tone === 'error' ? 'danger' : tone === 'warn' ? 'warning' : 'success';
+  }
+
+  /** [5, 6, 7, 12] → "5–7, 12" */
+  formatRowList(rows: number[]): string {
+    const parts: string[] = [];
+    for (let i = 0; i < rows.length; i++) {
+      const start = rows[i];
+      while (i + 1 < rows.length && rows[i + 1] === rows[i] + 1) i++;
+      parts.push(start === rows[i] ? `${start}` : `${start}–${rows[i]}`);
+    }
+    return parts.join(', ');
+  }
+
+  dismissUploadResult(): void {
+    this.uploadResult = null;
+  }
 
   private readonly MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024; // 10 MB
+  // Backend columns parsed as LOCAL_DATE; text values make the whole upload fail.
+  private readonly backendDateColumns = new Set(['transaction date', 'maturity date']);
+  // Backend enums (BrokerName, AssetType, TransactionType); values must match exactly.
+  private readonly backendEnumColumns: Record<string, readonly string[]> = {
+    'broker name': ['ZERODHA', 'UPSTOX', 'FYERS'],
+    'asset type': ['EQUITY', 'MUTUAL_FUND', 'BOND', 'GOLD_BOND', 'FD', 'INSURANCE'],
+    'transaction type': ['BUY', 'SELL'],
+  };
 
   constructor(
     private transactionService: TransactionService,
@@ -102,34 +159,76 @@ export class UploadTransactionsComponent implements OnDestroy {
   // ========== Quarter ==========
   onQuarterChange(value: string): void {
     this.quarter = value;
-    if (this.workbook) {
-      const targetQuarter = value.toLowerCase();
-      const matchingSheet = this.sheetNames.find((name) =>
-        name.toLowerCase().includes(targetQuarter),
-      );
-      if (matchingSheet && matchingSheet !== this.selectedSheet) {
-        this.selectedSheet = matchingSheet;
-        this.loadSheetData(matchingSheet);
-      }
+    this.uploadResult = null;
+    const sheet = this.quarters.find((q) => q.value === value)?.sheet;
+    if (this.workbook && sheet && sheet !== this.selectedSheet) {
+      this.selectedSheet = sheet;
+      this.loadSheetData(sheet);
     }
+    this.updateSheetNameMismatch();
   }
 
-  // ========== Sheet Selection ==========
-  onSheetChange(sheetName: string): void {
-    if (!this.workbook || !sheetName) return;
-    this.selectedSheet = sheetName;
-    this.loadSheetData(sheetName);
+  /**
+   * Detects the quarter a sheet name refers to: "Q1", "FY26-Q2", "Quarter 3",
+   * "Qtr_4", or a month range like "Jan-Mar". Returns null when ambiguous.
+   */
+  private detectQuarter(sheetName: string): string | null {
+    const name = sheetName.toLowerCase();
+    const q = name.match(/(?<![a-z])q(?:uarter|tr)?[\s_.-]*([1-4])(?!\d)/);
+    if (q) return `Q${q[1]}`;
 
-    const nameLower = sheetName.toLowerCase();
-    if (nameLower.includes('q1')) {
-      this.quarter = 'Q1';
-    } else if (nameLower.includes('q2')) {
-      this.quarter = 'Q2';
-    } else if (nameLower.includes('q3')) {
-      this.quarter = 'Q3';
-    } else if (nameLower.includes('q4')) {
-      this.quarter = 'Q4';
+    const range = name.match(/\b(jan|apr|jul|oct)[a-z]*[\s_.-]*(?:to|-|–)?[\s_.-]*(mar|jun|sep|dec)/);
+    if (range) {
+      const starts = ['jan', 'apr', 'jul', 'oct'];
+      const ends = ['mar', 'jun', 'sep', 'dec'];
+      const i = starts.indexOf(range[1]);
+      if (i === ends.indexOf(range[2])) return `Q${i + 1}`;
     }
+    return null;
+  }
+
+  /** Maps quarter N to sheet N, matching the backend; quarters without that sheet are disabled. */
+  private buildQuarterOptions(): void {
+    this.quarters = this.baseQuarters.map((q, i) => {
+      const sheet = this.sheetNames[i] ?? '';
+      return {
+        value: q,
+        label: q,
+        sheet,
+        disabled: !sheet,
+        hint: `${q} (${this.quarterMonths[i]}) · ${sheet ? `uploads sheet ${i + 1}: ${sheet}` : `this file has no sheet ${i + 1}`}`,
+      };
+    });
+    this.ignoredSheetCount = Math.max(0, this.sheetNames.length - this.baseQuarters.length);
+  }
+
+  private updateSheetNameMismatch(): void {
+    const named = this.selectedSheet ? this.detectQuarter(this.selectedSheet) : null;
+    this.sheetNameMismatch = named && named !== this.quarter ? named : null;
+  }
+
+  private resetQuarterOptions(): void {
+    this.quarters = this.baseQuarters.map((q) => ({ label: q, value: q, sheet: '', hint: '', disabled: false }));
+    this.sheetNameMismatch = null;
+    this.ignoredSheetCount = 0;
+  }
+
+  // ========== Pending temporary transactions ==========
+  /** The backend rejects uploads while temporary transactions exist, so check up front. */
+  checkPendingTemporary(): void {
+    const email = this.authService.getUserEmail();
+    if (!email) return;
+    this.transactionService.getTemporaryTransactions(email).subscribe({
+      next: (rows) => {
+        this.pendingTempCount = rows?.length ?? 0;
+        this.cdr.markForCheck();
+      },
+      // Unknown state: let the upload go through and rely on the server's answer.
+      error: () => {
+        this.pendingTempCount = 0;
+        this.cdr.markForCheck();
+      },
+    });
   }
 
   // ========== File Selection ==========
@@ -143,8 +242,12 @@ export class UploadTransactionsComponent implements OnDestroy {
 
     const dotIndex = file.name.lastIndexOf('.');
     const ext = dotIndex >= 0 ? file.name.slice(dotIndex).toLowerCase() : '';
-    if (ext !== '.xlsx' && ext !== '.xls') {
-      const errorMessage = `We accept .xlsx and .xls files. Your file is ${ext || 'unknown type'}.`;
+    // The backend reads workbooks with Apache POI's XSSF, which only understands .xlsx.
+    if (ext !== '.xlsx') {
+      const errorMessage =
+        ext === '.xls'
+          ? 'Old .xls files are not supported. Open it in Excel and save as .xlsx.'
+          : `We accept .xlsx files only. Your file is ${ext || 'unknown type'}.`;
       this.fileError = errorMessage;
       this.showToast(errorMessage, 'error');
       return;
@@ -158,8 +261,10 @@ export class UploadTransactionsComponent implements OnDestroy {
     }
 
     this.fileError = null;
+    this.uploadResult = null;
     this.file = file;
     this.parseFile(file);
+    this.checkPendingTemporary();
   }
 
   dismissFileError(): void {
@@ -176,9 +281,14 @@ export class UploadTransactionsComponent implements OnDestroy {
     this.progress = 0;
     this.isUploading = false;
     this.workbook = null;
+    this.sheetCache.clear();
     this.sheetNames = [];
-    this.sheetOptions = [];
     this.selectedSheet = '';
+    this.rowIssues = [];
+    this.blankRows = [];
+    this.textDateRows = 0;
+    this.uploadResult = null;
+    this.resetQuarterOptions();
   }
 
   // ========== Drag & Drop ==========
@@ -227,36 +337,46 @@ export class UploadTransactionsComponent implements OnDestroy {
       .replace(/[^a-z0-9]/g, '');
   }
 
-  private parseNumber(value: unknown): number {
-    if (value === null || value === undefined || value === '') return 0;
-    const parsed = Number(value);
-    return Number.isFinite(parsed) ? parsed : 0;
+  private parseNumber(value: unknown): number | string {
+    if (value === null || value === undefined || value === '') return '';
+    if (typeof value === 'number') return value;
+    // Accept "1,234.50", "₹ 1,234", "(250)" style values from broker exports.
+    let str = String(value).trim().replace(/[,\s₹$]/g, '');
+    const negative = /^\(.*\)$/.test(str);
+    if (negative) str = str.slice(1, -1);
+    const parsed = Number(str);
+    if (!str || !Number.isFinite(parsed)) return String(value);
+    return negative ? -parsed : parsed;
   }
 
+  private formatYmd(y: number, m: number, d: number): string {
+    return `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+  }
+
+  /** Normalises Excel serials and common text formats to YYYY-MM-DD without timezone drift. */
   private parseDate(value: unknown): string {
     if (value === null || value === undefined || value === '') return '';
 
-    let date: Date | null = null;
-
-    if (value instanceof Date) {
-      date = value;
-    } else if (typeof value === 'number') {
-      const utcDays = Math.floor(value - 25569);
-      date = new Date(utcDays * 24 * 60 * 60 * 1000);
-    } else {
-      const str = String(value).trim();
-      if (!str) return '';
-      date = new Date(str);
+    if (typeof value === 'number') {
+      // Excel serial day (1900 date system); computed in UTC so local offsets can't shift the day.
+      const date = new Date(Date.UTC(1899, 11, 30) + Math.round(value * 86400) * 1000);
+      return this.formatYmd(date.getUTCFullYear(), date.getUTCMonth() + 1, date.getUTCDate());
     }
 
-    if (!date || isNaN(date.getTime())) {
-      return String(value);
-    }
+    const str = String(value).trim();
+    if (!str) return '';
 
-    const year = date.getUTCFullYear();
-    const month = String(date.getUTCMonth() + 1).padStart(2, '0');
-    const day = String(date.getUTCDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
+    const ymd = str.match(/^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})/);
+    if (ymd) return this.formatYmd(+ymd[1], +ymd[2], +ymd[3]);
+
+    // Numeric day-first dates (DD-MM-YYYY), as used in Indian broker statements.
+    const dmy = str.match(/^(\d{1,2})[-/.](\d{1,2})[-/.](\d{4})/);
+    if (dmy) return this.formatYmd(+dmy[3], +dmy[2], +dmy[1]);
+
+    // Text dates like "15-Jan-2026" or "Jan 15, 2026": read local fields, not UTC.
+    const date = new Date(str.replace(/-/g, ' '));
+    if (isNaN(date.getTime())) return str;
+    return this.formatYmd(date.getFullYear(), date.getMonth() + 1, date.getDate());
   }
 
   isTypeColumn(col: string): boolean {
@@ -298,75 +418,142 @@ export class UploadTransactionsComponent implements OnDestroy {
   parseFile(file: File): void {
     const reader = new FileReader();
     reader.onload = (e) => {
-      const binaryString = e.target?.result as string;
-      this.workbook = XLSX.read(binaryString, {
-        type: 'binary',
-        cellDates: true,
-      });
+      try {
+        this.workbook = XLSX.read(e.target?.result as ArrayBuffer, { type: 'array' });
+      } catch (err) {
+        console.error('Failed to parse workbook:', err);
+        this.clearFile();
+        this.fileError = 'This file could not be read. Make sure it is a valid Excel workbook.';
+        this.showToast(this.fileError, 'error');
+        this.cdr.markForCheck();
+        return;
+      }
+      this.sheetCache.clear();
       this.sheetNames = this.workbook.SheetNames || [];
-      this.sheetOptions = this.sheetNames.map((name) => ({ label: name, value: name }));
+      this.buildQuarterOptions();
 
-      // Auto-select sheet matching the current quarter if any, otherwise default to sheet index 0
-      const targetQuarter = this.quarter.toLowerCase();
-      const matchingSheet = this.sheetNames.find((name) =>
-        name.toLowerCase().includes(targetQuarter),
-      );
-
-      this.selectedSheet = matchingSheet || this.sheetNames[0] || '';
+      // Keep the current quarter if it has a sheet, otherwise jump to the first quarter that does.
+      const current = this.quarters.find((q) => q.value === this.quarter && !q.disabled);
+      const target = current ?? this.quarters.find((q) => !q.disabled);
+      this.quarter = target?.value ?? this.quarter;
+      this.selectedSheet = target?.sheet ?? '';
+      this.updateSheetNameMismatch();
 
       if (this.selectedSheet) {
         this.loadSheetData(this.selectedSheet);
+      } else {
+        this.headers = [];
+        this.previewRows = [];
+        this.textDateRows = 0;
+        this.rowIssues = [];
+        this.blankRows = [];
+        this.applyFilters();
+        this.cdr.detectChanges();
       }
     };
-    reader.readAsBinaryString(file);
+    reader.readAsArrayBuffer(file);
   }
 
   loadSheetData(sheetName: string): void {
     if (!this.workbook || !sheetName) return;
 
-    const sheet = this.workbook.Sheets[sheetName];
-    const rawData = XLSX.utils.sheet_to_json<unknown[]>(sheet, { header: 1 });
-
-    if (rawData.length > 1) {
-      const rawHeaders = (rawData[0] as unknown[]) || [];
-      const excludedColumns = ['email', 'stock code', 'maturity date'];
-
-      const validHeaderIndices: number[] = [];
-      this.headers = [];
-
-      rawHeaders.forEach((h, i) => {
-        let headerStr = String(h ?? '').trim();
-        if (!headerStr) {
-          headerStr = `Column ${i + 1}`;
-        }
-        if (!excludedColumns.includes(headerStr.toLowerCase())) {
-          this.headers.push(headerStr);
-          validHeaderIndices.push(i);
-        }
-      });
-
-      this.previewRows = rawData.slice(1).map((row: any) => {
-        const obj: any = {};
-        this.headers.forEach((header, i) => {
-          const index = validHeaderIndices[i];
-          let val = row[index];
-          if (val === undefined || val === null) {
-            val = '';
-          } else if (this.isDateColumn(header) || val instanceof Date) {
-            val = this.parseDate(val);
-          } else if (this.isPriceColumn(header) || this.isQtyColumn(header)) {
-            val = this.parseNumber(val);
-          }
-          obj[header] = val;
-        });
-        return obj;
-      });
-    } else {
-      this.headers = [];
-      this.previewRows = [];
+    let parsed = this.sheetCache.get(sheetName);
+    if (!parsed) {
+      parsed = this.parseSheet(this.workbook.Sheets[sheetName]);
+      this.sheetCache.set(sheetName, parsed);
     }
+    this.headers = parsed.headers;
+    this.previewRows = parsed.rows;
+    this.textDateRows = parsed.textDateRows;
+    this.rowIssues = parsed.rowIssues;
+    this.blankRows = parsed.blankRows;
     this.applyFilters();
     this.cdr.detectChanges();
+  }
+
+  private parseSheet(sheet: XLSX.WorkSheet | undefined): ParsedSheet {
+    if (!sheet) return { headers: [], rows: [], textDateRows: 0, rowIssues: [], blankRows: [] };
+
+    // Keep blank rows so row numbers match Excel and blank rows inside the data can be reported.
+    const rawData = XLSX.utils.sheet_to_json<unknown[]>(sheet, {
+      header: 1,
+      blankrows: true,
+      defval: '',
+    });
+    const empty = { headers: [], rows: [], textDateRows: 0, rowIssues: [], blankRows: [] };
+    if (rawData.length < 2) return empty;
+    const firstExcelRow = sheet['!ref'] ? XLSX.utils.decode_range(sheet['!ref']).s.r + 1 : 1;
+
+    const excludedColumns = new Set(['email', 'stock code', 'maturity date']);
+    const columns: { header: string; index: number; kind: 'date' | 'number' | 'text' }[] = [];
+    const strictDateIndexes: number[] = [];
+    const enumColumns: { header: string; index: number; allowed: readonly string[] }[] = [];
+
+    // Classify each column once instead of per cell.
+    (rawData[0] || []).forEach((h, index) => {
+      const header = String(h ?? '').trim() || `Column ${index + 1}`;
+      if (this.backendDateColumns.has(header.toLowerCase())) strictDateIndexes.push(index);
+      const allowed = this.backendEnumColumns[header.toLowerCase()];
+      if (allowed) enumColumns.push({ header, index, allowed });
+      if (excludedColumns.has(header.toLowerCase())) return;
+      const kind = this.isDateColumn(header)
+        ? 'date'
+        : this.isPriceColumn(header) || this.isQtyColumn(header)
+          ? 'number'
+          : 'text';
+      columns.push({ header, index, kind });
+    });
+
+    const isFilled = (v: unknown) => v !== '' && v != null;
+    const rows: any[] = [];
+    const rowIssues: string[] = [];
+    let textDateRows = 0;
+    const blankRows: number[] = [];
+    for (let r = 1; r < rawData.length; r++) {
+      const row = rawData[r] || [];
+      const excelRow = firstExcelRow + r;
+      // Blank rows inside the sheet's used range (often left behind by formatting) are still
+      // rows to the backend, which reads them as transactions with empty fields.
+      if (!row.some(isFilled)) {
+        blankRows.push(excelRow);
+        continue;
+      }
+
+      // The backend calls Enum.valueOf on these cells, so a blank or misspelled value
+      // (e.g. "Zerodha") fails the whole upload with "No enum constant ...".
+      for (const { header, index, allowed } of enumColumns) {
+        const val = row[index];
+        if (!isFilled(val)) {
+          rowIssues.push(`Row ${excelRow}: ${header} is empty`);
+        } else if (typeof val !== 'string' || !allowed.includes(val)) {
+          rowIssues.push(`Row ${excelRow}: ${header} "${val}" must be one of ${allowed.join(', ')}`);
+        }
+      }
+
+      // Skip rows that are empty in every visible column (e.g. only email/stock code filled).
+      if (!columns.some((c) => isFilled(row[c.index]))) continue;
+
+      // Real Excel dates arrive as serial numbers; anything else is typed-in text.
+      if (strictDateIndexes.some((i) => row[i] !== '' && row[i] != null && typeof row[i] !== 'number')) {
+        textDateRows++;
+      }
+
+      const obj: any = {};
+      for (const { header, index, kind } of columns) {
+        const val = row[index];
+        obj[header] =
+          val === undefined || val === null || val === ''
+            ? ''
+            : kind === 'date'
+              ? this.parseDate(val)
+              : kind === 'number'
+                ? this.parseNumber(val)
+                : val;
+      }
+      rows.push(obj);
+    }
+
+    return { headers: columns.map((c) => c.header), rows, textDateRows, rowIssues, blankRows };
   }
 
   applyFilters(): void {
@@ -384,7 +571,7 @@ export class UploadTransactionsComponent implements OnDestroy {
 
   // ========== Start Upload Flow ==========
   startUpload(): void {
-    if (!this.file || this.isUploading) return;
+    if (!this.file || this.isUploading || this.pendingTempCount > 0) return;
 
     const email = this.authService.getUserEmail();
     if (!email) {
@@ -394,6 +581,7 @@ export class UploadTransactionsComponent implements OnDestroy {
 
     this.isUploading = true;
     this.progress = 0;
+    this.uploadResult = null;
 
     this.transactionService
       .uploadTransactions(email, this.file, this.quarter)
@@ -404,19 +592,31 @@ export class UploadTransactionsComponent implements OnDestroy {
           } else if (event.type === HttpEventType.Response) {
             this.progress = 100;
             this.isUploading = false;
-            this.showToast('Transactions uploaded successfully.', 'success');
-            this.uploadComplete.emit();
+            const result = this.transactionService.interpretUploadResponse(event.body);
+            this.uploadResult = result;
+            this.showToast(result.message, result.tone);
+            // Rows were saved (fully, or with some held as temporary): refresh the page.
+            if (result.tone !== 'error') {
+              this.uploadComplete.emit();
+              this.checkPendingTemporary();
+            }
             // Reset progress back to 0 after 1.5 seconds, but don't clear the file
             setTimeout(() => {
               this.progress = 0;
+              this.cdr.markForCheck();
             }, 1500);
           }
+          this.cdr.markForCheck();
         },
         error: (err) => {
           console.error('Upload error:', err);
           this.isUploading = false;
+          this.cdr.markForCheck();
           const classified = this.transactionService.classifyUploadError(err);
+          this.uploadResult = { tone: 'error', title: classified.title, message: classified.message, details: [] };
           this.showToast(classified.message, 'error');
+          // The server may have refused because temporary transactions appeared meanwhile.
+          this.checkPendingTemporary();
         },
       });
   }

@@ -34,12 +34,12 @@
           <p class="text-text-secondary text-sm mb-4">or click to browse files</p>
           <ui-button variant="primary">Select Files</ui-button>
           <p class="text-xs text-text-muted mt-4">
-            Supported formats: XLSX, XLS (Max 10MB)
+            Supported format: XLSX (Max 10MB)
           </p>
           <input
             #fileInput
             type="file"
-            accept=".xlsx,.xls"
+            accept=".xlsx"
             class="hidden"
             (change)="onFilePicked($event)"
           />
@@ -82,9 +82,9 @@
       <!-- ==================== STEP 2: PREVIEW & ACTION ==================== -->
       <div class="space-y-6 animate-fadeIn">
         <!-- File Details Card -->
-        <div class="bg-gradient-to-br from-surface-hover to-surface border border-border rounded-xl p-5 shadow-lg flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div class="flex items-start gap-4">
-            <div class="bg-gradient-to-br from-blue-accent/20 to-blue-accent-hover/20 p-3 rounded-xl border border-blue-accent/30 flex items-center justify-center">
+        <div class="bg-gradient-to-br from-surface-hover to-surface border border-border rounded-xl p-5 shadow-lg flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div class="flex items-start gap-4 min-w-0">
+            <div class="bg-gradient-to-br from-blue-accent/20 to-blue-accent-hover/20 p-3 rounded-xl border border-blue-accent/30 flex items-center justify-center flex-shrink-0">
               <lucide-icon name="file-text" class="h-6 w-6 text-blue-accent"></lucide-icon>
             </div>
             <div class="min-w-0">
@@ -97,42 +97,40 @@
             </div>
           </div>
 
-          <div class="flex flex-wrap items-center gap-4">
-            <!-- Target Quarter Select -->
-            <div class="flex items-center gap-2">
-              <span class="text-xs font-bold text-text-secondary uppercase tracking-wide">Target Quarter:</span>
-              <p-select
-                id="quarterSelectPreview"
-                [options]="quarters"
-                [ngModel]="quarter"
-                (ngModelChange)="onQuarterChange($event)"
-                optionLabel="label"
-                optionValue="value"
-                placeholder="Select Quarter"
-                styleClass="bg-surface-alt border border-border rounded-lg text-white text-xs py-1"
-                appendTo="body"
-              >
-              </p-select>
-            </div>
-
-            <!-- Active Excel Sheet (show only if multiple sheets exist) -->
-            @if (sheetNames.length > 1) {
-              <div class="flex items-center gap-2">
-                <span class="text-xs font-bold text-text-secondary uppercase tracking-wide">Excel Sheet:</span>
-                <p-select
-                  id="sheetSelectPreview"
-                  [options]="sheetOptions"
-                  [ngModel]="selectedSheet"
-                  (ngModelChange)="onSheetChange($event)"
-                  optionLabel="label"
-                  optionValue="value"
-                  placeholder="Select Sheet"
-                  styleClass="bg-surface-alt border border-border rounded-lg text-white text-xs py-1"
-                  appendTo="body"
-                >
-                </p-select>
+          <div class="flex flex-wrap items-center gap-3">
+            <!-- Quarter + sheet as one control: the backend reads sheet N for quarter N -->
+            <div class="inline-flex items-stretch h-9 max-w-full rounded-lg border border-border bg-surface-alt">
+              <div role="radiogroup" aria-label="Quarter" class="flex items-center gap-0.5 p-1">
+                @for (q of quarters; track q.value) {
+                  <button
+                    type="button"
+                    role="radio"
+                    [attr.aria-checked]="quarter === q.value"
+                    [attr.aria-disabled]="q.disabled"
+                    [appTooltip]="q.hint"
+                    (click)="!q.disabled && onQuarterChange(q.value)"
+                    class="h-full px-2.5 rounded-md text-xs font-semibold tabular-nums transition-colors"
+                    [ngClass]="
+                      quarter === q.value
+                        ? 'bg-accent text-white shadow-sm'
+                        : q.disabled
+                          ? 'text-text-disabled opacity-50 cursor-not-allowed'
+                          : 'text-text-secondary hover:text-white hover:bg-surface-hover'
+                    "
+                  >
+                    {{ q.label }}
+                  </button>
+                }
               </div>
-            }
+
+              @if (selectedSheet) {
+                <div class="flex items-center gap-2 min-w-0 max-w-[14rem] pl-3 pr-3.5 border-l border-border"
+                  [appTooltip]="'Sheet ' + quarter.slice(1) + ' of ' + sheetNames.length + ': ' + selectedSheet">
+                  <lucide-icon name="file-spreadsheet" class="h-3.5 w-3.5 text-accent flex-shrink-0"></lucide-icon>
+                  <span class="truncate text-xs text-white font-medium">{{ selectedSheet }}</span>
+                </div>
+              }
+            </div>
 
             <ui-button variant="secondary" size="sm" (click)="clearFile()" appTooltip="Select a different transaction file">
               <lucide-icon name="arrow-left" class="h-3.5 w-3.5"></lucide-icon>
@@ -140,6 +138,69 @@
             </ui-button>
           </div>
         </div>
+
+        <!-- Checks that mirror how the server will read this file -->
+        @if (pendingTempCount > 0) {
+          <ui-alert tone="warning" title="Redrive pending transactions first">
+            You have {{ pendingTempCount }} temporary transaction{{ pendingTempCount === 1 ? '' : 's' }}.
+            Uploads are blocked until they are redriven from the Temporary tab below.
+          </ui-alert>
+        }
+
+        @if (rowIssues.length) {
+          <ui-alert tone="danger" title="Fix these rows before uploading">
+            <p>The server rejects the whole file if any of these values are blank or spelled differently. Values are case-sensitive.</p>
+            <ul class="mt-2 list-disc pl-5 space-y-0.5 text-xs">
+              @for (issue of rowIssues.slice(0, 5); track $index) {
+                <li>{{ issue }}</li>
+              }
+            </ul>
+            @if (rowIssues.length > 5) {
+              <p class="mt-1 text-xs">…and {{ rowIssues.length - 5 }} more.</p>
+            }
+          </ui-alert>
+        }
+
+        @if (blankRows.length) {
+          <ui-alert tone="warning" title="Delete the empty rows in this sheet">
+            Row{{ blankRows.length === 1 ? '' : 's' }} {{ formatRowList(blankRows) }} {{ blankRows.length === 1 ? 'looks' : 'look' }} empty but {{ blankRows.length === 1 ? 'is' : 'are' }} still part of the sheet.
+            The server reads {{ blankRows.length === 1 ? 'it' : 'them' }} as transactions with no broker and fails
+            ("No enum constant … BrokerName"). In Excel, select {{ blankRows.length === 1 ? 'that row' : 'those rows' }} → right-click → Delete.
+          </ui-alert>
+        }
+
+        @if (textDateRows > 0) {
+          <ui-alert tone="danger" title="Dates must be real Excel dates">
+            {{ textDateRows }} row{{ textDateRows === 1 ? ' has' : 's have' }} a Transaction or Maturity Date typed as text.
+            The server rejects the whole file; format those cells as dates in Excel.
+          </ui-alert>
+        }
+
+        @if (sheetNameMismatch) {
+          <ui-alert tone="warning" title="Sheet name doesn't match its position">
+            "{{ selectedSheet }}" looks like {{ sheetNameMismatch }}, but it is sheet {{ quarter.slice(1) }}, so it will upload as {{ quarter }}.
+            Reorder the sheets in Excel if that's not what you want.
+          </ui-alert>
+        }
+
+        @if (ignoredSheetCount > 0) {
+          <ui-alert tone="info" title="Only the first 4 sheets can be uploaded">
+            {{ ignoredSheetCount }} extra sheet{{ ignoredSheetCount === 1 ? ' is' : 's are' }} ignored.
+          </ui-alert>
+        }
+
+        @if (uploadResult; as result) {
+          <ui-alert [tone]="uploadResultTone" [title]="result.title" [dismissible]="true" (dismissed)="dismissUploadResult()">
+            <p>{{ result.message }}</p>
+            @if (result.details.length) {
+              <ul class="mt-2 list-disc pl-5 space-y-0.5 text-xs">
+                @for (detail of result.details; track $index) {
+                  <li>{{ detail }}</li>
+                }
+              </ul>
+            }
+          </ui-alert>
+        }
 
         <!-- Upload Progress -->
         @if (isUploading) {
@@ -254,7 +315,7 @@
           <ui-button variant="secondary" (click)="clearFile()" [disabled]="isUploading" class="w-full sm:w-auto">
             Cancel
           </ui-button>
-          <ui-button variant="primary" [loading]="isUploading" [disabled]="isUploading || previewRows.length === 0" (click)="startUpload()" class="w-full sm:w-auto">
+          <ui-button variant="primary" [loading]="isUploading" [disabled]="isUploading || previewRows.length === 0 || pendingTempCount > 0 || textDateRows > 0 || rowIssues.length > 0" (click)="startUpload()" class="w-full sm:w-auto">
             @if (!isUploading) {
               <lucide-icon name="upload" class="h-4 w-4"></lucide-icon>
             }

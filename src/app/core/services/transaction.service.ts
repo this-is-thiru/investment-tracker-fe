@@ -159,6 +159,73 @@ export class TransactionService {
   }
 
   /**
+   * The upload endpoint answers 200 with a plain message even when nothing was saved,
+   * so the outcome has to be read from the text:
+   *  - "No transaction uploaded. Errors: [...]"  → row validation failed, nothing saved
+   *  - "Filtered out transactions: [id, ...]"    → saved, but these rows are held as
+   *                                                 temporary until corporate actions run
+   *  - anything else                              → everything saved
+   */
+  interpretUploadResponse(body: unknown): {
+    tone: 'success' | 'warn' | 'error';
+    title: string;
+    message: string;
+    details: string[];
+  } {
+    const text = typeof body === 'string' ? body : '';
+    const listItems = (s: string): string[] => {
+      const inner = s.match(/\[(.*)\]\s*$/s)?.[1] ?? '';
+      return inner.split(',').map((x) => x.trim()).filter(Boolean);
+    };
+
+    if (text.startsWith('No transaction uploaded')) {
+      const details = listItems(text);
+      return {
+        tone: 'error',
+        title: 'Nothing was uploaded',
+        message: details.length
+          ? `${details.length} row${details.length === 1 ? ' has' : 's have'} problems. Fix them and upload again.`
+          : 'The file has problems. Fix them and upload again.',
+        details,
+      };
+    }
+
+    if (text.startsWith('Filtered out transactions')) {
+      const held = listItems(text).length;
+      return {
+        tone: 'warn',
+        title: 'Uploaded with rows on hold',
+        message: `${held || 'Some'} transaction${held === 1 ? ' is' : 's are'} held in the Temporary tab until pending corporate actions are applied. Apply them, then redrive.`,
+        details: [],
+      };
+    }
+
+    return {
+      tone: 'success',
+      title: 'Transactions uploaded',
+      message: 'All transactions were added to your portfolio.',
+      details: [],
+    };
+  }
+
+  /**
+   * Rewrites Java exception text the upload endpoint passes through. "No enum constant
+   * com...BrokerName.Zerodha" comes from Enum.valueOf on a cell; an empty suffix means a blank cell.
+   */
+  private friendlyServerMessage(message: string | undefined): string | undefined {
+    if (!message) return message;
+    const enumMatch = message.match(/No enum constant [\w.]*\.(\w+)\.(.*)$/);
+    if (enumMatch) {
+      const column = enumMatch[1].replace(/([a-z])([A-Z])/g, '$1 $2').toUpperCase();
+      const value = enumMatch[2].trim();
+      return value
+        ? `A row has ${column} "${value}", which isn't allowed. Check the spelling and use capitals.`
+        : `A row has an empty ${column}. Fill it in, or delete empty rows left at the end of the sheet.`;
+    }
+    return message;
+  }
+
+  /**
    * Classify an upload error into a user-friendly { category, title, message }
    * triple. Handles both HTTP error responses (read from `err.status` /
    * `err.error.message`) and client-side validation errors (read from
@@ -172,13 +239,13 @@ export class TransactionService {
         return {
           category: 'no-file',
           title: 'No file selected',
-          message: 'Please choose an .xlsx or .xls file to upload.',
+          message: 'Please choose an .xlsx file to upload.',
         };
       case 'bad-extension':
         return {
           category: 'bad-extension',
           title: 'Wrong file type',
-          message: 'We accept .xlsx and .xls files.',
+          message: 'We accept .xlsx files only.',
         };
       case 'too-large':
         return {
@@ -195,8 +262,11 @@ export class TransactionService {
     }
 
     const status: number = typeof err?.status === 'number' ? err.status : 0;
-    const rawServerMessage: string | undefined =
-      err?.error?.message || err?.error?.data || err?.message;
+    // Error bodies arrive wrapped as { data: { message } }; the auth interceptor only unwraps successes.
+    const serverBody = err?.error?.data ?? err?.error;
+    const bodyMessage =
+      typeof serverBody === 'string' ? serverBody : typeof serverBody?.message === 'string' ? serverBody.message : undefined;
+    const rawServerMessage: string | undefined = this.friendlyServerMessage(bodyMessage) || err?.message;
 
     // status 0 (or missing) → network vs unknown
     if (status === 0) {
