@@ -1,0 +1,29 @@
+:host {
+  display: block;
+}
+
+.ui-card {
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--color-border);
+}
+
+.ui-card--default {
+  background: var(--color-surface);
+}
+
+.ui-card--alt {
+  background: var(--color-surface-alt);
+}
+
+.ui-card--elevated {
+  background: linear-gradient(135deg, rgba(35, 35, 35, 0.7) 0%, rgba(25, 25, 25, 0.8) 100%);
+  border-color: rgba(255, 255, 255, 0.05);
+  box-shadow: var(--shadow-card);
+  backdrop-filter: blur(10px);
+  transition: border-color var(--transition-duration-slow) ease, transform var(--transition-duration-fast) ease;
+}
+
+.ui-card--pad-none { padding: 0; }
+.ui-card--pad-sm { padding: 0.75rem; }
+.ui-card--pad-md { padding: 1.25rem; }
+.ui-card--pad-lg { padding: 2rem; }

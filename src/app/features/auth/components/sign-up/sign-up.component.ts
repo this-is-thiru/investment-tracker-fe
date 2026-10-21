@@ -5,27 +5,30 @@ import {
 } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AuthService } from '../../../../services/auth.service';
+import { AuthService } from '@services/auth.service';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { finalize } from 'rxjs/operators';
-import { RegisterRequest } from '../../../../models/RegisterRequest';
-import { LucideIconsModule } from '../../../../core/icons/lucide-icons.module';
+import { RegisterRequest } from '../../models/register-request.model';
+import { UserRole, AuthModalRoute } from '@core/enums';
+import { NotificationService } from '@services/notification.service';
+import { LucideIconsModule } from '@core/icons/lucide-icons.module'; // import LucideIconsModule for custom SVG icons
+import { ModalComponent } from '@shared/ui/modal/modal.component';
+import { InputComponent } from '@shared/ui/input/input.component';
+import { ButtonComponent } from '@shared/ui/button/button.component';
 
 @Component({
     selector: 'app-sign-up',
     standalone: true,
     templateUrl: './sign-up.component.html',
     styleUrls: ['./sign-up.component.css'],
-    imports: [ReactiveFormsModule, CommonModule, RouterModule, LucideIconsModule],
+    imports: [ReactiveFormsModule, CommonModule, RouterModule, LucideIconsModule, ModalComponent, InputComponent, ButtonComponent],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SignUpComponent {
   registrationForm: FormGroup;
   isLoading = false;
-  errorMessage: string | null = null;
-  successMessage: string | null = null;
   hideRegistrationP = true;
   hideRegistrationCP = true;
 
@@ -33,7 +36,8 @@ export class SignUpComponent {
     public router: Router, // Changed to public for template access
     private authService: AuthService,
     private formBuilder: FormBuilder,
-    private cd: ChangeDetectorRef
+    private cd: ChangeDetectorRef,
+    private notificationService: NotificationService
   ) {
     this.registrationForm = this.initForm();
   }
@@ -44,7 +48,7 @@ export class SignUpComponent {
       password: ['', [
         Validators.required,
         Validators.minLength(6),
-        Validators.maxLength(12)
+        Validators.maxLength(128)
       ]],
       confirmPassword: ['', Validators.required]
     }, { validator: this.passwordMatchValidator });
@@ -62,14 +66,12 @@ export class SignUpComponent {
     }
 
     this.isLoading = true;
-    this.errorMessage = null;
-    this.successMessage = null;
     this.cd.markForCheck();
 
     const signUpData: RegisterRequest = {
       email: this.registrationForm.get('email')?.value,
       password: this.registrationForm.get('password')?.value,
-      role: 'USER' // Adding default role for new registrations
+      role: UserRole.USER // Adding default role for new registrations
     };
 
     this.authService.register(signUpData).pipe(
@@ -79,27 +81,28 @@ export class SignUpComponent {
       })
     ).subscribe({
       next: (response) => {
-        this.successMessage = 'Account created successfully! You can now sign in.';
-        this.cd.markForCheck();
-        
-        // Wait for user to see success message, then redirect to sign-in
-        setTimeout(() => {
-          this.router.navigate([{ outlets: { modal: ['sign-in'] } }]);
-        }, 2000);
+        this.notificationService.addNotification(
+          'Registration Success',
+          'Account created successfully! You can now sign in.',
+          'success'
+        );
+        this.router.navigate([{ outlets: { modal: [AuthModalRoute.SIGN_IN] } }], { queryParamsHandling: 'preserve' });
       },
       error: (err) => {
         console.error('Registration error:', err);
         
         // User-friendly error messages
-        if (err.status === 409) {
-          this.errorMessage = 'This email is already registered. Please try signing in instead.';
+        let message = 'Registration failed. Please try again later.';
+        const backendMessage = err?.error?.message || (typeof err?.error === 'string' ? err.error : '');
+        if (err.status === 409 || backendMessage.toLowerCase().includes('already exists')) {
+          message = 'This email is already registered. Please try signing in instead.';
         } else if (err.status === 400) {
-          this.errorMessage = 'Please check your information and try again.';
+          message = backendMessage || 'Please check your information and try again.';
         } else if (err.status === 0) {
-          this.errorMessage = 'Unable to connect to the server. Please check your internet connection.';
-        } else {
-          this.errorMessage = 'Registration failed. Please try again later.';
+          message = 'Unable to connect to the server. Please check your internet connection.';
         }
+        
+        this.notificationService.addNotification('Registration Failed', message, 'error');
         this.cd.markForCheck();
       }
     });

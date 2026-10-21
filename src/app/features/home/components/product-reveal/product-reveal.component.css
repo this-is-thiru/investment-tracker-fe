@@ -1,0 +1,91 @@
+:host {
+  display: block;
+  height: 420vh;
+  position: relative;
+}
+
+.stage {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  perspective: 2000px;
+  container-type: inline-size;
+}
+
+.caption {
+  position: absolute;
+  inset-inline: 16px;
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.5s, transform 0.5s;
+}
+.caption.on {
+  opacity: 1;
+  transform: none;
+}
+
+/* --t: tilt (1 = isometric, 0 = flat); --e: explode (0 = stacked, 1 = layers apart) */
+.device {
+  --t: 1;
+  --e: 0;
+  width: min(980px, 92vw, 102vh);
+  aspect-ratio: 16 / 10;
+  position: relative;
+  margin-top: 19vh;
+  transform-style: preserve-3d;
+  transform: translateY(calc(var(--t) * 4vh)) rotateX(calc(var(--t) * 54deg))
+    rotateZ(calc(var(--t) * -32deg)) scale(calc(0.92 - var(--t) * 0.2));
+  font-size: clamp(7px, 1.25cqi, 13px);
+}
+
+.layer {
+  position: absolute;
+  inset: 0;
+  border-radius: 1.4em;
+  transform: translateZ(calc(var(--i) * var(--e) * 6.5em));
+  transform-style: preserve-3d;
+}
+.layer::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  border: 1.5px dashed color-mix(in srgb, var(--color-accent) calc(var(--e) * 100%), transparent);
+  background: color-mix(in srgb, var(--color-accent) calc(var(--e) * 5%), transparent);
+}
+
+.tag {
+  position: absolute;
+  left: calc(100% + 1.6em);
+  top: 1.2em;
+  white-space: nowrap;
+  font-size: 1.25em;
+  font-weight: 600;
+  padding: 0.35em 0.8em;
+  border-radius: 999px;
+  background: var(--color-text-primary);
+  color: var(--color-background);
+  opacity: var(--e);
+}
+.tag small {
+  font-weight: 400;
+  opacity: 0.7;
+  margin-left: 0.4em;
+}
+@container (max-width: 700px) {
+  .tag {
+    left: auto;
+    right: 1em;
+    top: -2.6em;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .caption {
+    transition: none;
+  }
+}

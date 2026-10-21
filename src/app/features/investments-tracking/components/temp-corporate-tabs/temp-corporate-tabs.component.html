@@ -1,0 +1,27 @@
+<app-expansion-panel
+  [title]="'Transactions & Corporate Actions'"
+  [subtitle]="pendingCount
+    ? pendingCount + (pendingCount === 1 ? ' transaction needs' : ' transactions need') + ' review before reaching your portfolio'
+    : 'Review temporary transactions and apply corporate actions'"
+  [titleIcon]="'Database'"
+  [iconBgClass]="'bg-gradient-to-br from-warning to-[#EAB308] p-2 rounded-lg text-white'"
+  [isExpanded]="true"
+  class="animate-fade-in-up stagger-2"
+>
+  <div class="space-y-6">
+    <ui-tabs ariaLabel="Transactions and corporate actions" [items]="tabs"
+      [value]="activeTab" (valueChange)="onTabChange($any($event))" />
+
+    @if (activeTab === 'temporary') {
+      <app-temp-transactions-table [userEmail]="userEmail" (actionApplied)="onActionApplied()" (countChange)="onPendingCount($event)" (viewActions)="onTabChange('list-actions')"></app-temp-transactions-table>
+    }
+
+    @if (activeTab === 'list-actions') {
+      <app-corporate-action-list (addAction)="onTabChange('add-action')" (actionExecuted)="onActionApplied()"></app-corporate-action-list>
+    }
+
+    @if (activeTab === 'add-action') {
+      <app-add-corporate-action (actionAdded)="onActionAdded()" (viewActions)="onTabChange('list-actions')"></app-add-corporate-action>
+    }
+  </div>
+</app-expansion-panel>

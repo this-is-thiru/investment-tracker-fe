@@ -1,22 +1,27 @@
-import { Component, HostListener, inject } from '@angular/core';
+import { Component, HostListener, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
-import { LucideIconsModule } from '../../../core/icons/lucide-icons.module';
-import { AuthService } from '../../../services/auth.service';
-import { Notification } from '../../../models/Notification';
-import { NavItem } from '../../../models/Navitem';
+import { LucideIconsModule } from '@core/icons/lucide-icons.module';
+import { TooltipDirective } from '@shared/directives/tooltip/tooltip.directive';
+import { AuthService } from '@services/auth.service';
+import { NotificationService, Notification } from '@services/notification.service';
+import { NavItem } from '@models/nav-item.model';
+import { map } from 'rxjs/operators';
+import { ButtonComponent } from "@shared/ui/button/button.component";
+import { BadgeComponent } from "@shared/ui/badge/badge.component";
+import { UserRole, AuthModalRoute } from "@core/enums";
 
 
 @Component({
-    selector: 'app-header',
-    standalone: true,
-    imports: [CommonModule, LucideIconsModule, RouterModule],
-    templateUrl: './header.component.html',
-    styleUrls: ['./header.component.css']
+  selector: 'app-header',
+  imports: [CommonModule, LucideIconsModule, RouterModule, TooltipDirective, ButtonComponent, BadgeComponent],
+  templateUrl: './header.component.html',
+  styleUrls: ['./header.component.css']
 })
 export class HeaderComponent {
   private router = inject(Router);
   private authService = inject(AuthService);
+  private notificationService = inject(NotificationService);
 
   // --- UI States ---
   isProfileDropdownOpen = false;
@@ -25,6 +30,35 @@ export class HeaderComponent {
 
   // --- Auth state (signal) ---
   isAuthenticated = this.authService.isLoggedIn;
+  isDemo = this.authService.isDemo;
+  userEmail = this.authService.userEmail;
+  userRole = this.authService.userRole;
+  isSuperUser = this.authService.isSuperUser;
+  isAdmin = this.authService.isAdminUser;
+
+  formatRoleName(role: string): string {
+    switch (role) {
+      case UserRole.SUPER_USER: return 'Super User';
+      case UserRole.ADMIN: return 'Admin';
+      case UserRole.MANAGER: return 'Manager';
+      case UserRole.EDITOR: return 'Editor';
+      case UserRole.AUTHOR: return 'Author';
+      case UserRole.MODERATOR: return 'Moderator';
+      case UserRole.USER: return 'User';
+      case UserRole.GUEST: return 'Guest';
+      case UserRole.TEST_USER: return 'Test User';
+      default: return role;
+    }
+  }
+
+  getRoleTone(role: string): 'accent' | 'purple' | 'info' | 'neutral' {
+    switch (role) {
+      case UserRole.SUPER_USER: return 'accent';
+      case UserRole.ADMIN: return 'purple';
+      case UserRole.MANAGER: return 'info';
+      default: return 'neutral';
+    }
+  }
 
 
   // --- Nav Items ---
@@ -32,40 +66,47 @@ export class HeaderComponent {
     { id: 'investment-tracking', label: 'Investment Tracking', route: 'investments-tracking' },
     { id: 'tax-filing', label: 'Tax Filing', route: 'tax-filing' },
     { id: 'portfolio-analytics', label: 'Portfolio Analytics', route: 'portfolio-analytics' },
+    { id: 'broker-charges', label: 'Broker Charges', route: 'broker-charges' },
   ];
 
+  // Demo account only sees Tax Filing and Portfolio Analytics
+  visibleNavItems = computed(() =>
+    this.authService.isDemo()
+      ? this.navItems.filter(item => item.route !== 'investments-tracking')
+      : this.navItems
+  );
+
+  getNavItemIcon(id: string): string {
+    switch (id) {
+      case 'investment-tracking': return 'Briefcase';
+      case 'tax-filing': return 'FileText';
+      case 'portfolio-analytics': return 'BarChart3';
+      case 'broker-charges': return 'CreditCard';
+      default: return 'TrendingUp';
+    }
+  }
+
   // --- Notifications ---
-  notifications: Notification[] = [
-    {
-      id: 1,
-      title: 'Transaction Uploaded',
-      desc: '50 transactions processed successfully',
-      time: '2m ago',
-      unread: true,
-    },
-    {
-      id: 2,
-      title: 'Tax Report Ready',
-      desc: 'Your 2024 tax report is ready to download',
-      time: '1h ago',
-      unread: true,
-    },
-    {
-      id: 3,
-      title: 'Portfolio Update',
-      desc: 'Your portfolio gained 2.5% this week',
-      time: '3h ago',
-      unread: false,
-    },
-  ];
+  notifications$ = this.notificationService.notifications$.pipe(
+    map(list => list.slice(0, 5))
+  );
+  unreadCount$ = this.notificationService.unreadCount$;
 
   // --- Auth-based navigation ---
   onNavigate(route: string): void {
     if (this.authService.isUserAuthenticated()) {
       this.router.navigate([`/${route}`]);
     } else {
-      this.router.navigate([{ outlets: { modal: ['sign-in'] } }]);
+      this.router.navigate([{ outlets: { modal: ['sign-in'] } }], { queryParams: { returnUrl: `/${route}` } });
     }
+  }
+
+  openSignIn(): void {
+    this.router.navigate([{ outlets: { modal: [AuthModalRoute.SIGN_IN] } }]);
+  }
+
+  openChangePassword(): void {
+    this.router.navigate([{ outlets: { modal: [AuthModalRoute.CHANGE_PASSWORD] } }]);
   }
 
   // --- Toggles ---
@@ -84,6 +125,12 @@ export class HeaderComponent {
     this.isNotificationDropdownOpen = false;
   }
 
+  // Leave the demo account and open the sign-up modal on the home page
+  signUpFromDemo(): void {
+    this.authService.logOut();
+    this.router.navigate([{ outlets: { primary: ['home'], modal: ['sign-up'] } }]);
+  }
+
   signOut(): void {
     this.authService.logOut();
     this.closeAllMenus();
@@ -93,6 +140,42 @@ export class HeaderComponent {
     this.isProfileDropdownOpen = false;
     this.isMobileMenuOpen = false;
     this.isNotificationDropdownOpen = false;
+  }
+
+  // --- Notification Actions ---
+  markAllAsRead(event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
+    this.notificationService.markAllAsRead();
+  }
+
+  viewAllNotifications(): void {
+    this.isNotificationDropdownOpen = false;
+    this.router.navigate(['/notifications']);
+  }
+
+  onNotificationClick(notification: Notification): void {
+    this.notificationService.markAsRead(notification.id);
+    this.isNotificationDropdownOpen = false;
+    if (notification.link) {
+      this.router.navigateByUrl(notification.link);
+    }
+  }
+
+  formatTimestamp(date: Date): string {
+    const now = new Date();
+    const diff = now.getTime() - new Date(date).getTime();
+    const minutes = Math.floor(diff / 60000);
+    const hours = Math.floor(diff / 3600000);
+    const days = Math.floor(diff / 86400000);
+
+    if (minutes < 1) return 'Just now';
+    if (minutes < 60) return `${minutes}m ago`;
+    if (hours < 24) return `${hours}h ago`;
+    if (days < 7) return `${days}d ago`;
+
+    return new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
   }
 
   // --- Click outside detection ---

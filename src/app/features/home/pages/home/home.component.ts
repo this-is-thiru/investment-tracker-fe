@@ -1,10 +1,12 @@
 import { Component, OnInit, AfterViewInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { FooterComponent } from '../../../../shared/components/footer/footer.component';
-import { AuthService } from '../../../../services/auth.service';
-import { Benefit } from '../../../../models/Benefit';
-import { LucideIconsModule } from '../../../../core/icons/lucide-icons.module';
+import { FooterComponent } from '@shared/components/footer/footer.component';
+import { AuthService } from '@services/auth.service';
+import { LucideIconsModule } from '@core/icons/lucide-icons.module';
+import { ButtonComponent } from '@shared/ui/button/button.component';
+import { ProductRevealComponent } from '../../components/product-reveal/product-reveal.component';
+import { FeatureStoryComponent } from '../../components/feature-story/feature-story.component';
 
 @Component({
     selector: 'app-home',
@@ -13,6 +15,9 @@ import { LucideIconsModule } from '../../../../core/icons/lucide-icons.module';
         CommonModule,
         FooterComponent,
         LucideIconsModule,
+        ButtonComponent,
+        ProductRevealComponent,
+        FeatureStoryComponent,
     ],
     templateUrl: './home.component.html',
     styleUrls: ['./home.component.css']
@@ -21,35 +26,19 @@ export class HomeComponent implements OnInit, AfterViewInit {
   private auth = inject(AuthService);
   private router = inject(Router);
 
-  hoveredCard: string | null = null;
-  hoveredBenefit: number | null = null;
   isLoaded = false;
 
-  benefits: Benefit[] = [
-    {
-      icon: 'Zap',
-      color: '#10A37F',
-      title: 'Lightning Fast',
-      desc: 'Process thousands of transactions in seconds with our optimized engine',
-    },
-    {
-      icon: 'BarChart3',
-      color: '#3B82F6',
-      title: 'Comprehensive Reports',
-      desc: 'Generate detailed reports for tax filing, compliance, and analysis',
-    },
-    {
-      icon: 'Clock',
-      color: '#8B5CF6',
-      title: 'Save Time',
-      desc: 'Automate repetitive tasks and focus on what matters most',
-    },
-    {
-      icon: 'CheckCircle2',
-      color: '#FACC15',
-      title: 'Accuracy Guaranteed',
-      desc: 'Eliminate errors with validated calculations and smart checks',
-    },
+  readonly howSteps = [
+    { icon: 'play-circle', color: 'var(--color-accent)', title: 'Try it or sign up', text: 'Open the demo in one click, or create your free account.' },
+    { icon: 'upload', color: 'var(--color-blue-accent)', title: 'Add your investments', text: 'Upload the trade file from your broker, or type a trade in yourself.' },
+    { icon: 'pie-chart', color: 'var(--color-purple-accent)', title: 'See the full picture', text: 'Your value, profit, fees and tax numbers, all worked out for you.' },
+  ];
+
+  readonly audiences = [
+    { icon: 'user', color: 'var(--color-accent)', title: 'New investors', text: 'Understand what you own and what it costs, in plain words.' },
+    { icon: 'briefcase', color: 'var(--color-blue-accent)', title: 'Busy professionals', text: 'Your whole portfolio in one glance. No spreadsheets to keep up.' },
+    { icon: 'bar-chart-3', color: 'var(--color-warning)', title: 'Active traders', text: 'Every fee and every gain counted, ready for tax time.' },
+    { icon: 'users', color: 'var(--color-purple-accent)', title: 'Families', text: 'Track the investments you look after for parents or a partner too.' },
   ];
 
   ngOnInit() {
@@ -84,28 +73,11 @@ export class HomeComponent implements OnInit, AfterViewInit {
     if (this.auth.isUserAuthenticated()) {
       this.router.navigate([`/${route}`]);
     } else {
-      this.router.navigate([{ outlets: { modal: ['sign-in'] } }]);
+      this.router.navigate([{ outlets: { modal: ['sign-in'] } }], { queryParams: { returnUrl: `/${route}` } });
     }
   }
 
-  getBenefitStyle(benefit: Benefit, index: number): any {
-    const isHovered = this.hoveredBenefit === index;
-    return {
-      backgroundColor: `${benefit.color}10`,
-      border: `1px solid ${benefit.color}20`,
-      boxShadow: isHovered
-        ? `0 12px 32px ${benefit.color}40, 0 0 0 3px ${benefit.color}10`
-        : 'none',
-    };
-  }
-
-  // Hero Icon particle styles calculation (matching the original inline styles)
-  getParticleStyle(i: number) {
-    return {
-      left: `${20 + i * 15}%`,
-      top: `${30 + (i % 3) * 20}%`,
-      'animation-delay': `${i * 0.3}s`,
-      'animation-duration': `${3 + i * 0.5}s`
-    };
+  exploreDemo() {
+    this.auth.loginAsDemo();
   }
 }

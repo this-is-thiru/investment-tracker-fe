@@ -1,7 +1,7 @@
 import { Component, Input, Output, EventEmitter, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { LucideIconsModule } from '../../../core/icons/lucide-icons.module';
-import { Notification } from '../../../services/notification.service';
+import { LucideIconsModule } from '@core/icons/lucide-icons.module';
+import { Notification } from '@services/notification.service';
 
 @Component({
     selector: 'app-notification-toast',

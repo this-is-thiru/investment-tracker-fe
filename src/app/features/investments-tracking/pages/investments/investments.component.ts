@@ -1,95 +1,44 @@
-import { Component, inject } from '@angular/core';
-import * as XLSX from 'xlsx';
-import { HttpClient } from '@angular/common/http';
+import { ChangeDetectorRef, Component, ViewChild, inject } from '@angular/core';
 import { MessageService } from 'primeng/api';
-import { Observable } from 'rxjs';
 import { UploadTransactionsComponent } from '../../components/upload-transactions/upload-transactions.component';
-import { FooterComponent } from '../../../../shared/components/footer/footer.component';
-import { BaseurlService } from '../../../../services/baseurl.service';
-import { TransactionsTableComponent } from "../../components/transactions-table/transactions-table.component";
-import { AllTransactionsComponent } from '../../components/transaction-list/all-transactions.component';
+import { TempCorporateTabsComponent } from '../../components/temp-corporate-tabs/temp-corporate-tabs.component';
+import { PortfolioStocksComponent } from '../../components/portfolio-stocks/portfolio-stocks.component';
+import { FooterComponent } from '@shared/components/footer/footer.component';
+import { LucideIconsModule } from '@core/icons/lucide-icons.module';
 
 @Component({
     selector: 'app-investments',
     standalone: true,
-    imports: [UploadTransactionsComponent, FooterComponent, TransactionsTableComponent, AllTransactionsComponent],
+    imports: [UploadTransactionsComponent, TempCorporateTabsComponent, PortfolioStocksComponent, FooterComponent, LucideIconsModule],
     templateUrl: './investments.component.html',
     styleUrls: ['./investments.component.css'],
     providers: [MessageService]
 })
 export class InvestmentsComponent {
-  private http = inject(HttpClient);
-  private messageService = inject(MessageService);
-  private BASE_URL = inject(BaseurlService);
+  @ViewChild(TempCorporateTabsComponent) tempCorporateTabs?: TempCorporateTabsComponent;
+  @ViewChild(PortfolioStocksComponent) portfolioStocks?: PortfolioStocksComponent;
 
-  excelData: any[] = [];
-  headers: string[] = [];
+  private cdr = inject(ChangeDetectorRef);
 
-  constructor() { }
+  userEmail = localStorage.getItem('userEmail') || '';
 
-  // Handle Excel File Upload
-  onFileChange(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    const file = input?.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const binaryString = e.target?.result as string;
-        const workbook = XLSX.read(binaryString, { type: 'binary' });
-        this.loadSheetData(workbook);
-        this.messageService.add({ severity: 'success', summary: 'Excel Uploaded', detail: file.name });
-      };
-      reader.readAsBinaryString(file);
-    }
+  // Returning users already have holdings, so keep the upload panel out of the way
+  uploadExpanded = true;
+  private initialHoldingsChecked = false;
+
+  onHoldingsLoaded(count: number): void {
+    if (this.initialHoldingsChecked) return;
+    this.initialHoldingsChecked = true;
+    this.uploadExpanded = count === 0;
+    this.cdr.markForCheck(); // fired from the child's HTTP callback; the app is zoneless
   }
 
-  // Parse Excel and Convert to JSON
-  loadSheetData(workbook: XLSX.WorkBook): void {
-    const sheet = workbook.Sheets[workbook.SheetNames[0]];
-    const rawData = XLSX.utils.sheet_to_json<any[]>(sheet, { header: 1 });
-
-    if (rawData.length > 0) {
-      this.headers = rawData[0]; // First row is header
-      rawData.shift(); // Remove header from data
-
-      this.excelData = rawData.map((row) => {
-        const obj: any = {};
-        this.headers.forEach((header, i) => {
-          obj[header] = row[i] ?? '';
-        });
-        return obj;
-      });
-    }
+  onUploadComplete(): void {
+    this.tempCorporateTabs?.refresh();
+    this.portfolioStocks?.refresh();
   }
 
-  // Delete a row from the data
-  deleteRow(rowIndex: number): void {
-    this.excelData.splice(rowIndex, 1);
-    this.messageService.add({ severity: 'info', summary: 'Row Deleted', detail: `Row ${rowIndex + 1}` });
-  }
-
-  // Download template file from server
-  downloadTemplate(): void {
-    this.http
-      .get(`${this.BASE_URL.getBaseUrl()}/helper/template`, { responseType: 'blob' })
-      .subscribe((response: Blob) => {
-        const url = window.URL.createObjectURL(response);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'template.xlsx';
-        a.click();
-        window.URL.revokeObjectURL(url);
-        this.messageService.add({ severity: 'success', summary: 'Download Started', detail: 'Template.xlsx' });
-      });
-  }
-
-  // Optional: Upload Excel to backend
-  uploadExcelFile(file: File, email: string): Observable<any> {
-    const formData = new FormData();
-    formData.append('file', file);
-    return this.http.post(
-      `${this.BASE_URL.getBaseUrl()}/portfolio/user/${email}/upload-transactions`,
-      formData
-    );
+  onCorporateActionApplied(): void {
+    this.portfolioStocks?.refresh();
   }
 }

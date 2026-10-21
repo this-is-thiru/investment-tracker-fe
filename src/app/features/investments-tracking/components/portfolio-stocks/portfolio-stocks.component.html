@@ -1,0 +1,328 @@
+<app-expansion-panel
+  [title]="'Portfolio Stocks'"
+  [subtitle]="'Holdings with expandable transaction history'"
+  [titleIcon]="'Briefcase'"
+  [iconBgClass]="'bg-gradient-to-br from-purple-accent to-[#7C3AED] p-2 rounded-lg text-white'"
+  [isExpanded]="true"
+  class="animate-fade-in-up stagger-2"
+>
+  <div class="space-y-4">
+    <div class="flex flex-col lg:flex-row lg:items-center gap-2.5">
+      <!-- Search Input -->
+      <div class="relative w-full lg:flex-1 lg:min-w-[200px]">
+        <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+          <lucide-icon name="Search" class="w-4 h-4 text-text-disabled"></lucide-icon>
+        </span>
+        <input type="text" [(ngModel)]="searchQuery" (ngModelChange)="applyFilters()"
+          placeholder="Search stock, code, asset type..."
+          class="w-full pl-9 pr-8 py-2 text-sm rounded-lg bg-surface-hover border border-border text-white placeholder-text-disabled focus:ring-1 focus:ring-purple-accent focus:outline-none" />
+        @if (searchQuery) {
+          <button type="button" (click)="searchQuery = ''; applyFilters()"
+            class="absolute inset-y-0 right-0 flex items-center pr-2.5 text-text-disabled hover:text-white transition-colors"
+            title="Clear search">
+            <lucide-icon name="X" class="w-3.5 h-3.5"></lucide-icon>
+          </button>
+        }
+      </div>
+
+      <!-- Filters & Actions: clean stacked on mobile, single row on tablet & desktop -->
+      <div class="flex flex-col sm:flex-row sm:flex-wrap lg:flex-nowrap items-stretch sm:items-center gap-2 w-full lg:w-auto">
+        <!-- 3 Filter Dropdowns -->
+        <div class="grid grid-cols-2 sm:flex sm:items-center gap-2 w-full sm:w-auto">
+          <!-- Asset Type Dropdown -->
+          <p-select [options]="availableAssetTypes" [(ngModel)]="filterAssetType" (ngModelChange)="applyFilters()"
+            placeholder="Asset type" styleClass="text-sm w-full sm:w-36 lg:w-40" appendTo="body" [showClear]="true"></p-select>
+
+          <!-- Broker Dropdown -->
+          <p-select [options]="availableBrokers" [(ngModel)]="filterBroker" (ngModelChange)="applyFilters()"
+            placeholder="Broker" styleClass="text-sm w-full sm:w-36 lg:w-40" appendTo="body" [showClear]="true"></p-select>
+
+          <!-- Transaction Type Dropdown -->
+          <p-select [options]="availableTypes" [(ngModel)]="filterType" (ngModelChange)="applyFilters()"
+            placeholder="Type" styleClass="text-sm w-full col-span-2 sm:col-span-1 sm:w-32 lg:w-36" appendTo="body" [showClear]="true"></p-select>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex items-center gap-2 w-full sm:w-auto shrink-0">
+          <ui-button variant="secondary" size="sm" (click)="resetFilters()"
+            [disabled]="!searchQuery && !filterAssetType && !filterBroker && !filterType"
+            [fullWidth]="true" class="flex-1 sm:flex-initial">
+            <lucide-icon name="X" class="w-3.5 h-3.5"></lucide-icon>
+            Reset
+          </ui-button>
+
+          <ui-button variant="secondary" size="sm" (click)="refresh()" [disabled]="loading"
+            [fullWidth]="true" class="flex-1 sm:flex-initial">
+            <lucide-icon name="RotateCw" [class.animate-spin]="loading" class="w-3.5 h-3.5"></lucide-icon>
+            Refresh
+          </ui-button>
+        </div>
+      </div>
+    </div>
+
+    @if (loading) {
+      <div class="rounded-xl border border-border divide-y divide-divider" aria-busy="true" aria-label="Loading holdings">
+        @for (row of [1, 2, 3, 4]; track row) {
+          <div class="flex items-center gap-4 px-4 py-3">
+            <p-skeleton width="28%" height="14px" styleClass="bg-surface-hover"></p-skeleton>
+            <p-skeleton width="14%" height="14px" styleClass="bg-surface-hover"></p-skeleton>
+            <p-skeleton width="14%" height="14px" styleClass="bg-surface-hover"></p-skeleton>
+            <p-skeleton width="18%" height="14px" styleClass="bg-surface-hover"></p-skeleton>
+          </div>
+        }
+      </div>
+    } @else {
+      <div class="overflow-x-auto rounded-xl border border-border">
+        <p-table
+          [value]="filteredHoldings"
+          [paginator]="true"
+          [rows]="10"
+          [rowsPerPageOptions]="[5, 10, 20]"
+          paginatorDropdownAppendTo="body"
+          dataKey="stockCode"
+          [expandedRowKeys]="expandedRows"
+          (onRowExpand)="onRowExpand($event)"
+          [tableStyle]="{ 'min-width': '72rem' }"
+          responsiveLayout="scroll"
+          styleClass="p-datatable-sm w-full"
+        >
+          <ng-template pTemplate="header">
+            <tr>
+              <th style="width: 3.5rem"></th>
+              <th pSortableColumn="stockName">
+                <div class="flex items-center gap-1 whitespace-nowrap">Stock <p-sortIcon field="stockName"></p-sortIcon></div>
+              </th>
+              <th pSortableColumn="totalBought" class="text-right">
+                <div class="flex items-center justify-end gap-1 whitespace-nowrap">Bought <p-sortIcon field="totalBought"></p-sortIcon></div>
+              </th>
+              <th pSortableColumn="totalSold" class="text-right">
+                <div class="flex items-center justify-end gap-1 whitespace-nowrap">Sold <p-sortIcon field="totalSold"></p-sortIcon></div>
+              </th>
+              <th pSortableColumn="netHeld" class="text-right">
+                <div class="flex items-center justify-end gap-1 whitespace-nowrap">Net Held <p-sortIcon field="netHeld"></p-sortIcon></div>
+              </th>
+              <th pSortableColumn="totalInvested" class="text-right">
+                <div class="flex items-center justify-end gap-1 whitespace-nowrap">Invested <p-sortIcon field="totalInvested"></p-sortIcon></div>
+              </th>
+              <th pSortableColumn="netInvested" class="text-right">
+                <div class="flex items-center justify-end gap-1 whitespace-nowrap">Net ₹ <p-sortIcon field="netInvested"></p-sortIcon></div>
+              </th>
+              <th pSortableColumn="txnCount" class="text-right">
+                <div class="flex items-center justify-end gap-1 whitespace-nowrap">Txns <p-sortIcon field="txnCount"></p-sortIcon></div>
+              </th>
+              <th pSortableColumn="avgPrice" class="text-right">
+                <div class="flex items-center justify-end gap-1 whitespace-nowrap">Avg ₹ <p-sortIcon field="avgPrice"></p-sortIcon></div>
+              </th>
+              <th pSortableColumn="totalCharges" class="text-right">
+                <div class="flex items-center justify-end gap-1 whitespace-nowrap">Charges <p-sortIcon field="totalCharges"></p-sortIcon></div>
+              </th>
+              <th>
+                <div class="flex items-center gap-1 whitespace-nowrap">% Share</div>
+              </th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-h let-expanded="expanded">
+            <tr>
+              <td class="px-2 py-3 text-center">
+                <button type="button" [pRowToggler]="h"
+                  [appTooltip]="expanded ? 'Collapse transactions' : 'Expand transactions'"
+                  appTooltipPosition="right"
+                  class="p-0 w-8 h-8 flex items-center justify-center text-text-secondary hover:text-white hover:bg-white/10 rounded-full transition-colors duration-150"
+                  aria-label="Toggle Row">
+                  <i class="pi text-xs transition-transform duration-200" [ngClass]="expanded ? 'pi-chevron-down' : 'pi-chevron-right'"></i>
+                </button>
+              </td>
+              <td class="px-4 py-3">
+                <div class="font-medium text-white truncate max-w-[220px] cursor-default" [appTooltip]="h.stockCode">{{ h.stockName }}</div>
+              </td>
+              <td class="px-4 py-3 text-right text-gray-300 tabular-nums">{{ h.totalBought | number:'1.0-4' }}</td>
+              <td class="px-4 py-3 text-right text-gray-300 tabular-nums">{{ h.totalSold | number:'1.0-4' }}</td>
+              <td class="px-4 py-3 text-right font-semibold tabular-nums" [ngClass]="h.netHeld >= 0 ? 'text-success' : 'text-danger'">
+                {{ h.netHeld | number:'1.0-4' }}
+              </td>
+              <td class="px-4 py-3 text-right text-gray-300 tabular-nums">₹{{ h.totalInvested | number:'1.2-2' }}</td>
+              <td class="px-4 py-3 text-right font-semibold tabular-nums" [ngClass]="h.netInvested >= 0 ? 'text-success' : 'text-danger'">
+                ₹{{ h.netInvested | number:'1.2-2' }}
+              </td>
+              <td class="px-4 py-3 text-right text-gray-300 tabular-nums">{{ h.txnCount }}</td>
+              <td class="px-4 py-3 text-right text-gray-300 tabular-nums">₹{{ h.avgPrice | number:'1.2-2' }}</td>
+              <td class="px-4 py-3 text-right text-gray-300 tabular-nums">₹{{ h.totalCharges | number:'1.2-2' }}</td>
+              <td class="px-4 py-3" style="min-width: 160px;">
+                <div class="flex items-center gap-2" [appTooltip]="(h.sharePercent | number:'1.0-1') + '% of total portfolio'">
+                  <div class="flex-1 h-2 bg-surface-input rounded overflow-hidden min-w-[60px]">
+                    <div class="h-full bg-gradient-to-r from-purple-accent to-[#A78BFA] rounded" [style.width.%]="h.sharePercent"></div>
+                  </div>
+                  <span class="text-2xs text-text-secondary w-10 text-right">{{ h.sharePercent | number:'1.0-1' }}%</span>
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="expandedrow" let-h>
+            <tr>
+              <td colspan="11" class="p-4 bg-background">
+                <div class="border-l-4 border-l-purple-accent border-y border-r border-divider rounded-xl bg-surface-alt p-5 shadow-[0_4px_20px_rgba(0,0,0,0.4)]">
+                  
+                  <!-- Card Header -->
+                  <div class="flex items-center gap-2 mb-4">
+                    <lucide-icon name="file-text" class="w-4 h-4 text-purple-accent"></lucide-icon>
+                    <h4 class="text-sm font-semibold text-white">Transactions for {{ h.stockName }}</h4>
+                  </div>
+
+                  <!-- Loading Skeleton State -->
+                  @if (loadingStockTransactions[h.stockCode]) {
+                    <div class="space-y-4 animate-pulse">
+                      <!-- Stats Skeleton -->
+                      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        @for (s of [1, 2, 3]; track s) {
+                          <div class="bg-surface-alt p-3 rounded-lg border border-divider h-[60px] flex flex-col justify-between">
+                            <p-skeleton width="40%" height="0.6rem" styleClass="bg-divider"></p-skeleton>
+                            <p-skeleton width="70%" height="1rem" styleClass="bg-divider"></p-skeleton>
+                          </div>
+                        }
+                      </div>
+                      <!-- Table Skeleton -->
+                      <div class="border border-divider rounded-lg overflow-hidden bg-surface-alt">
+                        <div class="h-10 bg-surface-hover border-b border-divider flex items-center px-4 justify-between">
+                          <p-skeleton width="10%" height="0.7rem" styleClass="bg-divider"></p-skeleton>
+                          <p-skeleton width="10%" height="0.7rem" styleClass="bg-divider"></p-skeleton>
+                          <p-skeleton width="10%" height="0.7rem" styleClass="bg-divider"></p-skeleton>
+                          <p-skeleton width="12%" height="0.7rem" styleClass="bg-divider"></p-skeleton>
+                          <p-skeleton width="12%" height="0.7rem" styleClass="bg-divider"></p-skeleton>
+                          <p-skeleton width="10%" height="0.7rem" styleClass="bg-divider"></p-skeleton>
+                          <p-skeleton width="10%" height="0.7rem" styleClass="bg-divider"></p-skeleton>
+                        </div>
+                        <div class="divide-y divide-divider/60">
+                          @for (r of [1, 2, 3]; track r) {
+                            <div class="h-11 flex items-center px-4 justify-between">
+                              <p-skeleton width="10%" height="1.1rem" styleClass="bg-divider rounded-full"></p-skeleton>
+                              <p-skeleton width="8%" height="0.7rem" styleClass="bg-divider"></p-skeleton>
+                              <p-skeleton width="10%" height="0.7rem" styleClass="bg-divider"></p-skeleton>
+                              <p-skeleton width="12%" height="0.7rem" styleClass="bg-divider"></p-skeleton>
+                              <p-skeleton width="12%" height="0.7rem" styleClass="bg-divider"></p-skeleton>
+                              <p-skeleton width="10%" height="0.7rem" styleClass="bg-divider"></p-skeleton>
+                              <p-skeleton width="8%" height="0.7rem" styleClass="bg-divider"></p-skeleton>
+                            </div>
+                          }
+                        </div>
+                      </div>
+                    </div>
+                  } @else if (stockTransactions[h.stockCode]?.length) {
+                    
+                    <!-- Stats Summary Cards -->
+                    @let summary = getTransactionSummary(h.stockCode);
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
+                      <!-- BUY Stats Card -->
+                      <div class="bg-[#122A1E]/30 border border-success/15 rounded-lg p-3 flex items-center justify-between">
+                        <div>
+                          <span class="text-2xs font-bold text-[#8E9B93] uppercase tracking-wider">Total Bought</span>
+                          <div class="text-xs font-bold text-white mt-0.5 tabular-nums">
+                            {{ summary.buyQty | number:'1.0-4' }} <span class="text-2xs font-normal text-[#8E9B93]">units</span>
+                          </div>
+                          <div class="text-2xs text-gray-400 mt-0.5">Avg: ₹{{ summary.avgBuyPrice | number:'1.2-2' }}</div>
+                        </div>
+                        <div class="text-right">
+                          <span class="text-2xs text-[#8E9B93] block">Capital Invested</span>
+                          <span class="text-xs font-extrabold text-success tabular-nums">₹{{ summary.totalBuyValue | number:'1.2-2' }}</span>
+                        </div>
+                      </div>
+
+                      <!-- SELL Stats Card -->
+                      <div class="bg-[#2D161B]/30 border border-danger/15 rounded-lg p-3 flex items-center justify-between">
+                        <div>
+                          <span class="text-2xs font-bold text-[#9B8E90] uppercase tracking-wider">Total Sold</span>
+                          <div class="text-xs font-bold text-white mt-0.5 tabular-nums">
+                            {{ summary.sellQty | number:'1.0-4' }} <span class="text-2xs font-normal text-[#9B8E90]">units</span>
+                          </div>
+                          <div class="text-2xs text-gray-400 mt-0.5">Avg: ₹{{ summary.avgSellPrice | number:'1.2-2' }}</div>
+                        </div>
+                        <div class="text-right">
+                          <span class="text-2xs text-[#9B8E90] block">Realized Value</span>
+                          <span class="text-xs font-extrabold text-danger tabular-nums">₹{{ summary.totalSellValue | number:'1.2-2' }}</span>
+                        </div>
+                      </div>
+
+                      <!-- Friction Costs Card -->
+                      <div class="bg-[#1E192D]/30 border border-purple-accent/15 rounded-lg p-3 flex items-center justify-between">
+                        <div>
+                          <span class="text-2xs font-bold text-[#938EB0] uppercase tracking-wider">Friction Costs</span>
+                          <div class="text-2xs text-gray-400 mt-1">Total taxes & broker commissions</div>
+                        </div>
+                        <div class="text-right">
+                          <span class="text-2xs text-[#938EB0] block">Total Charges</span>
+                          <span class="text-xs font-extrabold text-white tabular-nums">₹{{ summary.totalCharges | number:'1.2-2' }}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Inner Table -->
+                    @let filteredTxns = getFilteredTransactions(h.stockCode);
+                    @if (filteredTxns.length) {
+                      <div class="overflow-x-auto rounded-lg border border-divider bg-background/50">
+                        <p-table [value]="filteredTxns" [tableStyle]="{ 'min-width': '48rem' }" responsiveLayout="scroll" styleClass="p-datatable-sm w-full">
+                          <ng-template pTemplate="header">
+                            <tr class="border-b border-divider bg-surface-alt">
+                              <th class="px-4 py-2 text-2xs font-bold text-gray-400 uppercase tracking-wider text-left">Type</th>
+                              <th class="px-4 py-2 text-2xs font-bold text-gray-400 uppercase tracking-wider text-right">Qty</th>
+                              <th class="px-4 py-2 text-2xs font-bold text-gray-400 uppercase tracking-wider text-right">Price</th>
+                              <th class="px-4 py-2 text-2xs font-bold text-gray-400 uppercase tracking-wider text-right">Total</th>
+                              <th class="px-4 py-2 text-2xs font-bold text-gray-400 uppercase tracking-wider text-left">Date</th>
+                              <th class="px-4 py-2 text-2xs font-bold text-gray-400 uppercase tracking-wider text-left">Broker</th>
+                              <th class="px-4 py-2 text-2xs font-bold text-gray-400 uppercase tracking-wider text-right">Charges</th>
+                            </tr>
+                          </ng-template>
+                          <ng-template pTemplate="body" let-t>
+                            <tr class="border-b border-divider/40 hover:bg-white/5 transition-colors duration-150">
+                              <td class="px-4 py-2">
+                                <ui-badge [tone]="t.transactionType === 'BUY' ? 'success' : 'danger'">{{ t.transactionType }}</ui-badge>
+                              </td>
+                              <td class="px-4 py-2 text-right text-gray-200 font-semibold tabular-nums">{{ t.quantity | number:'1.0-4' }}</td>
+                              <td class="px-4 py-2 text-right text-gray-300 tabular-nums">₹{{ t.price | number:'1.2-2' }}</td>
+                              <td class="px-4 py-2 text-right text-white font-semibold tabular-nums">₹{{ t.totalValue | number:'1.2-2' }}</td>
+                              <td class="px-4 py-2 text-gray-400 text-xs whitespace-nowrap">{{ t.transactionDate }}</td>
+                              <td class="px-4 py-2 text-gray-300 text-xs">{{ t.brokerName }}</td>
+                              <td class="px-4 py-2 text-right text-gray-300 tabular-nums cursor-help underline decoration-dotted decoration-border hover:decoration-white/40"
+                                  [appTooltip]="tooltipContent" appTooltipPosition="top" appTooltipMaxWidth="180px">
+                                ₹{{ ((t.brokerCharges || 0) + (t.miscCharges || 0)) | number:'1.2-2' }}
+
+                                <ng-template #tooltipContent>
+                                  <div class="text-2xs leading-normal min-w-[110px]">
+                                    <div class="flex justify-between gap-4 mb-0.5">
+                                      <span class="text-gray-400">Brokerage:</span>
+                                      <span class="text-white font-bold">₹{{ (t.brokerCharges || 0) | number:'1.2-2' }}</span>
+                                    </div>
+                                    <div class="flex justify-between gap-4 border-t border-white/10 mt-1 pt-1">
+                                      <span class="text-gray-400">Misc/Taxes:</span>
+                                      <span class="text-white font-bold">₹{{ (t.miscCharges || 0) | number:'1.2-2' }}</span>
+                                    </div>
+                                  </div>
+                                </ng-template>
+                              </td>
+                            </tr>
+                          </ng-template>
+                        </p-table>
+                      </div>
+                    } @else {
+                      <div class="text-center py-8 text-gray-400 text-xs bg-surface-alt/20 border border-divider rounded-lg">
+                        No transactions found matching filter "{{ filterType || 'ALL' }}".
+                      </div>
+                    }
+
+                  } @else {
+                    <div class="text-center py-6 text-gray-400 text-sm">No transactions found for {{ h.stockName }}.</div>
+                  }
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="11" class="py-12 px-4 text-center">
+                <ui-empty-state icon="briefcase" title="No holdings yet" message="Upload transactions to see your portfolio stocks." />
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    }
+  </div>
+</app-expansion-panel>

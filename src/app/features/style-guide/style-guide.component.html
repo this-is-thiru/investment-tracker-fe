@@ -1,0 +1,188 @@
+<div class="sg-page">
+  <header class="sg-header">
+    <h1>WealthLens Design System</h1>
+    <p>Live reference for design tokens and the <code>shared/ui</code> component library. Copy the snippets below when building new pages.</p>
+  </header>
+
+  <!-- Colors -->
+  <section class="sg-section">
+    <h2>Colors</h2>
+    <h3>Surfaces</h3>
+    <div class="sg-swatch-grid">
+      @for (t of surfaceTokens; track t.varName) {
+        <div class="sg-swatch">
+          <div class="sg-swatch__box" [style.background]="'var(' + t.varName + ')'"></div>
+          <span class="sg-swatch__label">{{ t.name }}</span>
+          <span class="sg-swatch__var">{{ t.varName }}</span>
+        </div>
+      }
+    </div>
+    <h3>Semantic</h3>
+    <div class="sg-swatch-grid">
+      @for (t of semanticTokens; track t.varName) {
+        <div class="sg-swatch">
+          <div class="sg-swatch__box" [style.background]="'var(' + t.varName + ')'"></div>
+          <span class="sg-swatch__label">{{ t.name }}</span>
+          <span class="sg-swatch__var">{{ t.varName }}</span>
+        </div>
+      }
+    </div>
+  </section>
+
+  <!-- Buttons -->
+  <section class="sg-section">
+    <h2>Buttons</h2>
+    <ui-card>
+      <div class="sg-row">
+        <ui-button variant="primary">Primary</ui-button>
+        <ui-button variant="secondary">Secondary</ui-button>
+        <ui-button variant="danger">Danger</ui-button>
+        <ui-button variant="ghost">Ghost</ui-button>
+        <ui-button variant="icon"><lucide-icon name="settings" class="w-4 h-4"></lucide-icon></ui-button>
+      </div>
+      <div class="sg-row">
+        <ui-button size="sm">Small</ui-button>
+        <ui-button size="md">Medium</ui-button>
+        <ui-button size="lg">Large</ui-button>
+        <ui-button [disabled]="true">Disabled</ui-button>
+        <ui-button [loading]="buttonLoading" (click)="toggleLoadingDemo()">Click to load</ui-button>
+      </div>
+    </ui-card>
+    <pre class="sg-snippet">&lt;ui-button variant="primary" size="md" [loading]="saving" (click)="save()"&gt;Save&lt;/ui-button&gt;</pre>
+  </section>
+
+  <!-- Badges -->
+  <section class="sg-section">
+    <h2>Badges</h2>
+    <ui-card>
+      <div class="sg-row">
+        <ui-badge tone="success">BUY</ui-badge>
+        <ui-badge tone="danger">SELL</ui-badge>
+        <ui-badge tone="warning">ST</ui-badge>
+        <ui-badge tone="info">Info</ui-badge>
+        <ui-badge tone="accent">Recommended</ui-badge>
+        <ui-badge tone="purple">Bonus</ui-badge>
+        <ui-badge tone="neutral">Neutral</ui-badge>
+      </div>
+      <div class="sg-row">
+        <ui-badge tone="success" styleVariant="solid">BUY</ui-badge>
+        <ui-badge tone="danger" styleVariant="solid">SELL</ui-badge>
+        <ui-badge tone="accent" styleVariant="solid">Premium</ui-badge>
+      </div>
+    </ui-card>
+    <pre class="sg-snippet">&lt;ui-badge tone="success"&gt;BUY&lt;/ui-badge&gt;</pre>
+  </section>
+
+  <!-- Cards -->
+  <section class="sg-section">
+    <h2>Cards</h2>
+    <div class="sg-row sg-row--wrap">
+      <ui-card variant="default" padding="md">Default surface</ui-card>
+      <ui-card variant="alt" padding="md">Alt surface (modals, nested panels)</ui-card>
+      <ui-card variant="elevated" padding="md">Elevated (landing page)</ui-card>
+    </div>
+    <pre class="sg-snippet">&lt;ui-card variant="default" padding="md"&gt;...&lt;/ui-card&gt;</pre>
+  </section>
+
+  <!-- Inputs & Forms -->
+  <section class="sg-section">
+    <h2>Form Controls</h2>
+    <ui-card>
+      <div class="sg-form-grid">
+        <div>
+          <label class="sg-label">Text input</label>
+          <ui-input placeholder="Email address" [(ngModel)]="inputValue" />
+        </div>
+        <div>
+          <label class="sg-label">Input with error</label>
+          <ui-input placeholder="Required field" [error]="true" />
+        </div>
+        <div>
+          <label class="sg-label">Toggle</label>
+          <ui-toggle [(ngModel)]="toggleValue" />
+        </div>
+        <div>
+          <label class="sg-label">Radio card</label>
+          <ui-radio-card [selected]="radioValue === 'usd'" (click)="radioValue = 'usd'">USD</ui-radio-card>
+        </div>
+      </div>
+    </ui-card>
+    <pre class="sg-snippet">&lt;ui-input type="email" placeholder="Email" formControlName="email" [error]="hasError" /&gt;
+&lt;ui-toggle formControlName="emailAlerts" /&gt;</pre>
+  </section>
+
+  <!-- Tabs -->
+  <section class="sg-section">
+    <h2>Tabs</h2>
+    <ui-card>
+      <ui-tabs [items]="tabItems" [value]="activeTab" (valueChange)="activeTab = $event" />
+      <p class="sg-note">Active: {{ activeTab }}</p>
+    </ui-card>
+  </section>
+
+  <!-- Empty state -->
+  <section class="sg-section">
+    <h2>Empty State</h2>
+    <ui-card>
+      <ui-empty-state icon="inbox" title="No Transactions" message="Nothing to show yet. Add your first transaction to get started." />
+    </ui-card>
+    <pre class="sg-snippet">&lt;ui-empty-state icon="inbox" title="No Transactions" message="..." /&gt;</pre>
+  </section>
+
+  <!-- Spinner -->
+  <section class="sg-section">
+    <h2>Spinner</h2>
+    <ui-card>
+      <div class="sg-row">
+        <ui-spinner size="sm" />
+        <ui-spinner size="md" />
+        <ui-spinner size="lg" />
+      </div>
+    </ui-card>
+  </section>
+
+  <!-- Modal & Confirm Dialog -->
+  <section class="sg-section">
+    <h2>Modal &amp; Confirm Dialog</h2>
+    <ui-card>
+      <div class="sg-row">
+        <ui-button (click)="modalOpen = true">Open Modal</ui-button>
+        <ui-button variant="danger" (click)="openConfirm()">Open Confirm Dialog</ui-button>
+      </div>
+    </ui-card>
+
+    <ui-modal [open]="modalOpen" title="Example Modal" (closed)="modalOpen = false">
+      <p class="sg-note">This is the shared ui-modal shell used for every dialog in the app.</p>
+      <div modalFooter class="sg-modal-footer">
+        <ui-button variant="secondary" (click)="modalOpen = false">Cancel</ui-button>
+        <ui-button variant="primary" (click)="modalOpen = false">Confirm</ui-button>
+      </div>
+    </ui-modal>
+  </section>
+
+  <!-- PrimeNG theming check -->
+  <section class="sg-section">
+    <h2>PrimeNG (theming check)</h2>
+    <ui-card>
+      <div class="sg-row" style="margin-bottom: 1rem;">
+        <p-select [options]="selectOptions" [(ngModel)]="selectedOption" optionLabel="label" optionValue="value" />
+      </div>
+      <p-table [value]="demoRows" [paginator]="true" [rows]="5">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Name</th>
+            <th>Qty</th>
+            <th>Price</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-row>
+          <tr>
+            <td>{{ row.name }}</td>
+            <td>{{ row.qty }}</td>
+            <td>{{ row.price | number: '1.2-2' }}</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </ui-card>
+  </section>
+</div>

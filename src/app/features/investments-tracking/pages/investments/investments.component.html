@@ -1,69 +1,45 @@
-<section class="flex flex-col w-full gap-4 px-4 md:px-6 max-w-7xl mx-auto lg:px-8 py-6 bg-background text-white">
-  <!-- Upload Transactions -->
-  <app-upload-transactions></app-upload-transactions>
+<div class="w-full min-h-screen flex flex-col bg-background text-white">
+  <!-- ============================================================== -->
+  <!-- HEADER STRIP                                                     -->
+  <!-- ============================================================== -->
+  <section class="relative bg-background overflow-hidden border-b border-divider">
+    <div class="absolute inset-0 opacity-30 pointer-events-none">
+      <div class="relative bg-gradient-to-br from-[#0F0F0F] via-[#121212] to-background w-full h-full"></div>
+    </div>
 
+    <div class="w-full max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-8 2xl:px-12 py-10 md:py-14 relative z-10">
+      <div class="inline-flex items-center gap-2 bg-warning/10 border border-warning/20 rounded-full px-3 py-1.5 mb-4">
+        <lucide-icon name="Briefcase" class="w-4 h-4 text-warning"></lucide-icon>
+        <span class="text-xs text-warning font-semibold uppercase tracking-wider">Investment Tracking</span>
+      </div>
 
-  <app-transactions-table></app-transactions-table>
+      <h1 class="text-3xl md:text-4xl text-white mb-2 font-semibold">
+        Track your
+        <span class="text-transparent bg-clip-text bg-gradient-to-r from-warning to-[#EAB308]">transactions</span>
+      </h1>
+      <p class="text-sm text-text-secondary max-w-2xl">
+        Manage and track all your investment transactions in one place. Upload your broker sheets to get started.
+      </p>
+    </div>
+  </section>
 
-  <app-all-transactions></app-all-transactions>
+  <!-- MAIN BODY -->
+  <main class="w-full max-w-[1760px] mx-auto px-4 sm:px-6 lg:px-8 2xl:px-12 py-8 flex-1 flex flex-col gap-6">
+    <!-- Section 1: Upload & Preview Transactions (Combined) -->
+    <app-upload-transactions
+      [expanded]="uploadExpanded"
+      (uploadComplete)="onUploadComplete()">
+    </app-upload-transactions>
 
-  <!-- Table Wrapper -->
-  <!-- <div class="w-full overflow-auto rounded-xl border border-[#4d4d4d] bg-surface shadow-sm">
-    <p-table 
-      *ngIf="excelData.length" 
-      [value]="excelData" 
-      [paginator]="true" 
-      [rows]="10"
-      [rowsPerPageOptions]="[5, 10, 20]" 
-      [globalFilterFields]="headers" 
-      [sortMode]="'multiple'"
-      responsiveLayout="scroll" 
-      editMode="cell" 
-      class="p-datatable-sm p-datatable w-full text-white"> -->
+    <!-- Section 3: Temporary Transactions & Corporate Actions -->
+    <app-temp-corporate-tabs
+      [userEmail]="userEmail"
+      (dataChanged)="onCorporateActionApplied()">
+    </app-temp-corporate-tabs>
 
-  <!-- Table Header -->
-  <!-- <ng-template pTemplate="header">
-        <tr class="bg-surfaceHover">
-          <th *ngFor="let header of headers" [pSortableColumn]="header" class="px-3 py-2 text-left">
-            {{ header }}
-            <p-columnFilter [field]="header" matchMode="contains"></p-columnFilter>
-            <p-sortIcon [field]="header"></p-sortIcon>
-          </th>
-          <th class="px-3 py-2 text-left">Actions</th>
-        </tr>
-      </ng-template> -->
-
-  <!-- Table Body -->
-  <!-- <ng-template pTemplate="body" let-rowData let-rowIndex="rowIndex">
-        <tr class="hover:bg-[#333] transition-colors duration-200">
-          <td class="px-3 py-2" *ngFor="let header of headers" pEditableColumn>
-            <p-cellEditor>
-              <ng-template pTemplate="input">
-                <input pInputText [(ngModel)]="rowData[header]" 
-                       class="bg-background text-white border border-border rounded px-2 py-1 focus:ring-2 focus:ring-border focus:outline-none"/>
-              </ng-template>
-              <ng-template pTemplate="output">
-                {{ rowData[header] }}
-              </ng-template>
-            </p-cellEditor>
-          </td>
-          <td class="px-3 py-2">
-            <button pButton icon="pi pi-trash" class="p-button-sm p-button-danger hover:bg-red-700 transition-colors"
-                    (click)="deleteRow(rowIndex)"></button>
-          </td>
-        </tr>
-      </ng-template> -->
-
-  <!-- No Data Template -->
-  <!-- <ng-template pTemplate="emptymessage">
-        <tr>
-          <td [attr.colspan]="headers.length + 1" class="text-center py-4 text-text-secondary">
-            No data found. Please upload an Excel file.
-          </td>
-        </tr>
-      </ng-template>
-    </p-table>
-  </div> -->
-</section>
+    <!-- Section 4: Portfolio Stocks -->
+    <app-portfolio-stocks [userEmail]="userEmail" (holdingsLoaded)="onHoldingsLoaded($event)"></app-portfolio-stocks>
+  </main>
+</div>
 
 <app-footer></app-footer>

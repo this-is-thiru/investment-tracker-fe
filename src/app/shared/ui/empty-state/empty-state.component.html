@@ -1,0 +1,10 @@
+<div class="ui-empty-state" [ngClass]="'ui-empty-state--' + size">
+  <div class="ui-empty-state__icon-tile">
+    <lucide-icon [name]="icon" class="ui-empty-state__icon"></lucide-icon>
+  </div>
+  <h4 class="ui-empty-state__title">{{ title }}</h4>
+  @if (message) {
+    <p class="ui-empty-state__message">{{ message }}</p>
+  }
+  <ng-content></ng-content>
+</div>

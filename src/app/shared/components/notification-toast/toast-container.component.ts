@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { NotificationService, Notification } from '../../../services/notification.service';
+import { NotificationService, Notification } from '@services/notification.service';
 import { NotificationToastComponent } from './notification-toast.component';
 import { Observable } from 'rxjs';
 

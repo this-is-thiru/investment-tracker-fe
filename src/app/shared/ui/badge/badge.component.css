@@ -1,0 +1,35 @@
+:host {
+  display: inline-block;
+}
+
+.ui-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.125rem 0.625rem;
+  border-radius: 9999px;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+
+/* Soft (tinted background, tinted border, tinted text) */
+.ui-badge--success-soft { background: rgba(34, 197, 94, 0.1); color: var(--color-success); border-color: rgba(34, 197, 94, 0.2); }
+.ui-badge--danger-soft { background: rgba(239, 68, 68, 0.1); color: var(--color-danger); border-color: rgba(239, 68, 68, 0.2); }
+.ui-badge--warning-soft { background: rgba(250, 204, 21, 0.1); color: var(--color-warning); border-color: rgba(250, 204, 21, 0.2); }
+.ui-badge--info-soft { background: rgba(59, 130, 246, 0.1); color: var(--color-blue-accent); border-color: rgba(59, 130, 246, 0.2); }
+.ui-badge--accent-soft { background: rgba(16, 163, 127, 0.1); color: var(--color-accent); border-color: rgba(16, 163, 127, 0.2); }
+.ui-badge--purple-soft { background: rgba(139, 92, 246, 0.1); color: var(--color-purple-accent); border-color: rgba(139, 92, 246, 0.2); }
+.ui-badge--neutral-soft { background: var(--color-surface-hover); color: var(--color-text-secondary); border-color: var(--color-border); }
+
+/* Solid (filled background, white text) */
+.ui-badge--success-solid { background: var(--color-success); color: #FFFFFF; }
+.ui-badge--danger-solid { background: var(--color-danger); color: #FFFFFF; }
+.ui-badge--warning-solid { background: var(--color-warning); color: #1A1A1A; }
+.ui-badge--info-solid { background: var(--color-blue-accent); color: #FFFFFF; }
+.ui-badge--accent-solid { background: var(--color-accent); color: #FFFFFF; }
+.ui-badge--purple-solid { background: var(--color-purple-accent); color: #FFFFFF; }
+.ui-badge--neutral-solid { background: var(--color-text-muted); color: #FFFFFF; }
