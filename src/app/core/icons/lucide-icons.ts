@@ -51,7 +51,19 @@ import {
   FileSpreadsheet,
   Filter,
   Inbox,
-  Check
+  Check,
+  Wallet,
+  PieChart,
+  Receipt,
+  Gift,
+  Calculator,
+  HeartPulse,
+  Landmark,
+  Target,
+  Layers,
+  Users,
+  Rocket,
+  HelpCircle
 } from 'lucide-angular';
 
 export const LUCIDE_ICONS = {
@@ -107,5 +119,17 @@ export const LUCIDE_ICONS = {
   FileSpreadsheet,
   Filter,
   Inbox,
-  Check
+  Check,
+  Wallet,
+  PieChart,
+  Receipt,
+  Gift,
+  Calculator,
+  HeartPulse,
+  Landmark,
+  Target,
+  Layers,
+  Users,
+  Rocket,
+  HelpCircle
 };

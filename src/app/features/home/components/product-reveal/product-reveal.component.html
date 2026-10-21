@@ -1,0 +1,75 @@
+<div class="stage">
+  <div class="absolute top-[11vh] inset-x-0 z-10 px-4 text-center" aria-live="polite">
+    @for (c of [
+      { title: 'One simple screen.', sub: 'Everything you own, at a glance…' },
+      { title: 'We do the hard work underneath.', sub: '…every trade, every fee and every rupee of profit, kept in order for you.' },
+      { title: 'This is WealthLens.', sub: 'Your money, finally in one clear picture.' }
+    ]; track c.title; let i = $index) {
+      <div class="caption" [class.on]="caption() === i">
+        <div class="text-2xl md:text-4xl font-semibold text-white tracking-tight">{{ c.title }}</div>
+        <div class="mt-2 text-sm md:text-base text-text-secondary">{{ c.sub }}</div>
+      </div>
+    }
+  </div>
+
+  <div class="device" #device aria-hidden="true">
+    <div class="layer bg-surface border border-border shadow-2xl" style="--i: 0">
+      <div class="absolute inset-y-0 left-0 w-[15%] border-r border-border p-[1.6em] flex flex-col gap-[.9em]">
+        <b class="text-white text-[1.15em] mb-[.8em]">WealthLens</b>
+        <span class="h-[.7em] rounded-full bg-accent/30"></span>
+        @for (n of [1, 2, 3, 4]; track n) {
+          <span class="h-[.7em] rounded-full bg-surface-hover"></span>
+        }
+      </div>
+      <div class="absolute left-[17%] right-[2%] top-[3.5%] flex justify-between text-text-muted text-[1.1em]">
+        <span>Portfolio · FY 2026-27</span>
+        <span>All your accounts</span>
+      </div>
+      <div class="tag">Your investments<small>every buy &amp; sell</small></div>
+    </div>
+
+    <div class="layer" style="--i: 1">
+      <div class="absolute right-[2%] w-[30%] top-[32%] bottom-[4%] bg-surface-alt rounded-[1em] p-[1.2em]">
+        <div class="text-text-muted mb-[.8em]">Holdings</div>
+        @for (h of holdings; track h.code) {
+          <div class="flex justify-between py-[.55em] border-b border-border last:border-0 text-[1.05em]">
+            <span class="text-white">{{ h.code }}</span>
+            <span [class]="h.change < 0 ? 'text-danger' : 'text-accent'">
+              {{ h.change < 0 ? '−' : '+' }}{{ h.change < 0 ? -h.change : h.change }}%
+            </span>
+          </div>
+        }
+      </div>
+      <div class="tag">Fees<small>every rupee charged</small></div>
+    </div>
+
+    <div class="layer" style="--i: 2">
+      <div class="absolute left-[17%] w-[49%] top-[32%] bottom-[4%] bg-surface-alt rounded-[1em] p-[1.2em] flex flex-col">
+        <div class="text-text-muted">Profit by month</div>
+        <div class="flex-1 flex items-end gap-[.7em] pt-[1em]">
+          @for (b of bars; track $index) {
+            <i class="flex-1 rounded-t-[.35em]" [class]="b < 0 ? 'bg-danger/90' : 'bg-accent/90'" [style.height.%]="b < 0 ? -b : b"></i>
+          }
+        </div>
+      </div>
+      <div class="tag">Profit<small>month by month</small></div>
+    </div>
+
+    <div class="layer" style="--i: 3">
+      <div class="absolute left-[17%] right-[2%] top-[11%] h-[17%] grid grid-cols-4 gap-[1.2em]">
+        @for (k of [
+          { label: 'You put in', value: '₹18.40L', up: false },
+          { label: 'Worth today', value: '₹22.61L', up: false },
+          { label: 'Growth', value: '+₹4.21L', up: true },
+          { label: 'Yearly return', value: '14.8%', up: true }
+        ]; track k.label) {
+          <div class="bg-surface-alt rounded-[1em] px-[1.2em] py-[1em] flex flex-col justify-between">
+            <span class="text-text-muted text-[.95em]">{{ k.label }}</span>
+            <b class="text-[1.7em] tracking-tight" [class]="k.up ? 'text-accent' : 'text-white'">{{ k.value }}</b>
+          </div>
+        }
+      </div>
+      <div class="tag">Insights<small>where your money is</small></div>
+    </div>
+  </div>
+</div>

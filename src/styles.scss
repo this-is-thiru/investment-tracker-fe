@@ -112,13 +112,14 @@
 body {
     background-color: var(--color-background);
     color: var(--color-text-primary);
-    overflow-x: hidden;
+    /* clip, not hidden: hidden turns body into a scroll container and breaks position: sticky */
+    overflow-x: clip;
     width: 100%;
 }
 
 html {
     font-size: 15px; /* Slightly reduced base font size (was 16px) */
-    overflow-x: hidden;
+    overflow-x: clip;
     width: 100%;
 }
 

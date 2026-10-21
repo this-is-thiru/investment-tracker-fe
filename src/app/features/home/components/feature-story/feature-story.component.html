@@ -1,0 +1,215 @@
+<div
+  class="w-full max-w-[1320px] mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-[1fr_1.15fr] gap-0 lg:gap-14">
+  <!-- Copy -->
+  <div class="pt-[4vh] lg:pt-[30vh] pb-[30vh] lg:pb-[40vh]">
+    @for (step of steps; track step.eyebrow; let i = $index) {
+    <article #step class="step" [class.on]="active() === i">
+      <div class="flex items-center gap-3 mb-4">
+        <span class="badge" [class.soon]="step.soon">
+          <lucide-icon [name]="step.icon" class="h-5 w-5"></lucide-icon>
+        </span>
+        <span class="text-xs font-semibold uppercase tracking-[.14em]"
+          [class]="step.soon ? 'text-purple-accent' : 'text-accent'">{{ step.eyebrow }}</span>
+      </div>
+      <h2 class="text-3xl md:text-5xl font-semibold text-white leading-[1.05] tracking-tight mb-5">{{ step.title }}</h2>
+      <p class="text-lg text-text-secondary leading-relaxed max-w-[480px] mb-5">{{ step.body }}</p>
+      <ul class="flex flex-col gap-2.5 max-w-[480px]">
+        @for (point of step.points; track point) {
+        <li class="flex items-center gap-3 text-text-primary">
+          <lucide-icon [name]="i === 0 ? 'help-circle' : step.soon ? 'clock' : 'check-circle-2'" class="h-4 w-4 shrink-0"
+            [class]="i === 0 ? 'text-warning' : step.soon ? 'text-purple-accent' : 'text-accent'"></lucide-icon>
+          {{ point }}
+        </li>
+        }
+      </ul>
+      @if (step.route) {
+      <button class="mt-7 inline-flex items-center gap-2 text-accent font-medium hover:gap-3 transition-all"
+        (click)="navigate.emit(step.route)">
+        {{ step.cta }}
+        <lucide-icon name="arrow-right" class="h-4 w-4"></lucide-icon>
+      </button>
+      }
+    </article>
+    }
+  </div>
+
+  <!-- Pinned screen -->
+  <div class="screen-wrap order-first lg:order-none" aria-hidden="true">
+    <div class="glow" [class.soon]="steps[active()].soon"></div>
+    <div class="screen bg-surface border border-border">
+      <div class="h-11 flex items-center gap-3 px-4 border-b border-border">
+        <span class="text-sm font-semibold text-white truncate">{{ steps[active()].screen }}</span>
+        <div class="ml-auto flex gap-1.5">
+          @for (s of steps; track s.eyebrow; let i = $index) {
+          <i class="rail" [class.done]="i <= active()"></i>
+          }
+        </div>
+      </div>
+
+      <!-- 0 · scattered money -->
+      <div class="scene" [class.on]="active() === 0" [style.--g]="ease(0, .2, .75)">
+        <div class="flex justify-between items-center text-sm">
+          <span class="text-text-muted">{{ at(0, .5) ? 'Now: one place' : 'Before: 5 places, 1 old spreadsheet' }}</span>
+          @if (at(0, .75)) {
+          <span class="pill bg-accent/15 text-accent">✓ All together</span>
+          }
+        </div>
+        <div class="flex-1 min-h-0 grid grid-cols-2 auto-rows-fr gap-2.5 lg:gap-3">
+          @for (t of tiles; track t.name) {
+          <div class="tile" [style.--x]="t.x" [style.--y]="t.y" [style.--r]="t.r">
+            <span class="w-8 h-8 rounded-lg grid place-items-center shrink-0"
+              [style.background]="'color-mix(in srgb, ' + t.color + ' 18%, transparent)'" [style.color]="t.color">
+              <lucide-icon [name]="t.icon" class="h-4 w-4"></lucide-icon>
+            </span>
+            <span class="min-w-0">
+              <b class="block text-white text-sm truncate">{{ t.name }}</b>
+              <small class="text-text-muted text-xs">{{ at(0, .5) ? t.value : t.where }}</small>
+            </span>
+          </div>
+          }
+          <div class="relative">
+            <div class="tile absolute inset-0 border-dashed" [style.--x]="48" [style.--y]="50" [style.--r]="-12"
+              [style.opacity]="1 - ease(0, .3, .6)">
+              <lucide-icon name="file-spreadsheet" class="h-6 w-6 text-text-muted shrink-0"></lucide-icon>
+              <small class="text-text-muted text-xs">Spreadsheet · last updated 8 months ago</small>
+            </div>
+            <div class="absolute inset-0 rounded-2xl bg-accent/15 border border-accent/40 flex flex-col justify-center px-3"
+              [style.opacity]="ease(0, .55, .8)">
+              <small class="text-accent text-xs">Total</small>
+              <b class="text-white text-lg lg:text-2xl tracking-tight">₹{{ count(0, 2261300, .55) }}</b>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 1 · one place -->
+      <div class="scene" [class.on]="active() === 1">
+        <div class="grid grid-cols-3 gap-2">
+          <div class="kpi">You put in<b>₹{{ count(1, 1840000, .1) }}</b></div>
+          <div class="kpi">Worth today<b>₹{{ count(1, 2261300, .1) }}</b></div>
+          <div class="kpi">Growth<b class="text-accent">+₹{{ count(1, 421300, .1) }}</b></div>
+        </div>
+        <div class="flex-1 grid grid-cols-2 gap-3 items-center">
+          <div class="donut" [style.background]="donut" [style.--sweep]="ease(1, .05, .6)">
+            <div class="absolute inset-0 z-10 grid place-items-center text-center text-xs text-text-muted">
+              <span>Yearly return<b class="block text-2xl lg:text-4xl text-white tracking-tight">{{ count(1, 14.8, .2, 1)
+                  }}%</b></span>
+            </div>
+          </div>
+          <ul class="flex flex-col gap-2.5 text-[13px]">
+            @for (a of allocation; track a.label; let r = $index) {
+            <li class="item flex justify-between gap-2 text-text-secondary" [class.in]="at(1, .15 + r * .08)">
+              <span><i class="inline-block w-2.5 h-2.5 rounded-full mr-2" [style.background]="a.color"></i>{{ a.label
+                }}</span>
+              <b class="text-white">{{ a.pct }}%</b>
+            </li>
+            }
+          </ul>
+        </div>
+        <div class="item flex items-center gap-2 text-xs text-text-muted" [class.in]="at(1, .7)">
+          <i class="w-2 h-2 rounded-full bg-accent live"></i> Prices update live
+        </div>
+      </div>
+
+      <!-- 2 · fees -->
+      <div class="scene" [class.on]="active() === 2">
+        <div class="flex justify-between items-baseline">
+          <span class="text-text-secondary text-sm">You bought shares worth <b class="text-white">₹75,600</b></span>
+        </div>
+        <div class="h-3 rounded-full bg-surface-hover overflow-hidden flex">
+          @for (f of fees; track f.name) {
+          <i class="block h-full" [style.background]="f.color"
+            [style.width.%]="(f.amount / feeTotal) * 100 * ease(2, .05, .5)"></i>
+          }
+        </div>
+        <div class="border border-border rounded-2xl overflow-hidden">
+          @for (f of fees; track f.name; let r = $index) {
+          <div class="item flex items-center gap-3 px-4 py-2 lg:py-2.5 border-b border-border last:border-0 text-sm"
+            [class.in]="at(2, .08 + r * .1)">
+            <i class="w-2.5 h-2.5 rounded-full shrink-0" [style.background]="f.color"></i>
+            <span class="flex-1 min-w-0">
+              <span class="text-white">{{ f.name }}</span>
+              <small class="hide-sm block text-xs text-text-muted">{{ f.note }}</small>
+            </span>
+            <b class="text-white">₹{{ f.amount.toFixed(2) }}</b>
+          </div>
+          }
+        </div>
+        <div class="item flex justify-between items-baseline px-1" [class.in]="at(2, .6)">
+          <span class="text-text-muted text-sm">Total fees</span>
+          <b class="text-3xl lg:text-4xl tracking-tight text-warning">₹{{ count(2, feeTotal, .6, 2) }}</b>
+        </div>
+        <div class="item hide-short rounded-xl px-4 py-3 bg-warning/10 text-warning text-sm" [class.in]="at(2, .8)">
+          Across all your trades this year: <b>₹3,412</b> in fees.
+        </div>
+      </div>
+
+      <!-- 3 · bonus shares -->
+      <div class="scene" [class.on]="active() === 3">
+        <div class="item rounded-xl px-4 py-3 bg-accent/10 text-accent text-sm flex items-center gap-3"
+          [class.in]="at(3, .05)">
+          <lucide-icon name="gift" class="h-5 w-5 shrink-0"></lucide-icon>
+          <span><b>Bonus 1:1</b> · one free share for every share you own</span>
+        </div>
+        <div class="dots">
+          @for (d of dots; track d) {
+          <i [class.on]="d < shares()" [class.new]="d >= 30"></i>
+          }
+        </div>
+        <div class="grid grid-cols-3 gap-2">
+          <div class="kpi">Shares<b [class.text-accent]="at(3, .7)">{{ shares() }}</b></div>
+          <div class="kpi">Price each<b [class.text-accent]="at(3, .7)">{{ at(3, .7) ? '₹960' : '₹1,920' }}</b></div>
+          <div class="kpi">Your money<b>₹57,600</b></div>
+        </div>
+        <div class="item flex flex-wrap gap-2" [class.in]="at(3, .8)">
+          <span class="pill bg-accent/15 text-accent">✓ Updated automatically</span>
+          <span class="pill bg-surface-hover text-text-secondary">Same money, more shares</span>
+        </div>
+      </div>
+
+      <!-- 4 · real profit -->
+      <div class="scene" [class.on]="active() === 4">
+        <div class="flex gap-4 text-xs text-text-muted">
+          <span><i class="inline-block w-2 h-2 rounded-sm bg-accent mr-1.5"></i>Profit</span>
+          <span><i class="inline-block w-2 h-2 rounded-sm bg-warning mr-1.5"></i>Fees</span>
+        </div>
+        <div class="flex-1 min-h-0 grid grid-cols-12 gap-1.5 items-end pb-5">
+          @for (m of months; track $index; let i = $index) {
+          <div class="relative h-full flex flex-col justify-end gap-[3px]">
+            <i class="block rounded-[3px] bg-warning" [style.height.%]="charges[i] * ease(4, .05, .6)"></i>
+            <i class="block rounded-t-[5px] bar" [style.height.%]="gains[i] * .82 * ease(4, .05, .6)"></i>
+            <span class="absolute -bottom-5 inset-x-0 text-center text-[10px] text-text-muted">{{ m }}</span>
+          </div>
+          }
+        </div>
+        <div class="grid grid-cols-3 gap-2">
+          <div class="kpi">Profit<b>₹{{ count(4, 184250, .1) }}</b></div>
+          <div class="kpi">Fees<b class="text-warning">−₹{{ count(4, 3412, .1) }}</b></div>
+          <div class="kpi">You keep<b class="text-accent">₹{{ count(4, 180838, .1) }}</b></div>
+        </div>
+        <div class="item flex flex-wrap gap-2" [class.in]="at(4, .65)">
+          <span class="pill bg-accent/15 text-accent">Long-term ₹1,12,600</span>
+          <span class="pill bg-blue-accent/15 text-blue-accent">Short-term ₹71,650</span>
+        </div>
+      </div>
+
+      <!-- 5 · coming soon -->
+      <div class="scene" [class.on]="active() === 5">
+        <div class="flex-1 min-h-0 grid grid-cols-2 auto-rows-fr gap-3">
+          @for (r of roadmap; track r.title; let k = $index) {
+          <div class="item card" [class.in]="at(5, .08 + k * .14)">
+            <div class="flex justify-between items-start gap-2">
+              <span class="w-9 h-9 rounded-xl grid place-items-center bg-purple-accent/15 text-purple-accent">
+                <lucide-icon [name]="r.icon" class="h-5 w-5"></lucide-icon>
+              </span>
+              <span class="pill bg-purple-accent/15 text-purple-accent !text-[10px]">Soon</span>
+            </div>
+            <b class="text-white text-base lg:text-lg mt-auto">{{ r.title }}</b>
+            <small class="hide-sm text-sm text-text-secondary leading-snug">{{ r.text }}</small>
+          </div>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
