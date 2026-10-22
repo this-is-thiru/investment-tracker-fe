@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, inject } from '@angular/core';
+import { Component, OnInit, AfterViewInit, DestroyRef, NgZone, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { FooterComponent } from '@shared/components/footer/footer.component';
@@ -7,6 +7,7 @@ import { LucideIconsModule } from '@core/icons/lucide-icons.module';
 import { ButtonComponent } from '@shared/ui/button/button.component';
 import { ProductRevealComponent } from '../../components/product-reveal/product-reveal.component';
 import { FeatureStoryComponent } from '../../components/feature-story/feature-story.component';
+import { HeroSceneComponent } from '../../components/hero-scene/hero-scene.component';
 
 @Component({
     selector: 'app-home',
@@ -18,6 +19,7 @@ import { FeatureStoryComponent } from '../../components/feature-story/feature-st
         ButtonComponent,
         ProductRevealComponent,
         FeatureStoryComponent,
+        HeroSceneComponent,
     ],
     templateUrl: './home.component.html',
     styleUrls: ['./home.component.css']
@@ -25,8 +27,22 @@ import { FeatureStoryComponent } from '../../components/feature-story/feature-st
 export class HomeComponent implements OnInit, AfterViewInit {
   private auth = inject(AuthService);
   private router = inject(Router);
+  private zone = inject(NgZone);
+  private destroyRef = inject(DestroyRef);
 
   isLoaded = false;
+
+  readonly questions = [
+    'Where is all my money?',
+    'Am I really making a profit?',
+    'How much am I paying in fees?',
+    'How much tax will I owe?',
+    'Did my bonus shares get added?',
+  ];
+  readonly answers = ['One screen', 'Real profit after fees', 'Every fee itemised', 'Tax-ready reports', 'Bonus & splits handled'];
+  // Repeated so half a track is wider than the screen and the marquee loops seamlessly at -50%
+  readonly questionLoop = Array(4).fill(this.questions).flat();
+  readonly answerLoop = Array(4).fill(this.answers).flat();
 
   readonly howSteps = [
     { icon: 'play-circle', color: 'var(--color-accent)', title: 'Try it or sign up', text: 'Open the demo in one click, or create your free account.' },
@@ -47,6 +63,20 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit() {
     this.setupIntersectionObserver();
+    this.setupCardSpotlight();
+  }
+
+  /** Feeds the pointer position to .spot-card so its glow follows the cursor */
+  private setupCardSpotlight() {
+    const move = (e: PointerEvent) => {
+      const card = (e.target as HTMLElement).closest?.('.spot-card') as HTMLElement | null;
+      if (!card) return;
+      const r = card.getBoundingClientRect();
+      card.style.setProperty('--mx', `${e.clientX - r.left}px`);
+      card.style.setProperty('--my', `${e.clientY - r.top}px`);
+    };
+    this.zone.runOutsideAngular(() => document.addEventListener('pointermove', move, { passive: true }));
+    this.destroyRef.onDestroy(() => document.removeEventListener('pointermove', move));
   }
 
   private setupIntersectionObserver() {
@@ -62,7 +92,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
       setTimeout(() => {
         document
-          .querySelectorAll('.scroll-reveal')
+          .querySelectorAll('.scroll-reveal, .draw')
           .forEach((el) => observer.observe(el));
       }, 0);
     }

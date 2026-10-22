@@ -25,6 +25,21 @@
 .screen-wrap {
   isolation: isolate;
 }
+.num {
+  position: absolute;
+  z-index: -1;
+  top: -0.42em;
+  left: -0.04em;
+  font-size: clamp(7rem, 12vw, 11rem);
+  font-weight: 800;
+  line-height: 1;
+  color: transparent;
+  -webkit-text-stroke: 1px var(--color-border);
+  pointer-events: none;
+}
+.on .num {
+  -webkit-text-stroke-color: color-mix(in srgb, var(--color-accent) 55%, transparent);
+}
 .screen {
   position: relative;
   width: 100%;
@@ -33,6 +48,7 @@
   border-radius: 26px;
   overflow: hidden;
   box-shadow: 0 30px 80px -30px rgba(0, 0, 0, 0.8);
+  transition: transform 0.25s ease-out;
 }
 
 .scene {
@@ -122,22 +138,6 @@
   background: var(--color-surface);
 }
 
-.badge {
-  width: 40px;
-  height: 40px;
-  border-radius: 12px;
-  display: grid;
-  place-items: center;
-  color: var(--color-accent);
-  background: color-mix(in srgb, var(--color-accent) 14%, transparent);
-  border: 1px solid color-mix(in srgb, var(--color-accent) 30%, transparent);
-}
-.badge.soon {
-  color: var(--color-purple-accent);
-  background: color-mix(in srgb, var(--color-purple-accent) 14%, transparent);
-  border-color: color-mix(in srgb, var(--color-purple-accent) 30%, transparent);
-}
-
 .glow {
   position: absolute;
   inset: 20% 10%;
@@ -147,20 +147,6 @@
   filter: blur(80px);
   transition: background 0.6s;
   pointer-events: none;
-}
-.glow.soon {
-  background: var(--color-purple-accent);
-}
-
-.rail {
-  width: 18px;
-  height: 4px;
-  border-radius: 4px;
-  background: var(--color-surface-hover);
-  transition: background 0.4s;
-}
-.rail.done {
-  background: var(--color-accent);
 }
 
 /* --g: 0 = scattered across apps, 1 = gathered into one grid */
@@ -238,6 +224,9 @@
   }
   .hide-sm {
     display: none;
+  }
+  .num {
+    font-size: 6rem;
   }
   .dots {
     gap: 5px;
