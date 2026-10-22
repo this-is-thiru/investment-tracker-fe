@@ -3,9 +3,11 @@
   <!-- Copy -->
   <div class="pt-[4vh] lg:pt-[30vh] pb-[30vh] lg:pb-[40vh]">
     @for (step of steps; track step.eyebrow; let i = $index) {
-    <article #step class="step" [class.on]="active() === i">
+    <article #step class="step relative isolate" [class.on]="active() === i">
+      <span class="num" aria-hidden="true">0{{ i + 1 }}</span>
       <div class="flex items-center gap-3 mb-4">
-        <span class="badge" [class.soon]="step.soon">
+        <span class="w-10 h-10 rounded-xl grid place-items-center border"
+          [class]="step.soon ? 'text-purple-accent bg-purple-accent/15 border-purple-accent/30' : 'text-accent bg-accent/15 border-accent/30'">
           <lucide-icon [name]="step.icon" class="h-5 w-5"></lucide-icon>
         </span>
         <span class="text-xs font-semibold uppercase tracking-[.14em]"
@@ -35,13 +37,21 @@
 
   <!-- Pinned screen -->
   <div class="screen-wrap order-first lg:order-none" aria-hidden="true">
-    <div class="glow" [class.soon]="steps[active()].soon"></div>
-    <div class="screen bg-surface border border-border">
+    <div class="glow" [style.background]="steps[active()].color"></div>
+    @for (s of steps; track s.eyebrow; let i = $index) {
+    <div
+      class="hidden lg:block absolute z-[2] -left-10 bottom-[3%] px-[18px] py-3 rounded-[18px] bg-[rgba(28,28,28,.8)] border border-white/10 backdrop-blur-md shadow-[0_20px_50px_-20px_#000] transition-all duration-[450ms] ease-[cubic-bezier(.34,1.56,.64,1)]"
+      [class]="active() === i ? 'opacity-100' : 'opacity-0 translate-y-4 scale-90'">
+      <b class="block text-[1.9rem] tracking-tight leading-tight" [style.color]="s.color">{{ s.callout.value }}</b>
+      <small class="text-xs text-text-secondary">{{ s.callout.label }}</small>
+    </div>
+    }
+    <div class="screen bg-surface border border-border" [style.transform]="tilt()">
       <div class="h-11 flex items-center gap-3 px-4 border-b border-border">
         <span class="text-sm font-semibold text-white truncate">{{ steps[active()].screen }}</span>
         <div class="ml-auto flex gap-1.5">
           @for (s of steps; track s.eyebrow; let i = $index) {
-          <i class="rail" [class.done]="i <= active()"></i>
+          <i class="w-[18px] h-1 rounded transition-colors duration-500" [class]="i <= active() ? 'bg-accent' : 'bg-surface-hover'"></i>
           }
         </div>
       </div>

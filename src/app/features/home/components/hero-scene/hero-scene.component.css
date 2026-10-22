@@ -1,0 +1,112 @@
+:host {
+  display: block;
+  --mx: 50%;
+  --my: 40%;
+  --px: 0;
+  --py: 0;
+}
+
+.grid-bg {
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(var(--color-border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--color-border) 1px, transparent 1px);
+  background-size: 56px 56px;
+  opacity: 0.35;
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 45%, #000 20%, transparent 75%);
+}
+
+.spot {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(520px circle at var(--mx) var(--my), rgba(16, 163, 127, 0.12), transparent 65%);
+}
+
+/* --d: parallax depth in px per unit of pointer offset */
+.widget {
+  position: absolute;
+  transform: translate(calc(var(--px) * var(--d) * 1px), calc(var(--py) * var(--d) * 1px));
+  transition: transform 0.3s ease-out;
+}
+
+.glass {
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: rgba(35, 35, 35, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 24px 60px -24px rgba(0, 0, 0, 0.8);
+}
+
+.glass-chip {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(35, 35, 35, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.spark {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: draw 2.2s 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.mini-donut {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  mask: radial-gradient(circle, transparent 13px, #000 14px);
+  animation: spin 14s linear infinite;
+}
+@keyframes spin {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+.live-dot {
+  box-shadow: 0 0 0 0 rgba(16, 163, 127, 0.6);
+  animation: ping 2s infinite;
+}
+@keyframes ping {
+  70% {
+    box-shadow: 0 0 0 8px rgba(16, 163, 127, 0);
+  }
+}
+
+.scroll-cue {
+  width: 1px;
+  height: 46px;
+  background: linear-gradient(var(--color-text-muted), transparent);
+  transform-origin: top;
+  animation: drip 1.8s ease-in-out infinite;
+}
+@keyframes drip {
+  0% {
+    transform: scaleY(0);
+  }
+  60% {
+    transform: scaleY(1);
+  }
+  100% {
+    transform: scaleY(1);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spark,
+  .mini-donut,
+  .live-dot,
+  .scroll-cue {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+}
