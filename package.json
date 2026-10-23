@@ -23,7 +23,7 @@
     "@primeuix/themes": "^2.0.3",
     "@tailwindcss/postcss": "^4.3.1",
     "chart.js": "^4.5.1",
-    "lucide-angular": "^0.548.0",
+    "lucide-angular": "^0.577.0",
     "primeflex": "^4.0.0",
     "primeicons": "^7.0.0",
     "primeng": "^21.1.9",
@@ -52,6 +52,6 @@
     "prettier": "^3.8.4",
     "serve": "^14.2.6",
     "tailwindcss": "^4.3.1",
-    "typescript": "~6.0.3"
+    "typescript": "~5.9.3"
   }
 }
