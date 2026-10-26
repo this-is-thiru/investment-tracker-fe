@@ -39,6 +39,8 @@ export class FeatureStoryComponent {
       body: 'Shares in one app, mutual funds in another, FDs at the bank, and a spreadsheet you stopped updating months ago. Nobody shows you the full picture.',
       points: ['Where is all my money?', 'Am I really making a profit?', 'How much am I losing to fees?'],
       screen: 'Before WealthLens',
+      color: 'var(--color-warning)',
+      callout: { value: '5 → 1', label: 'places, now one screen' },
     },
     {
       eyebrow: 'One place',
@@ -47,6 +49,8 @@ export class FeatureStoryComponent {
       body: 'Add your investments once. See what you own, what it is worth today and how fast it is growing.',
       points: ['Shares, mutual funds, gold, FDs and bonds', 'Today\'s value with live prices', 'Your real yearly return'],
       screen: 'My portfolio',
+      color: 'var(--color-blue-accent)',
+      callout: { value: '+22.9%', label: 'growth so far' },
       route: 'portfolio-analytics',
       cta: 'See the dashboard',
     },
@@ -57,6 +61,8 @@ export class FeatureStoryComponent {
       body: 'Every buy and sell carries small charges: brokerage, government tax, stamp duty, exchange fees. They look tiny, but they add up. We show every rupee.',
       points: ['Fees for each trade', 'What you paid this year', 'The price you need to break even'],
       screen: 'Fees on one trade',
+      color: 'var(--color-warning)',
+      callout: { value: '₹89.93', label: 'fees on a ₹75,600 buy' },
       route: 'broker-charges',
       cta: 'Check your fees',
     },
@@ -67,6 +73,8 @@ export class FeatureStoryComponent {
       body: 'When a company gives free shares or splits its stock, your share count changes but your money does not. WealthLens adjusts it for you, so your numbers stay right.',
       points: ['Bonus shares', 'Stock splits', 'Dividends and more'],
       screen: 'HDFC Bank',
+      color: 'var(--color-accent)',
+      callout: { value: '×2', label: 'shares, same money' },
       route: 'investments-tracking',
       cta: 'Track your investments',
     },
@@ -77,6 +85,8 @@ export class FeatureStoryComponent {
       body: 'See your profit after fees, month by month. Gains are split into short-term and long-term, the way the tax department sees them, so filing is no guesswork.',
       points: ['Profit after fees', 'Short-term and long-term gains', 'Reports ready for tax time'],
       screen: 'This financial year',
+      color: 'var(--color-accent)',
+      callout: { value: '98%', label: 'of your profit you keep' },
       route: 'tax-filing',
       cta: 'Open tax reports',
     },
@@ -87,6 +97,8 @@ export class FeatureStoryComponent {
       body: 'Investments come first. Next, WealthLens grows into one home for the rest of your money life.',
       points: ['Tax planner', 'Insurance', 'Loans & EMI', 'SIP goals'],
       screen: 'What we are building next',
+      color: 'var(--color-purple-accent)',
+      callout: { value: '4', label: 'new tools on the way' },
       soon: true,
     },
   ];
@@ -205,6 +217,12 @@ export class FeatureStoryComponent {
   count(scene: number, value: number, from: number, decimals = 0): string {
     const v = value * smooth(from, Math.min(1, from + 0.35), this.p(scene));
     return v.toLocaleString('en-IN', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+  }
+
+  /** Gentle 3D sway of the pinned screen as the visitor reads through a step */
+  tilt(): string {
+    const t = this.progress() - 0.5;
+    return `perspective(1600px) rotateY(${(-t * 10).toFixed(2)}deg) rotateX(${(t * 4).toFixed(2)}deg)`;
   }
 
   /** 30 shares before the bonus, 60 after */

@@ -7,18 +7,145 @@
   opacity: 0;
 }
 
-.scroll-cue {
-  width: 1px;
-  height: 46px;
-  background: linear-gradient(var(--color-text-muted), transparent);
-  transform-origin: top;
-  animation: drip 1.8s ease-in-out infinite;
+/* Two ribbons crossing at slight angles, scrolling in opposite directions */
+.ribbons {
+  position: relative;
+  height: 170px;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
 }
-@keyframes drip {
-  0% { transform: scaleY(0); }
-  60% { transform: scaleY(1); }
-  100% { transform: scaleY(1); opacity: 0; }
+.ribbon {
+  position: absolute;
+  left: -5%;
+  width: 110%;
+  padding: 14px 0;
+  overflow: hidden;
 }
+.ribbon-front {
+  z-index: 1;
+  background: linear-gradient(90deg, var(--color-accent), #0d8a6b);
+  color: #06281f;
+  transform: rotate(-3deg);
+  box-shadow: 0 20px 50px -20px rgba(16, 163, 127, 0.6);
+}
+.ribbon-back {
+  background: var(--color-surface);
+  border-block: 1px solid var(--color-border);
+  color: var(--color-text-secondary);
+  transform: rotate(2.5deg);
+}
+.track {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  width: max-content;
+  font-size: 1.15rem;
+  font-weight: 600;
+  white-space: nowrap;
+  animation: marquee 45s linear infinite;
+}
+.track.reverse {
+  animation-direction: reverse;
+}
+.track i {
+  font-style: normal;
+  opacity: 0.6;
+}
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* How it works: connector draws in when revealed */
+.draw {
+  background: linear-gradient(90deg, var(--color-accent), var(--color-blue-accent), var(--color-purple-accent));
+  opacity: 0.6;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 1.8s cubic-bezier(0.16, 1, 0.3, 1) 0.4s;
+}
+.draw.revealed {
+  transform: none;
+}
+
+.step-icon {
+  position: relative;
+  width: 64px;
+  height: 64px;
+  border-radius: 20px;
+  display: grid;
+  place-items: center;
+  background: var(--color-background);
+  border: 1px solid color-mix(in srgb, currentColor 40%, transparent);
+  box-shadow: 0 0 30px -6px color-mix(in srgb, currentColor 50%, transparent);
+}
+.step-icon b {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  color: var(--color-background);
+  background: var(--c);
+}
+
+/* Cards: a glow follows the pointer (--mx/--my set from the component) */
+.spot-card {
+  position: relative;
+  overflow: hidden;
+}
+.spot-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(240px circle at var(--mx, 50%) var(--my, -200px), color-mix(in srgb, var(--c) 22%, transparent), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.spot-card:hover::before {
+  opacity: 1;
+}
+.spot-card.revealed:hover {
+  transform: translateY(-6px);
+  border-color: color-mix(in srgb, var(--c) 45%, transparent);
+}
+
+/* CTA: a gradient light runs around the border */
+.cta-ring {
+  position: relative;
+  padding: 1px;
+  border-radius: 1.5rem;
+  overflow: hidden;
+}
+.cta-ring::before {
+  content: '';
+  position: absolute;
+  inset: -150%;
+  background: conic-gradient(transparent 0 65%, var(--color-accent), var(--color-blue-accent), var(--color-purple-accent), transparent);
+  animation: spin 7s linear infinite;
+}
+.cta-inner {
+  position: relative;
+  overflow: hidden;
+  border-radius: calc(1.5rem - 1px);
+  background: var(--color-surface-alt);
+}
+@keyframes spin {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .scroll-cue { animation: none; }
+  .track,
+  .cta-ring::before {
+    animation: none;
+  }
 }

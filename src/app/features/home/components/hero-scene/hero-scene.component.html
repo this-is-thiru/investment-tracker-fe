@@ -1,0 +1,117 @@
+<section class="relative min-h-[calc(100vh-4rem)] grid place-items-center text-center px-4 py-16 overflow-hidden">
+  <!-- Backdrop -->
+  <div class="absolute inset-0 pointer-events-none" aria-hidden="true">
+    <div class="grid-bg"></div>
+    <div class="absolute top-[8%] left-[12%] w-[28rem] h-[28rem] bg-accent/15 rounded-full blur-3xl animate-blob-1"></div>
+    <div class="absolute bottom-[6%] right-[10%] w-[26rem] h-[26rem] bg-purple-accent/15 rounded-full blur-3xl animate-blob-2"></div>
+    <div class="absolute top-[40%] left-[45%] w-72 h-72 bg-blue-accent/10 rounded-full blur-3xl animate-blob-2"></div>
+    <div class="spot"></div>
+  </div>
+
+  <!-- Floating widgets (wide screens) -->
+  <div class="hidden xl:block absolute inset-0 pointer-events-none" aria-hidden="true">
+    <div class="widget top-[16%] left-[6%]" style="--d: -26">
+      <div class="glass animate-float-up w-56">
+        <div class="flex justify-between items-center text-xs text-text-muted">
+          Worth today <span class="text-accent font-semibold">+22.9%</span>
+        </div>
+        <b class="block text-xl text-white tracking-tight mt-1">₹22,61,300</b>
+        <svg viewBox="0 0 110 40" class="w-full h-10 mt-2">
+          <path [attr.d]="spark + ' L110,40 L0,40 Z'" class="fill-accent/15" />
+          <path [attr.d]="spark" class="spark" fill="none" stroke="var(--color-accent)" stroke-width="2"
+            stroke-linejoin="round" pathLength="1" />
+        </svg>
+      </div>
+    </div>
+
+    <div class="widget top-[20%] right-[6%]" style="--d: 22">
+      <div class="glass animate-float-down flex items-center gap-3">
+        <span class="w-10 h-10 rounded-xl grid place-items-center bg-warning/15 text-warning">
+          <lucide-icon name="receipt" class="h-5 w-5"></lucide-icon>
+        </span>
+        <span class="text-left">
+          <small class="block text-xs text-text-muted">Fees on one trade</small>
+          <b class="text-lg text-white">₹89.93</b>
+        </span>
+      </div>
+    </div>
+
+    <div class="widget bottom-[18%] left-[9%]" style="--d: 18">
+      <div class="glass animate-float-down flex items-center gap-3 [animation-delay:1s]">
+        <span class="w-10 h-10 rounded-xl grid place-items-center bg-accent/15 text-accent">
+          <lucide-icon name="gift" class="h-5 w-5"></lucide-icon>
+        </span>
+        <span class="text-left">
+          <small class="block text-xs text-text-muted">Bonus shares added</small>
+          <b class="text-lg text-white">+30 shares</b>
+        </span>
+      </div>
+    </div>
+
+    <div class="widget bottom-[14%] right-[8%]" style="--d: -20">
+      <div class="glass animate-float-up flex items-center gap-4 [animation-delay:.6s]">
+        <span class="mini-donut" [style.background]="mix"></span>
+        <span class="text-left text-xs text-text-muted leading-relaxed">
+          <b class="block text-sm text-white">Your mix</b>
+          Shares 58% · Funds 24%<br />Gold 8% · FDs 6%
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Copy -->
+  <div class="relative z-10 max-w-4xl">
+    <div
+      class="inline-flex items-center gap-2 bg-accent/10 border border-accent/20 rounded-full px-4 py-2 mb-8 flow-slide-up flow-delay-1">
+      <i class="w-2 h-2 rounded-full bg-accent live-dot"></i>
+      <span class="text-sm text-accent">Made for every Indian investor</span>
+    </div>
+
+    <h1 class="text-5xl md:text-7xl lg:text-8xl font-semibold text-white leading-[.98] tracking-tight mb-6">
+      <span class="inline-block mr-[.22em] flow-slide-up flow-delay-2">Your</span>
+      <span class="inline-block flow-slide-up flow-delay-3">money,</span>
+      <span
+        class="block pb-2 bg-gradient-to-r from-accent via-blue-accent to-purple-accent bg-clip-text text-transparent animate-gradient flow-slide-up flow-delay-4">
+        all in one place.
+      </span>
+    </h1>
+
+    <p class="text-lg md:text-xl text-text-secondary max-w-2xl mx-auto mb-10 leading-relaxed flow-slide-up flow-delay-5">
+      Track your shares, mutual funds, gold and deposits. See your real profit after fees and get your tax numbers
+      ready. No finance degree needed.
+    </p>
+
+    <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center flow-slide-up flow-delay-6">
+      <ui-button variant="primary" size="lg"
+        class="w-full sm:w-auto group hover:scale-[1.02] sm:hover:scale-105 transition-transform duration-200"
+        (click)="start.emit()">
+        <div
+          class="absolute inset-0 bg-gradient-to-r from-[#0D8A6B] to-[#0B7A5E] translate-x-[-100%] group-hover:translate-x-0 transition-transform duration-300">
+        </div>
+        <span class="relative z-10 font-semibold">Get Started</span>
+        <lucide-icon name="arrow-right"
+          class="h-5 w-5 relative z-10 group-hover:translate-x-1 transition-transform"></lucide-icon>
+      </ui-button>
+
+      <ui-button variant="ghost" size="lg"
+        class="w-full sm:w-auto group hover:scale-[1.02] sm:hover:scale-105 transition-transform duration-200"
+        (click)="demo.emit()">
+        <span class="relative z-10 font-semibold">Explore Demo Dashboard</span>
+        <lucide-icon name="play-circle"
+          class="h-5 w-5 relative z-10 text-accent group-hover:scale-110 transition-transform"></lucide-icon>
+      </ui-button>
+    </div>
+
+    <!-- Compact widgets (narrow screens) -->
+    <div class="xl:hidden flex flex-wrap justify-center gap-2 mt-8 flow-slide-up flow-delay-7">
+      <span class="glass-chip"><b class="text-accent">₹22.61L</b> in one place</span>
+      <span class="glass-chip"><b class="text-warning">₹89.93</b> fees spotted</span>
+      <span class="glass-chip"><b class="text-white">14.8%</b> a year</span>
+    </div>
+
+    <div class="mt-14 flex flex-col items-center gap-3 text-sm text-text-muted flow-slide-up flow-delay-8">
+      Scroll to see how it works
+      <i class="scroll-cue"></i>
+    </div>
+  </div>
+</section>

@@ -34,10 +34,11 @@
   width: min(980px, 92vw, 102vh);
   aspect-ratio: 16 / 10;
   position: relative;
-  margin-top: 19vh;
+  margin-top: 16vh;
   transform-style: preserve-3d;
-  transform: translateY(calc(var(--t) * 4vh)) rotateX(calc(var(--t) * 54deg))
-    rotateZ(calc(var(--t) * -32deg)) scale(calc(0.92 - var(--t) * 0.2));
+  /* pushed down and shrunk while exploded so the stack never rises into the captions */
+  transform: translateY(calc(var(--t) * 12vh + var(--e) * 4vh)) rotateX(calc(var(--t) * 54deg))
+    rotateZ(calc(var(--t) * -32deg)) scale(calc(0.86 - var(--t) * 0.2 - var(--e) * 0.1));
   font-size: clamp(7px, 1.25cqi, 13px);
 }
 
@@ -45,7 +46,7 @@
   position: absolute;
   inset: 0;
   border-radius: 1.4em;
-  transform: translateZ(calc(var(--i) * var(--e) * 6.5em));
+  transform: translateZ(calc(var(--i) * var(--e) * 4.6em));
   transform-style: preserve-3d;
 }
 .layer::before {
