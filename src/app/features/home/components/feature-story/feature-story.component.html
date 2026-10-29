@@ -1,7 +1,7 @@
 <div
-  class="w-full max-w-[1320px] mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-[1fr_1.15fr] gap-0 lg:gap-14">
+  class="story w-full max-w-[1320px] mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-[1fr_1.15fr] gap-0 lg:gap-14">
   <!-- Copy -->
-  <div class="pt-[4vh] lg:pt-[30vh] pb-[30vh] lg:pb-[40vh]">
+  <div class="copy pt-[4vh] lg:pt-[30vh] pb-[30vh] lg:pb-[40vh]">
     @for (step of steps; track step.eyebrow; let i = $index) {
     <article #step class="step relative isolate" [class.on]="active() === i">
       <span class="num" aria-hidden="true">0{{ i + 1 }}</span>
@@ -36,7 +36,7 @@
   </div>
 
   <!-- Pinned screen -->
-  <div class="screen-wrap order-first lg:order-none" aria-hidden="true">
+  <div #screenWrap class="screen-wrap order-first lg:order-none" aria-hidden="true">
     <div class="glow" [style.background]="steps[active()].color"></div>
     @for (s of steps; track s.eyebrow; let i = $index) {
     <div
@@ -99,7 +99,7 @@
           <div class="kpi">Worth today<b>₹{{ count(1, 2261300, .1) }}</b></div>
           <div class="kpi">Growth<b class="text-accent">+₹{{ count(1, 421300, .1) }}</b></div>
         </div>
-        <div class="flex-1 grid grid-cols-2 gap-3 items-center">
+        <div class="donut-row flex-1 min-h-0 grid grid-cols-2 gap-3 items-center">
           <div class="donut" [style.background]="donut" [style.--sweep]="ease(1, .05, .6)">
             <div class="absolute inset-0 z-10 grid place-items-center text-center text-xs text-text-muted">
               <span>Yearly return<b class="block text-2xl lg:text-4xl text-white tracking-tight">{{ count(1, 14.8, .2, 1)
@@ -134,12 +134,12 @@
         </div>
         <div class="border border-border rounded-2xl overflow-hidden">
           @for (f of fees; track f.name; let r = $index) {
-          <div class="item flex items-center gap-3 px-4 py-2 lg:py-2.5 border-b border-border last:border-0 text-sm"
+          <div class="item fee-row flex items-center gap-3 px-4 py-1.5 lg:py-2.5 border-b border-border last:border-0 text-sm"
             [class.in]="at(2, .08 + r * .1)">
             <i class="w-2.5 h-2.5 rounded-full shrink-0" [style.background]="f.color"></i>
             <span class="flex-1 min-w-0">
               <span class="text-white">{{ f.name }}</span>
-              <small class="hide-sm block text-xs text-text-muted">{{ f.note }}</small>
+              <small class="hide-short block text-xs text-text-muted">{{ f.note }}</small>
             </span>
             <b class="text-white">₹{{ f.amount.toFixed(2) }}</b>
           </div>
@@ -147,7 +147,7 @@
         </div>
         <div class="item flex justify-between items-baseline px-1" [class.in]="at(2, .6)">
           <span class="text-text-muted text-sm">Total fees</span>
-          <b class="text-3xl lg:text-4xl tracking-tight text-warning">₹{{ count(2, feeTotal, .6, 2) }}</b>
+          <b class="text-2xl lg:text-4xl tracking-tight text-warning">₹{{ count(2, feeTotal, .6, 2) }}</b>
         </div>
         <div class="item hide-short rounded-xl px-4 py-3 bg-warning/10 text-warning text-sm" [class.in]="at(2, .8)">
           Across all your trades this year: <b>₹3,412</b> in fees.
@@ -171,7 +171,7 @@
           <div class="kpi">Price each<b [class.text-accent]="at(3, .7)">{{ at(3, .7) ? '₹960' : '₹1,920' }}</b></div>
           <div class="kpi">Your money<b>₹57,600</b></div>
         </div>
-        <div class="item flex flex-wrap gap-2" [class.in]="at(3, .8)">
+        <div class="item hide-short flex flex-wrap gap-2" [class.in]="at(3, .8)">
           <span class="pill bg-accent/15 text-accent">✓ Updated automatically</span>
           <span class="pill bg-surface-hover text-text-secondary">Same money, more shares</span>
         </div>

@@ -1,4 +1,4 @@
-import { Component, DestroyRef, ElementRef, NgZone, afterNextRender, inject, output, signal, viewChildren } from '@angular/core';
+import { Component, DestroyRef, ElementRef, NgZone, afterNextRender, inject, output, signal, viewChild, viewChildren } from '@angular/core';
 import { LucideIconsModule } from '@core/icons/lucide-icons.module';
 import { StoryStep } from '../../models/story-step.model';
 
@@ -25,6 +25,7 @@ export class FeatureStoryComponent {
   private destroyRef = inject(DestroyRef);
 
   private stepEls = viewChildren<ElementRef<HTMLElement>>('step');
+  private screenWrap = viewChild.required<ElementRef<HTMLElement>>('screenWrap');
 
   navigate = output<string>();
 
@@ -158,20 +159,33 @@ export class FeatureStoryComponent {
         const els = this.stepEls().map(s => s.nativeElement);
         if (!els.length) return;
 
-        // The step nearest the middle of the viewport owns the screen
+        // When stacked (phones), the pinned screen covers the top of the viewport and the copy
+        // slides under it, so a step takes over as soon as its heading is in clear view below it
+        const wrap = this.screenWrap().nativeElement.getBoundingClientRect();
+        const stacked = wrap.left < els[0].getBoundingClientRect().right - 1;
+        const covered = stacked ? Math.min(Math.max(wrap.bottom, 0), innerHeight * 0.7) : 0;
+        const line = stacked ? covered + (innerHeight - covered) * 0.35 : innerHeight / 2;
+
         let best = 0;
-        let bestDist = Infinity;
-        els.forEach((el, i) => {
-          const r = el.getBoundingClientRect();
-          const d = Math.abs(r.top + r.height / 2 - innerHeight / 2);
-          if (d < bestDist) {
-            bestDist = d;
-            best = i;
-          }
-        });
-        // 0 when the step's top reaches mid-screen, 1 a little before the next step takes over
+        if (stacked) {
+          els.forEach((el, i) => {
+            if (el.getBoundingClientRect().top <= line) best = i;
+          });
+        } else {
+          // The step nearest the middle of the viewport owns the screen
+          let bestDist = Infinity;
+          els.forEach((el, i) => {
+            const r = el.getBoundingClientRect();
+            const d = Math.abs(r.top + r.height / 2 - line);
+            if (d < bestDist) {
+              bestDist = d;
+              best = i;
+            }
+          });
+        }
+        // 0 when the step's top reaches the reading line, 1 a little before the next step takes over
         const r = els[best].getBoundingClientRect();
-        const p = reduced ? 1 : clamp((innerHeight * 0.5 - r.top) / (r.height * 0.85));
+        const p = reduced ? 1 : clamp((line - r.top) / (r.height * 0.85));
         const rounded = Math.round(p * 100) / 100;
 
         if (best !== this.active() || rounded !== this.progress()) {

@@ -36,7 +36,8 @@
   cursor: not-allowed;
 }
 
-.ui-button--full {
+.ui-button--full,
+:host(.w-full) .ui-button {
   width: 100%;
 }
 
